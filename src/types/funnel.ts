@@ -137,6 +137,41 @@ export interface PersonalBrandData {
   authenticityGuidance: { he: string; en: string }[];
 }
 
+// ═══════════════════════════════════════════════
+// Neuro-Storytelling Types
+// ═══════════════════════════════════════════════
+
+export interface NeuroVector {
+  id: "cortisol" | "oxytocin" | "dopamine";
+  name: { he: string; en: string };
+  emoji: string;
+  color: string;
+  biologicalFunction: { he: string; en: string };
+  copyApplication: { he: string; en: string };
+  intensityTips: { he: string; en: string }[];
+}
+
+export interface NeuroPromptTemplate {
+  stage: string;
+  stageName: { he: string; en: string };
+  template: { he: string; en: string };
+  vectors: ("cortisol" | "oxytocin" | "dopamine")[];
+}
+
+export interface EntropyGuide {
+  definition: { he: string; en: string };
+  overloadSigns: { he: string; en: string }[];
+  collapseSigns: { he: string; en: string }[];
+  balanceTips: { he: string; en: string }[];
+}
+
+export interface NeuroStorytellingData {
+  vectors: NeuroVector[];
+  promptTemplates: NeuroPromptTemplate[];
+  entropyGuide: EntropyGuide;
+  axiom: { he: string; en: string };
+}
+
 export interface FunnelResult {
   id: string;
   funnelName: { he: string; en: string };
