@@ -570,7 +570,39 @@ function getOverallTips(data: FormData): { he: string; en: string }[] {
     });
   }
 
-  return tips.slice(0, 10);
+  // ═══════════════════════════════════════════════
+  // Personal Brand Tips
+  // ═══════════════════════════════════════════════
+  if (businessField === "personalBrand") {
+    tips.push({
+      he: "🎯 משולש הזהב: מצא את הצומת בין מומחיות × עניין × ביקוש – שם נמצאת הנישה המושלמת שלך",
+      en: "🎯 Golden Triangle: Find the intersection of expertise × interest × demand – that's where your perfect niche lives",
+    });
+    tips.push({
+      he: "🌊 אוקיינוס כחול: במקום להתחרות בשוק רווי, השתמש במטריצת ERRC (בטל, הפחת, העלה, צור) כדי ליצור קטגוריה חדשה",
+      en: "🌊 Blue Ocean: Instead of competing in a saturated market, use the ERRC Matrix (Eliminate, Reduce, Raise, Create) to create a new category",
+    });
+    tips.push({
+      he: "📡 סיגנלים יקרים (Costly Signals): תוצאות מתועדות, Case Studies עם מספרים, והמלצות וידאו – אלה הסיגנלים שבאמת משכנעים",
+      en: "📡 Costly Signals: Documented results, Case Studies with numbers, and video testimonials – these are the signals that truly convince",
+    });
+    tips.push({
+      he: "✨ אפקט ההילה: זהה את ה-Mega Trait שלך (תכונה מרכזית אחת) ובנה סביבו את כל הנרטיב – הוא ישפיע על תפיסת כל שאר התכונות",
+      en: "✨ Halo Effect: Identify your Mega Trait (one core quality) and build your entire narrative around it – it influences perception of all other qualities",
+    });
+    if (audienceType === "b2b") {
+      tips.push({
+        he: "🤝 שנאת הפסד במיתוג: מסגר את הערך שלך דרך 'עלות האי-פעולה' – כמה עולה ללקוח לא להשתמש בך? זה חזק פי 2 מהבטחת רווח",
+        en: "🤝 Loss Aversion in Branding: Frame your value through 'cost of inaction' – how much does it cost NOT to use you? This is 2x stronger than promising gains",
+      });
+    }
+    tips.push({
+      he: "🔗 דביקות רשת: בנה קהילה שהערך שלה גדל עם כל חבר חדש – Alumni Network, אירועים, Referrals דו-כיווניים",
+      en: "🔗 Network Stickiness: Build a community whose value grows with each new member – Alumni Network, events, bilateral Referrals",
+    });
+  }
+
+  return tips.slice(0, 12);
 }
 
 function getKpis(data: FormData): { name: { he: string; en: string }; target: string }[] {
