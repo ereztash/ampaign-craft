@@ -173,6 +173,18 @@ export const translations = {
   hookFormula: { he: "נוסחה", en: "Formula" },
   hookExample: { he: "דוגמה", en: "Example" },
   hookChannels: { he: "מתאים ל", en: "Best for" },
+  tabCopyLab: { he: "Copy Lab", en: "Copy Lab" },
+  copyLabSubtitle: { he: "כלי כתיבה מבוססי נוירוקופירייטינג, נוסחאות היסטוריות ו-Meta-Cognitive Framework", en: "Writing tools based on neurocopywriting, historical formulas, and Meta-Cognitive Framework" },
+  readerProfile: { he: "פרופיל קורא", en: "Reader Profile" },
+  copyArchitecture: { he: "ארכיטקטורת קופי", en: "Copy Architecture" },
+  effectivePrinciples: { he: "עקרונות אפקטיביים", en: "Effective Principles" },
+  copyFormulas: { he: "נוסחאות כתיבה", en: "Copy Formulas" },
+  writingTechniques: { he: "טכניקות כתיבה", en: "Writing Techniques" },
+  formulaOrigin: { he: "מקור", en: "Origin" },
+  formulaStructure: { he: "מבנה", en: "Structure" },
+  formulaBestFor: { he: "הכי טוב ל", en: "Best for" },
+  doThis: { he: "✅ עשה", en: "✅ Do this" },
+  dontDoThis: { he: "❌ לא ככה", en: "❌ Not like this" },
 
   // Funnel Stages
   stageAwareness: { he: "מודעות", en: "Awareness" },
