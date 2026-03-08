@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CopyLabTab from "@/components/CopyLabTab";
+import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
