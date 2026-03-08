@@ -1132,5 +1132,173 @@ export function generateFunnel(data: FormData): FunnelResult {
     createdAt: new Date().toISOString(),
     formData: data,
     personalBrand: getPersonalBrandData(data),
+    neuroStorytelling: getNeuroStorytellingData(data, stageDefinitions),
   };
+}
+
+function getNeuroStorytellingData(data: FormData, stageDefinitions: { id: string; name: { he: string; en: string }; desc: { he: string; en: string } }[]): NeuroStorytellingData {
+  const { audienceType, mainGoal, businessField } = data;
+  const isB2B = audienceType === "b2b" || audienceType === "both";
+  const isB2C = audienceType === "b2c" || audienceType === "both";
+
+  // ═══════════════════════════════════════════════
+  // THE 3 VECTORS
+  // ═══════════════════════════════════════════════
+  const stakesByField: Record<string, { he: string; en: string }> = {
+    health: { he: "תוצאות בריאותיות של המטופל", en: "Patient health outcomes" },
+    tech: { he: "כשל מערכתי ואובדן נתונים", en: "System failure and data loss" },
+    food: { he: "בטיחות מזון ואמון צרכנים", en: "Food safety and consumer trust" },
+    realEstate: { he: "השקעה שגויה של מאות אלפים", en: "Wrong investment of hundreds of thousands" },
+    education: { he: "עתיד הלומדים ופער הידע", en: "Learner futures and knowledge gap" },
+    services: { he: "אובדן הכנסות ומיצוב מקצועי", en: "Revenue loss and professional positioning" },
+    fashion: { he: "ביטחון עצמי וזהות אישית", en: "Self-confidence and personal identity" },
+    tourism: { he: "חוויה בלתי נשכחת vs. בזבוז זמן יקר", en: "Unforgettable experience vs. wasted precious time" },
+    personalBrand: { he: "אמינות מקצועית ומיתוג אישי", en: "Professional credibility and personal brand" },
+  };
+
+  const fieldStakes = stakesByField[businessField || "services"] || stakesByField.services;
+
+  const vectors: NeuroVector[] = [
+    {
+      id: "cortisol",
+      name: { he: "וקטור קורטיזול", en: "Cortisol Vector" },
+      emoji: "🔴",
+      color: "destructive",
+      biologicalFunction: { he: "הורמון הלחץ – מופרש בתגובה לאיום, יוצר ערנות מוגברת ומיקוד. מכוון את תשומת הלב ל'מה יכול להשתבש'", en: "Stress hormone – released in response to threat, creates heightened alertness and focus. Directs attention to 'what could go wrong'" },
+      copyApplication: { he: `מסגור בסיכון גבוה: "${fieldStakes.he}". פתח עם Stakes שמחדדים את תשומת הלב לפני שמציע פתרון`, en: `High-stakes framing: "${fieldStakes.en}". Open with Stakes that sharpen attention before offering a solution` },
+      intensityTips: isB2B ? [
+        { he: "B2B: השתמש ב-Stakes עסקיים כמותיים ('₪200K הפסד שנתי') – מפעיל System 2 + קורטיזול", en: "B2B: Use quantitative business stakes ('$200K annual loss') – activates System 2 + Cortisol" },
+        { he: "הימנע מ-FUD (Fear, Uncertainty, Doubt) גולמי – B2B מזהה מניפולציה ב-70% מהמקרים", en: "Avoid raw FUD (Fear, Uncertainty, Doubt) – B2B detects manipulation 70% of the time" },
+        { he: "השתמש ב-Stakes + פתרון תוך 2 משפטים – קורטיזול ללא רזולוציה = נטישה", en: "Use Stakes + solution within 2 sentences – cortisol without resolution = abandonment" },
+      ] : [
+        { he: "B2C: FOMO ומחסור ('נשאר 3 מקומות', 'ההצעה נגמרת הלילה') – מפעיל קורטיזול + דחיפות", en: "B2C: FOMO and scarcity ('3 spots left', 'offer ends tonight') – activates cortisol + urgency" },
+        { he: "סיפור כאב אישי ('שרה הרגישה תקועה...') – קורטיזול דרך הזדהות", en: "Personal pain story ('Sarah felt stuck...') – cortisol through identification" },
+        { he: "אל תגזים – קורטיזול מופרז יוצר Reactance (התנגדות פסיכולוגית) של -30%", en: "Don't overdo it – excessive cortisol creates Reactance (psychological resistance) of -30%" },
+      ],
+    },
+    {
+      id: "oxytocin",
+      name: { he: "וקטור אוקסיטוצין", en: "Oxytocin Vector" },
+      emoji: "🔵",
+      color: "primary",
+      biologicalFunction: { he: "הורמון ההתקשרות – נוצר בתגובה להזדהות, אמפתיה וחיבור אנושי. יוצר Neural Coupling – סנכרון מוחי בין מספר לקורא", en: "Bonding hormone – created in response to identification, empathy, and human connection. Creates Neural Coupling – brain synchronization between narrator and reader" },
+      copyApplication: { he: "יישור פרסונה: דבר בשפת ה-ICP, שתף חוויות משותפות, ובנה 'אנחנו' לפני 'אני'", en: "Persona alignment: speak the ICP's language, share common experiences, and build 'we' before 'I'" },
+      intensityTips: isB2B ? [
+        { he: "B2B: 'כמנכ\"ל שמנהל צוות של 50+, אתה מכיר את...' – פרסונה ספציפית = אוקסיטוצין ×2", en: "B2B: 'As a CEO managing 50+ people, you know...' – specific persona = oxytocin ×2" },
+        { he: "Case Studies כ'אפוסים של הצלחה' עם גיבור ברור – סיפור = אוקסיטוצין", en: "Case Studies as 'Success Epics' with a clear hero – story = oxytocin" },
+        { he: "שקיפות ופגיעות ('גם אנחנו נכשלנו ב...') – אותנטיות מגבירה אמון ב-50%", en: "Transparency and vulnerability ('we also failed at...') – authenticity boosts trust by 50%" },
+      ] : [
+        { he: "B2C: סיפורים אישיים של לקוחות ('שרה, אמא לשלושה, מספרת...') – UGC = אוקסיטוצין טבעי", en: "B2C: Personal customer stories ('Sarah, mom of three, shares...') – UGC = natural oxytocin" },
+        { he: "שפה מכילה ('אנחנו מבינים', 'את לא לבד') – יוצר תחושת שייכות", en: "Inclusive language ('we understand', 'you're not alone') – creates sense of belonging" },
+        { he: "הראה את הצוות האמיתי מאחורי המותג – פנים = אוקסיטוצין", en: "Show the real team behind the brand – faces = oxytocin" },
+      ],
+    },
+    {
+      id: "dopamine",
+      name: { he: "וקטור דופמין", en: "Dopamine Vector" },
+      emoji: "🟢",
+      color: "accent",
+      biologicalFunction: { he: "הורמון הציפייה לתגמול – מופרש לא בתגמול עצמו אלא בציפייה. כל 'שלב שנפתח' יוצר היט דופמיני שמניע לשלב הבא", en: "Reward anticipation hormone – released not at the reward itself but in anticipation. Each 'unlocked step' creates a dopamine hit driving to the next" },
+      copyApplication: { he: "מסלול תגמול סדרתי: חלק את הטקסט/חוויה לשלבים עם תגמול פרוגרסיבי. כל שלב חושף ערך חדש", en: "Sequential reward path: break the text/experience into stages with progressive reward. Each stage reveals new value" },
+      intensityTips: mainGoal === "awareness" ? [
+        { he: "מודעות: סקרנות דופמינית – 'הגילוי שמשנה הכל' (Information Gap Theory)", en: "Awareness: Dopamine curiosity – 'The discovery that changes everything' (Information Gap Theory)" },
+        { he: "השתמש ב-Open Loops ('ב-שלב 3 תגלה את...') – המוח לא יכול לעזוב Loop פתוח", en: "Use Open Loops ('in Step 3 you'll discover...') – the brain can't leave an open loop" },
+        { he: "Visual Progress Bars ו-Gamification – דופמין מגיב לתחושת התקדמות", en: "Visual Progress Bars and Gamification – dopamine responds to sense of progress" },
+      ] : [
+        { he: "שלב 1→תוצאה מיידית. שלב 2→שיפור ×3. שלב 3→צמיחה אקספוננציאלית – Progressive Disclosure", en: "Step 1→Immediate result. Step 2→3x improvement. Step 3→Exponential growth – Progressive Disclosure" },
+        { he: "הצג ROI בכל שלב – דופמין מופרש כשרואים תגמול קרוב", en: "Show ROI at each step – dopamine is released when seeing nearby reward" },
+        { he: "Gamification: 'השלמת 60%! עוד שלב אחד ל...' – אפקט Zeigarnik + דופמין", en: "Gamification: 'You've completed 60%! One more step to...' – Zeigarnik Effect + dopamine" },
+      ],
+    },
+  ];
+
+  // ═══════════════════════════════════════════════
+  // NEURO-PROMPT TEMPLATES (per funnel stage)
+  // ═══════════════════════════════════════════════
+  const promptTemplates: NeuroPromptTemplate[] = stageDefinitions.map((stage) => {
+    const stageVectorMap: Record<string, { vectors: ("cortisol" | "oxytocin" | "dopamine")[]; template: { he: string; en: string } }> = {
+      awareness: {
+        vectors: ["cortisol", "dopamine"],
+        template: {
+          he: `[🔴 CORTISOL] פתיחה: "${fieldStakes.he}" – הציגו את הסטייקס\n[🟢 DOPAMINE] גירוי סקרנות: "הנה מה שרוב ${isB2B ? "המנכ\"לים" : "האנשים"} לא יודעים..."\n[CTA] "גלה את 3 השלבים ש..."`,
+          en: `[🔴 CORTISOL] Opening: "${fieldStakes.en}" – present the stakes\n[🟢 DOPAMINE] Curiosity trigger: "Here's what most ${isB2B ? "CEOs" : "people"} don't know..."\n[CTA] "Discover the 3 steps that..."`,
+        },
+      },
+      engagement: {
+        vectors: ["oxytocin", "dopamine"],
+        template: {
+          he: `[🔵 OXYTOCIN] הזדהות: "כ${isB2B ? "מנהל שמכיר את הלחץ של..." : "מי שמרגיש ש..."}\n[🔵 OXYTOCIN] סיפור: שתפו חוויה אמיתית (Case Study / UGC)\n[🟢 DOPAMINE] Progressive Reveal: "הנה מה שגילינו אחרי 6 חודשים..."`,
+          en: `[🔵 OXYTOCIN] Identification: "As ${isB2B ? "a leader who knows the pressure of..." : "someone who feels..."}\n[🔵 OXYTOCIN] Story: Share a real experience (Case Study / UGC)\n[🟢 DOPAMINE] Progressive Reveal: "Here's what we discovered after 6 months..."`,
+        },
+      },
+      leads: {
+        vectors: ["cortisol", "oxytocin", "dopamine"],
+        template: {
+          he: `[🔴 CORTISOL] פער: "רוב ${isB2B ? "העסקים" : "האנשים"} מפסידים X בגלל..."\n[🔵 OXYTOCIN] הזדהות: "אנחנו בנינו את הכלי הזה כי גם אנחנו סבלנו מ..."\n[🟢 DOPAMINE] Lead Magnet: "הורד את המדריך החינמי → שלב 1: ... שלב 2: ... שלב 3: ..."`,
+          en: `[🔴 CORTISOL] Gap: "Most ${isB2B ? "businesses" : "people"} lose X because of..."\n[🔵 OXYTOCIN] Identification: "We built this tool because we also suffered from..."\n[🟢 DOPAMINE] Lead Magnet: "Download the free guide → Step 1: ... Step 2: ... Step 3: ..."`,
+        },
+      },
+      conversion: {
+        vectors: ["cortisol", "oxytocin", "dopamine"],
+        template: {
+          he: `[🔴 CORTISOL] דחיפות: "המחיר עולה ב-X / נשאר Y מקומות"\n[🔵 OXYTOCIN] הוכחה חברתית: "הנה מה ש-Z לקוחות אומרים..."\n[🟢 DOPAMINE] Progressive Value: "מה שתקבל: שלב 1→ ... שלב 2→ ... שלב 3→ ..."\n[CTA] "התחל עכשיו – ניסיון ללא סיכון"`,
+          en: `[🔴 CORTISOL] Urgency: "Price goes up by X / Y spots remaining"\n[🔵 OXYTOCIN] Social proof: "Here's what Z clients say..."\n[🟢 DOPAMINE] Progressive Value: "What you'll get: Step 1→ ... Step 2→ ... Step 3→ ..."\n[CTA] "Start now – risk-free trial"`,
+        },
+      },
+      retention: {
+        vectors: ["oxytocin", "dopamine"],
+        template: {
+          he: `[🔵 OXYTOCIN] קהילה: "ברוכים הבאים למשפחה – אתם חלק מ-X ${isB2B ? "מנהלים" : "אנשים"} שכבר..."\n[🟢 DOPAMINE] Milestones: "השלמת את שלב 1! הנה מה שפתוח לך עכשיו..."\n[🔵 OXYTOCIN] Referral: "הזמן חבר – כי דברים טובים כדאי לשתף"`,
+          en: `[🔵 OXYTOCIN] Community: "Welcome to the family – you're part of X ${isB2B ? "leaders" : "people"} who already..."\n[🟢 DOPAMINE] Milestones: "You completed Step 1! Here's what's unlocked now..."\n[🔵 OXYTOCIN] Referral: "Invite a friend – because good things are worth sharing"`,
+        },
+      },
+    };
+
+    const mapping = stageVectorMap[stage.id] || stageVectorMap.engagement;
+
+    return {
+      stage: stage.id,
+      stageName: stage.name,
+      template: mapping.template,
+      vectors: mapping.vectors,
+    };
+  });
+
+  // ═══════════════════════════════════════════════
+  // ENTROPY GUIDE
+  // ═══════════════════════════════════════════════
+  const entropyGuide: EntropyGuide = {
+    definition: {
+      he: "אנטרופיה נרטיבית = מידת הכאוס/סדר בטקסט. מעט מדי = משעמם (קריסת אנטרופיה). יותר מדי = מבלבל (עומס אנטרופי). ה-Sweet Spot: מספיק מתח כדי להחזיק קשב, מספיק מבנה כדי לנווט",
+      en: "Narrative entropy = the degree of chaos/order in text. Too little = boring (entropy collapse). Too much = confusing (entropic overload). The Sweet Spot: enough tension to hold attention, enough structure to navigate",
+    },
+    overloadSigns: [
+      { he: "יותר מ-2 Stakes בפסקה אחת – הקורא נכנס ל'הקפאה' (Freeze Response)", en: "More than 2 Stakes in one paragraph – reader enters 'Freeze Response'" },
+      { he: "שאלות רטוריות רצופות ללא תשובה – עומס קוגניטיבי", en: "Consecutive rhetorical questions without answers – cognitive overload" },
+      { he: "FOMO + דחיפות + מחסור באותו משפט – Reactance של -30%", en: "FOMO + urgency + scarcity in the same sentence – Reactance of -30%" },
+      { he: "טקסט ארוך ללא 'אי-הפסקה' (סיכום ביניים, תגמול) – נטישה", en: "Long text without 'breathers' (interim summary, reward) – abandonment" },
+    ],
+    collapseSigns: [
+      { he: "רק עובדות ונתונים ללא נרטיב – הקורא מדלג (System 1 לא מופעל)", en: "Only facts and data without narrative – reader skips (System 1 not activated)" },
+      { he: "כל משפט באותו אורך ומבנה – חוסר קצב = שעמום", en: "Every sentence same length and structure – no rhythm = boredom" },
+      { he: "אין מתח בין בעיה לפתרון – הכל 'חלק' מדי", en: "No tension between problem and solution – everything too 'smooth'" },
+      { he: "CTA צפוי ללא הפתעה – דופמין אפסי", en: "Predictable CTA with no surprise – zero dopamine" },
+    ],
+    balanceTips: [
+      { he: "כלל 70/30: 70% ערך ותגמול, 30% מתח וסטייקס", en: "70/30 Rule: 70% value and reward, 30% tension and stakes" },
+      { he: "כל Stakes דורש רזולוציה תוך 2-3 משפטים – קורטיזול ללא סגירה = בריחה", en: "Every Stakes needs resolution within 2-3 sentences – cortisol without closure = flight" },
+      { he: "שנה קצב: קצר-ארוך-קצר. רגש-נתון-סיפור. כותרת-תוכן-CTA", en: "Vary rhythm: short-long-short. Emotion-data-story. Headline-content-CTA" },
+      { he: "בדוק 'מבחן הנשימה': קרא בקול – אם אתה חנוק, הקורא גם", en: "Do the 'Breath Test': read aloud – if you're breathless, so is the reader" },
+    ],
+  };
+
+  // ═══════════════════════════════════════════════
+  // THE AXIOM
+  // ═══════════════════════════════════════════════
+  const axiom = {
+    he: "האקסיומה של כוח המשיכה הנרטיבי הוקטורי: מתח נרטיבי עובד רק כשהוא מיושר עם המטרה שלך. קורטיזול ללא אוקסיטוצין = פחד. אוקסיטוצין ללא דופמין = נוסטלגיה. דופמין ללא קורטיזול = בידור ריק. שלושתם יחד, במינון נכון = טרנספורמציה.",
+    en: "The Axiom of Vectorial Narrative Gravity: Narrative tension works only when aligned with your goal. Cortisol without Oxytocin = fear. Oxytocin without Dopamine = nostalgia. Dopamine without Cortisol = empty entertainment. All three together, in the right dose = transformation.",
+  };
+
+  return { vectors, promptTemplates, entropyGuide, axiom };
 }

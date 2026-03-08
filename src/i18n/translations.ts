@@ -214,6 +214,24 @@ export const translations = {
   tabBrandDna: { he: "Brand DNA", en: "Brand DNA" },
   brandDnaSubtitle: { he: "כלי אבחון מיתוג אישי מבוסס מחקר – ציון בריאות מיצוב + תבניות ביצוע", en: "Research-based personal brand diagnostic – Positioning Health Score + execution templates" },
 
+  // Neuro-Storytelling Tab
+  tabNeuroStory: { he: "Neuro-Story", en: "Neuro-Story" },
+  neuroSubtitle: { he: "כלי נוירו-סטוריטלינג מבוססי מחקר – 3 וקטורים ביוכימיים, תבניות Neuro-Prompt וניהול אנטרופיה", en: "Research-based neuro-storytelling tools – 3 biochemical vectors, Neuro-Prompt templates, and entropy management" },
+  neuroAxiom: { he: "האקסיומה של כוח המשיכה הנרטיבי הוקטורי", en: "The Axiom of Vectorial Narrative Gravity" },
+  neuroVectors: { he: "3 הוקטורים הביוכימיים", en: "The 3 Biochemical Vectors" },
+  neuroBioFunction: { he: "פונקציה ביולוגית", en: "Biological Function" },
+  neuroCopyApp: { he: "יישום בקופי", en: "Copy Application" },
+  neuroTips: { he: "טיפים לעוצמה", en: "Intensity Tips" },
+  neuroPromptGenerator: { he: "גנרטור Neuro-Prompt", en: "Neuro-Prompt Generator" },
+  neuroPromptDesc: { he: "בחר שלב במשפך לקבלת תבנית Neuro-Prompt מותאמת עם סימוני וקטורים", en: "Select a funnel stage to get a tailored Neuro-Prompt template with vector markers" },
+  neuroEntropy: { he: "מד איזון אנטרופיה", en: "Entropy Balance Meter" },
+  neuroOverload: { he: "עומס אנטרופי", en: "Entropic Overload" },
+  neuroCollapse: { he: "קריסת אנטרופיה", en: "Entropy Collapse" },
+  neuroSweetSpot: { he: "Sweet Spot", en: "Sweet Spot" },
+  neuroOverloadSigns: { he: "סימני עומס", en: "Overload Signs" },
+  neuroCollapseSigns: { he: "סימני קריסה", en: "Collapse Signs" },
+  neuroBalanceTips: { he: "טיפים לאיזון", en: "Balance Tips" },
+
   // Disclaimer
   disclaimer: {
     he: "⚠️ המלצות אלו מבוססות על כללי שיווק מקובלים ואינן מהוות ייעוץ מקצועי. התקציב המומלץ הוא הערכה בלבד.",

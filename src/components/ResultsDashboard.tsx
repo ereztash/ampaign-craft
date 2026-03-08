@@ -288,6 +288,12 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             </TabsContent>
           )}
 
+          {result.neuroStorytelling && (
+            <TabsContent value="neurostory" className="mt-6">
+              <NeuroStorytellingTab data={result.neuroStorytelling} />
+            </TabsContent>
+          )}
+
           <TabsContent value="tips" className="mt-6">
             <Card>
               <CardHeader>
