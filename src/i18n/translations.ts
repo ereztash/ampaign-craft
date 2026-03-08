@@ -244,6 +244,8 @@ export const translations = {
   planSaved: { he: "התוכנית נשמרה!", en: "Plan saved!" },
   planDeleted: { he: "התוכנית נמחקה", en: "Plan deleted" },
   comparePlans: { he: "השווה תוכניות", en: "Compare Plans" },
+  copyTemplate: { he: "העתק תבנית", en: "Copy Template" },
+  templateCopied: { he: "התבנית הועתקה!", en: "Template copied!" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
