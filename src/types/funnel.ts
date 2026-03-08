@@ -79,8 +79,8 @@ export interface SavedPlan {
 
 export const initialFormData: FormData = {
   businessField: "",
-  audienceType: "",
-  ageRange: [18, 65],
+  audienceType: "b2b",
+  ageRange: [25, 55],
   interests: "",
   productDescription: "",
   averagePrice: 0,
