@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CopyLabTab from "@/components/CopyLabTab";
 import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
+import NeuroStorytellingTab from "@/components/NeuroStorytellingTab";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
@@ -138,12 +139,13 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
         {/* Tabs */}
         <Tabs defaultValue="strategy" className="mb-8">
-          <TabsList className={`w-full grid ${showBrandDna ? "grid-cols-7" : "grid-cols-6"}`}>
+          <TabsList className={`w-full grid ${showBrandDna ? "grid-cols-8" : "grid-cols-7"}`}>
             <TabsTrigger value="strategy">{t("tabStrategy")}</TabsTrigger>
             <TabsTrigger value="budget">{t("tabBudget")}</TabsTrigger>
             <TabsTrigger value="kpis">{t("tabKpis")}</TabsTrigger>
             <TabsTrigger value="hooks">{t("tabHooks")}</TabsTrigger>
             <TabsTrigger value="copylab">{t("tabCopyLab")}</TabsTrigger>
+            <TabsTrigger value="neurostory">{t("tabNeuroStory")}</TabsTrigger>
             {showBrandDna && <TabsTrigger value="branddna">{t("tabBrandDna")}</TabsTrigger>}
             <TabsTrigger value="tips">{t("tabTips")}</TabsTrigger>
           </TabsList>
@@ -283,6 +285,12 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           {showBrandDna && (
             <TabsContent value="branddna" className="mt-6">
               <BrandDiagnosticTab personalBrand={result.personalBrand} />
+            </TabsContent>
+          )}
+
+          {result.neuroStorytelling && (
+            <TabsContent value="neurostory" className="mt-6">
+              <NeuroStorytellingTab data={result.neuroStorytelling} />
             </TabsContent>
           )}
 
