@@ -135,10 +135,11 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
         {/* Tabs */}
         <Tabs defaultValue="strategy" className="mb-8">
-          <TabsList className="w-full grid grid-cols-4">
+          <TabsList className="w-full grid grid-cols-5">
             <TabsTrigger value="strategy">{t("tabStrategy")}</TabsTrigger>
             <TabsTrigger value="budget">{t("tabBudget")}</TabsTrigger>
             <TabsTrigger value="kpis">{t("tabKpis")}</TabsTrigger>
+            <TabsTrigger value="hooks">{t("tabHooks")}</TabsTrigger>
             <TabsTrigger value="tips">{t("tabTips")}</TabsTrigger>
           </TabsList>
 
@@ -228,6 +229,41 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                     <div key={i} className="rounded-xl border p-4">
                       <div className="text-sm text-muted-foreground">{kpi.name[language]}</div>
                       <div className="mt-1 text-2xl font-bold text-primary">{kpi.target}</div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="hooks" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("tabHooks")}</CardTitle>
+                <p className="text-sm text-muted-foreground">{t("hooksSubtitle")}</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {result.hookTips.map((hook, i) => (
+                    <div key={i} className="rounded-xl border p-4">
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{i + 1}</span>
+                        <span className="font-semibold text-foreground">{hook.lawName[language]}</span>
+                      </div>
+                      <div className="mb-2 rounded-lg bg-muted/50 p-3">
+                        <div className="mb-1 text-xs font-semibold text-muted-foreground">{t("hookFormula")}:</div>
+                        <p className="text-sm text-foreground">{hook.formula[language]}</p>
+                      </div>
+                      <div className="mb-2 rounded-lg bg-primary/5 p-3">
+                        <div className="mb-1 text-xs font-semibold text-muted-foreground">{t("hookExample")}:</div>
+                        <p className="text-sm text-foreground italic">{hook.example[language]}</p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground">{t("hookChannels")}:</span>
+                        {hook.channels.map((ch, j) => (
+                          <span key={j} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">{ch}</span>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
