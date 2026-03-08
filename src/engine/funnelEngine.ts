@@ -313,7 +313,7 @@ function getChannelsForStage(
     channels.push({
       channel: "facebook",
       name: { he: "קהילת לקוחות", en: "Customer Community" },
-      budgetPercent: salesModel === "subscription" ? 25 : 35,
+      budgetPercent: data.salesModel === "subscription" ? 25 : 35,
       kpis: [
         { he: "מעורבות בקהילה", en: "Community engagement" },
         { he: "המלצות", en: "Referrals" },
