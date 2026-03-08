@@ -1,8 +1,12 @@
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Globe } from "lucide-react";
+import { Globe, BookMarked } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const Header = () => {
+interface HeaderProps {
+  onSavedPlans?: () => void;
+}
+
+const Header = ({ onSavedPlans }: HeaderProps) => {
   const { language, setLanguage, t } = useLanguage();
 
   return (
@@ -14,15 +18,28 @@ const Header = () => {
           </div>
           <span className="text-xl font-bold text-foreground">{t("appName")}</span>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setLanguage(language === "he" ? "en" : "he")}
-          className="gap-2"
-        >
-          <Globe className="h-4 w-4" />
-          {language === "he" ? "EN" : "עב"}
-        </Button>
+        <div className="flex items-center gap-2">
+          {onSavedPlans && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onSavedPlans}
+              className="gap-2"
+            >
+              <BookMarked className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("savedPlans")}</span>
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLanguage(language === "he" ? "en" : "he")}
+            className="gap-2"
+          >
+            <Globe className="h-4 w-4" />
+            {language === "he" ? "EN" : "עב"}
+          </Button>
+        </div>
       </div>
     </header>
   );

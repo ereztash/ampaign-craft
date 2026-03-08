@@ -7,8 +7,9 @@ import LandingPage from "@/components/LandingPage";
 import MultiStepForm from "@/components/MultiStepForm";
 import ProcessingScreen from "@/components/ProcessingScreen";
 import ResultsDashboard from "@/components/ResultsDashboard";
+import SavedPlansPage from "@/components/SavedPlansPage";
 
-type AppState = "landing" | "form" | "processing" | "results";
+type AppState = "landing" | "form" | "processing" | "results" | "savedPlans";
 
 const Index = () => {
   const [state, setState] = useState<AppState>("landing");
@@ -26,10 +27,15 @@ const Index = () => {
     setState("results");
   }, []);
 
+  const handleLoadPlan = useCallback((loadedResult: FunnelResult) => {
+    setResult(loadedResult);
+    setState("results");
+  }, []);
+
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-background">
-        <Header />
+        <Header onSavedPlans={() => setState("savedPlans")} />
         {state === "landing" && (
           <LandingPage onStart={() => setState("form")} />
         )}
@@ -47,6 +53,12 @@ const Index = () => {
             result={result}
             onEdit={() => setState("form")}
             onNewPlan={() => { setResult(null); setFormDataCache(null); setState("landing"); }}
+          />
+        )}
+        {state === "savedPlans" && (
+          <SavedPlansPage
+            onBack={() => setState("landing")}
+            onLoadPlan={handleLoadPlan}
           />
         )}
       </div>
