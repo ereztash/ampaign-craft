@@ -11,7 +11,7 @@ import {
   ChevronLeft, ChevronRight, Sparkles,
   ShoppingBag, Monitor, UtensilsCrossed, Briefcase,
   GraduationCap, Heart, Building, Plane, MoreHorizontal,
-  Users, Building2, UsersRound, Megaphone, UserPlus, ShoppingCart, Award,
+  Users, Building2, UsersRound, Megaphone, UserPlus, ShoppingCart, Award, User,
 } from "lucide-react";
 
 interface MultiStepFormProps {
