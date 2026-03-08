@@ -136,11 +136,12 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
         {/* Tabs */}
         <Tabs defaultValue="strategy" className="mb-8">
-          <TabsList className="w-full grid grid-cols-5">
+          <TabsList className="w-full grid grid-cols-6">
             <TabsTrigger value="strategy">{t("tabStrategy")}</TabsTrigger>
             <TabsTrigger value="budget">{t("tabBudget")}</TabsTrigger>
             <TabsTrigger value="kpis">{t("tabKpis")}</TabsTrigger>
             <TabsTrigger value="hooks">{t("tabHooks")}</TabsTrigger>
+            <TabsTrigger value="copylab">{t("tabCopyLab")}</TabsTrigger>
             <TabsTrigger value="tips">{t("tabTips")}</TabsTrigger>
           </TabsList>
 
