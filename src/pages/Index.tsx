@@ -32,36 +32,34 @@ const Index = () => {
   }, []);
 
   return (
-    <LanguageProvider>
-      <div className="min-h-screen bg-background">
-        <Header onSavedPlans={() => setState("savedPlans")} />
-        {state === "landing" && (
-          <LandingPage onStart={() => setState("form")} />
-        )}
-        {state === "form" && (
-          <MultiStepForm
-            onComplete={handleFormComplete}
-            onBack={() => setState("landing")}
-          />
-        )}
-        {state === "processing" && (
-          <ProcessingScreen onComplete={handleProcessingComplete} />
-        )}
-        {state === "results" && result && (
-          <ResultsDashboard
-            result={result}
-            onEdit={() => setState("form")}
-            onNewPlan={() => { setResult(null); setFormDataCache(null); setState("landing"); }}
-          />
-        )}
-        {state === "savedPlans" && (
-          <SavedPlansPage
-            onBack={() => setState("landing")}
-            onLoadPlan={handleLoadPlan}
-          />
-        )}
-      </div>
-    </LanguageProvider>
+    <div className="min-h-screen bg-background">
+      <Header onSavedPlans={() => setState("savedPlans")} />
+      {state === "landing" && (
+        <LandingPage onStart={() => setState("form")} />
+      )}
+      {state === "form" && (
+        <MultiStepForm
+          onComplete={handleFormComplete}
+          onBack={() => setState("landing")}
+        />
+      )}
+      {state === "processing" && (
+        <ProcessingScreen onComplete={handleProcessingComplete} />
+      )}
+      {state === "results" && result && (
+        <ResultsDashboard
+          result={result}
+          onEdit={() => setState("form")}
+          onNewPlan={() => { setResult(null); setFormDataCache(null); setState("landing"); }}
+        />
+      )}
+      {state === "savedPlans" && (
+        <SavedPlansPage
+          onBack={() => setState("landing")}
+          onLoadPlan={handleLoadPlan}
+        />
+      )}
+    </div>
   );
 };
 
