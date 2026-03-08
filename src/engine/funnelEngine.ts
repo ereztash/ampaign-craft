@@ -656,6 +656,125 @@ function getKpis(data: FormData): { name: { he: string; en: string }; target: st
   return kpis;
 }
 
+function getHookTips(data: FormData): HookTip[] {
+  const hooks: HookTip[] = [];
+  const { audienceType, experienceLevel, existingChannels, ageRange } = data;
+  const isB2B = audienceType === "b2b" || audienceType === "both";
+  const isB2C = audienceType === "b2c" || audienceType === "both";
+  const isAdvanced = experienceLevel === "advanced";
+  const isYoung = ageRange[0] < 30;
+
+  // Law 1: Epistemic Curiosity Gap — best for B2B, LinkedIn, Email
+  if (isB2B || isAdvanced) {
+    hooks.push({
+      law: "curiosityGap",
+      lawName: { he: "פער סקרנות אפיסטמי", en: "Epistemic Curiosity Gap" },
+      formula: { he: "\"[מספר ספציפי] [תוצאה] – וזה לא מה שאתה חושב\" | \"הסיבה האמיתית ש-[X] נכשל ב-[Y]\"", en: "\"[Specific number] [outcome] – and it's not what you think\" | \"The real reason [X] fails at [Y]\"" },
+      example: { he: "\"73% מהמנהלים עושים את השגיאה הזו בפיפליין – וזה לא מה שאתה חושב\"", en: "\"73% of executives make this pipeline mistake – and it's not what you think\"" },
+      channels: ["LinkedIn", "Email", "Blog"],
+    });
+  }
+
+  // Law 2: Asymmetric Loss Pricing — best for B2C, Email, Ads
+  if (isB2C) {
+    hooks.push({
+      law: "lossAversion",
+      lawName: { he: "תמחור הפסד אסימטרי", en: "Asymmetric Loss Pricing" },
+      formula: { he: "\"אתה מפסיד [X] בכל [יחידת זמן] ש-[Y]\" | \"כל יום בלי [Z] עולה לך [סכום]\"", en: "\"You're losing [X] every [time unit] that [Y]\" | \"Every day without [Z] costs you [amount]\"" },
+      example: { he: "\"כל חודש בלי אוטומציה עולה לך ₪4,200 – הפסד שקט שהמתחרים כבר עצרו\"", en: "\"Every month without automation costs you $4,200 – a silent loss your competitors already stopped\"" },
+      channels: ["Email", "Facebook Ads", "Google Ads"],
+    });
+  }
+
+  // Law 3: Anchoring & Absolute Specificity — universal
+  hooks.push({
+    law: "anchoring",
+    lawName: { he: "עיגון ומדויקות מוחלטת", en: "Anchoring & Absolute Specificity" },
+    formula: { he: "השתמש במספרים היפר-ספציפיים (47.3% ולא \"כמחצית\") – מספרים מדויקים עוקפים ספקנות", en: "Use hyper-specific numbers (47.3% not \"about half\") – precise numbers bypass skepticism" },
+    example: { he: "\"שיפור של 23.7% בהמרות תוך 14 ימים\" במקום \"שיפור משמעותי בהמרות\"", en: "\"23.7% conversion improvement in 14 days\" instead of \"significant conversion improvement\"" },
+    channels: ["Google Ads", "Email", "Landing Pages"],
+  });
+
+  // Law 4: Pattern Interrupt — best for TikTok, Reels, young audiences
+  if (isB2C || isYoung) {
+    hooks.push({
+      law: "patternInterrupt",
+      lawName: { he: "שבירת דפוס", en: "Pattern Interrupt" },
+      formula: { he: "\"תפסיק לעשות [דבר מקובל]\" | \"מה אם אמרתי לך ש-[ההפך מהצפוי]?\" | פתח עם משפט שלא הגיוני לכאורה", en: "\"Stop doing [common thing]\" | \"What if I told you [opposite of expected]?\" | Open with a seemingly illogical statement" },
+      example: { he: "\"הקמפיין הכי מוצלח שלי עלה 0 שקל\" | \"התוכן הכי טוב שלך? תמחק אותו.\"", en: "\"My most successful campaign cost $0\" | \"Your best content? Delete it.\"" },
+      channels: ["TikTok", "Instagram Reels", "LinkedIn"],
+    });
+  }
+
+  // Law 5: Social Identity Boundary Drawing — B2B and community
+  if (isB2B) {
+    hooks.push({
+      law: "identityBoundary",
+      lawName: { he: "שרטוט גבולות זהות חברתית", en: "Social Identity Boundary Drawing" },
+      formula: { he: "\"יש 2 סוגי [X]: אלה ש-[A] ואלה ש-[B]\" | \"אם אתה [זהות שלילית], תמשיך לגלול\"", en: "\"There are 2 types of [X]: those who [A] and those who [B]\" | \"If you're [negative identity], keep scrolling\"" },
+      example: { he: "\"יש 2 סוגי CMOs: אלה שמודדים Pipeline Velocity ואלה שעדיין מדווחים CPL\"", en: "\"There are 2 types of CMOs: those measuring Pipeline Velocity and those still reporting CPL\"" },
+      channels: ["LinkedIn", "Email", "Webinar"],
+    });
+  }
+
+  // Law 6: SPOK Violation & Semantic Tension — advanced users
+  if (isAdvanced) {
+    hooks.push({
+      law: "semanticTension",
+      lawName: { he: "הפרת SPOK ומתח סמנטי", en: "SPOK Violation & Semantic Tension" },
+      formula: { he: "שלב מילים סותרות: \"[שלילי] + [חיובי]\" | \"[טכני] + [רגשי]\" – הפרדוקס עוצר קריאה אוטומטית", en: "Combine contradictory words: \"[negative] + [positive]\" | \"[technical] + [emotional]\" – paradox halts automatic reading" },
+      example: { he: "\"הכישלון המבריק\" | \"האסטרטגיה העצלה שמכפילה מכירות\" | \"המדריך האנטי-שיווקי לשיווק\"", en: "\"The brilliant failure\" | \"The lazy strategy that doubles sales\" | \"The anti-marketing guide to marketing\"" },
+      channels: ["Blog", "LinkedIn", "Email Subject Lines"],
+    });
+  }
+
+  // Law 7: Peak-End Rule in Micro-Copy — social media
+  if (isB2C || existingChannels.includes("instagram") || existingChannels.includes("tikTok")) {
+    hooks.push({
+      law: "peakEnd",
+      lawName: { he: "כלל שיא-סוף במיקרו-קופי", en: "Peak-End Rule in Micro-Copy" },
+      formula: { he: "מקם את השיא הרגשי בדיוק בנקודת ה'ראה עוד' – שורה 2-3 חייבת להיות הפיק. אל תשמור את הטוב לסוף", en: "Place the emotional peak exactly at the 'see more' cut point – line 2-3 must be the peak. Don't save the best for last" },
+      example: { he: "שורה 1: הקשר | שורה 2-3: 💥 הטוויסט/הנתון המפתיע (כאן לוחצים 'ראה עוד') | שורה 4+: הפירוט", en: "Line 1: Context | Line 2-3: 💥 The twist/surprising stat (here they click 'see more') | Line 4+: Details" },
+      channels: ["Instagram", "Facebook", "LinkedIn"],
+    });
+  }
+
+  // Law 8: Time Compression Illusion — B2C, ads
+  if (isB2C) {
+    hooks.push({
+      law: "timeCompression",
+      lawName: { he: "אשליית דחיסת זמן", en: "Time Compression Illusion" },
+      formula: { he: "\"[תוצאה גדולה] ב-[זמן קטן מהצפוי]\" | \"בלי [מאמץ שהקהל מפחד ממנו]\"", en: "\"[Big result] in [less time than expected]\" | \"Without [effort the audience fears]\"" },
+      example: { he: "\"3 דקות ביום → עור שנראה 5 שנים צעיר יותר\" | \"בלי להעסיק צוות, בלי תקציב ענק\"", en: "\"3 minutes a day → skin that looks 5 years younger\" | \"No hiring, no huge budget\"" },
+      channels: ["Facebook Ads", "Instagram", "Google Ads"],
+    });
+  }
+
+  // Law 9: Weaponized Vulnerability / POV Framing — B2B, LinkedIn
+  if (isB2B || isAdvanced) {
+    hooks.push({
+      law: "vulnerability",
+      lawName: { he: "פגיעות מכוונת / POV Framing", en: "Weaponized Vulnerability / POV Framing" },
+      formula: { he: "\"הייתי טועה לגבי [X]. הנה מה שלמדתי\" | \"הכישלון שלימד אותי [תובנה]\" – חולשה אותנטית = סוס טרויאני של אמון", en: "\"I was wrong about [X]. Here's what I learned\" | \"The failure that taught me [insight]\" – authentic weakness = trust Trojan horse" },
+      example: { he: "\"בזבזתי ₪120K על קמפיינים שלא עבדו. הנה 3 הלקחים שהפכו הכל\"", en: "\"I wasted $120K on campaigns that didn't work. Here are the 3 lessons that changed everything\"" },
+      channels: ["LinkedIn", "Blog", "Podcast"],
+    });
+  }
+
+  // Law 10: Execution Gap Architecture — universal
+  hooks.push({
+    law: "executionGap",
+    lawName: { he: "ארכיטקטורת פער הביצוע", en: "Execution Gap Architecture" },
+    formula: { he: "\"הבעיה היא לא שאתה לא יודע מה לעשות – הבעיה היא [חיכוך ספציפי]\" → מצב את התוכן כמערכת שמסירה חיכוך", en: "\"The problem isn't that you don't know what to do – the problem is [specific friction]\" → position content as a friction-removing system" },
+    example: { he: "\"אתה לא צריך עוד מידע על שיווק. אתה צריך מערכת שעושה את הצעד הבא בשבילך\"", en: "\"You don't need more marketing information. You need a system that takes the next step for you\"" },
+    channels: ["Landing Pages", "Email", "Webinar"],
+  });
+
+  // Limit based on experience level
+  const limit = experienceLevel === "beginner" ? 3 : experienceLevel === "intermediate" ? 5 : hooks.length;
+  return hooks.slice(0, limit);
+}
+
 export function generateFunnel(data: FormData): FunnelResult {
   const weights = getStageWeights(data);
   const budget = getBudgetRange(data.budgetRange);
@@ -692,6 +811,7 @@ export function generateFunnel(data: FormData): FunnelResult {
     stages: activeStages.length > 0 ? activeStages : stages,
     totalBudget: budget,
     overallTips: getOverallTips(data),
+    hookTips: getHookTips(data),
     kpis: getKpis(data),
     createdAt: new Date().toISOString(),
     formData: data,
