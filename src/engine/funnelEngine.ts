@@ -993,6 +993,33 @@ function getCopyLabData(data: FormData): CopyLabData {
     });
   }
 
+  // ═══════════════════════════════════════════════
+  // NEURO-STORYTELLING TECHNIQUES (3 Vectors)
+  // ═══════════════════════════════════════════════
+  techniques.push({
+    name: { he: "וקטור קורטיזול (Hook & Stakes)", en: "Cortisol Vector (Hook & Stakes)" },
+    description: { he: "מסגור בסיכון גבוה שמחדד את מיקוד הקורא. קורטיזול מופרש בתגובה לאיום ויוצר ערנות – המוח לא יכול להתעלם מסטייקס גבוהים", en: "High-stakes framing that sharpens reader focus. Cortisol is released in response to threat, creating alertness – the brain can't ignore high stakes" },
+    doExample: { he: "\"ההחלטה הזו תגדיר את הרבעון הבא שלך\" | \"אם לא תפעל עכשיו, המתחרים כבר שם\"", en: "\"This decision will define your next quarter\" | \"If you don't act now, competitors are already there\"" },
+    dontExample: { he: "\"שקול את המוצר שלנו\" | \"אנחנו מציעים שירות טוב\"", en: "\"Consider our product\" | \"We offer a good service\"" },
+    metric: "+115% on complex tasks (EmotionPrompt)",
+  });
+
+  techniques.push({
+    name: { he: "וקטור אוקסיטוצין (Neural Coupling)", en: "Oxytocin Vector (Neural Coupling)" },
+    description: { he: "יישור פרסונה והקשר משותף. אוקסיטוצין נוצר דרך הזדהות – כשהקורא מרגיש 'זה אני', נוצר צימוד עצבי שמגביר אמון", en: "Persona alignment and shared context. Oxytocin is created through identification – when the reader feels 'that's me', neural coupling boosts trust" },
+    doExample: { he: "\"כמנהלת שיווק שמנהלת 10+ קמפיינים במקביל...\" | \"אתה מכיר את הרגע שהתקציב נגמר באמצע הרבעון\"", en: "\"As a marketing director managing 10+ campaigns...\" | \"You know that moment when budget runs out mid-quarter\"" },
+    dontExample: { he: "\"לקוח יקר\" | \"לכל מי שזה רלוונטי\"", en: "\"Dear customer\" | \"To whom it may concern\"" },
+    metric: "+80% empathy-driven action",
+  });
+
+  techniques.push({
+    name: { he: "וקטור דופמין (Resolution Engine)", en: "Dopamine Vector (Resolution Engine)" },
+    description: { he: "מסלול תגמול סדרתי עם תשלום פרוגרסיבי. דופמין מופרש בציפייה לתגמול – כל שלב שנפתר יוצר 'היט' שמניע לשלב הבא", en: "Sequential reward path with progressive payoff. Dopamine is released in anticipation of reward – each solved step creates a 'hit' driving to the next" },
+    doExample: { he: "\"שלב 1: חיבור → תוצאה מיידית. שלב 2: אופטימיזציה → שיפור ×3. שלב 3: סקייל → צמיחה אקספוננציאלית\"", en: "\"Step 1: Connect → Immediate result. Step 2: Optimize → 3x improvement. Step 3: Scale → Exponential growth\"" },
+    dontExample: { he: "\"המוצר שלנו עושה הרבה דברים\" | \"יש לנו פיצ'רים רבים\"", en: "\"Our product does many things\" | \"We have many features\"" },
+    metric: "+25-35% completion rate",
+  });
+
   return {
     readerProfile,
     formulas,
