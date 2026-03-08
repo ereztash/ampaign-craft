@@ -273,6 +273,10 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             </Card>
           </TabsContent>
 
+          <TabsContent value="copylab" className="mt-6">
+            <CopyLabTab copyLab={result.copyLab} />
+          </TabsContent>
+
           <TabsContent value="tips" className="mt-6">
             <Card>
               <CardHeader>
