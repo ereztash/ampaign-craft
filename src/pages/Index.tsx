@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { LanguageProvider } from "@/i18n/LanguageContext";
 import { FormData, FunnelResult } from "@/types/funnel";
 import { generateFunnel } from "@/engine/funnelEngine";
 import Header from "@/components/Header";
