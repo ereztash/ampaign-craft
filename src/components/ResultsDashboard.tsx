@@ -27,6 +27,7 @@ const COLORS = [
 
 const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
+  const showBrandDna = result.formData.businessField === "personalBrand" || result.formData.businessField === "services";
 
   const barData = result.stages.map((stage, i) => ({
     name: stage.name[language],

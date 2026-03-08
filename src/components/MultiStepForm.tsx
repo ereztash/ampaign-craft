@@ -101,7 +101,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         const fieldLabels: Record<string, string> = {
           fashion: t("fieldFashion"), tech: t("fieldTech"), food: t("fieldFood"),
           services: t("fieldServices"), education: t("fieldEducation"), health: t("fieldHealth"),
-          realEstate: t("fieldRealEstate"), tourism: t("fieldTourism"), other: t("fieldOther"),
+          realEstate: t("fieldRealEstate"), tourism: t("fieldTourism"), personalBrand: t("fieldPersonalBrand"), other: t("fieldOther"),
         };
         return (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
