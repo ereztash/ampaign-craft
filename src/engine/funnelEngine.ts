@@ -296,7 +296,7 @@ function getChannelsForStage(
         { he: "שלח הצעות מותאמות אישית ללקוחות קיימים", en: "Send personalized offers to existing customers" },
       ],
     });
-    if (salesModel === "subscription") {
+  if (data.salesModel === "subscription") {
       channels.push({
         channel: "content",
         name: { he: "תוכן בלעדי למנויים", en: "Exclusive Subscriber Content" },
