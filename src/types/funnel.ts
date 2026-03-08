@@ -67,6 +67,37 @@ export interface HookTip {
   channels: string[];
 }
 
+export interface CopyFormula {
+  name: { he: string; en: string };
+  origin: string;
+  structure: { he: string; en: string };
+  example: { he: string; en: string };
+  bestFor: string[];
+  conversionLift: string;
+}
+
+export interface ReaderProfile {
+  level: number;
+  name: { he: string; en: string };
+  description: { he: string; en: string };
+  copyArchitecture: { he: string; en: string };
+  principles: { he: string; en: string }[];
+}
+
+export interface WritingTechnique {
+  name: { he: string; en: string };
+  description: { he: string; en: string };
+  doExample: { he: string; en: string };
+  dontExample: { he: string; en: string };
+  metric: string;
+}
+
+export interface CopyLabData {
+  readerProfile: ReaderProfile;
+  formulas: CopyFormula[];
+  writingTechniques: WritingTechnique[];
+}
+
 export interface FunnelResult {
   id: string;
   funnelName: { he: string; en: string };
@@ -74,6 +105,7 @@ export interface FunnelResult {
   totalBudget: { min: number; max: number };
   overallTips: { he: string; en: string }[];
   hookTips: HookTip[];
+  copyLab: CopyLabData;
   kpis: { name: { he: string; en: string }; target: string }[];
   createdAt: string;
   formData: FormData;
