@@ -236,6 +236,41 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             </Card>
           </TabsContent>
 
+          <TabsContent value="hooks" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("tabHooks")}</CardTitle>
+                <p className="text-sm text-muted-foreground">{t("hooksSubtitle")}</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {result.hookTips.map((hook, i) => (
+                    <div key={i} className="rounded-xl border p-4">
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{i + 1}</span>
+                        <span className="font-semibold text-foreground">{hook.lawName[language]}</span>
+                      </div>
+                      <div className="mb-2 rounded-lg bg-muted/50 p-3">
+                        <div className="mb-1 text-xs font-semibold text-muted-foreground">{t("hookFormula")}:</div>
+                        <p className="text-sm text-foreground">{hook.formula[language]}</p>
+                      </div>
+                      <div className="mb-2 rounded-lg bg-primary/5 p-3">
+                        <div className="mb-1 text-xs font-semibold text-muted-foreground">{t("hookExample")}:</div>
+                        <p className="text-sm text-foreground italic">{hook.example[language]}</p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground">{t("hookChannels")}:</span>
+                        {hook.channels.map((ch, j) => (
+                          <span key={j} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">{ch}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="tips" className="mt-6">
             <Card>
               <CardHeader>
