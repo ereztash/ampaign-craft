@@ -184,6 +184,7 @@ export interface FunnelResult {
   createdAt: string;
   formData: FormData;
   personalBrand?: PersonalBrandData;
+  neuroStorytelling?: NeuroStorytellingData;
 }
 
 export interface SavedPlan {
