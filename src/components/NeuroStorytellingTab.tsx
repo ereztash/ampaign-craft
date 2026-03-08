@@ -152,6 +152,19 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
                   );
                 })}
               </div>
+              <div className="flex items-center justify-between mb-2">
+                <div />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(promptTemplates[selectedStage].template[language]);
+                    toast.success(t("templateCopied"));
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                  {t("copyTemplate")}
+                </button>
+              </div>
               <pre className="whitespace-pre-wrap text-sm leading-relaxed text-foreground font-mono">
                 {promptTemplates[selectedStage].template[language]}
               </pre>
