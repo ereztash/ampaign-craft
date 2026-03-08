@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Copy, Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { toast } from "sonner";
 import { NeuroStorytellingData } from "@/types/funnel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
