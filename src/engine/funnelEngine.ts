@@ -529,7 +529,15 @@ export function generateFunnel(data: FormData): FunnelResult {
   const weights = getStageWeights(data);
   const budget = getBudgetRange(data.budgetRange);
 
-  const stageDefinitions = [
+  const isB2B = data.audienceType === "b2b" || data.audienceType === "both";
+  
+  const stageDefinitions = isB2B ? [
+    { id: "awareness", name: { he: "מודעות – הקריאה להרפתקה", en: "Awareness – Call to Adventure" }, desc: { he: "זיהוי ה'נבל' (הבעיה העסקית) של הלקוח ויצירת מודעות לפתרון אפשרי", en: "Identify the prospect's 'Villain' (business pain) and create awareness of a possible solution" } },
+    { id: "engagement", name: { he: "מעורבות – דרך הניסיונות", en: "Engagement – Road of Trials" }, desc: { he: "הצגת המותג כמנטור שמספק ידע וכלים – Case Studies כ'אפוסים של הצלחה'", en: "Position your brand as the Mentor providing knowledge and tools – Case Studies as 'Success Epics'" } },
+    { id: "leads", name: { he: "לידים – בניית אמון", en: "Leads – Building Trust" }, desc: { he: "בניית 'תעלת אמון' באמצעות תוכן מקצועי, דוחות תעשייה ותובנות ייחודיות", en: "Build a 'Trust Moat' through professional content, industry reports, and unique insights" } },
+    { id: "conversion", name: { he: "המרה – החרב הקסומה", en: "Conversion – The Magic Sword" }, desc: { he: "הצגת המוצר כפתרון שמאפשר ללקוח לנצח את האתגר – דמואים, ROI וסיפורי טרנספורמציה", en: "Present your product as the solution enabling the prospect to overcome their challenge – demos, ROI, and transformation stories" } },
+    { id: "retention", name: { he: "שימור – החזרה עם השיקוי", en: "Retention – Return with the Elixir" }, desc: { he: "הפיכת לקוחות מרוצים לשגרירי מותג שמספרים את סיפור ההצלחה שלהם", en: "Turn satisfied customers into brand advocates who share their success stories" } },
+  ] : [
     { id: "awareness", name: { he: "מודעות", en: "Awareness" }, desc: { he: "הגברת הנראות והמודעות למותג שלך", en: "Increasing visibility and brand awareness" } },
     { id: "engagement", name: { he: "מעורבות", en: "Engagement" }, desc: { he: "יצירת עניין ואינטראקציה עם הקהל", en: "Creating interest and audience interaction" } },
     { id: "leads", name: { he: "לידים", en: "Leads" }, desc: { he: "איסוף פרטי לקוחות פוטנציאליים", en: "Collecting potential customer details" } },
