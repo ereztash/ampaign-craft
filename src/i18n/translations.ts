@@ -168,6 +168,11 @@ export const translations = {
   tabBudget: { he: "תקציב", en: "Budget" },
   tabKpis: { he: "מדדים", en: "KPIs" },
   tabTips: { he: "טיפים", en: "Tips" },
+  tabHooks: { he: "הוקים התנהגותיים", en: "Content Hooks" },
+  hooksSubtitle: { he: "נוסחאות כתיבה מבוססות מדע התנהגותי ללכידת קשב", en: "Behavioral science-based writing formulas for capturing attention" },
+  hookFormula: { he: "נוסחה", en: "Formula" },
+  hookExample: { he: "דוגמה", en: "Example" },
+  hookChannels: { he: "מתאים ל", en: "Best for" },
 
   // Funnel Stages
   stageAwareness: { he: "מודעות", en: "Awareness" },

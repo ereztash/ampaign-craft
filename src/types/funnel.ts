@@ -59,12 +59,21 @@ export interface ChannelRecommendation {
   tips: { he: string; en: string }[];
 }
 
+export interface HookTip {
+  law: string;
+  lawName: { he: string; en: string };
+  formula: { he: string; en: string };
+  example: { he: string; en: string };
+  channels: string[];
+}
+
 export interface FunnelResult {
   id: string;
   funnelName: { he: string; en: string };
   stages: FunnelStage[];
   totalBudget: { min: number; max: number };
   overallTips: { he: string; en: string }[];
+  hookTips: HookTip[];
   kpis: { name: { he: string; en: string }; target: string }[];
   createdAt: string;
   formData: FormData;
