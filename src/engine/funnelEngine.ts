@@ -435,6 +435,7 @@ function getFunnelName(data: FormData): { he: string; en: string } {
     health: { he: "בריאות", en: "Health" },
     realEstate: { he: "נדל\"ן", en: "Real Estate" },
     tourism: { he: "תיירות", en: "Tourism" },
+    personalBrand: { he: "מיתוג אישי", en: "Personal Brand" },
     other: { he: "עסק", en: "Business" },
   };
 
