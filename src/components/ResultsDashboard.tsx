@@ -279,6 +279,12 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             <CopyLabTab copyLab={result.copyLab} />
           </TabsContent>
 
+          {showBrandDna && (
+            <TabsContent value="branddna" className="mt-6">
+              <BrandDiagnosticTab personalBrand={result.personalBrand} />
+            </TabsContent>
+          )}
+
           <TabsContent value="tips" className="mt-6">
             <Card>
               <CardHeader>
