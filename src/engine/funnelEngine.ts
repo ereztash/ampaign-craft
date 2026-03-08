@@ -1,4 +1,4 @@
-import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip } from "@/types/funnel";
+import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip, CopyLabData, CopyFormula, ReaderProfile, WritingTechnique } from "@/types/funnel";
 
 function getBudgetRange(range: string): { min: number; max: number } {
   switch (range) {
