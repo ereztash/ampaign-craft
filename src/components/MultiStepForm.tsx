@@ -95,6 +95,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
           { key: "health", icon: <Heart className="h-5 w-5" /> },
           { key: "realEstate", icon: <Building className="h-5 w-5" /> },
           { key: "tourism", icon: <Plane className="h-5 w-5" /> },
+          { key: "personalBrand", icon: <User className="h-5 w-5" /> },
           { key: "other", icon: <MoreHorizontal className="h-5 w-5" /> },
         ] as const;
         const fieldLabels: Record<string, string> = {
