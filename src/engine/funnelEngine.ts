@@ -368,17 +368,58 @@ function getOverallTips(data: FormData): { he: string; en: string }[] {
   const tips: { he: string; en: string }[] = [];
   const { audienceType, budgetRange, mainGoal, businessField, existingChannels, experienceLevel, salesModel, averagePrice, ageRange } = data;
 
+  // B2B Storytelling Framework Tips (Hero's Journey / TOFU-MOFU-BOFU)
+  if (audienceType === "b2b" || audienceType === "both") {
+    tips.push({
+      he: "📖 סטוריטלינג B2B: הפוך את הלקוח לגיבור הסיפור ואת המותג שלך למנטור – זהה את ה'נבל' (הבעיה העסקית) ובנה נרטיב של טרנספורמציה",
+      en: "📖 B2B Storytelling: Position your customer as the Hero and your brand as the Mentor – identify the 'Villain' (business pain) and build a transformation narrative",
+    });
+    tips.push({
+      he: "🎯 TOFU (מודעות): השתמש ב'קריאה להרפתקה' – תוכן שמזהה את הכאב העסקי בצורה כל כך מדויקת שהלקוח מרגיש שמבינים אותו",
+      en: "🎯 TOFU (Awareness): Use the 'Call to Adventure' – content that identifies the business pain so precisely that the prospect feels truly understood",
+    });
+    tips.push({
+      he: "🔬 MOFU (שיקול): הפוך Case Studies ל'אפוסים של הצלחה' – אל תציג רק תוצאות, ספר את סיפור המאבק, הפיבוט והניצחון",
+      en: "🔬 MOFU (Consideration): Turn Case Studies into 'Success Epics' – don't just list results, tell the story of struggle, pivot, and victory",
+    });
+    tips.push({
+      he: "⚔️ BOFU (המרה): המוצר שלך הוא ה'חרב הקסומה' – השתמש בדמואים וסיפורי ROI כדי להראות את החיים אחרי הטרנספורמציה",
+      en: "⚔️ BOFU (Conversion): Your product is the 'Magic Sword' – use demos and ROI stories to show life after the transformation",
+    });
+  }
+
+  if (audienceType === "b2b") {
+    tips.push({
+      he: "🏢 בשיווק B2B, מחזור המכירה ארוך יותר – תכנן תוכן לכל שלב. 95% מההחלטות הן תת-מודעות, גם ב-B2B",
+      en: "🏢 In B2B marketing, the sales cycle is longer – plan content for each stage. 95% of purchase decisions are subconscious, even in B2B",
+    });
+    tips.push({
+      he: "🤝 בנה 'תעלת אמון' (Trust Moat) – שתף מומחיות ייחודית, דוחות תעשייה ותובנות מקוריות שמבדילות אותך מהמתחרים",
+      en: "🤝 Build a 'Trust Moat' – share unique expertise, industry reports, and original insights that differentiate you from competitors",
+    });
+    if (averagePrice > 1000) {
+      tips.push({
+        he: "💎 מוצר יקר ב-B2B דורש אסטרטגיית Full-Funnel: השקע 68% בגיוס לקוחות חדשים ו-32% בשימור וצמיחת לקוחות קיימים",
+        en: "💎 High-ticket B2B requires a Full-Funnel strategy: invest ~68% in new customer acquisition and ~32% in retention and growth of existing customers",
+      });
+    }
+    tips.push({
+      he: "📊 מעבר ל-CPC ו-CTR: מדוד Pipeline Velocity, Coverage Ratio, Churn Rate ו-LTV לתמונה מלאה",
+      en: "📊 Beyond CPC and CTR: measure Pipeline Velocity, Coverage Ratio, Churn Rate, and LTV for the full picture",
+    });
+  }
+
   if (experienceLevel === "beginner") {
     tips.push({
-      he: "💡 התחל עם ערוץ אחד או שניים והתרחב בהדרגה",
-      en: "💡 Start with one or two channels and expand gradually",
+      he: "💡 התחל עם ערוץ אחד או שניים והתרחב בהדרגה – מודל היברידי (צוות פנימי + סוכנות חיצונית) יכול להאיץ תוצאות",
+      en: "💡 Start with one or two channels and expand gradually – a hybrid model (in-house team + external agency) can accelerate results",
     });
   }
 
   if (budgetRange === "low") {
     tips.push({
-      he: "💰 עם תקציב מוגבל, התמקד בתוכן אורגני ושיווק ברשתות חברתיות",
-      en: "💰 With a limited budget, focus on organic content and social media marketing",
+      he: "💰 עם תקציב מוגבל, התמקד בתוכן אורגני ובניית סמכות – תוכן איכותי הוא הנכס הטכני הכי חשוב שלך ב-2026",
+      en: "💰 With a limited budget, focus on organic content and authority building – quality content is your most valuable technical asset in 2026",
     });
   }
 
@@ -389,21 +430,14 @@ function getOverallTips(data: FormData): { he: string; en: string }[] {
     });
   }
 
-  if (audienceType === "b2b") {
-    tips.push({
-      he: "🏢 בשיווק B2B, מחזור המכירה ארוך יותר – תכנן תוכן לכל שלב",
-      en: "🏢 In B2B marketing, the sales cycle is longer – plan content for each stage",
-    });
-  }
-
   if (salesModel === "subscription") {
     tips.push({
-      he: "🔄 במודל מנוי, שימור לקוחות חשוב לא פחות מגיוס חדשים",
-      en: "🔄 In a subscription model, retaining customers is as important as acquiring new ones",
+      he: "🔄 במודל מנוי, שימור לקוחות חשוב לא פחות מגיוס חדשים – השקע ב'Return with the Elixir': הפוך לקוחות מרוצים לשגרירי מותג",
+      en: "🔄 In a subscription model, retention is as important as acquisition – invest in 'Return with the Elixir': turn happy customers into brand advocates",
     });
   }
 
-  if (averagePrice > 1000) {
+  if (averagePrice > 1000 && audienceType !== "b2b") {
     tips.push({
       he: "💎 עם מחיר גבוה, השקע ביצירת אמון – ביקורות, המלצות, Case Studies",
       en: "💎 With a high price point, invest in building trust – reviews, testimonials, case studies",
@@ -424,7 +458,15 @@ function getOverallTips(data: FormData): { he: string; en: string }[] {
     });
   }
 
-  return tips.slice(0, 5);
+  // Post-funnel advocacy tip
+  if (mainGoal === "loyalty" || salesModel === "subscription") {
+    tips.push({
+      he: "🌟 שלב פוסט-משפך: הפוך לקוחות מרוצים לגיבורי הסיפור הבא שלך – בנה פלטפורמה לשיתוף סיפורי הצלחה",
+      en: "🌟 Post-funnel stage: Turn happy customers into the heroes of your next story – build a platform for sharing success stories",
+    });
+  }
+
+  return tips.slice(0, 8);
 }
 
 function getKpis(data: FormData): { name: { he: string; en: string }; target: string }[] {
