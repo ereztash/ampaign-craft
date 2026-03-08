@@ -7,6 +7,7 @@ export type BusinessField =
   | "health"
   | "realEstate"
   | "tourism"
+  | "personalBrand"
   | "other";
 
 export type AudienceType = "b2c" | "b2b" | "both";
@@ -98,6 +99,44 @@ export interface CopyLabData {
   writingTechniques: WritingTechnique[];
 }
 
+// ═══════════════════════════════════════════════
+// Personal Brand Types
+// ═══════════════════════════════════════════════
+
+export interface DiagnosticQuestion {
+  id: string;
+  section: string;
+  question: { he: string; en: string };
+  type: "slider" | "choice";
+  options?: { label: { he: string; en: string }; value: number }[];
+}
+
+export interface ExecutionTemplate {
+  id: string;
+  name: { he: string; en: string };
+  description: { he: string; en: string };
+  steps: { he: string; en: string }[];
+  timeline: { he: string; en: string };
+  priority: "high" | "medium" | "low";
+}
+
+export interface BrandDiagnosticResult {
+  totalScore: number;
+  tier: "strong" | "gaps" | "pivot" | "restart";
+  sections: {
+    name: { he: string; en: string };
+    score: number;
+    maxScore: number;
+  }[];
+  recommendedTemplates: ExecutionTemplate[];
+}
+
+export interface PersonalBrandData {
+  positioningTips: { he: string; en: string }[];
+  signalPriority: { signal: string; name: { he: string; en: string }; description: { he: string; en: string } }[];
+  authenticityGuidance: { he: string; en: string }[];
+}
+
 export interface FunnelResult {
   id: string;
   funnelName: { he: string; en: string };
@@ -109,6 +148,7 @@ export interface FunnelResult {
   kpis: { name: { he: string; en: string }; target: string }[];
   createdAt: string;
   formData: FormData;
+  personalBrand?: PersonalBrandData;
 }
 
 export interface SavedPlan {
