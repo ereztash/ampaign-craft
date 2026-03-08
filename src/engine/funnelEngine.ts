@@ -775,6 +775,198 @@ function getHookTips(data: FormData): HookTip[] {
   return hooks.slice(0, limit);
 }
 
+function getCopyLabData(data: FormData): CopyLabData {
+  const { audienceType, experienceLevel, mainGoal, existingChannels, ageRange } = data;
+  const isB2B = audienceType === "b2b" || audienceType === "both";
+  const isB2C = audienceType === "b2c" || audienceType === "both";
+  const isBeginner = experienceLevel === "beginner";
+  const isAdvanced = experienceLevel === "advanced";
+
+  // ═══════════════════════════════════════════════
+  // READER PROFILE (Meta-Cognitive Framework)
+  // ═══════════════════════════════════════════════
+  let readerProfile: ReaderProfile;
+
+  if (isB2C && ageRange[0] < 30) {
+    // Young B2C → System 1 dominant
+    readerProfile = {
+      level: 1,
+      name: { he: "קורא רגשי (System 1)", en: "Emotional Reader (System 1)" },
+      description: { he: "מקבל החלטות דרך רגש, אינטואיציה והוכחה חברתית. מחליט תוך פחות מ-30 שניות. לא קורא מעבר לכותרת אם היא לא תופסת", en: "Makes decisions through emotion, intuition, and social proof. Decides in under 30 seconds. Won't read past the headline if it doesn't grab" },
+      copyArchitecture: { he: "כותרת: [מילה בעוצמה גבוהה] + [הוכחה חברתית] + [מחסור]\nפסקה ראשונה: [סיפור/רגש] + [FOMO]\nCTA: [דחיפות] + [ללא חיכוך]", en: "Headline: [High-arousal word] + [Social proof] + [Scarcity]\nFirst paragraph: [Story/emotion] + [FOMO]\nCTA: [Urgency] + [Friction-free]" },
+      principles: [
+        { he: "✓ מחסור ודחיפות (השפעה +40-50%)", en: "✓ Scarcity & Urgency (+40-50% impact)" },
+        { he: "✓ הוכחה חברתית (השפעה +35-40%)", en: "✓ Social Proof (+35-40% impact)" },
+        { he: "✓ סיפור רגשי (השפעה +45-60%)", en: "✓ Emotional storytelling (+45-60% impact)" },
+        { he: "✗ נתונים וסמכות (השפעה נמוכה)", en: "✗ Authority data (LOW impact)" },
+      ],
+    };
+  } else if (isB2B && (isAdvanced || data.averagePrice > 1000)) {
+    // B2B analytical → System 2 dominant
+    readerProfile = {
+      level: 3,
+      name: { he: "קורא אנליטי (System 2)", en: "Analytical Reader (System 2)" },
+      description: { he: "מקבל החלטות דרך לוגיקה, נתונים וספקנות. חוקר בהרחבה. קורא הכל. דורש הוכחות, מקורות ומגבלות. זמן החלטה: 10-30+ דקות", en: "Makes decisions through logic, data, and skepticism. Researches extensively. Reads everything. Demands proof, sources, and limitations. Decision time: 10-30+ minutes" },
+      copyArchitecture: { he: "כותרת: [טענה ספציפית] + [מגדיר היקף]\nפסקה 1: [הצהרת בעיה] + [למה זה חשוב]\nפסקה 2: [מתודולוגיה/נתונים]\nפסקה 3: [מגבלות בשקיפות]\nCTA: [פעולה ספציפית] + [נסה לפני שאתה קונה]", en: "Headline: [Specific claim] + [Scope qualifier]\nParagraph 1: [Problem statement] + [Why it matters]\nParagraph 2: [Methodology/data]\nParagraph 3: [Transparent limitations]\nCTA: [Specific action] + [Try before buying]" },
+      principles: [
+        { he: "✓ סמכות + מקורות (השפעה +40%)", en: "✓ Authority + Credentials (+40% impact)" },
+        { he: "✓ נתונים ספציפיים + ציטוטים (השפעה +42%)", en: "✓ Specific data + Citations (+42% impact)" },
+        { he: "✓ שקיפות על מגבלות (השפעה +35%)", en: "✓ Transparency about limitations (+35% impact)" },
+        { he: "✗ מחסור לבד (BACKFIRE -20%)", en: "✗ Scarcity alone (BACKFIRES -20%)" },
+        { he: "✗ סיפור רגשי בלבד (השפעה נמוכה)", en: "✗ Emotional storytelling alone (LOW impact)" },
+      ],
+    };
+  } else {
+    // Default: Balanced reader (System 1 + 2)
+    readerProfile = {
+      level: 2,
+      name: { he: "קורא מאוזן (System 1 + 2)", en: "Balanced Reader (System 1 + 2)" },
+      description: { he: "מקבל החלטות דרך שילוב רגש ולוגיקה (רוב האנשים). מגיב לסיפורים עם נתונים. זמן החלטה: 2-5 דקות", en: "Makes decisions through both emotion and logic (most people). Responds to stories WITH data. Decision time: 2-5 minutes" },
+      copyArchitecture: { he: "כותרת: [תועלת] + [הוכחה חברתית] + [ספציפיות]\nפסקה 1: [סיפור]\nפסקה 2: [נתונים]\nפסקה 3: [הוכחה חברתית] + [ביטחון]\nCTA: [פועל פעולה] + [התחייבות קטנה] + [מחסור]", en: "Headline: [Benefit] + [Social proof] + [Specificity]\nParagraph 1: [Story]\nParagraph 2: [Data]\nParagraph 3: [Social proof] + [Reassurance]\nCTA: [Action verb] + [Small commitment] + [Scarcity]" },
+      principles: [
+        { he: "✓ מחסור + ביטחון (השפעה +35%)", en: "✓ Scarcity + Reassurance (+35% impact)" },
+        { he: "✓ סיפור + נתונים משולבים (השפעה +40%)", en: "✓ Story + Data integration (+40% impact)" },
+        { he: "✓ הוכחה חברתית + סמכות (השפעה +38%)", en: "✓ Social proof + Authority (+38% impact)" },
+        { he: "✓ הדדיות + התחייבות (השפעה +30%)", en: "✓ Reciprocity + Commitment (+30% impact)" },
+      ],
+    };
+  }
+
+  // ═══════════════════════════════════════════════
+  // COPY FORMULAS (Historical Masters)
+  // ═══════════════════════════════════════════════
+  const formulas: CopyFormula[] = [];
+
+  // PAS — Problem-Agitation-Solution (universal, best for email/landing)
+  formulas.push({
+    name: { he: "PAS – בעיה, הגברה, פתרון", en: "PAS – Problem, Agitation, Solution" },
+    origin: "Eugene Schwartz / Dan Kennedy",
+    structure: { he: "1. הצג את הבעיה\n2. הגבר את הכאב (מה קורה אם לא פותרים?)\n3. הצג את הפתרון שלך", en: "1. State the problem\n2. Agitate the pain (what happens if unsolved?)\n3. Present your solution" },
+    example: { he: "\"מבזבז שעות על דוחות ידניים? (בעיה)\nכל חודש שעובר, המתחרים שלך מתקדמים יותר מהר. (הגברה)\nהמערכת שלנו הופכת 4 שעות עבודה ל-15 דקות. (פתרון)\"", en: "\"Wasting hours on manual reports? (Problem)\nEvery month that passes, your competitors move faster. (Agitation)\nOur system turns 4 hours of work into 15 minutes. (Solution)\"" },
+    bestFor: ["Email", "Landing Pages", "Google Ads"],
+    conversionLift: "+25-35%",
+  });
+
+  // AIDA — Attention, Interest, Desire, Action
+  formulas.push({
+    name: { he: "AIDA – קשב, עניין, רצון, פעולה", en: "AIDA – Attention, Interest, Desire, Action" },
+    origin: "E. St. Elmo Lewis (1898)",
+    structure: { he: "1. קשב: כותרת שתופסת\n2. עניין: למה זה רלוונטי אליך\n3. רצון: דמיין את התוצאה\n4. פעולה: CTA ברור", en: "1. Attention: Grabbing headline\n2. Interest: Why it's relevant to you\n3. Desire: Imagine the result\n4. Action: Clear CTA" },
+    example: { he: "\"[A] 73% מהצוותים מבזבזים 23% מהזמן בפגישות\n[I] אם אתה מנהל צוות של 10+, זה עולה לך ₪50K בשנה\n[D] דמיין: צוות שמסיים יום עבודה ב-4:30 במקום 7:00\n[A] התחל ניסיון חינם של 14 יום\"", en: "\"[A] 73% of teams waste 23% of time in meetings\n[I] If you manage 10+ people, that costs $50K/year\n[D] Imagine: a team that finishes by 4:30 instead of 7:00\n[A] Start a free 14-day trial\"" },
+    bestFor: ["Sales Pages", "Facebook Ads", "Email Sequences"],
+    conversionLift: "+20-30%",
+  });
+
+  // BAB — Before-After-Bridge (great for storytelling)
+  formulas.push({
+    name: { he: "BAB – לפני, אחרי, גשר", en: "BAB – Before, After, Bridge" },
+    origin: "Robert Collier (1931)",
+    structure: { he: "1. לפני: המצב הכואב עכשיו\n2. אחרי: המצב האידיאלי\n3. גשר: איך להגיע לשם (המוצר שלך)", en: "1. Before: The painful current state\n2. After: The ideal state\n3. Bridge: How to get there (your product)" },
+    example: { he: "\"[לפני] מבלה 3 שעות ביום בניהול ידני של קמפיינים\n[אחרי] קמפיינים רצים באוטומט, אתה מתמקד באסטרטגיה\n[גשר] המערכת שלנו אוטומטית את 80% מהעבודה\"", en: "\"[Before] Spending 3 hours daily manually managing campaigns\n[After] Campaigns run automatically, you focus on strategy\n[Bridge] Our system automates 80% of the work\"" },
+    bestFor: ["Instagram", "LinkedIn", "Email"],
+    conversionLift: "+30-40%",
+  });
+
+  // B2B-specific: Caples' Question Formula
+  if (isB2B) {
+    formulas.push({
+      name: { he: "נוסחת השאלה של Caples", en: "Caples' Question Formula" },
+      origin: "John Caples (1932) – +55% CTR",
+      structure: { he: "פתח בשאלה שחייבת תשובה – המוח לא יכול להתעלם משאלה פתוחה. השאלה חייבת לגעת בכאב או בפער ידע", en: "Open with a question that demands an answer – the brain can't ignore an open question. The question must touch a pain point or knowledge gap" },
+      example: { he: "\"האם אתה עושה את 3 הטעויות האלה ב-Pipeline שלך?\"\n\"למה 73% מה-Startups נכשלים בשנה הראשונה – ומה 27% עושים אחרת?\"", en: "\"Do you make these 3 mistakes in your Pipeline?\"\n\"Why do 73% of startups fail in year one – and what do the 27% do differently?\"" },
+      bestFor: ["LinkedIn", "Email Subject Lines", "Blog Headlines"],
+      conversionLift: "+55% CTR (Caples' highest)",
+    });
+  }
+
+  // B2C-specific: Hopkins' Direct Response
+  if (isB2C) {
+    formulas.push({
+      name: { he: "ארכיטקטורת תגובה ישירה – Hopkins", en: "Hopkins' Direct Response Architecture" },
+      origin: "Claude Hopkins (1923)",
+      structure: { he: "1. פתח בתועלת ספציפית (לא תכונה)\n2. הוביל עם האינטרס של הקורא (לא המוצר)\n3. ספר סיפור מרתק\n4. הצע הצעה ספציפית\n5. CTA חזק\n6. הוסף תמריץ/ניסיון", en: "1. Start with specific benefit (not feature)\n2. Lead with reader's self-interest (not product)\n3. Tell a compelling story\n4. Make a specific offer\n5. Strong CTA\n6. Add incentive/trial" },
+      example: { he: "\"[תועלת] ייפטר מהעייפות הזו תוך 10 ימים\n[אינטרס] בלי לשלם הון לרופאים\n[סיפור] שרה הרגישה תשושה כל יום עד ש...\n[הצעה] דוגמית חינם + מדריך\n[CTA] הזמן עכשיו – משלוח חינם\"", en: "\"[Benefit] Get rid of that tired feeling in 10 days\n[Self-interest] Without spending a fortune on doctors\n[Story] Sarah felt exhausted every day until...\n[Offer] Free sample + guide\n[CTA] Order now – free shipping\"" },
+      bestFor: ["Sales Pages", "Facebook Ads", "Landing Pages"],
+      conversionLift: "+30-45%",
+    });
+  }
+
+  // ═══════════════════════════════════════════════
+  // WRITING TECHNIQUES (Neurocopywriting + Linguistics)
+  // ═══════════════════════════════════════════════
+  const techniques: WritingTechnique[] = [];
+
+  // High-Arousal Words (always relevant)
+  techniques.push({
+    name: { he: "מילים בעוצמה גבוהה (High-Arousal)", en: "High-Arousal Word Selection" },
+    description: { he: "החלף מילים ניטרליות במילים שמפעילות את האמיגדלה אוטומטית – 31-45% יותר קליקים", en: "Replace neutral words with words that auto-activate the amygdala – 31-45% higher CTR" },
+    doExample: { he: "\"הפסק לבזבז כסף\" | \"טרנספורמטיבי\" | \"תפוס הזדמנות\"", en: "\"Stop wasting money\" | \"Transformative\" | \"Seize the opportunity\"" },
+    dontExample: { he: "\"חסוך כסף\" | \"איכות טובה\" | \"קבל גישה\"", en: "\"Save money\" | \"Good quality\" | \"Get access\"" },
+    metric: "+31-45% CTR",
+  });
+
+  // Active Voice
+  techniques.push({
+    name: { he: "פעיל, לא סביל", en: "Active Voice, Not Passive" },
+    description: { he: "המוח מעבד משפט סביל באיטיות כפולה. משפט פעיל = הבנה מהירה יותר ב-40-50%", en: "The brain processes passive voice nearly twice as slow. Active voice = 40-50% faster comprehension" },
+    doExample: { he: "\"חקרנו 500 צוותים וגילינו שאוטומציה משפרת פרודוקטיביות\"", en: "\"We researched 500 teams and discovered automation improves productivity\"" },
+    dontExample: { he: "\"לאחר שמחקר נרחב בוצע, התגלה שהפרודוקטיביות יכולה להשתפר\"", en: "\"After extensive research was conducted, it was discovered that productivity could improve\"" },
+    metric: "+40-50% comprehension",
+  });
+
+  // SVO Word Order
+  techniques.push({
+    name: { he: "סדר מילים SVO (נושא-פועל-מושא)", en: "SVO Word Order (Subject-Verb-Object)" },
+    description: { he: "המוח מעבד SVO בהפעלה אחת. סדר מילים מורכב דורש 20% יותר מאמץ קוגניטיבי ו-2 הפעלות מוחיות", en: "The brain processes SVO in one activation. Complex word order requires 20% more cognitive effort and 2 brain activations" },
+    doExample: { he: "\"המערכת שלנו חוסכת לך זמן. כך זה עובד...\"", en: "\"Our system saves you time. Here's how...\"" },
+    dontExample: { he: "\"זמן, תחסוך בעזרת המערכת שלנו באופן משמעותי לאורך זמן\"", en: "\"Time, you will save significantly over time by implementing our system\"" },
+    metric: "-20% cognitive load",
+  });
+
+  // Sentence Rhythm
+  techniques.push({
+    name: { he: "קצב משפטים (קצר-ארוך-קצר)", en: "Sentence Rhythm (Short-Long-Short)" },
+    description: { he: "חילוף בין משפטים קצרים (3-8 מילים) לארוכים (20+) מייצר קצב שמגביר מעורבות ב-23%", en: "Alternating short (3-8 words) and long (20+) sentences creates rhythm that boosts engagement by 23%" },
+    doExample: { he: "\"תפסיק לבזבז זמן. רוב המנהלים מבלים 23% מהשבוע בפגישות, לפי נתוני הלמ\"ס. זה בלתי מקובל.\"", en: "\"Stop wasting time. Most professionals spend 23% of their week in meetings, according to Bureau of Labor Statistics. That's unacceptable.\"" },
+    dontExample: { he: "\"רוב המנהלים מבזבזים זמן. הם מבלים שעות בפגישות. הם צריכים פתרון. אנחנו מציעים פתרון.\"", en: "\"Most managers waste time. They spend hours in meetings. They need a solution. We offer a solution.\"" },
+    metric: "+23% engagement time",
+  });
+
+  // Story + Data Integration (Neurocopywriting 3.A.3)
+  techniques.push({
+    name: { he: "שילוב סיפור + נתון (לא רציף)", en: "Story + Data Integration (Not Sequential)" },
+    description: { he: "שלב נרטיב והוכחה באותה פסקה – לא בנפרד. מפעיל לימבי + ניאוקורטקס במקביל = 22% יותר זיכרון", en: "Mix narrative and proof in the same paragraph – not separately. Activates limbic + neocortex in parallel = 22% more memory retention" },
+    doExample: { he: "\"שרה הפסידה ₪40K – מה שמחקר MIT מראה שקורה ל-47% מהמייסדים ש...\"", en: "\"Sarah lost $40K—which MIT research shows happens to 47% of founders who...\"" },
+    dontExample: { he: "\"שרה הפסידה ₪40K (פסקה 1) / הנה המחקר (פסקה 2)\"", en: "\"Sarah lost $40K (paragraph 1) / Here's the research (paragraph 2)\"" },
+    metric: "+22% memory, +19% conversion",
+  });
+
+  // For advanced users: add more techniques
+  if (isAdvanced) {
+    techniques.push({
+      name: { he: "שפה חושית (Sensory Language)", en: "Sensory Language Deployment" },
+      description: { he: "החלף שמות תואר מופשטים בתיאורים חושיים ספציפיים – מפעיל את הקורטקס המוטורי ב-19% יותר", en: "Replace abstract adjectives with specific sensory descriptions – activates motor cortex 19% more" },
+      doExample: { he: "\"ממשק שקוף כבדולח\" | \"תגובה מהירה כברק\" | \"זרימה חלקה\"", en: "\"Crystal-clear interface\" | \"Lightning-quick response\" | \"Effortless workflow\"" },
+      dontExample: { he: "\"חוויה טובה\" | \"ביצועים טובים\" | \"תהליך קל\"", en: "\"Great experience\" | \"Good performance\" | \"Easy process\"" },
+      metric: "+19% motor cortex, +12-18% engagement",
+    });
+
+    techniques.push({
+      name: { he: "שקיפות שכנוע (לקוראי Level 4)", en: "Persuasion Transparency (Level 4 Readers)" },
+      description: { he: "לקוראים מטא-קוגניטיביים: חשוף את טכניקת השכנוע שאתה משתמש בה – שקיפות מגבירה אמון ב-50%", en: "For meta-cognitive readers: reveal the persuasion technique you're using – transparency boosts trust by 50%" },
+      doExample: { he: "\"אנחנו משתמשים כאן ב-framing של הפסד – והנה למה זה עובד ולמה אנחנו מאמינים שזה אתי\"", en: "\"We're using loss-aversion framing here – and here's why it works and why we believe it's ethical\"" },
+      dontExample: { he: "\"הזדמנות אחרונה! רק 3 מקומות!\" (מניפולציה חבויה שעלולה לגרום ל-BACKFIRE של -70%)", en: "\"Last chance! Only 3 spots!\" (hidden manipulation that can BACKFIRE by -70%)" },
+      metric: "+50% trust (Level 4), -70% if hidden",
+    });
+  }
+
+  return {
+    readerProfile,
+    formulas,
+    writingTechniques: isBeginner ? techniques.slice(0, 3) : techniques,
+  };
+}
+
 export function generateFunnel(data: FormData): FunnelResult {
   const weights = getStageWeights(data);
   const budget = getBudgetRange(data.budgetRange);
@@ -812,6 +1004,7 @@ export function generateFunnel(data: FormData): FunnelResult {
     totalBudget: budget,
     overallTips: getOverallTips(data),
     hookTips: getHookTips(data),
+    copyLab: getCopyLabData(data),
     kpis: getKpis(data),
     createdAt: new Date().toISOString(),
     formData: data,
