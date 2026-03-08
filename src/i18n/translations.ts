@@ -56,6 +56,7 @@ export const translations = {
   fieldHealth: { he: "בריאות וכושר", en: "Health & Fitness" },
   fieldRealEstate: { he: "נדל\"ן", en: "Real Estate" },
   fieldTourism: { he: "תיירות ופנאי", en: "Tourism & Leisure" },
+  fieldPersonalBrand: { he: "מיתוג אישי", en: "Personal Brand" },
   fieldOther: { he: "אחר", en: "Other" },
 
   // Step 2 - Target Audience
@@ -208,6 +209,10 @@ export const translations = {
   funnelName: { he: "שם המשפך", en: "Funnel Name" },
   estimatedBudget: { he: "תקציב מוערך", en: "Estimated Budget" },
   perMonth: { he: "לחודש", en: "/month" },
+
+  // Brand DNA Tab
+  tabBrandDna: { he: "Brand DNA", en: "Brand DNA" },
+  brandDnaSubtitle: { he: "כלי אבחון מיתוג אישי מבוסס מחקר – ציון בריאות מיצוב + תבניות ביצוע", en: "Research-based personal brand diagnostic – Positioning Health Score + execution templates" },
 
   // Disclaimer
   disclaimer: {

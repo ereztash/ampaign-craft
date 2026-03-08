@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CopyLabTab from "@/components/CopyLabTab";
+import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ const COLORS = [
 
 const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
+  const showBrandDna = result.formData.businessField === "personalBrand" || result.formData.businessField === "services";
 
   const barData = result.stages.map((stage, i) => ({
     name: stage.name[language],
@@ -136,12 +138,13 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
         {/* Tabs */}
         <Tabs defaultValue="strategy" className="mb-8">
-          <TabsList className="w-full grid grid-cols-6">
+          <TabsList className={`w-full grid ${showBrandDna ? "grid-cols-7" : "grid-cols-6"}`}>
             <TabsTrigger value="strategy">{t("tabStrategy")}</TabsTrigger>
             <TabsTrigger value="budget">{t("tabBudget")}</TabsTrigger>
             <TabsTrigger value="kpis">{t("tabKpis")}</TabsTrigger>
             <TabsTrigger value="hooks">{t("tabHooks")}</TabsTrigger>
             <TabsTrigger value="copylab">{t("tabCopyLab")}</TabsTrigger>
+            {showBrandDna && <TabsTrigger value="branddna">{t("tabBrandDna")}</TabsTrigger>}
             <TabsTrigger value="tips">{t("tabTips")}</TabsTrigger>
           </TabsList>
 
@@ -276,6 +279,12 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           <TabsContent value="copylab" className="mt-6">
             <CopyLabTab copyLab={result.copyLab} />
           </TabsContent>
+
+          {showBrandDna && (
+            <TabsContent value="branddna" className="mt-6">
+              <BrandDiagnosticTab personalBrand={result.personalBrand} />
+            </TabsContent>
+          )}
 
           <TabsContent value="tips" className="mt-6">
             <Card>

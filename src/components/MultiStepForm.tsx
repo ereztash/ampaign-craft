@@ -11,7 +11,7 @@ import {
   ChevronLeft, ChevronRight, Sparkles,
   ShoppingBag, Monitor, UtensilsCrossed, Briefcase,
   GraduationCap, Heart, Building, Plane, MoreHorizontal,
-  Users, Building2, UsersRound, Megaphone, UserPlus, ShoppingCart, Award,
+  Users, Building2, UsersRound, Megaphone, UserPlus, ShoppingCart, Award, User,
 } from "lucide-react";
 
 interface MultiStepFormProps {
@@ -95,12 +95,13 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
           { key: "health", icon: <Heart className="h-5 w-5" /> },
           { key: "realEstate", icon: <Building className="h-5 w-5" /> },
           { key: "tourism", icon: <Plane className="h-5 w-5" /> },
+          { key: "personalBrand", icon: <User className="h-5 w-5" /> },
           { key: "other", icon: <MoreHorizontal className="h-5 w-5" /> },
         ] as const;
         const fieldLabels: Record<string, string> = {
           fashion: t("fieldFashion"), tech: t("fieldTech"), food: t("fieldFood"),
           services: t("fieldServices"), education: t("fieldEducation"), health: t("fieldHealth"),
-          realEstate: t("fieldRealEstate"), tourism: t("fieldTourism"), other: t("fieldOther"),
+          realEstate: t("fieldRealEstate"), tourism: t("fieldTourism"), personalBrand: t("fieldPersonalBrand"), other: t("fieldOther"),
         };
         return (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

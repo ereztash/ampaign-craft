@@ -1,4 +1,4 @@
-import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip, CopyLabData, CopyFormula, ReaderProfile, WritingTechnique } from "@/types/funnel";
+import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip, CopyLabData, CopyFormula, ReaderProfile, WritingTechnique, PersonalBrandData } from "@/types/funnel";
 
 function getBudgetRange(range: string): { min: number; max: number } {
   switch (range) {
@@ -435,6 +435,7 @@ function getFunnelName(data: FormData): { he: string; en: string } {
     health: { he: "בריאות", en: "Health" },
     realEstate: { he: "נדל\"ן", en: "Real Estate" },
     tourism: { he: "תיירות", en: "Tourism" },
+    personalBrand: { he: "מיתוג אישי", en: "Personal Brand" },
     other: { he: "עסק", en: "Business" },
   };
 
@@ -569,7 +570,39 @@ function getOverallTips(data: FormData): { he: string; en: string }[] {
     });
   }
 
-  return tips.slice(0, 10);
+  // ═══════════════════════════════════════════════
+  // Personal Brand Tips
+  // ═══════════════════════════════════════════════
+  if (businessField === "personalBrand") {
+    tips.push({
+      he: "🎯 משולש הזהב: מצא את הצומת בין מומחיות × עניין × ביקוש – שם נמצאת הנישה המושלמת שלך",
+      en: "🎯 Golden Triangle: Find the intersection of expertise × interest × demand – that's where your perfect niche lives",
+    });
+    tips.push({
+      he: "🌊 אוקיינוס כחול: במקום להתחרות בשוק רווי, השתמש במטריצת ERRC (בטל, הפחת, העלה, צור) כדי ליצור קטגוריה חדשה",
+      en: "🌊 Blue Ocean: Instead of competing in a saturated market, use the ERRC Matrix (Eliminate, Reduce, Raise, Create) to create a new category",
+    });
+    tips.push({
+      he: "📡 סיגנלים יקרים (Costly Signals): תוצאות מתועדות, Case Studies עם מספרים, והמלצות וידאו – אלה הסיגנלים שבאמת משכנעים",
+      en: "📡 Costly Signals: Documented results, Case Studies with numbers, and video testimonials – these are the signals that truly convince",
+    });
+    tips.push({
+      he: "✨ אפקט ההילה: זהה את ה-Mega Trait שלך (תכונה מרכזית אחת) ובנה סביבו את כל הנרטיב – הוא ישפיע על תפיסת כל שאר התכונות",
+      en: "✨ Halo Effect: Identify your Mega Trait (one core quality) and build your entire narrative around it – it influences perception of all other qualities",
+    });
+    if (audienceType === "b2b") {
+      tips.push({
+        he: "🤝 שנאת הפסד במיתוג: מסגר את הערך שלך דרך 'עלות האי-פעולה' – כמה עולה ללקוח לא להשתמש בך? זה חזק פי 2 מהבטחת רווח",
+        en: "🤝 Loss Aversion in Branding: Frame your value through 'cost of inaction' – how much does it cost NOT to use you? This is 2x stronger than promising gains",
+      });
+    }
+    tips.push({
+      he: "🔗 דביקות רשת: בנה קהילה שהערך שלה גדל עם כל חבר חדש – Alumni Network, אירועים, Referrals דו-כיווניים",
+      en: "🔗 Network Stickiness: Build a community whose value grows with each new member – Alumni Network, events, bilateral Referrals",
+    });
+  }
+
+  return tips.slice(0, 12);
 }
 
 function getKpis(data: FormData): { name: { he: string; en: string }; target: string }[] {
@@ -967,13 +1000,76 @@ function getCopyLabData(data: FormData): CopyLabData {
   };
 }
 
+function getPersonalBrandData(data: FormData): PersonalBrandData | undefined {
+  if (data.businessField !== "personalBrand" && data.businessField !== "services") return undefined;
+
+  const isB2B = data.audienceType === "b2b" || data.audienceType === "both";
+  const positioningTips: { he: string; en: string }[] = [];
+
+  if (isB2B) {
+    positioningTips.push(
+      { he: "🏢 B2B מיתוג: מצב את עצמך כ'מנטור' שמבין את הכאב העסקי של ה-ICP – לא כ'ספק שירות' אלא כ'שותף אסטרטגי'", en: "🏢 B2B Branding: Position yourself as the 'Mentor' who understands ICP's business pain – not a 'service provider' but a 'strategic partner'" },
+      { he: "📊 Consultative Selling: בנה תהליך מכירה ייעוצי – אבחון → Tripwire → עסקה מלאה. הראה ערך לפני שאתה מבקש תשלום", en: "📊 Consultative Selling: Build a consultative sales process – diagnostic → Tripwire → full deal. Show value before asking for payment" },
+    );
+  } else {
+    positioningTips.push(
+      { he: "🎬 B2C מיתוג: אותנטיות > הפקה. שתף את התהליך (Building in Public), לא רק תוצאות. הקהל מתחבר לאנשים, לא למותגים", en: "🎬 B2C Branding: Authenticity > Production. Share the process (Building in Public), not just results. Audiences connect with people, not brands" },
+      { he: "📱 Creator Economy: בנה קהל לפני שאתה מוכר. ניוזלטר + קהילה = בעלות על הקהל שלך (לא תלוי באלגוריתם)", en: "📱 Creator Economy: Build an audience before selling. Newsletter + community = own your audience (not algorithm-dependent)" },
+    );
+  }
+
+  positioningTips.push(
+    { he: "🎭 פרדוקס האותנטיות: שתף פגיעויות אסטרטגיות (Weaponized Vulnerability) – כישלון שמסתיים בתובנה בונה אמון חזק יותר מסיפורי הצלחה", en: "🎭 Authenticity Paradox: Share strategic vulnerabilities (Weaponized Vulnerability) – failure ending with insight builds stronger trust than success stories" },
+    { he: "🏗️ Conformity Breakout: זהה 'אמיתות מקובלות' בתעשייה שאתה חולק עליהן – Contrarian Takes ממצבים אותך כמחשב עצמאי", en: "🏗️ Conformity Breakout: Identify 'accepted truths' you disagree with – Contrarian Takes position you as an independent thinker" },
+  );
+
+  // Signal priority by field
+  const signalPriority: PersonalBrandData["signalPriority"] = [];
+  const field = data.businessField === "personalBrand" ? data.interests.toLowerCase() : data.businessField;
+
+  if (field.includes("tech") || field.includes("טכנולוגיה")) {
+    signalPriority.push(
+      { signal: "shipped-products", name: { he: "מוצרים שנשלחו", en: "Shipped Products" }, description: { he: "מוצרים ופרויקטים שהשקת – הדמו הטוב ביותר הוא מוצר עובד", en: "Products and projects you've launched – the best demo is a working product" } },
+      { signal: "open-source", name: { he: "תרומות קוד פתוח", en: "Open Source Contributions" }, description: { he: "תרומות ל-Open Source, כלים שיצרת, GitHub stars – סיגנל של מומחיות אמיתית", en: "Open Source contributions, tools you built, GitHub stars – signal of real expertise" } },
+      { signal: "technical-writing", name: { he: "כתיבה טכנית", en: "Technical Writing" }, description: { he: "בלוג טכני, תיעוד, הסברים מעמיקים – מי שמסביר טוב, מבין טוב", en: "Technical blog, documentation, deep explanations – those who explain well, understand well" } },
+    );
+  } else if (field.includes("consult") || field.includes("ייעוץ") || field === "services") {
+    signalPriority.push(
+      { signal: "case-studies", name: { he: "Case Studies", en: "Case Studies" }, description: { he: "תיעוד תוצאות עם מספרים ספציפיים: 'מ-X ל-Y תוך Z חודשים' – ROI Epic", en: "Documented results with specific numbers: 'from X to Y in Z months' – ROI Epic" } },
+      { signal: "methodology", name: { he: "מתודולוגיה ממותגת", en: "Branded Methodology" }, description: { he: "Framework ייחודי עם שם ממותג – הופך אותך מ'עוד יועץ' ל'ממציא הגישה'", en: "Unique framework with branded name – transforms you from 'another consultant' to 'the approach creator'" } },
+      { signal: "speaking", name: { he: "הרצאות וכנסים", en: "Speaking & Conferences" }, description: { he: "הופעות על במה, פודקאסטים, וובינרים – Halo Effect מהסביבה הממותגת", en: "Stage appearances, podcasts, webinars – Halo Effect from the branded environment" } },
+    );
+  } else {
+    signalPriority.push(
+      { signal: "portfolio", name: { he: "תיק עבודות", en: "Portfolio" }, description: { he: "עבודות מתועדות עם תוצאות – הוכחה ויזואלית של היכולת שלך", en: "Documented work with results – visual proof of your capability" } },
+      { signal: "testimonials", name: { he: "המלצות", en: "Testimonials" }, description: { he: "המלצות וידאו מלקוחות – Social Proof מהסוג החזק ביותר", en: "Video testimonials from clients – the strongest form of Social Proof" } },
+      { signal: "thought-leadership", name: { he: "מנהיגות מחשבתית", en: "Thought Leadership" }, description: { he: "תוכן מקורי שמראה חשיבה עצמאית – מאמרים, ניוזלטר, פודקאסט", en: "Original content showing independent thinking – articles, newsletter, podcast" } },
+    );
+  }
+
+  const authenticityGuidance: { he: string; en: string }[] = [
+    { he: "🎯 הגדר את ה-No-Go Zone: מה אתה לא משתף? גבולות בריאים הם חלק מאותנטיות – לא צריך לחשוף הכל", en: "🎯 Define your No-Go Zone: what don't you share? Healthy boundaries are part of authenticity – you don't need to expose everything" },
+    { he: "📖 Hero's Journey אישי: מצב התחלתי → משבר/כישלון → תובנה מכוננת → טרנספורמציה – זה הנרטיב שמחבר אנשים", en: "📖 Personal Hero's Journey: starting point → crisis/failure → formative insight → transformation – this is the narrative that connects people" },
+    { he: "⚖️ כיול Halo/Horn: היה מודע לאפקט ההילה (תכונה אחת טובה צובעת הכל) ואפקט ה-Horn (תכונה שלילית אחת הורסת) – נהל את שניהם במודע", en: "⚖️ Halo/Horn Calibration: Be aware of the Halo Effect (one good trait colors everything) and Horn Effect (one negative trait ruins all) – manage both consciously" },
+  ];
+
+  return { positioningTips, signalPriority, authenticityGuidance };
+}
+
 export function generateFunnel(data: FormData): FunnelResult {
   const weights = getStageWeights(data);
   const budget = getBudgetRange(data.budgetRange);
 
   const isB2B = data.audienceType === "b2b" || data.audienceType === "both";
-  
-  const stageDefinitions = isB2B ? [
+  const isPersonalBrand = data.businessField === "personalBrand";
+
+  const stageDefinitions = isPersonalBrand ? [
+    { id: "awareness", name: { he: "נישה ו-ICP", en: "Niche & ICP Definition" }, desc: { he: "הגדרת המשולש הזהב (מומחיות × עניין × ביקוש), זיהוי ה-ICP, ומיפוי הנוף התחרותי", en: "Defining the Golden Triangle (expertise × interest × demand), identifying your ICP, and mapping the competitive landscape" } },
+    { id: "engagement", name: { he: "UVP ואוקיינוס כחול", en: "UVP & Blue Ocean" }, desc: { he: "מיצוב ייחודי באמצעות מטריצת ERRC, בידול מהמתחרים, ויצירת קטגוריה חדשה", en: "Unique positioning using ERRC Matrix, differentiation from competitors, and creating a new category" } },
+    { id: "leads", name: { he: "בניית סיגנלים ואמינות", en: "Signal Building & Credibility" }, desc: { he: "בניית סיגנלים יקרים (Costly Signals): Case Studies, Thought Leadership, המלצות – היררכיית הוכחות לפי הסקטור שלך", en: "Building Costly Signals: Case Studies, Thought Leadership, testimonials – proof hierarchy for your sector" } },
+    { id: "conversion", name: { he: "תוכן ומנהיגות מחשבתית", en: "Content & Thought Leadership" }, desc: { he: "מגבר אפקט הילה (Halo Amplifier), ארכיטקטורת נרטיב, ו-Contrarian Takes שמבדילים אותך", en: "Halo Amplifier, narrative architecture, and Contrarian Takes that set you apart" } },
+    { id: "retention", name: { he: "קהילה ואפקט רשת", en: "Community & Network Effects" }, desc: { he: "בניית דביקות רשת (Network Stickiness), Alumni Network, תוכנית Referral, ואפקט Flywheel", en: "Building Network Stickiness, Alumni Network, Referral program, and Flywheel effect" } },
+  ] : isB2B ? [
     { id: "awareness", name: { he: "ICP טרגוט וגילוי כאב", en: "ICP Targeting & Pain Discovery" }, desc: { he: "זיהוי ה-ICP (Ideal Customer Profile), מיפוי הכאב העסקי, ויצירת מודעות לפער בין המצב הנוכחי לפוטנציאל", en: "Identify your ICP (Ideal Customer Profile), map their business pain, and create awareness of the gap between current state and potential" } },
     { id: "engagement", name: { he: "Thought Leadership ותעלת אמון", en: "Thought Leadership & Trust Moat" }, desc: { he: "מיצוב המותג כסמכות בתעשייה: דוחות, תובנות מקוריות, Case Studies כ'אפוסים של הצלחה' – בניית תעלת אמון בלתי עבירה", en: "Position your brand as an industry authority: reports, original insights, Case Studies as 'Success Epics' – building an impenetrable Trust Moat" } },
     { id: "leads", name: { he: "Lead Magnet דיאגנוסטי", en: "Diagnostic Lead Magnet" }, desc: { he: "יצירת דיסוננס קוגניטיבי באמצעות כלי אבחון שחושף פער בין המצב הנוכחי לפוטנציאל – מנוע ההמרה החזק ביותר", en: "Create cognitive dissonance with a diagnostic tool exposing the gap between current state and potential – the most powerful conversion driver" } },
@@ -1008,5 +1104,6 @@ export function generateFunnel(data: FormData): FunnelResult {
     kpis: getKpis(data),
     createdAt: new Date().toISOString(),
     formData: data,
+    personalBrand: getPersonalBrandData(data),
   };
 }
