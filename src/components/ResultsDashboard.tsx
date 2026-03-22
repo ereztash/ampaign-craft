@@ -2,6 +2,9 @@ import { useState } from "react";
 import CopyLabTab from "@/components/CopyLabTab";
 import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
 import NeuroStorytellingTab from "@/components/NeuroStorytellingTab";
+import MetaConnect from "@/components/MetaConnect";
+import MetaMonitor from "@/components/MetaMonitor";
+import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
@@ -28,7 +31,11 @@ const COLORS = [
 
 const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
+  const isHe = language === "he";
   const showBrandDna = result.formData.businessField === "personalBrand" || result.formData.businessField === "services";
+  const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect } = useMetaAuth();
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
+  const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
 
   const barData = result.stages.map((stage, i) => ({
     name: stage.name[language],
@@ -139,7 +146,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
         {/* Tabs */}
         <Tabs defaultValue="strategy" className="mb-8">
-          <TabsList className={`w-full grid ${showBrandDna ? "grid-cols-8" : "grid-cols-7"}`}>
+          <TabsList className={`w-full grid ${showBrandDna ? "grid-cols-9" : "grid-cols-8"}`}>
             <TabsTrigger value="strategy">{t("tabStrategy")}</TabsTrigger>
             <TabsTrigger value="budget">{t("tabBudget")}</TabsTrigger>
             <TabsTrigger value="kpis">{t("tabKpis")}</TabsTrigger>
@@ -148,6 +155,9 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             <TabsTrigger value="neurostory">{t("tabNeuroStory")}</TabsTrigger>
             {showBrandDna && <TabsTrigger value="branddna">{t("tabBrandDna")}</TabsTrigger>}
             <TabsTrigger value="tips">{t("tabTips")}</TabsTrigger>
+            <TabsTrigger value="monitor" className="gap-1.5">
+              📊 {isHe ? "ניטור" : "Monitor"}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="strategy" className="mt-6">
@@ -293,6 +303,31 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               <NeuroStorytellingTab data={result.neuroStorytelling} />
             </TabsContent>
           )}
+
+          <TabsContent value="monitor" className="mt-6">
+            <div className="space-y-6">
+              <MetaConnect
+                connected={!!auth}
+                loading={metaLoading}
+                error={metaError}
+                accounts={accounts}
+                selectedAccountId={selectedAccountId}
+                onConnect={connect}
+                onDisconnect={disconnect}
+                onSelectAccount={(id, name) => {
+                  setSelectedAccountId(id);
+                  setSelectedAccountName(name);
+                }}
+              />
+              {auth && selectedAccountId && (
+                <MetaMonitor
+                  result={result}
+                  accountId={selectedAccountId}
+                  accessToken={auth.accessToken}
+                />
+              )}
+            </div>
+          </TabsContent>
 
           <TabsContent value="tips" className="mt-6">
             <Card>
