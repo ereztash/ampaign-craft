@@ -7,13 +7,15 @@ export interface TabConfig {
   visible: boolean;
   priority: number; // lower = shown first
   badge?: { he: string; en: string };
+  simplifiedMode?: boolean; // true = show beginner-friendly simplified view
 }
 
 /**
- * MECE Segment-based tab configuration:
- * - Segment A (Builder/Beginner): Strategy, Budget, KPIs, Tips only. Hide advanced tabs.
- * - Segment B (Amplifier/Intermediate): All tabs, Brand DNA promoted, Copy Lab & Neuro-Story available.
- * - Segment C (Analyst/Advanced): All tabs, Monitor & Data promoted.
+ * MECE Segment-based tab configuration with progressive disclosure:
+ * ALL tabs visible to ALL users. Beginners get simplified views (simplifiedMode: true).
+ * - Segment A (Builder/Beginner): All tabs, Tips promoted, advanced tabs in simplified mode.
+ * - Segment B (Amplifier/Intermediate): All tabs, Brand DNA promoted, full views.
+ * - Segment C (Analyst/Advanced): All tabs, Monitor & Data promoted, full views.
  */
 export function getTabConfig(result: FunnelResult, profile: UserProfile): TabConfig[] {
   const { formData } = result;
@@ -24,7 +26,6 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
   const isBeginner = formData.experienceLevel === "beginner" || formData.experienceLevel === "";
 
   const tabs: TabConfig[] = [
-    // Always visible
     {
       id: "strategy",
       labelKey: "tabStrategy",
@@ -52,56 +53,72 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       badge: isBeginner ? { he: "התחל כאן", en: "Start Here" } : undefined,
     },
 
-    // Segment B+C: Hooks (hidden for beginners — too complex without context)
+    // Hooks — visible to all; beginners get simplified 3-hook view
     {
       id: "hooks",
       labelKey: "tabHooks",
-      visible: !isBeginner,
-      priority: formData.mainGoal === "awareness" ? 15 : 50,
-      badge: formData.mainGoal === "awareness" ? { he: "מומלץ", en: "Key" } : undefined,
+      visible: true,
+      priority: isBeginner ? 55 : formData.mainGoal === "awareness" ? 15 : 50,
+      badge: !isBeginner && formData.mainGoal === "awareness" ? { he: "מומלץ", en: "Key" } : undefined,
+      simplifiedMode: isBeginner,
     },
 
-    // Segment B+C: Copy Lab (hidden for beginners — neurocopywriting requires knowledge)
+    // Copy Lab — visible to all; beginners get 2 basic formulas
     {
       id: "copylab",
       labelKey: "tabCopyLab",
-      visible: !isBeginner,
-      priority: 55,
+      visible: true,
+      priority: isBeginner ? 60 : 55,
+      simplifiedMode: isBeginner,
     },
 
-    // Segment B+C: Neuro-Storytelling (hidden for beginners)
+    // Neuro-Storytelling — visible to all (if data exists); beginners get simplified emotions view
     {
       id: "neurostory",
       labelKey: "tabNeuroStory",
-      visible: !isBeginner && !!result.neuroStorytelling,
-      priority: 60,
+      visible: !!result.neuroStorytelling,
+      priority: isBeginner ? 65 : 60,
+      simplifiedMode: isBeginner,
     },
 
-    // Segment B: Brand DNA (only for personal brands/services, promoted for intermediates)
+    // Brand DNA — only for personal brands/services, visible to all segments
     {
       id: "branddna",
       labelKey: "tabBrandDna",
-      visible: showBrandDna && !isBeginner,
-      priority: showBrandDna && isIntermediate ? 12 : 999,
+      visible: showBrandDna,
+      priority: showBrandDna && isIntermediate ? 12 : isBeginner ? 70 : 999,
       badge: showBrandDna && isIntermediate ? { he: "מומלץ", en: "Recommended" } : undefined,
+      simplifiedMode: isBeginner,
     },
 
-    // Segment C: Monitor (hidden for beginners — requires Meta Ads)
+    // Monitor — visible to all; beginners get guided intro
     {
       id: "monitor",
       labelKey: "tabMonitor",
-      visible: !isBeginner,
-      priority: isAdvanced ? 8 : 80,
+      visible: true,
+      priority: isAdvanced ? 8 : isBeginner ? 75 : 80,
       badge: isAdvanced ? { he: "מומלץ", en: "Key" } : undefined,
+      simplifiedMode: isBeginner,
     },
 
-    // Segment C: Data import/analysis (hidden for beginners)
+    // Data import/analysis — visible to all; critical for all segments
     {
       id: "data",
       labelKey: "tabData",
-      visible: !isBeginner,
-      priority: isAdvanced ? 9 : 85,
-      badge: isAdvanced ? { he: "חדש", en: "New" } : undefined,
+      visible: true,
+      priority: isAdvanced ? 9 : isBeginner ? 50 : 85,
+      badge: isAdvanced ? { he: "חדש", en: "New" } : isBeginner ? { he: "נתונים", en: "Data" } : undefined,
+      simplifiedMode: isBeginner,
+    },
+
+    // Stylome Extractor — personal style fingerprint + system prompt
+    {
+      id: "stylome",
+      labelKey: "tabStylome",
+      visible: true,
+      priority: isBeginner ? 52 : isAdvanced ? 45 : 56,
+      badge: { he: "חדש", en: "New" },
+      simplifiedMode: isBeginner,
     },
   ];
 

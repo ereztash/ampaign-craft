@@ -26,6 +26,7 @@ export type Channel =
   | "email"
   | "tikTok"
   | "linkedIn"
+  | "whatsapp"
   | "other";
 
 export type ExperienceLevel = "beginner" | "intermediate" | "advanced";

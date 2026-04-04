@@ -6,19 +6,22 @@ import MetaConnect from "@/components/MetaConnect";
 import MetaMonitor from "@/components/MetaMonitor";
 import AdaptiveTabNav from "@/components/AdaptiveTabNav";
 import DataAnalysisTab from "@/components/DataAnalysisTab";
+import StylomeExtractor from "@/components/StylomeExtractor";
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult } from "@/types/funnel";
-import { getTabConfig } from "@/lib/adaptiveTabRules";
+import { getTabConfig, TabConfig } from "@/lib/adaptiveTabRules";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
+import { getIsraeliToolsSummary, getToolsForChannel } from "@/lib/toolRecommendations";
+import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Edit, Download, Save, Share2, Plus, AlertTriangle } from "lucide-react";
+import { Edit, Download, Save, Share2, Plus, AlertTriangle, ExternalLink, Info, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 interface ResultsDashboardProps {
@@ -49,6 +52,12 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   // Adaptive tabs
   const tabs = getTabConfig(result, profile);
   const defaultTab = tabs[0]?.id || "strategy";
+  const tabMap = new Map(tabs.map((t) => [t.id, t]));
+  const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
+
+  // Israeli tools & benchmarks
+  const israeliTools = getIsraeliToolsSummary();
+  const benchmarks = getIndustryBenchmarks(result.formData.businessField);
 
   const barData = result.stages.map((stage, i) => ({
     name: stage.name[language],
@@ -203,23 +212,58 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                       <p className="mb-3 text-sm text-muted-foreground">{stage.description[language]}</p>
                       <div className="space-y-2">
                         <div className="text-sm font-semibold text-foreground">{t("recommendedChannels")}:</div>
-                        {stage.channels.map((ch, j) => (
-                          <div key={j} className="rounded-lg bg-muted/50 p-3">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-foreground">{ch.name[language]}</span>
-                              <span className="text-sm text-primary font-semibold">{ch.budgetPercent}%</span>
+                        {stage.channels.map((ch, j) => {
+                          const tools = getToolsForChannel(ch.channel);
+                          return (
+                            <div key={j} className="rounded-lg bg-muted/50 p-3">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-foreground">
+                                  {ch.channel === "whatsapp" && <MessageCircle className="inline h-3.5 w-3.5 mr-1 text-green-500" />}
+                                  {ch.name[language]}
+                                </span>
+                                <span className="text-sm text-primary font-semibold">{ch.budgetPercent}%</span>
+                              </div>
+                              {ch.tips.map((tip, k) => (
+                                <p key={k} className="mt-1 text-xs text-muted-foreground">💡 {tip[language]}</p>
+                              ))}
+                              {tools.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                  {tools.map((tool, ti) => (
+                                    <span key={ti} className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                                      🇮🇱 {tool.tool}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                            {ch.tips.map((tip, k) => (
-                              <p key={k} className="mt-1 text-xs text-muted-foreground">💡 {tip[language]}</p>
-                            ))}
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </CardContent>
                   </Card>
                 );
               })}
             </div>
+
+            {/* Israeli Tools Recommendation Section */}
+            <Card className="mt-6 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  🇮🇱 {t("israeliToolsTitle")}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">{t("israeliToolsSubtitle")}</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {israeliTools.map((tool, i) => (
+                    <div key={i} className="rounded-xl border p-3">
+                      <div className="font-semibold text-foreground">{tool.tool}</div>
+                      <div className="mt-1 text-xs text-muted-foreground">{tool.role[language]}</div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="budget" className="mt-6">
@@ -279,17 +323,42 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                 </div>
               </CardContent>
             </Card>
+
+            {/* Israeli Industry Benchmarks */}
+            {benchmarks.length > 0 && (
+              <Card className="mt-6 border-primary/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    🇮🇱 {t("industryBenchmarkTitle")}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">{t("industryBenchmarkSubtitle")}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {benchmarks.map((bm, i) => (
+                      <div key={i} className="rounded-xl border border-primary/10 bg-primary/5 p-4">
+                        <div className="text-sm font-medium text-foreground">{bm.metric[language]}</div>
+                        <div className="mt-1 text-xl font-bold text-primary">{bm.value}</div>
+                        <div className="mt-1 text-xs text-muted-foreground">{bm.context[language]}</div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="hooks" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t("tabHooks")}</CardTitle>
-                <p className="text-sm text-muted-foreground">{t("hooksSubtitle")}</p>
+                <CardTitle>{isSimplified("hooks") ? t("beginnerHooksTitle") : t("tabHooks")}</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  {isSimplified("hooks") ? t("beginnerHooksSubtitle") : t("hooksSubtitle")}
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {result.hookTips.map((hook, i) => (
+                  {(isSimplified("hooks") ? result.hookTips.slice(0, 3) : result.hookTips).map((hook, i) => (
                     <div key={i} className="rounded-xl border p-4">
                       <div className="mb-2 flex items-center gap-2">
                         <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{i + 1}</span>
@@ -312,12 +381,36 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                     </div>
                   ))}
                 </div>
+                {isSimplified("hooks") && (
+                  <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="copylab" className="mt-6">
-            <CopyLabTab copyLab={result.copyLab} />
+            {isSimplified("copylab") ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("beginnerCopyLabTitle")}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{t("beginnerCopyLabSubtitle")}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {result.copyLab.formulas.slice(0, 2).map((formula, i) => (
+                      <div key={i} className="rounded-xl border p-4">
+                        <div className="font-semibold text-foreground">{formula.name[language]}</div>
+                        <div className="mt-2 rounded-lg bg-muted/50 p-3 font-mono text-sm">{formula.structure[language]}</div>
+                        <div className="mt-2 rounded-lg bg-primary/5 p-3 text-sm italic text-foreground">{formula.example[language]}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <CopyLabTab copyLab={result.copyLab} />
+            )}
           </TabsContent>
 
           <TabsContent value="branddna" className="mt-6">
@@ -326,37 +419,111 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
           {result.neuroStorytelling && (
             <TabsContent value="neurostory" className="mt-6">
-              <NeuroStorytellingTab data={result.neuroStorytelling} />
+              {isSimplified("neurostory") ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("beginnerNeuroTitle")}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{t("beginnerNeuroSubtitle")}</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      {result.neuroStorytelling.vectors.map((v) => (
+                        <div key={v.id} className={`rounded-xl border-2 p-4 text-center ${
+                          v.id === "cortisol" ? "border-destructive/30 bg-destructive/5" :
+                          v.id === "oxytocin" ? "border-primary/30 bg-primary/5" :
+                          "border-accent/30 bg-accent/5"
+                        }`}>
+                          <div className="text-3xl mb-2">{v.emoji}</div>
+                          <div className="font-bold text-foreground">{v.name[language]}</div>
+                          <p className="mt-2 text-sm text-muted-foreground">{v.copyApplication[language]}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <NeuroStorytellingTab data={result.neuroStorytelling} />
+              )}
             </TabsContent>
           )}
 
           <TabsContent value="monitor" className="mt-6">
-            <div className="space-y-6">
-              <MetaConnect
-                connected={!!auth}
-                loading={metaLoading}
-                error={metaError}
-                accounts={accounts}
-                selectedAccountId={selectedAccountId}
-                onConnect={connect}
-                onDisconnect={disconnect}
-                onSelectAccount={(id, name) => {
-                  setSelectedAccountId(id);
-                  setSelectedAccountName(name);
-                }}
-              />
-              {auth && selectedAccountId && (
-                <MetaMonitor
-                  result={result}
-                  accountId={selectedAccountId}
-                  accessToken={auth.accessToken}
+            {isSimplified("monitor") ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("beginnerMonitorTitle")}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{t("beginnerMonitorSubtitle")}</p>
+                </CardHeader>
+                <CardContent>
+                  <MetaConnect
+                    connected={!!auth}
+                    loading={metaLoading}
+                    error={metaError}
+                    accounts={accounts}
+                    selectedAccountId={selectedAccountId}
+                    onConnect={connect}
+                    onDisconnect={disconnect}
+                    onSelectAccount={(id, name) => {
+                      setSelectedAccountId(id);
+                      setSelectedAccountName(name);
+                    }}
+                  />
+                  <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                <MetaConnect
+                  connected={!!auth}
+                  loading={metaLoading}
+                  error={metaError}
+                  accounts={accounts}
+                  selectedAccountId={selectedAccountId}
+                  onConnect={connect}
+                  onDisconnect={disconnect}
+                  onSelectAccount={(id, name) => {
+                    setSelectedAccountId(id);
+                    setSelectedAccountName(name);
+                  }}
                 />
-              )}
-            </div>
+                {auth && selectedAccountId && (
+                  <MetaMonitor
+                    result={result}
+                    accountId={selectedAccountId}
+                    accessToken={auth.accessToken}
+                  />
+                )}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="data" className="mt-6">
             <DataAnalysisTab />
+          </TabsContent>
+
+          <TabsContent value="stylome" className="mt-6">
+            {isSimplified("stylome") ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("beginnerStylomeTitle")}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{t("beginnerStylomeSubtitle")}</p>
+                </CardHeader>
+                <CardContent>
+                  <StylomeExtractor />
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("tabStylome")}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{t("stylomeSubtitle")}</p>
+                </CardHeader>
+                <CardContent>
+                  <StylomeExtractor />
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="tips" className="mt-6">

@@ -128,6 +128,7 @@ export const translations = {
   channelEmail: { he: "אימייל", en: "Email" },
   channelTikTok: { he: "טיקטוק", en: "TikTok" },
   channelLinkedIn: { he: "לינקדאין", en: "LinkedIn" },
+  channelWhatsApp: { he: "וואטסאפ", en: "WhatsApp" },
   channelOther: { he: "אחר", en: "Other" },
 
   // Step 7 - Experience
@@ -253,6 +254,41 @@ export const translations = {
   // Adaptive Tabs
   tabMonitor: { he: "ניטור", en: "Monitor" },
   tabData: { he: "נתונים", en: "Data" },
+
+  // Israeli Tool Recommendations
+  israeliToolsTitle: { he: "כלים ישראליים מומלצים לביצוע", en: "Recommended Israeli Tools for Execution" },
+  israeliToolsSubtitle: {
+    he: "FunnelForge בונה את האסטרטגיה – הכלים האלה מבצעים אותה. כולם ישראליים.",
+    en: "FunnelForge builds the strategy – these tools execute it. All Israeli-made.",
+  },
+  israeliToolWhy: { he: "למה?", en: "Why?" },
+  israeliToolPricing: { he: "תמחור", en: "Pricing" },
+
+  // Israeli Industry Benchmarks
+  industryBenchmarkTitle: { he: "בנצ'מרק ישראלי לפי תעשייה", en: "Israeli Industry Benchmarks" },
+  industryBenchmarkSubtitle: {
+    he: "מדדים ממוצעים לתעשייה שלך בשוק הישראלי",
+    en: "Average metrics for your industry in the Israeli market",
+  },
+  benchmarkAvg: { he: "ממוצע בענף", en: "Industry avg." },
+  benchmarkYourTarget: { he: "היעד שלך", en: "Your target" },
+
+  // Beginner simplified views
+  beginnerHooksTitle: { he: "3 טריגרים פסיכולוגיים שעובדים", en: "3 Psychological Triggers That Work" },
+  beginnerHooksSubtitle: { he: "הנוסחאות הכי פשוטות ללכידת קשב – בלי ז'רגון", en: "The simplest attention-grabbing formulas – no jargon" },
+  beginnerCopyLabTitle: { he: "2 נוסחאות כתיבה קלאסיות", en: "2 Classic Writing Formulas" },
+  beginnerCopyLabSubtitle: { he: "התחל עם הנוסחאות הכי מוכחות – PAS ו-AIDA", en: "Start with the most proven formulas – PAS & AIDA" },
+  beginnerNeuroTitle: { he: "3 רגשות שמניעים החלטות", en: "3 Emotions That Drive Decisions" },
+  beginnerNeuroSubtitle: { he: "מתח, אמון ותגמול – שלושת הכוחות מאחורי כל רכישה", en: "Tension, trust & reward – the three forces behind every purchase" },
+  beginnerMonitorTitle: { he: "ניטור ביצועים", en: "Performance Monitoring" },
+  beginnerMonitorSubtitle: { he: "חבר את חשבון Meta Ads שלך כדי לעקוב אחרי ביצועי הקמפיינים בזמן אמת", en: "Connect your Meta Ads account to track campaign performance in real time" },
+  unlockFullView: { he: "רוצה לראות את הגרסה המלאה? שנה רמת ניסיון ל\"בינוני\" או \"מתקדם\"", en: "Want the full version? Change experience level to \"Intermediate\" or \"Advanced\"" },
+
+  // Stylome Extractor
+  tabStylome: { he: "טביעת סגנון", en: "Stylome" },
+  stylomeSubtitle: { he: "מחלץ טביעת סגנון אישית — הדבק דגימות כתיבה וקבל System Prompt לשכפול הקול שלך", en: "Personal style fingerprint — paste writing samples and get a System Prompt to clone your voice" },
+  beginnerStylomeTitle: { he: "מחלץ טביעת סגנון", en: "Style Fingerprint" },
+  beginnerStylomeSubtitle: { he: "הדבק טקסטים שכתבת (וואטסאפ, אימייל, פוסט) וקבל פרומפט AI שכותב כמוך", en: "Paste texts you've written (WhatsApp, email, post) and get an AI prompt that writes like you" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

@@ -214,6 +214,22 @@ function getChannelsForStage(
         ],
       });
     }
+    // WhatsApp — dominant messaging channel in Israel (99% penetration)
+    if (isB2C || audienceType === "both") {
+      channels.push({
+        channel: "whatsapp",
+        name: { he: "וואטסאפ ביזנס – מעורבות", en: "WhatsApp Business – Engagement" },
+        budgetPercent: 20,
+        kpis: [
+          { he: "שיעור פתיחת הודעות", en: "Message open rate" },
+          { he: "זמן תגובה ממוצע", en: "Average response time" },
+        ],
+        tips: [
+          { he: "השתמש ב-WhatsApp Business API לשליחת עדכונים מותאמים – שיעור פתיחה של 98% לעומת 20% באימייל", en: "Use WhatsApp Business API for personalized updates – 98% open rate vs 20% for email" },
+          { he: "צור רשימות שידור לפי תחום עניין – פילוח מדויק מגביר מעורבות פי 3", en: "Create broadcast lists by interest – precise segmentation triples engagement" },
+        ],
+      });
+    }
   }
 
   // ═══════════════════════════════════════════════
@@ -412,6 +428,20 @@ function getChannelsForStage(
         ],
       });
     }
+    // WhatsApp — retention & re-engagement
+    channels.push({
+      channel: "whatsapp",
+      name: { he: "וואטסאפ – שימור ו-Reactivation", en: "WhatsApp – Retention & Reactivation" },
+      budgetPercent: 15,
+      kpis: [
+        { he: "שיעור תגובה להודעות", en: "Message response rate" },
+        { he: "רכישות חוזרות מ-WhatsApp", en: "Repeat purchases from WhatsApp" },
+      ],
+      tips: [
+        { he: "שלח הודעות מותאמות אישית ללקוחות קיימים – תזכורות, הטבות יום הולדת, ועדכוני מוצר חדש", en: "Send personalized messages to existing customers – reminders, birthday perks, and new product updates" },
+        { he: "צ'אטבוט WhatsApp לשירות לקוחות 24/7 – זמן תגובה מיידי מגביר שביעות רצון ב-73%", en: "WhatsApp chatbot for 24/7 customer service – instant response time boosts satisfaction by 73%" },
+      ],
+    });
   }
 
   // Normalize budget percentages

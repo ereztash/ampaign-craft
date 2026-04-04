@@ -326,6 +326,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
           { key: "email", label: t("channelEmail") },
           { key: "tikTok", label: t("channelTikTok") },
           { key: "linkedIn", label: t("channelLinkedIn") },
+          { key: "whatsapp", label: t("channelWhatsApp") },
           { key: "other", label: t("channelOther") },
         ];
         const toggle = (ch: Channel) => {

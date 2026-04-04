@@ -4,7 +4,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult, SavedPlan, ExperienceLevel } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart } from "lucide-react";
+import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface LandingPageProps {
@@ -206,6 +206,36 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
             </motion.div>
           ))}
         </div>
+
+        {/* Data Intelligence Entry Point */}
+        <motion.div
+          {...(reducedMotion ? {} : {
+            initial: { opacity: 0, y: 20 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { delay: 0.45 },
+          })}
+          className="mt-6"
+        >
+          <button
+            onClick={() => onStartWithSegment ? onStartWithSegment("advanced") : onStart()}
+            className="w-full glass-card rounded-2xl p-6 text-center transition-all hover:shadow-lg border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-r from-primary/5 to-accent/5"
+          >
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <Database className="h-6 w-6 text-primary" />
+              </div>
+              <div className="text-start">
+                <h3 className="text-lg font-bold text-foreground">
+                  {isHe ? "יש לי נתונים לנתח" : "I have data to analyze"}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {isHe ? "ייבא XLSX, נתח מגמות, וקבל תובנות מבוססות היקשי עבר" : "Import XLSX, analyze trends, and get insights based on historical data"}
+                </p>
+              </div>
+            </div>
+          </button>
+        </motion.div>
       </section>
 
       {/* Features */}
