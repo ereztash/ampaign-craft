@@ -9,6 +9,7 @@ import MultiStepForm from "@/components/MultiStepForm";
 import ProcessingScreen from "@/components/ProcessingScreen";
 import ResultsDashboard from "@/components/ResultsDashboard";
 import SavedPlansPage from "@/components/SavedPlansPage";
+import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 type AppState = "landing" | "form" | "processing" | "results" | "savedPlans";
 
@@ -60,6 +61,7 @@ const Index = () => {
         {t("skipToContent")}
       </a>
       <Header onSavedPlans={() => setState("savedPlans")} />
+      <OnboardingOverlay />
       <div id="main-content" ref={mainContentRef} tabIndex={-1} className="outline-none">
       {state === "landing" && (
         <LandingPage onStart={() => setState("form")} onStartWithSegment={handleStartWithSegment} onLoadLastPlan={handleLoadLastPlan} />

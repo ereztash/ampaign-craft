@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { DiagnosticQuestion, BrandDiagnosticResult, ExecutionTemplate, PersonalBrandData } from "@/types/funnel";
+import { getDiagnosticTierColor } from "@/lib/colorSemantics";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Target, TrendingUp, Shield, Sparkles } from "lucide-react";
 
@@ -205,11 +206,9 @@ const BrandDiagnosticTab = ({ personalBrand }: BrandDiagnosticTabProps) => {
     setResult(calculateDiagnosticResult(answers));
   };
 
-  const tierColors: Record<string, string> = {
-    strong: "bg-emerald-500/10 text-emerald-700 border-emerald-200",
-    gaps: "bg-amber-500/10 text-amber-700 border-amber-200",
-    pivot: "bg-orange-500/10 text-orange-700 border-orange-200",
-    restart: "bg-red-500/10 text-red-700 border-red-200",
+  const getTierColorClasses = (tier: string) => {
+    const colors = getDiagnosticTierColor(tier as "strong" | "gaps" | "pivot" | "restart");
+    return `${colors.bg} ${colors.text} ${colors.border}`;
   };
 
   const tierLabels: Record<string, { he: string; en: string }> = {
@@ -227,7 +226,7 @@ const BrandDiagnosticTab = ({ personalBrand }: BrandDiagnosticTabProps) => {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>{language === "he" ? "ציון בריאות מיצוב" : "Positioning Health Score"}</span>
-              <Badge className={`text-base px-4 py-1 ${tierColors[result.tier]}`}>
+              <Badge className={`text-base px-4 py-1 ${getTierColorClasses(result.tier)}`}>
                 {tierLabels[result.tier][language]}
               </Badge>
             </CardTitle>

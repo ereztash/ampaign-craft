@@ -142,17 +142,17 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                     <motion.div
                       key={stage.id}
                       {...stageMotionProps(0.3 + i * 0.1)}
-                      className="relative flex items-center justify-center rounded-lg py-4 text-center text-accent-foreground"
+                      className="relative flex items-center justify-center rounded-lg py-4 text-center text-white shadow-sm"
                       style={{
                         width: `${widthPercent}%`,
-                        background: chartColorPalette[i % chartColorPalette.length],
+                        background: funnelStageColors[stageId]?.gradient || chartColorPalette[i % chartColorPalette.length],
                         minHeight: "56px",
                       }}
                     >
                       <div>
-                        <div className="text-sm font-bold">{stage.name[language]}</div>
-                        <div className="text-xs opacity-80">
-                          {NEURO_LABELS[stageId]?.emoji} {stage.budgetPercent}%
+                        <div className="text-sm font-bold drop-shadow-sm">{stage.name[language]}</div>
+                        <div className="text-xs opacity-90 drop-shadow-sm">
+                          {NEURO_LABELS[stageId]?.emoji} {NEURO_LABELS[stageId]?.vector[language]} · {stage.budgetPercent}%
                         </div>
                       </div>
                     </motion.div>
