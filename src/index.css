@@ -99,6 +99,93 @@
   }
 }
 
+/* ═══════════════════════════════════════════════
+   Adaptive Theming — Business Field Color Variants
+   Colors shift based on data-field attribute set by useAdaptiveTheme
+   ═══════════════════════════════════════════════ */
+
+/* Fashion — rose/pink creative tone */
+:root[data-field="fashion"] {
+  --primary: 340 65% 47%;
+  --accent: 330 60% 55%;
+  --chart-1: 340 65% 47%;
+}
+:root[data-field="fashion"].dark {
+  --primary: 340 55% 60%;
+  --accent: 330 50% 50%;
+}
+
+/* Food — warm appetizing orange */
+:root[data-field="food"] {
+  --primary: 25 85% 50%;
+  --accent: 145 55% 42%;
+  --chart-1: 25 85% 50%;
+}
+:root[data-field="food"].dark {
+  --primary: 25 75% 55%;
+  --accent: 145 45% 40%;
+}
+
+/* Health — calm wellness green */
+:root[data-field="health"] {
+  --primary: 160 50% 40%;
+  --accent: 170 55% 45%;
+  --chart-1: 160 50% 40%;
+}
+:root[data-field="health"].dark {
+  --primary: 160 45% 50%;
+  --accent: 170 45% 42%;
+}
+
+/* Personal Brand — distinctive purple */
+:root[data-field="personalBrand"] {
+  --primary: 270 55% 50%;
+  --accent: 280 50% 55%;
+  --chart-1: 270 55% 50%;
+}
+:root[data-field="personalBrand"].dark {
+  --primary: 270 50% 60%;
+  --accent: 280 45% 50%;
+}
+
+/* Real Estate — premium dark blue */
+:root[data-field="realEstate"] {
+  --primary: 220 60% 30%;
+  --accent: 180 45% 40%;
+  --chart-1: 220 60% 30%;
+}
+:root[data-field="realEstate"].dark {
+  --primary: 220 50% 55%;
+  --accent: 180 40% 45%;
+}
+
+/* Education — accessible light blue */
+:root[data-field="education"] {
+  --primary: 200 65% 50%;
+  --accent: 160 50% 45%;
+  --chart-1: 200 65% 50%;
+}
+:root[data-field="education"].dark {
+  --primary: 200 55% 58%;
+  --accent: 160 45% 42%;
+}
+
+/* Tourism — vibrant teal */
+:root[data-field="tourism"] {
+  --primary: 185 60% 42%;
+  --accent: 165 55% 45%;
+  --chart-1: 185 60% 42%;
+}
+:root[data-field="tourism"].dark {
+  --primary: 185 50% 52%;
+  --accent: 165 45% 42%;
+}
+
+/* B2B audience — professional teal accent */
+:root[data-audience="b2b"] {
+  --accent: 175 45% 38%;
+}
+
 @layer base {
   * {
     @apply border-border;

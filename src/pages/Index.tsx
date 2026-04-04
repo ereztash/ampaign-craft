@@ -10,6 +10,7 @@ import ProcessingScreen from "@/components/ProcessingScreen";
 import ResultsDashboard from "@/components/ResultsDashboard";
 import SavedPlansPage from "@/components/SavedPlansPage";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
+import { useAdaptiveTheme } from "@/hooks/useAdaptiveTheme";
 
 type AppState = "landing" | "form" | "processing" | "results" | "savedPlans";
 
@@ -20,6 +21,7 @@ const Index = () => {
   const { persistFormData, refreshSavedPlanCount, setExperienceLevel } = useUserProfile();
   const { t } = useLanguage();
   const mainContentRef = useRef<HTMLDivElement>(null);
+  useAdaptiveTheme();
 
   // Focus management on state transitions
   useEffect(() => {
