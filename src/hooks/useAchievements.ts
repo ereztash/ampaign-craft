@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 
 export interface Achievement {
@@ -142,7 +142,6 @@ function updateStreak(prev: StreakData): StreakData {
   }
 
   // Check if last active was the previous week
-  const lastDate = new Date();
   const [, lastWeekStr] = prev.lastActiveDate.split("-W");
   const [, currWeekStr] = currentWeek.split("-W");
   const lastWeekNum = parseInt(lastWeekStr);
@@ -225,7 +224,7 @@ export function useAchievements(language: "he" | "en" = "he") {
   useEffect(() => {
     if (streak.currentStreak >= 4) unlock("streak_4");
     if (streak.currentStreak >= 12) unlock("streak_12");
-  }, [streak.currentStreak]);
+  }, [streak.currentStreak, unlock]);
 
   const unlock = useCallback(
     (id: string) => {
@@ -267,7 +266,7 @@ export function useAchievements(language: "he" | "en" = "he") {
   const unlockedCount = achievements.filter((a) => a.unlockedAt).length;
   const totalCount = achievements.length;
 
-  const mastery: MasteryProgress = {
+  const mastery = useMemo<MasteryProgress>(() => ({
     totalFeatures: Object.keys(FEATURE_MAP).length,
     usedFeatures: masteryFeatures.size,
     percentage: Math.round((masteryFeatures.size / Object.keys(FEATURE_MAP).length) * 100),
@@ -276,7 +275,7 @@ export function useAchievements(language: "he" | "en" = "he") {
       used: masteryFeatures.has(key) ? 1 : 0,
       total: 1,
     })),
-  };
+  }), [masteryFeatures]);
 
   return { achievements, unlock, isUnlocked, unlockedCount, totalCount, streak, trackFeature, mastery };
 }

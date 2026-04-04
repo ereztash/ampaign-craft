@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -23,6 +24,13 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
   const { profile } = useUserProfile();
   const reducedMotion = useReducedMotion();
   const { streak, mastery } = useAchievements(language);
+
+  const savedPlans = useMemo<SavedPlan[]>(() => {
+    try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); }
+    catch { return []; }
+  }, [profile.savedPlanCount]);
+
+  const pulse = useMemo(() => generateWeeklyPulse(savedPlans), [savedPlans]);
 
   const features = [
     { icon: Target, title: t("featureAnalyze"), desc: t("featureAnalyzeDesc") },
@@ -137,11 +145,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
               )}
 
               {/* Weekly Pulse Card */}
-              {(() => {
-                const plans: SavedPlan[] = (() => { try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; } })();
-                const pulse = generateWeeklyPulse(plans);
-                if (!pulse) return null;
-                return (
+              {pulse && (
                   <Card className="mx-auto mb-8 max-w-lg border-accent/20 bg-accent/5">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-3">
@@ -170,19 +174,14 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
                       )}
                     </CardContent>
                   </Card>
-                );
-              })()}
+              )}
 
               {/* Marketing Wrapped */}
-              {(() => {
-                const plans: SavedPlan[] = (() => { try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; } })();
-                if (plans.length < 2) return null;
-                return (
-                  <div className="mx-auto mb-8 max-w-lg">
-                    <MarketingWrapped plans={plans} />
-                  </div>
-                );
-              })()}
+              {savedPlans.length >= 2 && (
+                <div className="mx-auto mb-8 max-w-lg">
+                  <MarketingWrapped plans={savedPlans} />
+                </div>
+              )}
 
               <div className="flex flex-wrap justify-center gap-4">
                 <Button

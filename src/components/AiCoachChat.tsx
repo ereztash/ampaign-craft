@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { FunnelResult } from "@/types/funnel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +35,6 @@ const QUICK_PROMPTS = {
 
 const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) => {
   const { language } = useLanguage();
-  const { user } = useAuth();
   const isHe = language === "he";
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");

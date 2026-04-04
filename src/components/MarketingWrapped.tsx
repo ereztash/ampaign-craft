@@ -24,14 +24,6 @@ const MarketingWrapped = ({ plans }: MarketingWrappedProps) => {
   const latestPlan = plans[0];
   const healthScore = calculateHealthScore(latestPlan.result);
 
-  // Most used industry
-  const industryCounts = new Map<string, number>();
-  plans.forEach((p) => {
-    const field = p.result.formData.businessField || "other";
-    industryCounts.set(field, (industryCounts.get(field) || 0) + 1);
-  });
-  const topIndustry = [...industryCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "other";
-
   // Most used hooks
   const hookCounts = new Map<string, number>();
   plans.forEach((p) => {

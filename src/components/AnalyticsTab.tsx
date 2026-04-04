@@ -7,31 +7,25 @@ import { MetaAuthState, MetaAdAccount } from "@/types/meta";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-interface AnalyticsTabProps {
-  auth: MetaAuthState | null;
-  metaLoading: boolean;
-  metaError: string | null;
+export interface MetaConnectionProps {
+  connected: boolean;
+  loading: boolean;
+  error: string | null;
   accounts: MetaAdAccount[];
   selectedAccountId: string | null;
   onConnect: () => void;
   onDisconnect: () => void;
   onSelectAccount: (id: string, name: string) => void;
+}
+
+interface AnalyticsTabProps {
+  meta: MetaConnectionProps;
+  auth: MetaAuthState | null;
   result: FunnelResult;
   isSimplified: boolean;
 }
 
-const AnalyticsTab = ({
-  auth,
-  metaLoading,
-  metaError,
-  accounts,
-  selectedAccountId,
-  onConnect,
-  onDisconnect,
-  onSelectAccount,
-  result,
-  isSimplified,
-}: AnalyticsTabProps) => {
+const AnalyticsTab = ({ meta, auth, result, isSimplified }: AnalyticsTabProps) => {
   const { t } = useLanguage();
 
   return (
@@ -48,32 +42,14 @@ const AnalyticsTab = ({
               <p className="text-sm text-muted-foreground">{t("beginnerMonitorSubtitle")}</p>
             </CardHeader>
             <CardContent>
-              <MetaConnect
-                connected={!!auth}
-                loading={metaLoading}
-                error={metaError}
-                accounts={accounts}
-                selectedAccountId={selectedAccountId}
-                onConnect={onConnect}
-                onDisconnect={onDisconnect}
-                onSelectAccount={onSelectAccount}
-              />
+              <MetaConnect {...meta} />
               <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-4">
-            <MetaConnect
-              connected={!!auth}
-              loading={metaLoading}
-              error={metaError}
-              accounts={accounts}
-              selectedAccountId={selectedAccountId}
-              onConnect={onConnect}
-              onDisconnect={onDisconnect}
-              onSelectAccount={onSelectAccount}
-            />
-            {auth && selectedAccountId && (
+            <MetaConnect {...meta} />
+            {auth && meta.selectedAccountId && (
               <MetaMonitor
                 result={result}
                 accountId={selectedAccountId}

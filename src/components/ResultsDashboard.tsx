@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
 import PlanningTab from "@/components/PlanningTab";
 import ContentTab from "@/components/ContentTab";
@@ -61,35 +61,35 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
 
-  // MOAT features
-  const healthScore = calculateHealthScore(result);
-  const socialProof = getSocialProof(result.formData.businessField || "other");
+  // MOAT features (memoized — only recompute when result changes)
+  const healthScore = useMemo(() => calculateHealthScore(result), [result]);
+  const socialProof = useMemo(() => getSocialProof(result.formData.businessField || "other"), [result.formData.businessField]);
+  const roiEstimate = useMemo(() => calculateRoi(result.formData), [result.formData]);
   const { unlock, trackFeature } = useAchievements(language);
-  const roiEstimate = calculateRoi(result.formData);
 
   // Auto-trigger achievements on mount
   useEffect(() => {
     unlock("first_plan");
     if (language === "he") unlock("hebrew_power");
     if (healthScore.total >= 80) unlock("high_score");
-  }, []);
+  }, [unlock, language, healthScore.total]);
 
   // Track feature usage when switching tabs
   const handleTabChange = (tabId: string) => {
     trackFeature(tabId);
   };
 
-  // Data for planning tab
-  const israeliTools = getIsraeliToolsSummary();
-  const benchmarks = getIndustryBenchmarks(result.formData.businessField);
+  // Data for planning tab (memoized)
+  const israeliTools = useMemo(() => getIsraeliToolsSummary(), []);
+  const benchmarks = useMemo(() => getIndustryBenchmarks(result.formData.businessField), [result.formData.businessField]);
 
-  const barData = result.stages.map((stage, i) => ({
+  const barData = useMemo(() => result.stages.map((stage, i) => ({
     name: stage.name[language],
     budget: stage.budgetPercent,
     fill: chartColorPalette[i % chartColorPalette.length],
-  }));
+  })), [result.stages, language]);
 
-  const pieData = result.stages.flatMap((stage) =>
+  const pieData = useMemo(() => result.stages.flatMap((stage) =>
     stage.channels.map((ch) => ({
       name: ch.name[language],
       value: Math.round((ch.budgetPercent * stage.budgetPercent) / 100),
@@ -99,7 +99,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
     if (existing) existing.value += item.value;
     else acc.push({ ...item });
     return acc;
-  }, []);
+  }, []), [result.stages, language]);
 
   const savePlan = () => {
     const plans = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
@@ -379,17 +379,20 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           {/* Tab 4: Analytics (Monitor + Data) */}
           <TabsContent value="analytics" className="mt-6">
             <AnalyticsTab
-              auth={auth}
-              metaLoading={metaLoading}
-              metaError={metaError}
-              accounts={accounts}
-              selectedAccountId={selectedAccountId}
-              onConnect={connect}
-              onDisconnect={disconnect}
-              onSelectAccount={(id, name) => {
-                setSelectedAccountId(id);
-                setSelectedAccountName(name);
+              meta={{
+                connected: !!auth,
+                loading: metaLoading,
+                error: metaError,
+                accounts,
+                selectedAccountId,
+                onConnect: connect,
+                onDisconnect: disconnect,
+                onSelectAccount: (id, name) => {
+                  setSelectedAccountId(id);
+                  setSelectedAccountName(name);
+                },
               }}
+              auth={auth}
               result={result}
               isSimplified={isSimplified("analytics")}
             />

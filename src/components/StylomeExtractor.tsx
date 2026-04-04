@@ -11,6 +11,31 @@ import { toast } from "sonner";
 
 type WizardStep = "collect" | "analyze" | "profile";
 
+const CONTEXT_LABELS: Record<string, { he: string; en: string }> = {
+  formal: { he: "רשמי (מייל, דוח)", en: "Formal (email, report)" },
+  informal: { he: "לא-רשמי (וואטסאפ, צ'אט)", en: "Informal (WhatsApp, chat)" },
+  marketing: { he: "שיווקי (פוסט, מודעה)", en: "Marketing (post, ad)" },
+  general: { he: "כללי", en: "General" },
+};
+
+const REGISTER_LABELS: Record<string, { he: string; en: string }> = {
+  formal: { he: "רשמי", en: "Formal" },
+  casual: { he: "לא-פורמלי", en: "Casual" },
+  mixed: { he: "מעורב", en: "Mixed" },
+};
+
+const COGNITIVE_LABELS: Record<string, { he: string; en: string }> = {
+  concrete: { he: "קונקרטי", en: "Concrete" },
+  abstract: { he: "מופשט", en: "Abstract" },
+  balanced: { he: "מאוזן", en: "Balanced" },
+};
+
+const EMOTION_LABELS: Record<string, { he: string; en: string }> = {
+  low: { he: "נמוכה", en: "Low" },
+  medium: { he: "בינונית", en: "Medium" },
+  high: { he: "גבוהה", en: "High" },
+};
+
 const StylomeExtractor = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
@@ -64,31 +89,6 @@ const StylomeExtractor = () => {
   };
 
   const totalWords = samples.reduce((sum, s) => sum + s.wordCount, 0);
-
-  const contextLabels: Record<string, { he: string; en: string }> = {
-    formal: { he: "רשמי (מייל, דוח)", en: "Formal (email, report)" },
-    informal: { he: "לא-רשמי (וואטסאפ, צ'אט)", en: "Informal (WhatsApp, chat)" },
-    marketing: { he: "שיווקי (פוסט, מודעה)", en: "Marketing (post, ad)" },
-    general: { he: "כללי", en: "General" },
-  };
-
-  const registerLabels: Record<string, { he: string; en: string }> = {
-    formal: { he: "רשמי", en: "Formal" },
-    casual: { he: "לא-פורמלי", en: "Casual" },
-    mixed: { he: "מעורב", en: "Mixed" },
-  };
-
-  const cognitiveLabels: Record<string, { he: string; en: string }> = {
-    concrete: { he: "קונקרטי", en: "Concrete" },
-    abstract: { he: "מופשט", en: "Abstract" },
-    balanced: { he: "מאוזן", en: "Balanced" },
-  };
-
-  const emotionLabels: Record<string, { he: string; en: string }> = {
-    low: { he: "נמוכה", en: "Low" },
-    medium: { he: "בינונית", en: "Medium" },
-    high: { he: "גבוהה", en: "High" },
-  };
 
   return (
     <div className="space-y-6">
@@ -175,7 +175,7 @@ const StylomeExtractor = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(contextLabels).map(([key, label]) => (
+                    {Object.entries(CONTEXT_LABELS).map(([key, label]) => (
                       <SelectItem key={key} value={key} className="text-xs">
                         {label[language]}
                       </SelectItem>
@@ -209,7 +209,7 @@ const StylomeExtractor = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <Badge variant="outline" className="text-[10px]">
-                          {contextLabels[sample.context][language]}
+                          {CONTEXT_LABELS[sample.context][language]}
                         </Badge>
                         <span className="text-[10px] text-muted-foreground">
                           {sample.wordCount} {isHe ? "מילים" : "words"}
@@ -294,15 +294,15 @@ const StylomeExtractor = () => {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl bg-muted/50 p-3">
                   <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "רגיסטר" : "Register"}</div>
-                  <Badge>{registerLabels[profile.style.register][language]}</Badge>
+                  <Badge>{REGISTER_LABELS[profile.style.register][language]}</Badge>
                 </div>
                 <div className="rounded-xl bg-muted/50 p-3">
                   <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "סגנון קוגניטיבי" : "Cognitive Style"}</div>
-                  <Badge>{cognitiveLabels[profile.style.cognitiveStyle][language]}</Badge>
+                  <Badge>{COGNITIVE_LABELS[profile.style.cognitiveStyle][language]}</Badge>
                 </div>
                 <div className="rounded-xl bg-muted/50 p-3">
                   <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "עוצמה רגשית" : "Emotional Intensity"}</div>
-                  <Badge>{emotionLabels[profile.style.emotionalIntensity][language]}</Badge>
+                  <Badge>{EMOTION_LABELS[profile.style.emotionalIntensity][language]}</Badge>
                 </div>
                 <div className="rounded-xl bg-muted/50 p-3">
                   <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "הומור" : "Humor"}</div>
