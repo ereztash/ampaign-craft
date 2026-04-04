@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { FormData, initialFormData, Channel } from "@/types/funnel";
+import { getVisibleSteps, canProceed, shouldShowAgeRange, shouldShowAveragePrice } from "@/lib/adaptiveFormRules";
+import { getProgressColor } from "@/lib/colorSemantics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,42 +24,78 @@ interface MultiStepFormProps {
   onBack: () => void;
 }
 
-const TOTAL_STEPS = 7;
-
 const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
   const { t, language, isRTL } = useLanguage();
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const { profile, updateFormData } = useUserProfile();
+  const reducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
+  const [stepIndex, setStepIndex] = useState(0);
+  const [formData, setFormData] = useState<FormData>(() => {
+    // Pre-fill from last form data if returning user
+    if (profile.isReturningUser && profile.lastFormData) {
+      return { ...profile.lastFormData };
+    }
+    // Auto-set b2c for personalBrand
+    return initialFormData;
+  });
   const [direction, setDirection] = useState(1);
+  const [showPrefill, setShowPrefill] = useState(profile.isReturningUser && !!profile.lastFormData);
 
-  const update = (partial: Partial<FormData>) =>
-    setFormData((prev) => ({ ...prev, ...partial }));
+  const update = (partial: Partial<FormData>) => {
+    const newData = { ...formData, ...partial };
+    setFormData(newData);
+    updateFormData(newData);
 
-  const next = () => { setDirection(1); setStep((s) => Math.min(s + 1, TOTAL_STEPS)); };
-  const prev = () => { setDirection(-1); setStep((s) => Math.max(s - 1, 1)); };
-
-  const canNext = (): boolean => {
-    switch (step) {
-      case 1: return formData.businessField !== "";
-      case 2: return formData.audienceType !== "";
-      case 3: return formData.productDescription !== "" && formData.salesModel !== "";
-      case 4: return formData.budgetRange !== "";
-      case 5: return formData.mainGoal !== "";
-      case 6: return true; // optional
-      case 7: return formData.experienceLevel !== "";
-      default: return false;
+    // Auto-set audience type for personal brand
+    if (partial.businessField === "personalBrand" && newData.audienceType === "b2b") {
+      setFormData((prev) => ({ ...prev, ...partial, audienceType: "b2c" }));
     }
   };
 
-  const handleSubmit = () => {
-    if (canNext()) onComplete(formData);
+  // Dynamic steps based on current form data
+  const visibleSteps = useMemo(() => getVisibleSteps(formData), [
+    formData.businessField,
+    formData.budgetRange,
+    formData.experienceLevel,
+    formData.audienceType,
+  ]);
+
+  const totalSteps = visibleSteps.length;
+  const currentStep = visibleSteps[stepIndex];
+  const progressPercent = ((stepIndex + 1) / totalSteps) * 100;
+  const progressColor = getProgressColor(stepIndex + 1, totalSteps);
+
+  const next = () => {
+    setDirection(1);
+    setStepIndex((s) => Math.min(s + 1, totalSteps - 1));
+  };
+  const prev = () => {
+    setDirection(-1);
+    setStepIndex((s) => Math.max(s - 1, 0));
   };
 
-  const variants = {
-    enter: (d: number) => ({ x: d > 0 ? (isRTL ? -200 : 200) : (isRTL ? 200 : -200), opacity: 0 }),
-    center: { x: 0, opacity: 1 },
-    exit: (d: number) => ({ x: d > 0 ? (isRTL ? 200 : -200) : (isRTL ? -200 : 200), opacity: 0 }),
+  const isLastStep = stepIndex === totalSteps - 1;
+  const canGoNext = currentStep ? canProceed(currentStep.id, formData) : false;
+
+  const handleSubmit = () => {
+    if (canGoNext) onComplete(formData);
   };
+
+  const handlePrefill = () => {
+    if (profile.lastFormData) {
+      setFormData({ ...profile.lastFormData });
+      updateFormData(profile.lastFormData);
+    }
+    setShowPrefill(false);
+  };
+
+  const variants = reducedMotion
+    ? { enter: {}, center: {}, exit: {} }
+    : {
+        enter: (d: number) => ({ x: d > 0 ? (isRTL ? -200 : 200) : (isRTL ? 200 : -200), opacity: 0 }),
+        center: { x: 0, opacity: 1 },
+        exit: (d: number) => ({ x: d > 0 ? (isRTL ? 200 : -200) : (isRTL ? -200 : 200), opacity: 0 }),
+      };
 
   const OptionCard = ({
     selected, onClick, icon, label, description,
@@ -84,8 +125,10 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
   );
 
   const renderStep = () => {
-    switch (step) {
-      case 1: {
+    if (!currentStep) return null;
+
+    switch (currentStep.id) {
+      case "businessField": {
         const fields = [
           { key: "fashion", icon: <ShoppingBag className="h-5 w-5" /> },
           { key: "tech", icon: <Monitor className="h-5 w-5" /> },
@@ -104,7 +147,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
           realEstate: t("fieldRealEstate"), tourism: t("fieldTourism"), personalBrand: t("fieldPersonalBrand"), other: t("fieldOther"),
         };
         return (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={`grid gap-3 ${isMobile ? "grid-cols-1" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
             {fields.map((f) => (
               <OptionCard
                 key={f.key}
@@ -118,12 +161,32 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         );
       }
 
-      case 2: {
+      case "experienceLevel":
+        return (
+          <div className="grid gap-4">
+            {([
+              { key: "beginner" as const, label: t("expBeginner"), desc: t("expBeginnerDesc") },
+              { key: "intermediate" as const, label: t("expIntermediate"), desc: t("expIntermediateDesc") },
+              { key: "advanced" as const, label: t("expAdvanced"), desc: t("expAdvancedDesc") },
+            ]).map((e) => (
+              <OptionCard
+                key={e.key}
+                selected={formData.experienceLevel === e.key}
+                onClick={() => update({ experienceLevel: e.key })}
+                label={e.label}
+                description={e.desc}
+              />
+            ))}
+          </div>
+        );
+
+      case "audience": {
         const types = [
           { key: "b2c" as const, label: t("b2c"), icon: <Users className="h-5 w-5" /> },
           { key: "b2b" as const, label: t("b2b"), icon: <Building2 className="h-5 w-5" /> },
           { key: "both" as const, label: t("both"), icon: <UsersRound className="h-5 w-5" /> },
         ];
+        const showAge = shouldShowAgeRange(formData);
         return (
           <div className="space-y-6">
             <div className="grid gap-3 sm:grid-cols-3">
@@ -137,24 +200,26 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
                 />
               ))}
             </div>
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-foreground">{t("ageRange")}: {formData.ageRange[0]} – {formData.ageRange[1]}</label>
-              <div className="flex items-center gap-4">
-                <Input
-                  type="number" min={13} max={80}
-                  value={formData.ageRange[0]}
-                  onChange={(e) => update({ ageRange: [Number(e.target.value), formData.ageRange[1]] })}
-                  className="w-24"
-                />
-                <span className="text-muted-foreground">–</span>
-                <Input
-                  type="number" min={13} max={80}
-                  value={formData.ageRange[1]}
-                  onChange={(e) => update({ ageRange: [formData.ageRange[0], Number(e.target.value)] })}
-                  className="w-24"
-                />
+            {showAge && (
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-foreground">{t("ageRange")}: {formData.ageRange[0]} – {formData.ageRange[1]}</label>
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="number" min={13} max={80}
+                    value={formData.ageRange[0]}
+                    onChange={(e) => update({ ageRange: [Number(e.target.value), formData.ageRange[1]] })}
+                    className="w-24"
+                  />
+                  <span className="text-muted-foreground">–</span>
+                  <Input
+                    type="number" min={13} max={80}
+                    value={formData.ageRange[1]}
+                    onChange={(e) => update({ ageRange: [formData.ageRange[0], Number(e.target.value)] })}
+                    className="w-24"
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">{t("interests")}</label>
               <Input
@@ -167,7 +232,8 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         );
       }
 
-      case 3:
+      case "product": {
+        const showPrice = shouldShowAveragePrice(formData);
         return (
           <div className="space-y-6">
             <div className="space-y-2">
@@ -178,15 +244,17 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
                 onChange={(e) => update({ productDescription: e.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">{t("averagePrice")}</label>
-              <Input
-                type="number" min={0}
-                value={formData.averagePrice || ""}
-                onChange={(e) => update({ averagePrice: Number(e.target.value) })}
-                placeholder="₪"
-              />
-            </div>
+            {showPrice && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">{t("averagePrice")}</label>
+                <Input
+                  type="number" min={0}
+                  value={formData.averagePrice || ""}
+                  onChange={(e) => update({ averagePrice: Number(e.target.value) })}
+                  placeholder="₪"
+                />
+              </div>
+            )}
             <div className="space-y-3">
               <label className="text-sm font-medium text-foreground">{t("salesModel")}</label>
               <div className="grid gap-3 sm:grid-cols-3">
@@ -206,8 +274,9 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
             </div>
           </div>
         );
+      }
 
-      case 4:
+      case "budget":
         return (
           <div className="grid gap-3 sm:grid-cols-2">
             {([
@@ -226,7 +295,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
           </div>
         );
 
-      case 5: {
+      case "goal": {
         const goals = [
           { key: "awareness" as const, label: t("goalAwareness"), icon: <Megaphone className="h-5 w-5" /> },
           { key: "leads" as const, label: t("goalLeads"), icon: <UserPlus className="h-5 w-5" /> },
@@ -248,7 +317,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         );
       }
 
-      case 6: {
+      case "channels": {
         const channelList: { key: Channel; label: string }[] = [
           { key: "facebook", label: t("channelFacebook") },
           { key: "instagram", label: t("channelInstagram") },
@@ -287,63 +356,70 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         );
       }
 
-      case 7:
-        return (
-          <div className="grid gap-4">
-            {([
-              { key: "beginner" as const, label: t("expBeginner"), desc: t("expBeginnerDesc") },
-              { key: "intermediate" as const, label: t("expIntermediate"), desc: t("expIntermediateDesc") },
-              { key: "advanced" as const, label: t("expAdvanced"), desc: t("expAdvancedDesc") },
-            ]).map((e) => (
-              <OptionCard
-                key={e.key}
-                selected={formData.experienceLevel === e.key}
-                onClick={() => update({ experienceLevel: e.key })}
-                label={e.label}
-                description={e.desc}
-              />
-            ))}
-          </div>
-        );
-
-      default: return null;
+      default:
+        return null;
     }
   };
 
-  const stepTitles: Record<number, { title: string; subtitle: string }> = {
-    1: { title: t("step1Title"), subtitle: t("step1Subtitle") },
-    2: { title: t("step2Title"), subtitle: t("step2Subtitle") },
-    3: { title: t("step3Title"), subtitle: t("step3Subtitle") },
-    4: { title: t("step4Title"), subtitle: t("step4Subtitle") },
-    5: { title: t("step5Title"), subtitle: t("step5Subtitle") },
-    6: { title: t("step6Title"), subtitle: t("step6Subtitle") },
-    7: { title: t("step7Title"), subtitle: t("step7Subtitle") },
+  // Step titles mapped by step ID
+  const stepTitles: Record<string, { title: string; subtitle: string }> = {
+    businessField: { title: t("step1Title"), subtitle: t("step1Subtitle") },
+    experienceLevel: { title: t("step7Title"), subtitle: t("step7Subtitle") },
+    audience: { title: t("step2Title"), subtitle: t("step2Subtitle") },
+    product: { title: t("step3Title"), subtitle: t("step3Subtitle") },
+    budget: { title: t("step4Title"), subtitle: t("step4Subtitle") },
+    goal: { title: t("step5Title"), subtitle: t("step5Subtitle") },
+    channels: { title: t("step6Title"), subtitle: t("step6Subtitle") },
   };
 
   return (
     <div className="min-h-screen px-4 pt-24 pb-12">
       <div className="mx-auto max-w-2xl">
-        {/* Progress */}
+        {/* Returning user pre-fill banner */}
+        {showPrefill && (
+          <div className="mb-6 flex items-center justify-between rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <span className="text-sm font-medium text-foreground">
+              {language === "he" ? "ברוך שובך! להשתמש בתשובות הקודמות?" : "Welcome back! Use your previous answers?"}
+            </span>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => setShowPrefill(false)}>
+                {language === "he" ? "לא" : "No"}
+              </Button>
+              <Button size="sm" onClick={handlePrefill}>
+                {language === "he" ? "כן" : "Yes"}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Progress with neuro-spectrum color */}
         <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
-          <span>{t("step")} {step} {t("of")} {TOTAL_STEPS}</span>
-          <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
+          <span>{t("step")} {stepIndex + 1} {t("of")} {totalSteps}</span>
+          <span>{Math.round(progressPercent)}%</span>
         </div>
-        <Progress value={(step / TOTAL_STEPS) * 100} className="mb-8 h-2" />
+        <div className="mb-8 h-2 overflow-hidden rounded-full bg-muted">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
 
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
-            key={step}
+            key={currentStep?.id}
             custom={direction}
             variants={variants}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.3, ease: "easeInOut" }}
           >
             <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
-              {stepTitles[step]?.title}
+              {currentStep ? stepTitles[currentStep.id]?.title : ""}
             </h2>
-            <p className="mb-8 text-muted-foreground">{stepTitles[step]?.subtitle}</p>
+            <p className="mb-8 text-muted-foreground">
+              {currentStep ? stepTitles[currentStep.id]?.subtitle : ""}
+            </p>
             {renderStep()}
           </motion.div>
         </AnimatePresence>
@@ -352,26 +428,26 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         <div className="mt-10 flex items-center justify-between">
           <Button
             variant="outline"
-            onClick={step === 1 ? onBack : prev}
+            onClick={stepIndex === 0 ? onBack : prev}
             className="gap-2"
           >
             {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            {step === 1 ? t("back") : t("back")}
+            {t("back")}
           </Button>
 
           <div className="flex gap-3">
-            {step === 6 && (
+            {currentStep?.skippable && (
               <Button variant="ghost" onClick={next}>
                 {t("skip")}
               </Button>
             )}
-            {step < TOTAL_STEPS ? (
-              <Button onClick={next} disabled={!canNext()} className="gap-2">
+            {!isLastStep ? (
+              <Button onClick={next} disabled={!canGoNext} className="gap-2">
                 {t("next")}
                 {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={!canNext()} className="gap-2 funnel-gradient border-0 text-accent-foreground">
+              <Button onClick={handleSubmit} disabled={!canGoNext} className="gap-2 funnel-gradient border-0 text-accent-foreground">
                 <Sparkles className="h-4 w-4" />
                 {t("generateFunnel")}
               </Button>

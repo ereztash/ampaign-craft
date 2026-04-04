@@ -4,12 +4,18 @@ import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
 import NeuroStorytellingTab from "@/components/NeuroStorytellingTab";
 import MetaConnect from "@/components/MetaConnect";
 import MetaMonitor from "@/components/MetaMonitor";
+import AdaptiveTabNav from "@/components/AdaptiveTabNav";
+import DataAnalysisTab from "@/components/DataAnalysisTab";
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult } from "@/types/funnel";
+import { getTabConfig } from "@/lib/adaptiveTabRules";
+import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Edit, Download, Save, Share2, Plus, AlertTriangle } from "lucide-react";
@@ -21,26 +27,25 @@ interface ResultsDashboardProps {
   onNewPlan: () => void;
 }
 
-const COLORS = [
-  "hsl(213, 56%, 24%)",
-  "hsl(152, 60%, 45%)",
-  "hsl(32, 95%, 55%)",
-  "hsl(280, 60%, 55%)",
-  "hsl(0, 84%, 60%)",
-];
+const STAGE_IDS = ["awareness", "engagement", "leads", "conversion", "retention"];
 
 const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
+  const { profile } = useUserProfile();
+  const reducedMotion = useReducedMotion();
   const isHe = language === "he";
-  const showBrandDna = result.formData.businessField === "personalBrand" || result.formData.businessField === "services";
   const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect } = useMetaAuth();
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
 
+  // Adaptive tabs
+  const tabs = getTabConfig(result, profile);
+  const defaultTab = tabs[0]?.id || "strategy";
+
   const barData = result.stages.map((stage, i) => ({
     name: stage.name[language],
     budget: stage.budgetPercent,
-    fill: COLORS[i % COLORS.length],
+    fill: chartColorPalette[i % chartColorPalette.length],
   }));
 
   const pieData = result.stages.flatMap((stage) =>
@@ -85,15 +90,20 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
     }
   };
 
+  const motionProps = reducedMotion
+    ? { initial: undefined, animate: undefined, transition: { duration: 0 } }
+    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
+
+  const stageMotionProps = (delay: number) =>
+    reducedMotion
+      ? {}
+      : { initial: { scaleX: 0 }, animate: { scaleX: 1 }, transition: { delay } };
+
   return (
     <div className="min-h-screen px-4 pt-24 pb-12">
       <div className="mx-auto max-w-5xl" id="results-content">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8 text-center"
-        >
+        <motion.div {...motionProps} className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-extrabold text-foreground sm:text-4xl">
             {t("resultsTitle")}
           </h1>
@@ -107,11 +117,10 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           </div>
         </motion.div>
 
-        {/* Funnel Visualization */}
+        {/* Funnel Visualization with neuro-vector colors */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          {...motionProps}
+          transition={reducedMotion ? { duration: 0 } : { delay: 0.2 }}
           className="mb-8"
         >
           <Card>
@@ -119,16 +128,16 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               <div className="flex flex-col items-center gap-2">
                 {result.stages.map((stage, i) => {
                   const widthPercent = 100 - i * 15;
+                  const stageId = STAGE_IDS[i] || "engagement";
+                  const stageColor = funnelStageColors[stageId];
                   return (
                     <motion.div
                       key={stage.id}
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ delay: 0.3 + i * 0.1 }}
+                      {...stageMotionProps(0.3 + i * 0.1)}
                       className="relative flex items-center justify-center rounded-lg py-4 text-center text-accent-foreground"
                       style={{
                         width: `${widthPercent}%`,
-                        background: COLORS[i % COLORS.length],
+                        background: chartColorPalette[i % chartColorPalette.length],
                         minHeight: "56px",
                       }}
                     >
@@ -144,53 +153,48 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           </Card>
         </motion.div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="strategy" className="mb-8">
-          <TabsList className={`w-full grid ${showBrandDna ? "grid-cols-9" : "grid-cols-8"}`}>
-            <TabsTrigger value="strategy">{t("tabStrategy")}</TabsTrigger>
-            <TabsTrigger value="budget">{t("tabBudget")}</TabsTrigger>
-            <TabsTrigger value="kpis">{t("tabKpis")}</TabsTrigger>
-            <TabsTrigger value="hooks">{t("tabHooks")}</TabsTrigger>
-            <TabsTrigger value="copylab">{t("tabCopyLab")}</TabsTrigger>
-            <TabsTrigger value="neurostory">{t("tabNeuroStory")}</TabsTrigger>
-            {showBrandDna && <TabsTrigger value="branddna">{t("tabBrandDna")}</TabsTrigger>}
-            <TabsTrigger value="tips">{t("tabTips")}</TabsTrigger>
-            <TabsTrigger value="monitor" className="gap-1.5">
-              📊 {isHe ? "ניטור" : "Monitor"}
-            </TabsTrigger>
-          </TabsList>
+        {/* Adaptive Tabs */}
+        <Tabs defaultValue={defaultTab} className="mb-8">
+          <AdaptiveTabNav tabs={tabs} />
 
           <TabsContent value="strategy" className="mt-6">
             <div className="grid gap-4 md:grid-cols-2">
-              {result.stages.map((stage, i) => (
-                <Card key={stage.id}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground" style={{ background: COLORS[i] }}>
-                        {i + 1}
-                      </div>
-                      <CardTitle className="text-lg">{stage.name[language]}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="mb-3 text-sm text-muted-foreground">{stage.description[language]}</p>
-                    <div className="space-y-2">
-                      <div className="text-sm font-semibold text-foreground">{t("recommendedChannels")}:</div>
-                      {stage.channels.map((ch, j) => (
-                        <div key={j} className="rounded-lg bg-muted/50 p-3">
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-foreground">{ch.name[language]}</span>
-                            <span className="text-sm text-primary font-semibold">{ch.budgetPercent}%</span>
-                          </div>
-                          {ch.tips.map((tip, k) => (
-                            <p key={k} className="mt-1 text-xs text-muted-foreground">💡 {tip[language]}</p>
-                          ))}
+              {result.stages.map((stage, i) => {
+                const stageId = STAGE_IDS[i] || "engagement";
+                const colors = funnelStageColors[stageId];
+                return (
+                  <Card key={stage.id} className={`border-l-4 ${colors?.border || ""}`}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground"
+                          style={{ background: chartColorPalette[i] }}
+                        >
+                          {i + 1}
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        <CardTitle className="text-lg">{stage.name[language]}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="mb-3 text-sm text-muted-foreground">{stage.description[language]}</p>
+                      <div className="space-y-2">
+                        <div className="text-sm font-semibold text-foreground">{t("recommendedChannels")}:</div>
+                        {stage.channels.map((ch, j) => (
+                          <div key={j} className="rounded-lg bg-muted/50 p-3">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-foreground">{ch.name[language]}</span>
+                              <span className="text-sm text-primary font-semibold">{ch.budgetPercent}%</span>
+                            </div>
+                            {ch.tips.map((tip, k) => (
+                              <p key={k} className="mt-1 text-xs text-muted-foreground">💡 {tip[language]}</p>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
 
@@ -198,7 +202,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             <div className="grid gap-6 md:grid-cols-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("budgetAllocation")} ({language === "he" ? "לפי שלב" : "by stage"})</CardTitle>
+                  <CardTitle>{t("budgetAllocation")} ({isHe ? "לפי שלב" : "by stage"})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -217,14 +221,14 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("budgetAllocation")} ({language === "he" ? "לפי ערוץ" : "by channel"})</CardTitle>
+                  <CardTitle>{t("budgetAllocation")} ({isHe ? "לפי ערוץ" : "by channel"})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, value }) => `${name} ${value}%`}>
                         {pieData.map((_, i) => (
-                          <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                          <Cell key={i} fill={chartColorPalette[i % chartColorPalette.length]} />
                         ))}
                       </Pie>
                       <Tooltip formatter={(value: number) => `${value}%`} />
@@ -292,11 +296,9 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             <CopyLabTab copyLab={result.copyLab} />
           </TabsContent>
 
-          {showBrandDna && (
-            <TabsContent value="branddna" className="mt-6">
-              <BrandDiagnosticTab personalBrand={result.personalBrand} />
-            </TabsContent>
-          )}
+          <TabsContent value="branddna" className="mt-6">
+            <BrandDiagnosticTab personalBrand={result.personalBrand} />
+          </TabsContent>
 
           {result.neuroStorytelling && (
             <TabsContent value="neurostory" className="mt-6">
@@ -327,6 +329,10 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                 />
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="data" className="mt-6">
+            <DataAnalysisTab />
           </TabsContent>
 
           <TabsContent value="tips" className="mt-6">

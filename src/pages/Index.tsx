@@ -1,6 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { FormData, FunnelResult } from "@/types/funnel";
 import { generateFunnel } from "@/engine/funnelEngine";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import Header from "@/components/Header";
 import LandingPage from "@/components/LandingPage";
 import MultiStepForm from "@/components/MultiStepForm";
@@ -14,13 +16,24 @@ const Index = () => {
   const [state, setState] = useState<AppState>("landing");
   const [result, setResult] = useState<FunnelResult | null>(null);
   const [formDataCache, setFormDataCache] = useState<FormData | null>(null);
+  const { persistFormData, refreshSavedPlanCount } = useUserProfile();
+  const { t } = useLanguage();
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  // Focus management on state transitions
+  useEffect(() => {
+    if (state === "results" && mainContentRef.current) {
+      mainContentRef.current.focus();
+    }
+  }, [state]);
 
   const handleFormComplete = useCallback((data: FormData) => {
     setFormDataCache(data);
+    persistFormData(data);
     const funnelResult = generateFunnel(data);
     setResult(funnelResult);
     setState("processing");
-  }, []);
+  }, [persistFormData]);
 
   const handleProcessingComplete = useCallback(() => {
     setState("results");
@@ -31,11 +44,20 @@ const Index = () => {
     setState("results");
   }, []);
 
+  const handleLoadLastPlan = useCallback((loadedResult: FunnelResult) => {
+    setResult(loadedResult);
+    setState("results");
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
+      <a href="#main-content" className="skip-to-content">
+        {t("skipToContent")}
+      </a>
       <Header onSavedPlans={() => setState("savedPlans")} />
+      <div id="main-content" ref={mainContentRef} tabIndex={-1} className="outline-none">
       {state === "landing" && (
-        <LandingPage onStart={() => setState("form")} />
+        <LandingPage onStart={() => setState("form")} onLoadLastPlan={handleLoadLastPlan} />
       )}
       {state === "form" && (
         <MultiStepForm
@@ -44,7 +66,7 @@ const Index = () => {
         />
       )}
       {state === "processing" && (
-        <ProcessingScreen onComplete={handleProcessingComplete} />
+        <ProcessingScreen onComplete={handleProcessingComplete} formData={formDataCache || undefined} />
       )}
       {state === "results" && result && (
         <ResultsDashboard
@@ -59,6 +81,7 @@ const Index = () => {
           onLoadPlan={handleLoadPlan}
         />
       )}
+      </div>
     </div>
   );
 };

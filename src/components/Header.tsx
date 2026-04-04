@@ -1,6 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Globe, BookMarked } from "lucide-react";
+import { Globe, BookMarked, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface HeaderProps {
   onSavedPlans?: () => void;
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 const Header = ({ onSavedPlans }: HeaderProps) => {
   const { language, setLanguage, t } = useLanguage();
+  const { isDark, toggle: toggleDarkMode } = useDarkMode();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-card">
@@ -30,6 +32,15 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
               <span className="hidden sm:inline">{t("savedPlans")}</span>
             </Button>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleDarkMode}
+            className="gap-2"
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
           <Button
             variant="outline"
             size="sm"

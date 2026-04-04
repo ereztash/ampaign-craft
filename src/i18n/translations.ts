@@ -246,6 +246,13 @@ export const translations = {
   comparePlans: { he: "השווה תוכניות", en: "Compare Plans" },
   copyTemplate: { he: "העתק תבנית", en: "Copy Template" },
   templateCopied: { he: "התבנית הועתקה!", en: "Template copied!" },
+
+  // Accessibility
+  skipToContent: { he: "דלג לתוכן", en: "Skip to content" },
+
+  // Adaptive Tabs
+  tabMonitor: { he: "ניטור", en: "Monitor" },
+  tabData: { he: "נתונים", en: "Data" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
