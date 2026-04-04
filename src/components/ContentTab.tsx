@@ -1,6 +1,7 @@
 import CopyLabTab from "@/components/CopyLabTab";
 import NeuroStorytellingTab from "@/components/NeuroStorytellingTab";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { neuroVectorColors } from "@/lib/colorSemantics";
 import { FunnelResult } from "@/types/funnel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -108,17 +109,16 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 sm:grid-cols-3">
-                  {result.neuroStorytelling.vectors.map((v) => (
-                    <div key={v.id} className={`rounded-xl border-2 p-4 text-center ${
-                      v.id === "cortisol" ? "border-destructive/30 bg-destructive/5" :
-                      v.id === "oxytocin" ? "border-primary/30 bg-primary/5" :
-                      "border-accent/30 bg-accent/5"
-                    }`}>
+                  {result.neuroStorytelling.vectors.map((v) => {
+                    const colors = neuroVectorColors[v.id as keyof typeof neuroVectorColors];
+                    return (
+                    <div key={v.id} className={`rounded-xl border-2 p-4 text-center ${colors?.border || ""} ${colors?.bg || ""}`}>
                       <div className="text-3xl mb-2">{v.emoji}</div>
                       <div className="font-bold text-foreground">{v.name[language]}</div>
                       <p className="mt-2 text-sm text-muted-foreground">{v.copyApplication[language]}</p>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
               </CardContent>

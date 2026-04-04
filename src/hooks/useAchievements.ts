@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
+import { safeParseJson, getWeekId } from "@/lib/utils";
 
 export interface Achievement {
   id: string;
@@ -83,15 +84,11 @@ const ACHIEVEMENT_DEFS: Omit<Achievement, "unlockedAt">[] = [
 ];
 
 function loadAchievements(): Achievement[] {
-  try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    return ACHIEVEMENT_DEFS.map((def) => ({
-      ...def,
-      unlockedAt: stored[def.id] || null,
-    }));
-  } catch {
-    return ACHIEVEMENT_DEFS.map((def) => ({ ...def, unlockedAt: null }));
-  }
+  const stored = safeParseJson<Record<string, string>>(STORAGE_KEY, {});
+  return ACHIEVEMENT_DEFS.map((def) => ({
+    ...def,
+    unlockedAt: stored[def.id] || null,
+  }));
 }
 
 function saveUnlock(id: string) {
@@ -104,29 +101,12 @@ function saveUnlock(id: string) {
   }
 }
 
-// --- Streak Logic ---
-
 function loadStreak(): StreakData {
-  try {
-    const raw = localStorage.getItem(STREAK_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return { currentStreak: 0, longestStreak: 0, lastActiveDate: null };
+  return safeParseJson<StreakData>(STREAK_KEY, { currentStreak: 0, longestStreak: 0, lastActiveDate: null });
 }
 
 function saveStreak(data: StreakData) {
   localStorage.setItem(STREAK_KEY, JSON.stringify(data));
-}
-
-function getWeekId(date: Date): string {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  // ISO week: Monday-based
-  const dayNum = d.getDay() || 7;
-  d.setDate(d.getDate() + 4 - dayNum);
-  const yearStart = new Date(d.getFullYear(), 0, 1);
-  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-  return `${d.getFullYear()}-W${weekNo}`;
 }
 
 function updateStreak(prev: StreakData): StreakData {
@@ -176,12 +156,7 @@ export interface MasteryProgress {
 const MASTERY_KEY = "funnelforge-mastery";
 
 function loadMastery(): Set<string> {
-  try {
-    const raw = localStorage.getItem(MASTERY_KEY);
-    return new Set(raw ? JSON.parse(raw) : []);
-  } catch {
-    return new Set();
-  }
+  return new Set(safeParseJson<string[]>(MASTERY_KEY, []));
 }
 
 function saveMastery(features: Set<string>) {

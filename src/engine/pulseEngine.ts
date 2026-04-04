@@ -6,6 +6,7 @@
 
 import { SavedPlan } from "@/types/funnel";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
+import { getWeekNumber } from "@/lib/utils";
 
 export interface PulseAction {
   emoji: string;
@@ -40,13 +41,6 @@ const WEEKLY_INSIGHTS: { he: string; en: string }[] = [
   { he: "📊 מספרים היפר-ספציפיים (23.7% ולא \"כמחצית\") עוקפים ספקנות בקופי.", en: "📊 Hyper-specific numbers (23.7% not 'about half') bypass skepticism in copy." },
   { he: "🎭 וידאו קצר (15-30 שניות) הוא הפורמט בעל ההשפעה הגבוהה ביותר ב-2026.", en: "🎭 Short video (15-30 sec) is the highest-impact format in 2026." },
 ];
-
-function getWeekNumber(): number {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1);
-  const diff = now.getTime() - start.getTime();
-  return Math.ceil(diff / (7 * 24 * 60 * 60 * 1000));
-}
 
 function generateActions(latestIndustry: string): PulseAction[] {
   const benchmarks = getIndustryBenchmarks(latestIndustry);

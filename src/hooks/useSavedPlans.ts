@@ -2,15 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { FunnelResult, SavedPlan } from "@/types/funnel";
+import { safeParseJson } from "@/lib/utils";
 
 const LOCAL_KEY = "funnelforge-plans";
 
 function loadLocal(): SavedPlan[] {
-  try {
-    return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-  } catch {
-    return [];
-  }
+  return safeParseJson<SavedPlan[]>(LOCAL_KEY, []);
 }
 
 function saveLocal(plans: SavedPlan[]) {
