@@ -3,6 +3,7 @@ import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
 import PlanningTab from "@/components/PlanningTab";
 import ContentTab from "@/components/ContentTab";
 import AnalyticsTab from "@/components/AnalyticsTab";
+import AiCoachChat from "@/components/AiCoachChat";
 import StylomeExtractor from "@/components/StylomeExtractor";
 import AdaptiveTabNav from "@/components/AdaptiveTabNav";
 import { useMetaAuth } from "@/hooks/useMetaAuth";
@@ -16,13 +17,14 @@ import { getIsraeliToolsSummary, getToolsForChannel } from "@/lib/toolRecommenda
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
 import { calculateHealthScore, getHealthScoreColor } from "@/engine/healthScoreEngine";
 import { getSocialProof } from "@/lib/socialProofData";
+import { calculateRoi } from "@/lib/roiCalculator";
 import { useAchievements } from "@/hooks/useAchievements";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { motion } from "framer-motion";
-import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, ChevronDown } from "lucide-react";
+import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, ChevronDown, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +53,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
+  const [coachOpen, setCoachOpen] = useState(false);
 
   // Adaptive tabs (6 consolidated tabs)
   const tabs = getTabConfig(result, profile);
@@ -62,6 +65,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const healthScore = calculateHealthScore(result);
   const socialProof = getSocialProof(result.formData.businessField || "other");
   const { unlock, trackFeature } = useAchievements(language);
+  const roiEstimate = calculateRoi(result.formData);
 
   // Auto-trigger achievements on mount
   useEffect(() => {
@@ -247,6 +251,18 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               <span>{socialProof.topMetric[language]}</span>
             </div>
 
+            {/* ROI Estimate */}
+            {roiEstimate.monthlyImpact > 0 && (
+              <div className="mb-6 rounded-xl border border-accent/20 bg-accent/5 p-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  {isHe ? "אם המשפך הזה ישפר המרות ב-" : "If this funnel improves conversions by "}
+                  <span className="font-bold text-foreground">{roiEstimate.improvementPercent}%</span>
+                  {isHe ? " בלבד:" : " alone:"}
+                </p>
+                <p className="mt-1 text-lg font-bold text-accent">{roiEstimate.potentialSaving[language]}</p>
+              </div>
+            )}
+
             <div className="grid gap-4 md:grid-cols-2">
               {result.stages.map((stage, i) => {
                 const stageId = STAGE_IDS[i] || "engagement";
@@ -424,6 +440,28 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
         <Button onClick={onNewPlan} className="gap-2 funnel-gradient border-0 text-accent-foreground">
           <Plus className="h-4 w-4" /> {t("newPlan")}
         </Button>
+      </div>
+
+      {/* AI Coach Floating Button + Panel */}
+      <div className="fixed bottom-6 right-6 z-40">
+        {coachOpen ? (
+          <div className="w-[380px] max-h-[550px] animate-in slide-in-from-bottom-4">
+            <div className="flex justify-end mb-1">
+              <Button size="sm" variant="ghost" onClick={() => setCoachOpen(false)} className="text-xs">
+                {isHe ? "סגור" : "Close"} ✕
+              </Button>
+            </div>
+            <AiCoachChat result={result} healthScore={healthScore.total} />
+          </div>
+        ) : (
+          <Button
+            onClick={() => setCoachOpen(true)}
+            className="h-14 w-14 rounded-full shadow-lg funnel-gradient border-0 text-accent-foreground hover:opacity-90 transition-opacity"
+            title={isHe ? "מאמן שיווק AI" : "AI Marketing Coach"}
+          >
+            <Bot className="h-6 w-6" />
+          </Button>
+        )}
       </div>
     </div>
   );

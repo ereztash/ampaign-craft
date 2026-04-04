@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { getTotalUsers } from "@/lib/socialProofData";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { useAchievements } from "@/hooks/useAchievements";
+import MarketingWrapped from "@/components/MarketingWrapped";
 
 interface LandingPageProps {
   onStart: () => void;
@@ -169,6 +170,17 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
                       )}
                     </CardContent>
                   </Card>
+                );
+              })()}
+
+              {/* Marketing Wrapped */}
+              {(() => {
+                const plans: SavedPlan[] = (() => { try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; } })();
+                if (plans.length < 2) return null;
+                return (
+                  <div className="mx-auto mb-8 max-w-lg">
+                    <MarketingWrapped plans={plans} />
+                  </div>
                 );
               })()}
 
