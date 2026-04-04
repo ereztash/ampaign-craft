@@ -1,28 +1,27 @@
 import { useState } from "react";
-import CopyLabTab from "@/components/CopyLabTab";
 import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
-import NeuroStorytellingTab from "@/components/NeuroStorytellingTab";
-import MetaConnect from "@/components/MetaConnect";
-import MetaMonitor from "@/components/MetaMonitor";
-import AdaptiveTabNav from "@/components/AdaptiveTabNav";
-import DataAnalysisTab from "@/components/DataAnalysisTab";
+import PlanningTab from "@/components/PlanningTab";
+import ContentTab from "@/components/ContentTab";
+import AnalyticsTab from "@/components/AnalyticsTab";
 import StylomeExtractor from "@/components/StylomeExtractor";
+import AdaptiveTabNav from "@/components/AdaptiveTabNav";
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult } from "@/types/funnel";
-import { getTabConfig, TabConfig } from "@/lib/adaptiveTabRules";
+import { getTabConfig } from "@/lib/adaptiveTabRules";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getIsraeliToolsSummary, getToolsForChannel } from "@/lib/toolRecommendations";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { motion } from "framer-motion";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Edit, Download, Save, Share2, Plus, AlertTriangle, ExternalLink, Info, MessageCircle } from "lucide-react";
+import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface ResultsDashboardProps {
   result: FunnelResult;
@@ -48,14 +47,15 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect } = useMetaAuth();
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
+  const [tipsOpen, setTipsOpen] = useState(false);
 
-  // Adaptive tabs
+  // Adaptive tabs (6 consolidated tabs)
   const tabs = getTabConfig(result, profile);
   const defaultTab = tabs[0]?.id || "strategy";
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
 
-  // Israeli tools & benchmarks
+  // Data for planning tab
   const israeliTools = getIsraeliToolsSummary();
   const benchmarks = getIndustryBenchmarks(result.formData.businessField);
 
@@ -103,7 +103,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
       navigator.share({ title: result.funnelName[language], text });
     } else {
       navigator.clipboard.writeText(text);
-      toast.success(language === "he" ? "הועתק ללוח" : "Copied to clipboard");
+      toast.success(isHe ? "הועתק ללוח" : "Copied to clipboard");
     }
   };
 
@@ -112,18 +112,14 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
     : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
 
   const stageMotionProps = (delay: number) =>
-    reducedMotion
-      ? {}
-      : { initial: { scaleX: 0 }, animate: { scaleX: 1 }, transition: { delay } };
+    reducedMotion ? {} : { initial: { scaleX: 0 }, animate: { scaleX: 1 }, transition: { delay } };
 
   return (
     <div className="min-h-screen px-4 pt-24 pb-12">
       <div className="mx-auto max-w-5xl" id="results-content">
         {/* Header */}
         <motion.div {...motionProps} className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-extrabold text-foreground sm:text-4xl">
-            {t("resultsTitle")}
-          </h1>
+          <h1 className="mb-2 text-3xl font-extrabold text-foreground sm:text-4xl">{t("resultsTitle")}</h1>
           <p className="text-lg text-muted-foreground">{t("resultsSubtitle")}</p>
           <div className="mt-4 inline-block rounded-full bg-primary/10 px-6 py-2">
             <span className="font-bold text-primary">{result.funnelName[language]}</span>
@@ -134,19 +130,14 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           </div>
         </motion.div>
 
-        {/* Funnel Visualization with neuro-vector colors */}
-        <motion.div
-          {...motionProps}
-          transition={reducedMotion ? { duration: 0 } : { delay: 0.2 }}
-          className="mb-8"
-        >
+        {/* Funnel Visualization */}
+        <motion.div {...motionProps} transition={reducedMotion ? { duration: 0 } : { delay: 0.2 }} className="mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col items-center gap-2">
                 {result.stages.map((stage, i) => {
                   const widthPercent = 100 - i * 15;
                   const stageId = STAGE_IDS[i] || "engagement";
-                  const stageColor = funnelStageColors[stageId];
                   return (
                     <motion.div
                       key={stage.id}
@@ -172,10 +163,11 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           </Card>
         </motion.div>
 
-        {/* Adaptive Tabs */}
+        {/* === 6 CONSOLIDATED TABS === */}
         <Tabs defaultValue={defaultTab} className="mb-8">
           <AdaptiveTabNav tabs={tabs} />
 
+          {/* Tab 1: Strategy + Tips (collapsible) */}
           <TabsContent value="strategy" className="mt-6">
             <div className="grid gap-4 md:grid-cols-2">
               {result.stages.map((stage, i) => {
@@ -185,10 +177,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                   <Card key={stage.id} className={`border-l-4 ${colors?.border || ""}`}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground"
-                          style={{ background: chartColorPalette[i] }}
-                        >
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground" style={{ background: chartColorPalette[i] }}>
                           {i + 1}
                         </div>
                         <div>
@@ -196,13 +185,9 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                           {NEURO_LABELS[stageId] && (
                             <div className="flex items-center gap-1.5 mt-0.5">
                               <span className="text-xs">{NEURO_LABELS[stageId].emoji}</span>
-                              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                                {NEURO_LABELS[stageId].vector[language]}
-                              </span>
+                              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{NEURO_LABELS[stageId].vector[language]}</span>
                               <span className="text-[10px] text-muted-foreground">—</span>
-                              <span className="text-[10px] text-muted-foreground italic">
-                                {NEURO_LABELS[stageId].desc[language]}
-                              </span>
+                              <span className="text-[10px] text-muted-foreground italic">{NEURO_LABELS[stageId].desc[language]}</span>
                             </div>
                           )}
                         </div>
@@ -245,12 +230,10 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               })}
             </div>
 
-            {/* Israeli Tools Recommendation Section */}
+            {/* Israeli Tools */}
             <Card className="mt-6 border-primary/20">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  🇮🇱 {t("israeliToolsTitle")}
-                </CardTitle>
+                <CardTitle className="flex items-center gap-2">🇮🇱 {t("israeliToolsTitle")}</CardTitle>
                 <p className="text-sm text-muted-foreground">{t("israeliToolsSubtitle")}</p>
               </CardHeader>
               <CardContent>
@@ -264,281 +247,76 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="budget" className="mt-6">
-            <div className="grid gap-6 md:grid-cols-2">
+            {/* Collapsible Tips */}
+            <Collapsible open={tipsOpen} onOpenChange={setTipsOpen} className="mt-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>{t("budgetAllocation")} ({isHe ? "לפי שלב" : "by stage"})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={barData}>
-                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip formatter={(value: number) => `${value}%`} />
-                      <Bar dataKey="budget" radius={[8, 8, 0, 0]}>
-                        {barData.map((entry, i) => (
-                          <Cell key={i} fill={entry.fill} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("budgetAllocation")} ({isHe ? "לפי ערוץ" : "by channel"})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, value }) => `${name} ${value}%`}>
-                        {pieData.map((_, i) => (
-                          <Cell key={i} fill={chartColorPalette[i % chartColorPalette.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value: number) => `${value}%`} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="kpis" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("keyMetrics")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {result.kpis.map((kpi, i) => (
-                    <div key={i} className="rounded-xl border p-4">
-                      <div className="text-sm text-muted-foreground">{kpi.name[language]}</div>
-                      <div className="mt-1 text-2xl font-bold text-primary">{kpi.target}</div>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                    <CardTitle className="flex items-center justify-between">
+                      {t("personalizedTips")}
+                      <ChevronDown className={cn("h-4 w-4 transition-transform", tipsOpen && "rotate-180")} />
+                    </CardTitle>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {result.overallTips.map((tip, i) => (
+                        <div key={i} className="rounded-xl bg-muted/50 p-4 text-foreground">{tip[language]}</div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Israeli Industry Benchmarks */}
-            {benchmarks.length > 0 && (
-              <Card className="mt-6 border-primary/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    🇮🇱 {t("industryBenchmarkTitle")}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">{t("industryBenchmarkSubtitle")}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {benchmarks.map((bm, i) => (
-                      <div key={i} className="rounded-xl border border-primary/10 bg-primary/5 p-4">
-                        <div className="text-sm font-medium text-foreground">{bm.metric[language]}</div>
-                        <div className="mt-1 text-xl font-bold text-primary">{bm.value}</div>
-                        <div className="mt-1 text-xs text-muted-foreground">{bm.context[language]}</div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
+                  </CardContent>
+                </CollapsibleContent>
               </Card>
-            )}
+            </Collapsible>
           </TabsContent>
 
-          <TabsContent value="hooks" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{isSimplified("hooks") ? t("beginnerHooksTitle") : t("tabHooks")}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {isSimplified("hooks") ? t("beginnerHooksSubtitle") : t("hooksSubtitle")}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {(isSimplified("hooks") ? result.hookTips.slice(0, 3) : result.hookTips).map((hook, i) => (
-                    <div key={i} className="rounded-xl border p-4">
-                      <div className="mb-2 flex items-center gap-2">
-                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{i + 1}</span>
-                        <span className="font-semibold text-foreground">{hook.lawName[language]}</span>
-                      </div>
-                      <div className="mb-2 rounded-lg bg-muted/50 p-3">
-                        <div className="mb-1 text-xs font-semibold text-muted-foreground">{t("hookFormula")}:</div>
-                        <p className="text-sm text-foreground">{hook.formula[language]}</p>
-                      </div>
-                      <div className="mb-2 rounded-lg bg-primary/5 p-3">
-                        <div className="mb-1 text-xs font-semibold text-muted-foreground">{t("hookExample")}:</div>
-                        <p className="text-sm text-foreground italic">{hook.example[language]}</p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-xs text-muted-foreground">{t("hookChannels")}:</span>
-                        {hook.channels.map((ch, j) => (
-                          <span key={j} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">{ch}</span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {isSimplified("hooks") && (
-                  <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
-                )}
-              </CardContent>
-            </Card>
+          {/* Tab 2: Planning (Budget + KPIs) */}
+          <TabsContent value="planning" className="mt-6">
+            <PlanningTab barData={barData} pieData={pieData} kpis={result.kpis} benchmarks={benchmarks} />
           </TabsContent>
 
-          <TabsContent value="copylab" className="mt-6">
-            {isSimplified("copylab") ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("beginnerCopyLabTitle")}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{t("beginnerCopyLabSubtitle")}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {result.copyLab.formulas.slice(0, 2).map((formula, i) => (
-                      <div key={i} className="rounded-xl border p-4">
-                        <div className="font-semibold text-foreground">{formula.name[language]}</div>
-                        <div className="mt-2 rounded-lg bg-muted/50 p-3 font-mono text-sm">{formula.structure[language]}</div>
-                        <div className="mt-2 rounded-lg bg-primary/5 p-3 text-sm italic text-foreground">{formula.example[language]}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <CopyLabTab copyLab={result.copyLab} />
-            )}
+          {/* Tab 3: Content (Hooks + CopyLab + NeuroStory) */}
+          <TabsContent value="content" className="mt-6">
+            <ContentTab result={result} isSimplified={isSimplified("content")} />
           </TabsContent>
 
+          {/* Tab 4: Analytics (Monitor + Data) */}
+          <TabsContent value="analytics" className="mt-6">
+            <AnalyticsTab
+              auth={auth}
+              metaLoading={metaLoading}
+              metaError={metaError}
+              accounts={accounts}
+              selectedAccountId={selectedAccountId}
+              onConnect={connect}
+              onDisconnect={disconnect}
+              onSelectAccount={(id, name) => {
+                setSelectedAccountId(id);
+                setSelectedAccountName(name);
+              }}
+              result={result}
+              isSimplified={isSimplified("analytics")}
+            />
+          </TabsContent>
+
+          {/* Tab 5: Brand DNA (conditional) */}
           <TabsContent value="branddna" className="mt-6">
             <BrandDiagnosticTab personalBrand={result.personalBrand} />
           </TabsContent>
 
-          {result.neuroStorytelling && (
-            <TabsContent value="neurostory" className="mt-6">
-              {isSimplified("neurostory") ? (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t("beginnerNeuroTitle")}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{t("beginnerNeuroSubtitle")}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-4 sm:grid-cols-3">
-                      {result.neuroStorytelling.vectors.map((v) => (
-                        <div key={v.id} className={`rounded-xl border-2 p-4 text-center ${
-                          v.id === "cortisol" ? "border-destructive/30 bg-destructive/5" :
-                          v.id === "oxytocin" ? "border-primary/30 bg-primary/5" :
-                          "border-accent/30 bg-accent/5"
-                        }`}>
-                          <div className="text-3xl mb-2">{v.emoji}</div>
-                          <div className="font-bold text-foreground">{v.name[language]}</div>
-                          <p className="mt-2 text-sm text-muted-foreground">{v.copyApplication[language]}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <NeuroStorytellingTab data={result.neuroStorytelling} />
-              )}
-            </TabsContent>
-          )}
-
-          <TabsContent value="monitor" className="mt-6">
-            {isSimplified("monitor") ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("beginnerMonitorTitle")}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{t("beginnerMonitorSubtitle")}</p>
-                </CardHeader>
-                <CardContent>
-                  <MetaConnect
-                    connected={!!auth}
-                    loading={metaLoading}
-                    error={metaError}
-                    accounts={accounts}
-                    selectedAccountId={selectedAccountId}
-                    onConnect={connect}
-                    onDisconnect={disconnect}
-                    onSelectAccount={(id, name) => {
-                      setSelectedAccountId(id);
-                      setSelectedAccountName(name);
-                    }}
-                  />
-                  <p className="mt-4 text-center text-xs text-muted-foreground">{t("unlockFullView")}</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-6">
-                <MetaConnect
-                  connected={!!auth}
-                  loading={metaLoading}
-                  error={metaError}
-                  accounts={accounts}
-                  selectedAccountId={selectedAccountId}
-                  onConnect={connect}
-                  onDisconnect={disconnect}
-                  onSelectAccount={(id, name) => {
-                    setSelectedAccountId(id);
-                    setSelectedAccountName(name);
-                  }}
-                />
-                {auth && selectedAccountId && (
-                  <MetaMonitor
-                    result={result}
-                    accountId={selectedAccountId}
-                    accessToken={auth.accessToken}
-                  />
-                )}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="data" className="mt-6">
-            <DataAnalysisTab />
-          </TabsContent>
-
+          {/* Tab 6: Stylome */}
           <TabsContent value="stylome" className="mt-6">
-            {isSimplified("stylome") ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("beginnerStylomeTitle")}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{t("beginnerStylomeSubtitle")}</p>
-                </CardHeader>
-                <CardContent>
-                  <StylomeExtractor />
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("tabStylome")}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{t("stylomeSubtitle")}</p>
-                </CardHeader>
-                <CardContent>
-                  <StylomeExtractor />
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="tips" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t("personalizedTips")}</CardTitle>
+                <CardTitle>{isSimplified("stylome") ? t("beginnerStylomeTitle") : t("tabStylome")}</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  {isSimplified("stylome") ? t("beginnerStylomeSubtitle") : t("stylomeSubtitle")}
+                </p>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {result.overallTips.map((tip, i) => (
-                    <div key={i} className="rounded-xl bg-muted/50 p-4 text-foreground">
-                      {tip[language]}
-                    </div>
-                  ))}
-                </div>
+                <StylomeExtractor />
               </CardContent>
             </Card>
           </TabsContent>

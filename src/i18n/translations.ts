@@ -251,9 +251,19 @@ export const translations = {
   // Accessibility
   skipToContent: { he: "דלג לתוכן", en: "Skip to content" },
 
-  // Adaptive Tabs
+  // Adaptive Tabs (legacy — used as section labels inside merged tabs)
   tabMonitor: { he: "ניטור", en: "Monitor" },
   tabData: { he: "נתונים", en: "Data" },
+
+  // Consolidated Tabs
+  tabPlanning: { he: "תכנון", en: "Planning" },
+  tabContent: { he: "תוכן", en: "Content" },
+  tabAnalytics: { he: "אנליטיקס", en: "Analytics" },
+  contentSubNavHooks: { he: "הוקים", en: "Hooks" },
+  contentSubNavCopyLab: { he: "Copy Lab", en: "Copy Lab" },
+  contentSubNavNeuro: { he: "Neuro-Story", en: "Neuro-Story" },
+  analyticsMonitorSection: { he: "ניטור ביצועים", en: "Performance Monitoring" },
+  analyticsDataSection: { he: "ניתוח נתונים", en: "Data Analysis" },
 
   // Israeli Tool Recommendations
   israeliToolsTitle: { he: "כלים ישראליים מומלצים לביצוע", en: "Recommended Israeli Tools for Execution" },

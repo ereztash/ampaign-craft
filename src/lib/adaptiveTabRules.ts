@@ -26,62 +26,44 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
   const isBeginner = formData.experienceLevel === "beginner" || formData.experienceLevel === "";
 
   const tabs: TabConfig[] = [
+    // Strategy — core funnel + channels + Israeli tools + tips (collapsible)
     {
       id: "strategy",
       labelKey: "tabStrategy",
       visible: true,
       priority: 10,
     },
+
+    // Planning — budget charts + KPIs + Israeli benchmarks
     {
-      id: "budget",
-      labelKey: "tabBudget",
+      id: "planning",
+      labelKey: "tabPlanning",
       visible: true,
       priority: formData.mainGoal === "sales" ? 15 : 30,
       badge: formData.mainGoal === "sales" ? { he: "מומלץ", en: "Key" } : undefined,
     },
-    {
-      id: "kpis",
-      labelKey: "tabKpis",
-      visible: true,
-      priority: 40,
-    },
-    {
-      id: "tips",
-      labelKey: "tabTips",
-      visible: true,
-      priority: isBeginner ? 15 : 70,
-      badge: isBeginner ? { he: "התחל כאן", en: "Start Here" } : undefined,
-    },
 
-    // Hooks — visible to all; beginners get simplified 3-hook view
+    // Content — hooks + Copy Lab + Neuro-Story (nested sub-tabs)
     {
-      id: "hooks",
-      labelKey: "tabHooks",
+      id: "content",
+      labelKey: "tabContent",
       visible: true,
-      priority: isBeginner ? 55 : formData.mainGoal === "awareness" ? 15 : 50,
+      priority: isBeginner ? 40 : formData.mainGoal === "awareness" ? 15 : 50,
       badge: !isBeginner && formData.mainGoal === "awareness" ? { he: "מומלץ", en: "Key" } : undefined,
       simplifiedMode: isBeginner,
     },
 
-    // Copy Lab — visible to all; beginners get 2 basic formulas
+    // Analytics — Meta monitor + Data import/analysis
     {
-      id: "copylab",
-      labelKey: "tabCopyLab",
+      id: "analytics",
+      labelKey: "tabAnalytics",
       visible: true,
-      priority: isBeginner ? 60 : 55,
+      priority: isAdvanced ? 8 : isBeginner ? 55 : 60,
+      badge: isAdvanced ? { he: "מומלץ", en: "Key" } : undefined,
       simplifiedMode: isBeginner,
     },
 
-    // Neuro-Storytelling — visible to all (if data exists); beginners get simplified emotions view
-    {
-      id: "neurostory",
-      labelKey: "tabNeuroStory",
-      visible: !!result.neuroStorytelling,
-      priority: isBeginner ? 65 : 60,
-      simplifiedMode: isBeginner,
-    },
-
-    // Brand DNA — only for personal brands/services, visible to all segments
+    // Brand DNA — conditional: personal brands/services only
     {
       id: "branddna",
       labelKey: "tabBrandDna",
@@ -91,27 +73,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       simplifiedMode: isBeginner,
     },
 
-    // Monitor — visible to all; beginners get guided intro
-    {
-      id: "monitor",
-      labelKey: "tabMonitor",
-      visible: true,
-      priority: isAdvanced ? 8 : isBeginner ? 75 : 80,
-      badge: isAdvanced ? { he: "מומלץ", en: "Key" } : undefined,
-      simplifiedMode: isBeginner,
-    },
-
-    // Data import/analysis — visible to all; critical for all segments
-    {
-      id: "data",
-      labelKey: "tabData",
-      visible: true,
-      priority: isAdvanced ? 9 : isBeginner ? 50 : 85,
-      badge: isAdvanced ? { he: "חדש", en: "New" } : isBeginner ? { he: "נתונים", en: "Data" } : undefined,
-      simplifiedMode: isBeginner,
-    },
-
-    // Stylome Extractor — personal style fingerprint + system prompt
+    // Stylome — personal style fingerprint + system prompt
     {
       id: "stylome",
       labelKey: "tabStylome",
