@@ -9,7 +9,14 @@ export interface Achievement {
   unlockedAt: string | null;
 }
 
+export interface StreakData {
+  currentStreak: number;
+  longestStreak: number;
+  lastActiveDate: string | null;
+}
+
 const STORAGE_KEY = "funnelforge-achievements";
+const STREAK_KEY = "funnelforge-streak";
 
 const ACHIEVEMENT_DEFS: Omit<Achievement, "unlockedAt">[] = [
   {
@@ -60,6 +67,19 @@ const ACHIEVEMENT_DEFS: Omit<Achievement, "unlockedAt">[] = [
     description: { he: "חזרת ל-FunnelForge יותר מ-3 פעמים", en: "Returned to FunnelForge more than 3 times" },
     emoji: "💎",
   },
+  // Streak achievements
+  {
+    id: "streak_4",
+    name: { he: "עקבי", en: "Consistent" },
+    description: { he: "4 שבועות רצופים של שימוש", en: "4 consecutive weeks of usage" },
+    emoji: "🔥",
+  },
+  {
+    id: "streak_12",
+    name: { he: "מכונת שיווק", en: "Marketing Machine" },
+    description: { he: "12 שבועות רצופים של שימוש", en: "12 consecutive weeks of usage" },
+    emoji: "⚡",
+  },
 ];
 
 function loadAchievements(): Achievement[] {
@@ -84,18 +104,134 @@ function saveUnlock(id: string) {
   }
 }
 
+// --- Streak Logic ---
+
+function loadStreak(): StreakData {
+  try {
+    const raw = localStorage.getItem(STREAK_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return { currentStreak: 0, longestStreak: 0, lastActiveDate: null };
+}
+
+function saveStreak(data: StreakData) {
+  localStorage.setItem(STREAK_KEY, JSON.stringify(data));
+}
+
+function getWeekId(date: Date): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  // ISO week: Monday-based
+  const dayNum = d.getDay() || 7;
+  d.setDate(d.getDate() + 4 - dayNum);
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return `${d.getFullYear()}-W${weekNo}`;
+}
+
+function updateStreak(prev: StreakData): StreakData {
+  const now = new Date();
+  const currentWeek = getWeekId(now);
+
+  if (!prev.lastActiveDate) {
+    return { currentStreak: 1, longestStreak: 1, lastActiveDate: currentWeek };
+  }
+
+  if (prev.lastActiveDate === currentWeek) {
+    return prev; // Same week, no change
+  }
+
+  // Check if last active was the previous week
+  const lastDate = new Date();
+  const [, lastWeekStr] = prev.lastActiveDate.split("-W");
+  const [, currWeekStr] = currentWeek.split("-W");
+  const lastWeekNum = parseInt(lastWeekStr);
+  const currWeekNum = parseInt(currWeekStr);
+
+  // Simple consecutive check (handles year boundary approximately)
+  const isConsecutive = currWeekNum === lastWeekNum + 1 ||
+    (lastWeekNum >= 52 && currWeekNum === 1);
+
+  if (isConsecutive) {
+    const newStreak = prev.currentStreak + 1;
+    return {
+      currentStreak: newStreak,
+      longestStreak: Math.max(prev.longestStreak, newStreak),
+      lastActiveDate: currentWeek,
+    };
+  }
+
+  // Streak broken
+  return { currentStreak: 1, longestStreak: prev.longestStreak, lastActiveDate: currentWeek };
+}
+
+// --- Mastery Progress ---
+
+export interface MasteryProgress {
+  totalFeatures: number;
+  usedFeatures: number;
+  percentage: number;
+  categories: { name: { he: string; en: string }; used: number; total: number }[];
+}
+
+const MASTERY_KEY = "funnelforge-mastery";
+
+function loadMastery(): Set<string> {
+  try {
+    const raw = localStorage.getItem(MASTERY_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveMastery(features: Set<string>) {
+  localStorage.setItem(MASTERY_KEY, JSON.stringify([...features]));
+}
+
+const FEATURE_MAP: Record<string, { he: string; en: string }> = {
+  strategy: { he: "אסטרטגיה", en: "Strategy" },
+  planning: { he: "תכנון", en: "Planning" },
+  content: { he: "תוכן", en: "Content" },
+  analytics: { he: "אנליטיקס", en: "Analytics" },
+  stylome: { he: "טביעת סגנון", en: "Stylome" },
+  branddna: { he: "Brand DNA", en: "Brand DNA" },
+  plan_saved: { he: "שמירת תוכנית", en: "Save Plan" },
+  data_import: { he: "ייבוא נתונים", en: "Data Import" },
+  pdf_export: { he: "ייצוא PDF", en: "PDF Export" },
+  share: { he: "שיתוף", en: "Share" },
+};
+
+// --- Main Hook ---
+
 export function useAchievements(language: "he" | "en" = "he") {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [streak, setStreak] = useState<StreakData>({ currentStreak: 0, longestStreak: 0, lastActiveDate: null });
+  const [masteryFeatures, setMasteryFeatures] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setAchievements(loadAchievements());
+
+    // Update streak on mount
+    const prev = loadStreak();
+    const updated = updateStreak(prev);
+    saveStreak(updated);
+    setStreak(updated);
+
+    setMasteryFeatures(loadMastery());
   }, []);
+
+  // Auto-unlock streak achievements
+  useEffect(() => {
+    if (streak.currentStreak >= 4) unlock("streak_4");
+    if (streak.currentStreak >= 12) unlock("streak_12");
+  }, [streak.currentStreak]);
 
   const unlock = useCallback(
     (id: string) => {
       setAchievements((prev) => {
         const existing = prev.find((a) => a.id === id);
-        if (!existing || existing.unlockedAt) return prev; // Already unlocked
+        if (!existing || existing.unlockedAt) return prev;
 
         saveUnlock(id);
         const def = ACHIEVEMENT_DEFS.find((d) => d.id === id);
@@ -113,6 +249,16 @@ export function useAchievements(language: "he" | "en" = "he") {
     [language]
   );
 
+  const trackFeature = useCallback((featureId: string) => {
+    setMasteryFeatures((prev) => {
+      if (prev.has(featureId)) return prev;
+      const next = new Set(prev);
+      next.add(featureId);
+      saveMastery(next);
+      return next;
+    });
+  }, []);
+
   const isUnlocked = useCallback(
     (id: string) => achievements.find((a) => a.id === id)?.unlockedAt !== null,
     [achievements]
@@ -121,5 +267,16 @@ export function useAchievements(language: "he" | "en" = "he") {
   const unlockedCount = achievements.filter((a) => a.unlockedAt).length;
   const totalCount = achievements.length;
 
-  return { achievements, unlock, isUnlocked, unlockedCount, totalCount };
+  const mastery: MasteryProgress = {
+    totalFeatures: Object.keys(FEATURE_MAP).length,
+    usedFeatures: masteryFeatures.size,
+    percentage: Math.round((masteryFeatures.size / Object.keys(FEATURE_MAP).length) * 100),
+    categories: Object.entries(FEATURE_MAP).map(([key, name]) => ({
+      name,
+      used: masteryFeatures.has(key) ? 1 : 0,
+      total: 1,
+    })),
+  };
+
+  return { achievements, unlock, isUnlocked, unlockedCount, totalCount, streak, trackFeature, mastery };
 }

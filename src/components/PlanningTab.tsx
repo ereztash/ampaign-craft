@@ -1,4 +1,5 @@
 import { useLanguage } from "@/i18n/LanguageContext";
+import GlossaryTooltip from "@/components/GlossaryTooltip";
 import { IndustryBenchmark } from "@/lib/industryBenchmarks";
 import { chartColorPalette } from "@/lib/colorSemantics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,10 +66,14 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2">
-              {kpis.map((kpi, i) => (
+              {kpis.map((kpi, i) => {
+                // Detect glossary term from KPI name
+                const glossaryKey = kpi.name.en.match(/CPC|CPL|CPA|CPM|ROAS|ROI|LTV|NPS|CTR/i)?.[0]?.toLowerCase();
+                return (
                 <div key={i} className="rounded-xl border p-3">
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm text-muted-foreground">{kpi.name[language]}</span>
+                    {glossaryKey && <GlossaryTooltip termKey={glossaryKey} />}
                     {kpi.confidence && (
                       <span
                         className={`inline-block h-2 w-2 rounded-full ${
@@ -84,7 +89,8 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
                   </div>
                   <div className="mt-1 text-xl font-bold text-primary">{kpi.target}</div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>

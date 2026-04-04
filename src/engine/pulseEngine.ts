@@ -13,6 +13,12 @@ export interface PulseAction {
   impact: { he: string; en: string };
 }
 
+export interface LossFramedMessage {
+  emoji: string;
+  message: { he: string; en: string };
+  type: "loss" | "endowment" | "ikea";
+}
+
 export interface WeeklyPulse {
   weekNumber: number;
   greeting: { he: string; en: string };
@@ -21,6 +27,7 @@ export interface WeeklyPulse {
   latestIndustry: string;
   actions: PulseAction[];
   insightOfTheWeek: { he: string; en: string };
+  lossFramedMessages: LossFramedMessage[];
 }
 
 const WEEKLY_INSIGHTS: { he: string; en: string }[] = [
@@ -79,6 +86,43 @@ export function generateWeeklyPulse(plans: SavedPlan[]): WeeklyPulse | null {
   const weekNum = getWeekNumber();
   const insightIndex = weekNum % WEEKLY_INSIGHTS.length;
 
+  // Loss-framed messages (behavioral economics applied to FunnelForge's own UX)
+  const lossFramedMessages: LossFramedMessage[] = [];
+
+  // Endowment: remind of invested time
+  if (plans.length >= 2) {
+    lossFramedMessages.push({
+      emoji: "⏱️",
+      message: {
+        he: `השקעת זמן בבניית ${plans.length} אסטרטגיות — נכס שלא קיים בשום מקום אחר`,
+        en: `You've invested time building ${plans.length} strategies — an asset that doesn't exist anywhere else`,
+      },
+      type: "endowment",
+    });
+  }
+
+  // Loss aversion: competitors are moving
+  lossFramedMessages.push({
+    emoji: "⚠️",
+    message: {
+      he: `מתחרים בתחום שלך כבר מיישמים — כל שבוע בלי פעולה הוא הזדמנות שאובדת`,
+      en: `Competitors in your field are already implementing — every week without action is a lost opportunity`,
+    },
+    type: "loss",
+  });
+
+  // IKEA effect: your data is unique
+  if (plans.length >= 1) {
+    lossFramedMessages.push({
+      emoji: "🔒",
+      message: {
+        he: "האסטרטגיה שלך מותאמת אישית לעסק שלך — לא ניתנת לשחזור בכלי אחר",
+        en: "Your strategy is personalized to your business — can't be recreated in another tool",
+      },
+      type: "ikea",
+    });
+  }
+
   return {
     weekNumber: weekNum,
     greeting: {
@@ -90,5 +134,6 @@ export function generateWeeklyPulse(plans: SavedPlan[]): WeeklyPulse | null {
     latestIndustry: latest.result.formData.businessField || "other",
     actions: generateActions(latest.result.formData.businessField || "other"),
     insightOfTheWeek: WEEKLY_INSIGHTS[insightIndex],
+    lossFramedMessages,
   };
 }

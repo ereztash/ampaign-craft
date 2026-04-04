@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
 import PlanningTab from "@/components/PlanningTab";
 import ContentTab from "@/components/ContentTab";
@@ -16,6 +16,7 @@ import { getIsraeliToolsSummary, getToolsForChannel } from "@/lib/toolRecommenda
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
 import { calculateHealthScore, getHealthScoreColor } from "@/engine/healthScoreEngine";
 import { getSocialProof } from "@/lib/socialProofData";
+import { useAchievements } from "@/hooks/useAchievements";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -60,6 +61,19 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   // MOAT features
   const healthScore = calculateHealthScore(result);
   const socialProof = getSocialProof(result.formData.businessField || "other");
+  const { unlock, trackFeature } = useAchievements(language);
+
+  // Auto-trigger achievements on mount
+  useEffect(() => {
+    unlock("first_plan");
+    if (language === "he") unlock("hebrew_power");
+    if (healthScore.total >= 80) unlock("high_score");
+  }, []);
+
+  // Track feature usage when switching tabs
+  const handleTabChange = (tabId: string) => {
+    trackFeature(tabId);
+  };
 
   // Data for planning tab
   const israeliTools = getIsraeliToolsSummary();
@@ -88,6 +102,9 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
     plans.push({ id: result.id, name: result.funnelName[language], result, savedAt: new Date().toISOString() });
     localStorage.setItem("funnelforge-plans", JSON.stringify(plans));
     toast.success(t("planSaved"));
+    trackFeature("plan_saved");
+    // Check for 5 plans achievement
+    if (plans.length >= 5) unlock("five_plans");
   };
 
   const exportPdf = async () => {
@@ -170,7 +187,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
         </motion.div>
 
         {/* === 6 CONSOLIDATED TABS === */}
-        <Tabs defaultValue={defaultTab} className="mb-8">
+        <Tabs defaultValue={defaultTab} className="mb-8" onValueChange={handleTabChange}>
           <AdaptiveTabNav tabs={tabs} />
 
           {/* Tab 1: Strategy + Tips (collapsible) */}

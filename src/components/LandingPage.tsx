@@ -4,10 +4,11 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult, SavedPlan, ExperienceLevel } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database, Zap } from "lucide-react";
+import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database, Zap, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import { getTotalUsers } from "@/lib/socialProofData";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
+import { useAchievements } from "@/hooks/useAchievements";
 
 interface LandingPageProps {
   onStart: () => void;
@@ -20,6 +21,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
   const isHe = language === "he";
   const { profile } = useUserProfile();
   const reducedMotion = useReducedMotion();
+  const { streak, mastery } = useAchievements(language);
 
   const features = [
     { icon: Target, title: t("featureAnalyze"), desc: t("featureAnalyzeDesc") },
@@ -101,12 +103,37 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
                 </Card>
               )}
 
-              {/* Mini stats */}
-              <div className="mb-6 flex justify-center gap-6 text-sm text-muted-foreground">
-                <span>{language === "he" ? `${profile.savedPlanCount} תוכניות` : `${profile.savedPlanCount} plans`}</span>
+              {/* Mini stats + Streak */}
+              <div className="mb-4 flex justify-center gap-6 text-sm text-muted-foreground">
+                <span>{isHe ? `${profile.savedPlanCount} תוכניות` : `${profile.savedPlanCount} plans`}</span>
                 <span>•</span>
-                <span>{language === "he" ? `ביקור #${profile.visitCount}` : `Visit #${profile.visitCount}`}</span>
+                <span>{isHe ? `ביקור #${profile.visitCount}` : `Visit #${profile.visitCount}`}</span>
+                {streak.currentStreak > 0 && (
+                  <>
+                    <span>•</span>
+                    <span className="flex items-center gap-1 text-accent font-semibold">
+                      <Flame className="h-3.5 w-3.5" />
+                      {streak.currentStreak} {isHe ? "שבועות רצופים" : "week streak"}
+                    </span>
+                  </>
+                )}
               </div>
+
+              {/* Mastery Progress Bar */}
+              {mastery.percentage > 0 && (
+                <div className="mx-auto mb-6 max-w-xs">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                    <span>{isHe ? "שליטה בכלי" : "Tool Mastery"}</span>
+                    <span className="font-medium text-foreground">{mastery.percentage}%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted/30">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-primary to-accent transition-all"
+                      style={{ width: `${mastery.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Weekly Pulse Card */}
               {(() => {
@@ -132,6 +159,14 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
                         ))}
                       </div>
                       <p className="mt-3 text-[11px] text-muted-foreground italic">{pulse.insightOfTheWeek[language]}</p>
+                      {/* Loss-framed retention messages */}
+                      {pulse.lossFramedMessages.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-accent/10">
+                          <p className="text-[11px] text-muted-foreground">
+                            {pulse.lossFramedMessages[0].emoji} {pulse.lossFramedMessages[0].message[language]}
+                          </p>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 );
