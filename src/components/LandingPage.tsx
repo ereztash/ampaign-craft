@@ -1,19 +1,21 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { FunnelResult, SavedPlan } from "@/types/funnel";
+import { FunnelResult, SavedPlan, ExperienceLevel } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText } from "lucide-react";
+import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface LandingPageProps {
   onStart: () => void;
+  onStartWithSegment?: (segment: ExperienceLevel) => void;
   onLoadLastPlan?: (result: FunnelResult) => void;
 }
 
-const LandingPage = ({ onStart, onLoadLastPlan }: LandingPageProps) => {
+const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPageProps) => {
   const { t, language, isRTL } = useLanguage();
+  const isHe = language === "he";
   const { profile } = useUserProfile();
   const reducedMotion = useReducedMotion();
 
@@ -143,6 +145,67 @@ const LandingPage = ({ onStart, onLoadLastPlan }: LandingPageProps) => {
             <ArrowDown className="h-6 w-6 animate-bounce text-muted-foreground" />
           </motion.div>
         )}
+      </section>
+
+      {/* Segment Picker — MECE: Builder / Amplifier / Analyst */}
+      <section className="container mx-auto px-4 pb-12">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+            {isHe ? "איפה אתה בדרך?" : "Where are you on the journey?"}
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            {isHe ? "בחר את הנתיב שמתאים לך — נתאים את החוויה" : "Choose your path — we'll tailor the experience"}
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              segment: "beginner" as ExperienceLevel,
+              icon: Hammer,
+              emoji: "🏗️",
+              title: { he: "אני מתחיל", en: "I'm Starting" },
+              desc: { he: "בנה את תוכנית השיווק הראשונה שלך — פשוט, ברור, ללא ז'רגון", en: "Build your first marketing plan — simple, clear, no jargon" },
+              color: "border-primary/30 hover:border-primary bg-primary/5",
+            },
+            {
+              segment: "intermediate" as ExperienceLevel,
+              icon: Megaphone,
+              emoji: "📢",
+              title: { he: "אני מגדיל", en: "I'm Growing" },
+              desc: { he: "הגבר את המותג האישי שלך עם מסגרות מיצוב, נוירו-סטוריטלינג וקופי", en: "Amplify your personal brand with positioning frameworks, neuro-storytelling & copy" },
+              color: "border-accent/30 hover:border-accent bg-accent/5",
+            },
+            {
+              segment: "advanced" as ExperienceLevel,
+              icon: LineChart,
+              emoji: "📊",
+              title: { he: "אני ממטב", en: "I'm Optimizing" },
+              desc: { he: "נתונים, מדע התנהגותי ומוניטור ביצועים לשיווק מבוסס אינסייטס", en: "Data, behavioral science & performance monitoring for insight-driven marketing" },
+              color: "border-destructive/30 hover:border-destructive bg-destructive/5",
+            },
+          ].map((seg, i) => (
+            <motion.div
+              key={seg.segment}
+              {...(reducedMotion ? {} : {
+                initial: { opacity: 0, y: 20 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true },
+                transition: { delay: i * 0.15 },
+              })}
+            >
+              <button
+                onClick={() => onStartWithSegment ? onStartWithSegment(seg.segment) : onStart()}
+                className={`w-full glass-card rounded-2xl p-8 text-center transition-all hover:shadow-lg border-2 ${seg.color}`}
+              >
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-card">
+                  <seg.icon className="h-7 w-7 text-foreground" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-foreground">{seg.title[language]}</h3>
+                <p className="text-sm text-muted-foreground">{seg.desc[language]}</p>
+              </button>
+            </motion.div>
+          ))}
+        </div>
       </section>
 
       {/* Features */}

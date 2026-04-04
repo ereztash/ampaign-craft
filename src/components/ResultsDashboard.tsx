@@ -29,6 +29,14 @@ interface ResultsDashboardProps {
 
 const STAGE_IDS = ["awareness", "engagement", "leads", "conversion", "retention"];
 
+const NEURO_LABELS: Record<string, { emoji: string; vector: { he: string; en: string }; desc: { he: string; en: string } }> = {
+  awareness: { emoji: "🔴", vector: { he: "קורטיזול", en: "Cortisol" }, desc: { he: "תפוס קשב דרך מתח אסטרטגי", en: "Grab attention through strategic tension" } },
+  engagement: { emoji: "🔵", vector: { he: "אוקסיטוצין", en: "Oxytocin" }, desc: { he: "בנה אמון דרך חיבור", en: "Build trust through connection" } },
+  leads: { emoji: "🟠", vector: { he: "הזדמנות", en: "Opportunity" }, desc: { he: "מתח → תגמול: תפוס את הרגע", en: "Tension → reward: seize the moment" } },
+  conversion: { emoji: "🟢", vector: { he: "דופמין", en: "Dopamine" }, desc: { he: "רגע התגמול: הפוך להחלטה", en: "Reward moment: convert to decision" } },
+  retention: { emoji: "🔵", vector: { he: "אוקסיטוצין", en: "Oxytocin" }, desc: { he: "אמון מתמשך: הישאר איתנו", en: "Ongoing trust: stay with us" } },
+};
+
 const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
   const { profile } = useUserProfile();
@@ -143,7 +151,9 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                     >
                       <div>
                         <div className="text-sm font-bold">{stage.name[language]}</div>
-                        <div className="text-xs opacity-80">{stage.budgetPercent}%</div>
+                        <div className="text-xs opacity-80">
+                          {NEURO_LABELS[stageId]?.emoji} {stage.budgetPercent}%
+                        </div>
                       </div>
                     </motion.div>
                   );
@@ -172,7 +182,21 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                         >
                           {i + 1}
                         </div>
-                        <CardTitle className="text-lg">{stage.name[language]}</CardTitle>
+                        <div>
+                          <CardTitle className="text-lg">{stage.name[language]}</CardTitle>
+                          {NEURO_LABELS[stageId] && (
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="text-xs">{NEURO_LABELS[stageId].emoji}</span>
+                              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                                {NEURO_LABELS[stageId].vector[language]}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">—</span>
+                              <span className="text-[10px] text-muted-foreground italic">
+                                {NEURO_LABELS[stageId].desc[language]}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent>

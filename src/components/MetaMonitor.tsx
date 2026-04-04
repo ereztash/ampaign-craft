@@ -8,6 +8,7 @@ import { KpiGap, GuidanceItem, MetaInsights } from "@/types/meta";
 import { getCampaignInsights } from "@/services/metaApi";
 import { computeGaps } from "@/engine/gapEngine";
 import { generateGuidance, getOverallHealth } from "@/engine/guidanceEngine";
+import { getKpiStatusColor } from "@/lib/colorSemantics";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface MetaMonitorProps {
@@ -25,16 +26,17 @@ const DATE_LABELS: Record<DatePreset, { he: string; en: string }> = {
 };
 
 const StatusIcon = ({ status }: { status: KpiGap["status"] }) => {
-  if (status === "good") return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-  if (status === "warning") return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
-  return <XCircle className="h-4 w-4 text-red-500" />;
+  const colors = getKpiStatusColor(status);
+  if (status === "good") return <CheckCircle2 className={`h-4 w-4 ${colors.text}`} />;
+  if (status === "warning") return <AlertTriangle className={`h-4 w-4 ${colors.text}`} />;
+  return <XCircle className={`h-4 w-4 ${colors.text}`} />;
 };
 
 const GapRow = ({ gap, isHe }: { gap: KpiGap; isHe: boolean }) => {
   const isOver = gap.gapPercent > 0;
   const TrendIcon = isOver ? TrendingUp : gap.gapPercent < 0 ? TrendingDown : Minus;
-  const color =
-    gap.status === "good" ? "text-green-600" : gap.status === "warning" ? "text-yellow-600" : "text-red-600";
+  const statusColors = getKpiStatusColor(gap.status);
+  const color = statusColors.text;
 
   return (
     <div className="flex items-center justify-between py-2 border-b last:border-0">
@@ -52,13 +54,7 @@ const GapRow = ({ gap, isHe }: { gap: KpiGap; isHe: boolean }) => {
         </span>
         <Badge
           variant="outline"
-          className={`text-xs ${
-            gap.status === "good"
-              ? "border-green-300 text-green-700"
-              : gap.status === "warning"
-              ? "border-yellow-300 text-yellow-700"
-              : "border-red-300 text-red-700"
-          }`}
+          className={`text-xs ${statusColors.border} ${statusColors.text}`}
         >
           {isOver ? "+" : ""}
           {gap.gapPercent.toFixed(0)}%
@@ -70,12 +66,11 @@ const GapRow = ({ gap, isHe }: { gap: KpiGap; isHe: boolean }) => {
 
 const GuidanceCard = ({ item, isHe }: { item: GuidanceItem; isHe: boolean }) => {
   const [expanded, setExpanded] = useState(false);
-  const borderColor =
-    item.priority === "high" ? "border-red-200" : item.priority === "medium" ? "border-yellow-200" : "border-blue-200";
-  const bgColor =
-    item.priority === "high" ? "bg-red-50/50" : item.priority === "medium" ? "bg-yellow-50/50" : "bg-blue-50/50";
-  const badgeClass =
-    item.priority === "high" ? "bg-red-100 text-red-700" : item.priority === "medium" ? "bg-yellow-100 text-yellow-700" : "bg-blue-100 text-blue-700";
+  const priorityStatus = item.priority === "high" ? "critical" as const : item.priority === "medium" ? "warning" as const : "good" as const;
+  const priorityColors = getKpiStatusColor(priorityStatus);
+  const borderColor = priorityColors.border;
+  const bgColor = priorityColors.bg;
+  const badgeClass = `${priorityColors.bg} ${priorityColors.text}`;
 
   return (
     <Card className={`${borderColor} ${bgColor}`}>
@@ -186,8 +181,8 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
       </div>
 
       {error && (
-        <Card className="border-red-200 bg-red-50/30">
-          <CardContent className="py-4 flex items-center gap-2 text-sm text-red-700">
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="py-4 flex items-center gap-2 text-sm text-destructive">
             <XCircle className="h-4 w-4" />
             {error}
           </CardContent>
@@ -207,10 +202,10 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
             <Badge
               className={`text-sm px-3 py-1 ${
                 health.color === "green"
-                  ? "bg-green-100 text-green-700 border-green-200"
+                  ? getKpiStatusColor("good").bg + " " + getKpiStatusColor("good").text + " " + getKpiStatusColor("good").border
                   : health.color === "yellow"
-                  ? "bg-yellow-100 text-yellow-700 border-yellow-200"
-                  : "bg-red-100 text-red-700 border-red-200"
+                  ? getKpiStatusColor("warning").bg + " " + getKpiStatusColor("warning").text + " " + getKpiStatusColor("warning").border
+                  : getKpiStatusColor("critical").bg + " " + getKpiStatusColor("critical").text + " " + getKpiStatusColor("critical").border
               }`}
               variant="outline"
             >

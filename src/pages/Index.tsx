@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { FormData, FunnelResult } from "@/types/funnel";
+import { FormData, FunnelResult, ExperienceLevel } from "@/types/funnel";
 import { generateFunnel } from "@/engine/funnelEngine";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -16,7 +16,7 @@ const Index = () => {
   const [state, setState] = useState<AppState>("landing");
   const [result, setResult] = useState<FunnelResult | null>(null);
   const [formDataCache, setFormDataCache] = useState<FormData | null>(null);
-  const { persistFormData, refreshSavedPlanCount } = useUserProfile();
+  const { persistFormData, refreshSavedPlanCount, setExperienceLevel } = useUserProfile();
   const { t } = useLanguage();
   const mainContentRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +49,11 @@ const Index = () => {
     setState("results");
   }, []);
 
+  const handleStartWithSegment = useCallback((segment: ExperienceLevel) => {
+    setExperienceLevel(segment);
+    setState("form");
+  }, [setExperienceLevel]);
+
   return (
     <div className="min-h-screen bg-background">
       <a href="#main-content" className="skip-to-content">
@@ -57,7 +62,7 @@ const Index = () => {
       <Header onSavedPlans={() => setState("savedPlans")} />
       <div id="main-content" ref={mainContentRef} tabIndex={-1} className="outline-none">
       {state === "landing" && (
-        <LandingPage onStart={() => setState("form")} onLoadLastPlan={handleLoadLastPlan} />
+        <LandingPage onStart={() => setState("form")} onStartWithSegment={handleStartWithSegment} onLoadLastPlan={handleLoadLastPlan} />
       )}
       {state === "form" && (
         <MultiStepForm

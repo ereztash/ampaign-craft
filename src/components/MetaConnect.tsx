@@ -31,10 +31,10 @@ const MetaConnect = ({
 
   if (loading) {
     return (
-      <Card className="border-blue-200 bg-blue-50/50">
+      <Card className="border-primary/30 bg-primary/5">
         <CardContent className="flex items-center gap-3 py-6">
-          <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-          <span className="text-sm text-blue-700">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <span className="text-sm text-primary">
             {isHe ? "מתחבר לחשבון מטא..." : "Connecting to Meta..."}
           </span>
         </CardContent>
@@ -63,7 +63,7 @@ const MetaConnect = ({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          <Button onClick={onConnect} className="gap-2 bg-[#1877F2] hover:bg-[#1565C0]">
+          <Button onClick={onConnect} className="gap-2 bg-primary hover:bg-primary/90">
             <Facebook className="h-4 w-4" />
             {isHe ? "כניסה עם Facebook" : "Continue with Facebook"}
           </Button>
