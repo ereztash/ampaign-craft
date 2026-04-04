@@ -181,7 +181,7 @@ export interface FunnelResult {
   overallTips: { he: string; en: string }[];
   hookTips: HookTip[];
   copyLab: CopyLabData;
-  kpis: { name: { he: string; en: string }; target: string }[];
+  kpis: { name: { he: string; en: string }; target: string; confidence?: "high" | "medium" | "low" }[];
   createdAt: string;
   formData: FormData;
   personalBrand?: PersonalBrandData;

@@ -4,8 +4,10 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult, SavedPlan, ExperienceLevel } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database } from "lucide-react";
+import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { getTotalUsers } from "@/lib/socialProofData";
+import { generateWeeklyPulse } from "@/engine/pulseEngine";
 
 interface LandingPageProps {
   onStart: () => void;
@@ -100,11 +102,40 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
               )}
 
               {/* Mini stats */}
-              <div className="mb-8 flex justify-center gap-6 text-sm text-muted-foreground">
+              <div className="mb-6 flex justify-center gap-6 text-sm text-muted-foreground">
                 <span>{language === "he" ? `${profile.savedPlanCount} תוכניות` : `${profile.savedPlanCount} plans`}</span>
                 <span>•</span>
                 <span>{language === "he" ? `ביקור #${profile.visitCount}` : `Visit #${profile.visitCount}`}</span>
               </div>
+
+              {/* Weekly Pulse Card */}
+              {(() => {
+                const plans: SavedPlan[] = (() => { try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; } })();
+                const pulse = generateWeeklyPulse(plans);
+                if (!pulse) return null;
+                return (
+                  <Card className="mx-auto mb-8 max-w-lg border-accent/20 bg-accent/5">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Zap className="h-4 w-4 text-accent" />
+                        <span className="font-semibold text-foreground text-sm">{pulse.greeting[language]}</span>
+                      </div>
+                      <div className="space-y-2">
+                        {pulse.actions.map((a, i) => (
+                          <div key={i} className="flex items-start gap-2 text-xs">
+                            <span>{a.emoji}</span>
+                            <div>
+                              <span className="text-foreground">{a.action[language]}</span>
+                              <span className="text-muted-foreground ml-1">({a.impact[language]})</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="mt-3 text-[11px] text-muted-foreground italic">{pulse.insightOfTheWeek[language]}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
 
               <div className="flex flex-wrap justify-center gap-4">
                 <Button
@@ -121,8 +152,13 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
               <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
                 {t("heroTitle")}
               </h1>
-              <p className="mb-10 text-lg text-muted-foreground sm:text-xl">
+              <p className="mb-6 text-lg text-muted-foreground sm:text-xl">
                 {t("heroSubtitle")}
+              </p>
+              <p className="mb-8 text-sm text-muted-foreground">
+                {isHe
+                  ? `${getTotalUsers().toLocaleString()}+ עסקים ישראליים כבר משתמשים`
+                  : `${getTotalUsers().toLocaleString()}+ Israeli businesses already using it`}
               </p>
               <Button
                 size="lg"

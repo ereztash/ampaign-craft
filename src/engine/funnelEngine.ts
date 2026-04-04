@@ -635,12 +635,22 @@ function getOverallTips(data: FormData): { he: string; en: string }[] {
   return tips.slice(0, 12);
 }
 
-function getKpis(data: FormData): { name: { he: string; en: string }; target: string }[] {
-  const kpis: { name: { he: string; en: string }; target: string }[] = [];
+function getKpis(data: FormData): { name: { he: string; en: string }; target: string; confidence?: "high" | "medium" | "low" }[] {
+  const kpis: { name: { he: string; en: string }; target: string; confidence?: "high" | "medium" | "low" }[] = [];
+
+  // Calculate confidence based on how much data we have
+  const filledFields = [data.mainGoal, data.audienceType, data.budgetRange, data.businessField, data.salesModel]
+    .filter(Boolean).length;
+  const hasPrice = data.averagePrice > 0;
+  const hasChannels = data.existingChannels.length > 0;
+  const baseConfidence: "high" | "medium" | "low" =
+    filledFields >= 4 && hasPrice && hasChannels ? "high" :
+    filledFields >= 3 ? "medium" : "low";
 
   kpis.push({
     name: { he: "עלות לקליק (CPC)", en: "Cost per Click (CPC)" },
     target: data.audienceType === "b2b" ? "₪3-8" : "₪1-4",
+    confidence: baseConfidence,
   });
 
   if (data.mainGoal === "leads" || data.mainGoal === "sales") {
@@ -716,7 +726,8 @@ function getKpis(data: FormData): { name: { he: string; en: string }; target: st
     target: "200-400%",
   });
 
-  return kpis;
+  // Apply confidence to all KPIs that don't have it yet
+  return kpis.map((kpi) => ({ ...kpi, confidence: kpi.confidence || baseConfidence }));
 }
 
 function getHookTips(data: FormData): HookTip[] {

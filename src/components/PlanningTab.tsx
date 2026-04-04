@@ -67,7 +67,21 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
             <div className="grid gap-3 sm:grid-cols-2">
               {kpis.map((kpi, i) => (
                 <div key={i} className="rounded-xl border p-3">
-                  <div className="text-sm text-muted-foreground">{kpi.name[language]}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm text-muted-foreground">{kpi.name[language]}</span>
+                    {kpi.confidence && (
+                      <span
+                        className={`inline-block h-2 w-2 rounded-full ${
+                          kpi.confidence === "high" ? "bg-accent" :
+                          kpi.confidence === "medium" ? "bg-chart-3" :
+                          "bg-destructive/50"
+                        }`}
+                        title={kpi.confidence === "high" ? (isHe ? "ביטחון גבוה" : "High confidence") :
+                               kpi.confidence === "medium" ? (isHe ? "ביטחון בינוני" : "Medium confidence") :
+                               (isHe ? "ביטחון נמוך" : "Low confidence")}
+                      />
+                    )}
+                  </div>
                   <div className="mt-1 text-xl font-bold text-primary">{kpi.target}</div>
                 </div>
               ))}

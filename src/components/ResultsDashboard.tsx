@@ -14,6 +14,8 @@ import { getTabConfig } from "@/lib/adaptiveTabRules";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getIsraeliToolsSummary, getToolsForChannel } from "@/lib/toolRecommendations";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
+import { calculateHealthScore, getHealthScoreColor } from "@/engine/healthScoreEngine";
+import { getSocialProof } from "@/lib/socialProofData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -54,6 +56,10 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const defaultTab = tabs[0]?.id || "strategy";
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
+
+  // MOAT features
+  const healthScore = calculateHealthScore(result);
+  const socialProof = getSocialProof(result.formData.businessField || "other");
 
   // Data for planning tab
   const israeliTools = getIsraeliToolsSummary();
@@ -169,6 +175,61 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
           {/* Tab 1: Strategy + Tips (collapsible) */}
           <TabsContent value="strategy" className="mt-6">
+            {/* Marketing Health Score */}
+            <Card className="mb-6 border-primary/20">
+              <CardContent className="flex items-center gap-6 p-6">
+                <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+                  <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      className="text-muted/30"
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke={getHealthScoreColor(healthScore.total)}
+                      strokeWidth="3"
+                      strokeDasharray={`${healthScore.total}, 100`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="absolute text-xl font-bold text-foreground">{healthScore.total}</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground">
+                    {isHe ? "ציון בריאות שיווקית" : "Marketing Health Score"}
+                  </h3>
+                  <div className="mt-2 grid gap-1.5">
+                    {healthScore.breakdown.map((b) => (
+                      <div key={b.category} className="flex items-center gap-2">
+                        <div className="h-1.5 flex-1 rounded-full bg-muted/30">
+                          <div
+                            className="h-1.5 rounded-full transition-all"
+                            style={{ width: `${(b.score / b.maxScore) * 100}%`, background: getHealthScoreColor((b.score / b.maxScore) * 100) }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground w-24 text-end">{b.label[language]}</span>
+                        <span className="text-xs font-medium w-8">{b.score}/{b.maxScore}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Social Proof */}
+            <div className="mb-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <span className="inline-flex h-2 w-2 rounded-full bg-accent animate-pulse" />
+              {isHe
+                ? `${socialProof.usersCount.toLocaleString()} עסקים בתחום שלך כבר השתמשו ב-FunnelForge`
+                : `${socialProof.usersCount.toLocaleString()} businesses in your field already use FunnelForge`}
+              <span className="font-semibold text-accent">{socialProof.topMetricValue}</span>
+              <span>{socialProof.topMetric[language]}</span>
+            </div>
+
             <div className="grid gap-4 md:grid-cols-2">
               {result.stages.map((stage, i) => {
                 const stageId = STAGE_IDS[i] || "engagement";
