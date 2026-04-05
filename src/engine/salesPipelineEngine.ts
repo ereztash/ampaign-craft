@@ -247,6 +247,137 @@ function getClosingTips(salesType: SalesPipelineResult["salesType"]): { he: stri
 }
 
 // ═══════════════════════════════════════════════
+// MOAT 1: Neuro-Closing Frameworks
+// ═══════════════════════════════════════════════
+
+export type NeuroVector = "cortisol" | "oxytocin" | "dopamine";
+
+export interface NeuroClosingFramework {
+  name: { he: string; en: string };
+  vector: NeuroVector;
+  vectorLabel: { he: string; en: string };
+  psychology: { he: string; en: string };
+  script: { he: string; en: string };
+  bestFor: { he: string; en: string };
+  emoji: string;
+}
+
+export function getNeuroClosingFrameworks(
+  salesType: SalesPipelineResult["salesType"],
+  audienceType: string
+): NeuroClosingFramework[] {
+  const frameworks: NeuroClosingFramework[] = [
+    {
+      name: { he: "סגירה הנחתית (Assumptive)", en: "Assumptive Close" },
+      vector: "dopamine", vectorLabel: { he: "דופמין — עקביות", en: "Dopamine — Consistency" },
+      psychology: { he: "עיקרון העקביות של צ'יאלדיני: אנשים פועלים בהתאם להתחייבויות קודמות", en: "Cialdini's consistency principle: people act in line with prior commitments" },
+      script: { he: "\"מצוין, אז מתי נוח לך להתחיל — ראשון או שלישי?\" (לא 'אם', אלא 'מתי')", en: "\"Great, so when works for you to start — Monday or Wednesday?\" (not 'if', but 'when')" },
+      bestFor: { he: "לקוחות שכבר אמרו 'כן' למספר שאלות קטנות", en: "Clients who already said 'yes' to several small questions" },
+      emoji: "🧠",
+    },
+    {
+      name: { he: "סגירת Tripwire (מדרגות)", en: "Tripwire Close" },
+      vector: "cortisol", vectorLabel: { he: "קורטיזול → אוקסיטוצין", en: "Cortisol → Oxytocin" },
+      psychology: { he: "מחסום כניסה נמוך יוצר מחויבות. הקורטיזול (פחד להפסיד מבצע) → אוקסיטוצין (הקלה אחרי רכישה)", en: "Low barrier creates commitment. Cortisol (fear of missing deal) → Oxytocin (relief after purchase)" },
+      script: { he: "\"לפני שמתחילים עם הפתרון המלא — יש אפשרות לנסות X ב-₪49 בלבד. ללא התחייבות.\"", en: "\"Before the full solution — you can try X for just ₪49. No commitment.\"" },
+      bestFor: { he: "מוצרים עם עלות גבוהה, לקוחות מהססים", en: "High-cost products, hesitant buyers" },
+      emoji: "🪜",
+    },
+    {
+      name: { he: "סגירה ייעוצית (שותפות)", en: "Consultative Close" },
+      vector: "oxytocin", vectorLabel: { he: "אוקסיטוצין — אמון", en: "Oxytocin — Trust" },
+      psychology: { he: "מצב של 'אנחנו ביחד'. אוקסיטוצין משתחרר כשמרגישים שותפות אמיתית — מפחית התנגדות", en: "A 'we're in this together' state. Oxytocin releases with genuine partnership — reduces resistance" },
+      script: { he: "\"בוא נבנה את זה ביחד. מה הכי חשוב לך — X או Y? אני אתאים את הפתרון בדיוק לזה.\"", en: "\"Let's build this together. What matters most to you — X or Y? I'll tailor the solution exactly to that.\"" },
+      bestFor: { he: "B2B, שירותים, ייעוץ, לקוחות אנליטיים", en: "B2B, services, consulting, analytical buyers" },
+      emoji: "🤝",
+    },
+    {
+      name: { he: "סגירת הוכחה (Data-Driven)", en: "Proof Close" },
+      vector: "dopamine", vectorLabel: { he: "דופמין — ביטחון", en: "Dopamine — Certainty" },
+      psychology: { he: "System 2 (חשיבה אנליטית). דופמין משתחרר כשמוצאים תשובה ברורה — 'הנה ההוכחה'", en: "System 2 (analytical thinking). Dopamine releases when finding a clear answer — 'here's the proof'" },
+      script: { he: "\"הנה 3 לקוחות בדיוק בגודל שלך: A הגדיל ב-40%, B חסך ₪X, C סגר ב-Y ימים. הנתונים מדברים.\"", en: "\"Here are 3 clients your exact size: A grew 40%, B saved ₪X, C closed in Y days. The data speaks.\"" },
+      bestFor: { he: "מהנדסים, CFOs, לקוחות שאוהבים מספרים", en: "Engineers, CFOs, data-driven buyers" },
+      emoji: "📊",
+    },
+    {
+      name: { he: "סגירת הפניה (Network)", en: "Referral Close" },
+      vector: "oxytocin", vectorLabel: { he: "אוקסיטוצין — זהות חברתית", en: "Oxytocin — Social Identity" },
+      psychology: { he: "הזהות החברתית — אנשים רוצים להיות חלק מקבוצה. אוקסיטוצין = belonging", en: "Social identity — people want to belong. Oxytocin = belonging" },
+      script: { he: "\"אגב, מי שהפנה אותך — [שם] — הוא אחד הלקוחות הכי מרוצים שלנו. הוא אמר שזה בדיוק מה שאתה צריך.\"", en: "\"By the way, [name] who referred you is one of our happiest clients. They said this is exactly what you need.\"" },
+      bestFor: { he: "כשיש referral, קהילות, B2B ישראלי (הכל דרך קשרים)", en: "When there's a referral, communities, Israeli B2B (everything through connections)" },
+      emoji: "🔗",
+    },
+  ];
+
+  // Enterprise gets an extra framework
+  if (salesType === "enterprise") {
+    frameworks.push({
+      name: { he: "סגירת Champion (הפנימי)", en: "Champion Close" },
+      vector: "oxytocin", vectorLabel: { he: "אוקסיטוצין — מנטור", en: "Oxytocin — Mentorship" },
+      psychology: { he: "ה-Champion הפנימי מרגיש 'בעלות' על הפרויקט. תן לו להיות הגיבור — הוא ימכור בפנים", en: "The internal Champion feels 'ownership' of the project. Let them be the hero — they'll sell internally" },
+      script: { he: "\"אני רוצה שתצליח עם זה בפנים. הנה one-pager שתוכל להראות ל-CFO — עם ROI מחושב.\"", en: "\"I want you to succeed with this internally. Here's a one-pager for the CFO — with calculated ROI.\"" },
+      bestFor: { he: "Enterprise, מכירות מרובות-משתתפים", en: "Enterprise, multi-stakeholder sales" },
+      emoji: "🏆",
+    });
+  }
+
+  return frameworks;
+}
+
+// ═══════════════════════════════════════════════
+// MOAT 9: Buyer Personality Types (DISC-Inspired)
+// ═══════════════════════════════════════════════
+
+export type BuyerPersonality = "analytical" | "driver" | "amiable" | "expressive";
+
+export interface PersonalityProfile {
+  id: BuyerPersonality;
+  name: { he: string; en: string };
+  emoji: string;
+  traits: { he: string; en: string };
+  sellTo: { he: string; en: string };
+  avoid: { he: string; en: string };
+}
+
+export const BUYER_PERSONALITIES: PersonalityProfile[] = [
+  {
+    id: "analytical", name: { he: "אנליטי", en: "Analytical" }, emoji: "🔬",
+    traits: { he: "אוהב מספרים, שואל הרבה שאלות, צריך זמן לחשוב", en: "Loves data, asks many questions, needs time to think" },
+    sellTo: { he: "הראה ROI מדויק, השווה אלטרנטיבות, תן מסמכים מפורטים", en: "Show exact ROI, compare alternatives, provide detailed documents" },
+    avoid: { he: "לא ללחוץ על זמן, לא להגזים בהבטחות", en: "Don't pressure on time, don't over-promise" },
+  },
+  {
+    id: "driver", name: { he: "מוביל", en: "Driver" }, emoji: "🎯",
+    traits: { he: "ישיר, חסר סבלנות, רוצה תוצאות, ממוקד בשורה תחתונה", en: "Direct, impatient, wants results, bottom-line focused" },
+    sellTo: { he: "תמצת — 3 נקודות מפתח. הראה תוצאות מהירות. תן שליטה", en: "Be concise — 3 key points. Show quick results. Give control" },
+    avoid: { he: "לא לפטפט, לא להסביר מדי, לא להיות אגרסיבי מדי", en: "Don't ramble, don't over-explain, don't be too pushy" },
+  },
+  {
+    id: "amiable", name: { he: "חברותי", en: "Amiable" }, emoji: "💚",
+    traits: { he: "ערכי, מקשיב, נאמן, חושש מסיכון, צריך אמון", en: "Values-driven, good listener, loyal, risk-averse, needs trust" },
+    sellTo: { he: "בנה יחסים לפני מכירה. הראה עדויות. הבטח תמיכה אחרי רכישה", en: "Build relationship before selling. Show testimonials. Promise post-purchase support" },
+    avoid: { he: "לא ללחוץ, לא להיות שטחי, לא לזלזל בחששות", en: "Don't pressure, don't be superficial, don't dismiss concerns" },
+  },
+  {
+    id: "expressive", name: { he: "אקספרסיבי", en: "Expressive" }, emoji: "🌟",
+    traits: { he: "חזון, השראה, רוצה להיות ראשון, אוהב סיפורים", en: "Visionary, inspirational, wants to be first, loves stories" },
+    sellTo: { he: "צייר חזון עתידי. הראה איך יהיה 'הראשון'. ספר סיפורי הצלחה מרגשים", en: "Paint a future vision. Show how they'll be 'first'. Tell inspiring success stories" },
+    avoid: { he: "לא להיות יבש מדי, לא רק מספרים — צריך רגש", en: "Don't be too dry, not just numbers — needs emotion" },
+  },
+];
+
+export function detectBuyerPersonality(audienceType: string, businessField: string): BuyerPersonality {
+  // B2B tech/finance → Analytical
+  if (audienceType === "b2b" && (businessField === "tech" || businessField === "realEstate")) return "analytical";
+  // B2B services → Amiable
+  if (audienceType === "b2b" && (businessField === "services" || businessField === "health")) return "amiable";
+  // Personal brand / education → Expressive
+  if (businessField === "personalBrand" || businessField === "education") return "expressive";
+  // Default → Driver
+  return "driver";
+}
+
+// ═══════════════════════════════════════════════
 // Main Generator
 // ═══════════════════════════════════════════════
 
