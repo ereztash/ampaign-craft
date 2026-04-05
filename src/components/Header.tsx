@@ -3,7 +3,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
-import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award } from "lucide-react";
+import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award, UserCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useDarkMode } from "@/hooks/useDarkMode";
 
@@ -15,6 +16,7 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
   const { language, setLanguage, t } = useLanguage();
   const { isDark, toggle: toggleDarkMode } = useDarkMode();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const isHe = language === "he";
@@ -60,9 +62,9 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
             {/* Auth button */}
             {user ? (
               <div className="flex items-center gap-1.5">
-                <span className="hidden sm:inline text-xs text-muted-foreground max-w-[120px] truncate">
-                  {user.email}
-                </span>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/profile")} title={isHe ? "פרופיל" : "Profile"}>
+                  <UserCircle className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="sm" onClick={signOut} title={isHe ? "התנתק" : "Sign out"}>
                   <LogOut className="h-4 w-4" />
                 </Button>
