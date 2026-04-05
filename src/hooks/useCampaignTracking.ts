@@ -48,15 +48,14 @@ export function useCampaignTracking(planId: string | null) {
     setLoading(true);
 
     if (user) {
-      const { data } = await supabase
-        .from("campaign_tracking")
+      const { data } = await (supabase.from as any)("campaign_tracking")
         .select("*")
         .eq("plan_id", planId)
         .eq("user_id", user.id)
         .order("date", { ascending: false });
 
       if (data) {
-        setMetrics(data.map((r) => ({
+        setMetrics((data as any[]).map((r: any) => ({
           id: r.id,
           planId: r.plan_id,
           stageId: r.stage_id,
@@ -88,7 +87,7 @@ export function useCampaignTracking(planId: string | null) {
     };
 
     if (user) {
-      await supabase.from("campaign_tracking").insert({
+      await (supabase.from as any)("campaign_tracking").insert({
         id: entry.id,
         user_id: user.id,
         plan_id: planId,
@@ -100,7 +99,6 @@ export function useCampaignTracking(planId: string | null) {
       });
     }
 
-    // Local cache
     const all = safeParseJson<TrackedMetric[]>(LOCAL_KEY, []);
     all.push(entry);
     saveLocal(all);
