@@ -1,4 +1,5 @@
 import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip, CopyLabData, CopyFormula, ReaderProfile, WritingTechnique, PersonalBrandData, NeuroStorytellingData, NeuroVector, NeuroPromptTemplate, EntropyGuide } from "@/types/funnel";
+import { UserKnowledgeGraph, getFieldNameHe, getFieldNameEn, formatPrice } from "./userKnowledgeGraph";
 
 function getBudgetRange(range: string): { min: number; max: number } {
   switch (range) {
@@ -1342,4 +1343,130 @@ function getNeuroStorytellingData(data: FormData, stageDefinitions: { id: string
   };
 
   return { vectors, promptTemplates, entropyGuide, axiom };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// POST-GENERATION PERSONALIZATION
+// Takes a FunnelResult + UserKnowledgeGraph and enriches
+// copy examples and hooks with the user's actual business data
+// ═══════════════════════════════════════════════════════════════
+
+export function personalizeResult(result: FunnelResult, graph: UserKnowledgeGraph): FunnelResult {
+  return {
+    ...result,
+    copyLab: personalizeCopyLab(result.copyLab, graph),
+    hookTips: personalizeHookTips(result.hookTips, graph),
+  };
+}
+
+function personalizeCopyLab(copyLab: CopyLabData, g: UserKnowledgeGraph): CopyLabData {
+  const fieldHe = getFieldNameHe(g.business.field);
+  const fieldEn = getFieldNameEn(g.business.field);
+  const product = g.business.product || fieldHe;
+  const productEn = g.business.product || fieldEn;
+  const price = formatPrice(g.business.price);
+  const painHe = g.derived.industryPainPoints[0]?.he || "הבעיה";
+  const painEn = g.derived.industryPainPoints[0]?.en || "the problem";
+  const pain2He = g.derived.industryPainPoints[1]?.he || "אתגרים";
+  const pain2En = g.derived.industryPainPoints[1]?.en || "challenges";
+  const mechanism = g.differentiation?.mechanismStatement?.mechanism || "";
+  const competitor = g.differentiation?.competitors?.[0] || "";
+  const audienceHe = g.business.audience === "b2b" ? "מנהלים" : g.business.audience === "both" ? "לקוחות ועסקים" : "לקוחות";
+  const audienceEn = g.business.audience === "b2b" ? "managers" : g.business.audience === "both" ? "clients and businesses" : "customers";
+  const monthlyCost = formatPrice(Math.round(g.business.price * 0.4));
+  const identity = g.derived.identityStatement;
+
+  const personalizedFormulas = copyLab.formulas.map((formula) => {
+    // PAS
+    if (formula.origin?.includes("Schwartz") || formula.origin?.includes("Kennedy")) {
+      return {
+        ...formula,
+        example: {
+          he: `"${painHe}? (בעיה)\nכל חודש שעובר בלי פתרון, ${pain2He} מחמיר — ואת/ה מפסיד/ה ${monthlyCost}. (הגברה)\n${product ? `ב-${price}, ${product}` : `הפתרון שלנו`} פותר את זה תוך שבועיים. (פתרון)"`,
+          en: `"${painEn}? (Problem)\nEvery month without a fix, ${pain2En} gets worse — costing you ${monthlyCost}. (Agitation)\n${productEn ? `For ${price}, ${productEn}` : `Our solution`} fixes this within 2 weeks. (Solution)"`,
+        },
+      };
+    }
+    // AIDA
+    if (formula.origin?.includes("Lewis") || formula.origin?.includes("1898")) {
+      return {
+        ...formula,
+        example: {
+          he: `"[A] ${g.business.audience === "b2b" ? `73% מ${audienceHe} בתחום ה${fieldHe}` : `רוב ה${audienceHe} בתחום ה${fieldHe}`} מתמודדים עם ${painHe}\n[I] ${g.business.audience === "b2b" ? `אם אתה מנהל עסק ${fieldHe}, זה עולה לך ${monthlyCost} בחודש` : `וזה עולה לך ${monthlyCost} בחודש`}\n[D] דמיין: ${painHe} נפתר תוך חודש — ואתה מתמקד ב${g.business.goal === "sales" ? "מכירות" : g.business.goal === "leads" ? "לידים חדשים" : "צמיחה"}\n[A] התחל עכשיו — ${price}"`,
+          en: `"[A] ${g.business.audience === "b2b" ? `73% of ${fieldEn} ${audienceEn}` : `Most ${fieldEn} ${audienceEn}`} struggle with ${painEn}\n[I] ${g.business.audience === "b2b" ? `If you run a ${fieldEn} business, this costs ${monthlyCost}/month` : `And it costs you ${monthlyCost}/month`}\n[D] Imagine: ${painEn} solved in a month — and you focus on ${g.business.goal === "sales" ? "sales" : g.business.goal === "leads" ? "new leads" : "growth"}\n[A] Start now — ${price}"`,
+        },
+      };
+    }
+    // BAB
+    if (formula.origin?.includes("Collier") || formula.origin?.includes("1931")) {
+      return {
+        ...formula,
+        example: {
+          he: `"[לפני] ${painHe} — כל יום אותו סיפור\n[אחרי] ${mechanism || `${painHe} נפתר`}, ואתה מתמקד במה שבאמת חשוב\n[גשר] ${product || "הפתרון שלנו"} — ${price}"`,
+          en: `"[Before] ${painEn} — same story every day\n[After] ${mechanism || `${painEn} solved`}, and you focus on what truly matters\n[Bridge] ${productEn || "Our solution"} — ${price}"`,
+        },
+      };
+    }
+    // Caples' Question (B2B)
+    if (formula.origin?.includes("Caples")) {
+      return {
+        ...formula,
+        example: {
+          he: `"האם אתה עושה את 3 הטעויות האלה ב${fieldHe}?"\n"למה ${g.business.audience === "b2b" ? "רוב חברות ה" + fieldHe : "רוב עסקי ה" + fieldHe} מפסידים ${monthlyCost} בחודש — ומה אלה שמצליחים עושים אחרת?"`,
+          en: `"Do you make these 3 ${fieldEn} mistakes?"\n"Why most ${fieldEn} businesses lose ${monthlyCost}/month — and what the successful ones do differently?"`,
+        },
+      };
+    }
+    // Hopkins (B2C)
+    if (formula.origin?.includes("Hopkins")) {
+      return {
+        ...formula,
+        example: {
+          he: `"[תועלת] ${painHe.replace(/^./, (c) => c)} — נפתר תוך שבועיים\n[אינטרס] בלי לשלם הון\n[סיפור] לקוח/ה בתחום ה${fieldHe} הגיע/ה עם ${pain2He} — ותוך חודש...\n[הצעה] ${product || "התחלה"} ב-${price}\n[CTA] הזמן/י עכשיו — ניסיון ללא סיכון"`,
+          en: `"[Benefit] ${painEn} — solved in 2 weeks\n[Self-interest] Without spending a fortune\n[Story] A ${fieldEn} client came to us with ${pain2En} — within a month...\n[Offer] ${productEn || "Get started"} for ${price}\n[CTA] Order now — risk-free trial"`,
+        },
+      };
+    }
+    return formula;
+  });
+
+  return { ...copyLab, formulas: personalizedFormulas };
+}
+
+function personalizeHookTips(hooks: HookTip[], g: UserKnowledgeGraph): HookTip[] {
+  const fieldHe = getFieldNameHe(g.business.field);
+  const fieldEn = getFieldNameEn(g.business.field);
+  const painHe = g.derived.industryPainPoints[0]?.he || "הבעיה";
+  const painEn = g.derived.industryPainPoints[0]?.en || "the problem";
+  const monthlyCost = formatPrice(Math.round(g.business.price * 0.4));
+  const mechanism = g.differentiation?.mechanismStatement?.mechanism || "";
+  const audienceHe = g.business.audience === "b2b" ? "מנהלים" : "בעלי עסקים";
+  const audienceEn = g.business.audience === "b2b" ? "managers" : "business owners";
+
+  return hooks.map((hook) => {
+    switch (hook.law) {
+      case "curiosityGap":
+        return { ...hook, example: {
+          he: `"73% מ${audienceHe} בתחום ה${fieldHe} עושים את הטעות הזו — וזה לא מה שאתה חושב"`,
+          en: `"73% of ${fieldEn} ${audienceEn} make this mistake — and it's not what you think"`,
+        }};
+      case "lossAversion":
+        return { ...hook, example: {
+          he: `"כל חודש בלי אופטימיזציה עולה לך ${monthlyCost} — הפסד שקט שה${audienceHe} החכמים כבר עצרו"`,
+          en: `"Every month without optimization costs you ${monthlyCost} — a silent loss smart ${audienceEn} already stopped"`,
+        }};
+      case "anchoring":
+        return { ...hook, example: {
+          he: `"שיפור של 23.7% בהמרות ל${fieldHe} תוך 14 ימים" במקום "שיפור משמעותי"`,
+          en: `"23.7% conversion improvement for ${fieldEn} in 14 days" instead of "significant improvement"`,
+        }};
+      case "identityBoundary":
+        return { ...hook, example: mechanism
+          ? { he: `"יש 2 סוגי ${audienceHe} ב${fieldHe}: אלה ש${mechanism} ואלה שעדיין תקועים"`, en: `"There are 2 types of ${fieldEn} ${audienceEn}: those who ${mechanism} and those still stuck"` }
+          : { he: `"יש 2 סוגי ${audienceHe} ב${fieldHe}: אלה שכבר פתרו ${painHe} ואלה שמפסידים ${monthlyCost} כל חודש"`, en: `"There are 2 types of ${fieldEn} ${audienceEn}: those who solved ${painEn} and those losing ${monthlyCost}/month"` },
+        };
+      default:
+        return hook;
+    }
+  });
 }

@@ -25,6 +25,8 @@ import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { getEventsForField } from "@/lib/israeliMarketCalendar";
 import { generateCLGStrategy } from "@/engine/clgEngine";
 import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
+import { personalizeResult } from "@/engine/funnelEngine";
+import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
@@ -70,6 +72,10 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const defaultTab = tabs[0]?.id || "strategy";
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
+
+  // Knowledge graph + personalized result
+  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const personalizedResult = useMemo(() => personalizeResult(result, graph), [result, graph]);
 
   // MOAT features (memoized — only recompute when result changes)
   const healthScore = useMemo(() => calculateHealthScore(result), [result]);
@@ -481,7 +487,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
           {/* Tab 3: Content (Hooks + CopyLab + NeuroStory) */}
           <TabsContent value="content" className="mt-6">
-            <ContentTab result={result} isSimplified={isSimplified("content")} />
+            <ContentTab result={personalizedResult} isSimplified={isSimplified("content")} />
           </TabsContent>
 
           {/* Tab 4: Analytics (Monitor + Data) */}
