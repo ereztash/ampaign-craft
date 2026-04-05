@@ -217,6 +217,12 @@ export function useAchievements(language: "he" | "en" = "he") {
     [language]
   );
 
+  // Auto-unlock streak achievements
+  useEffect(() => {
+    if (streak.currentStreak >= 4) unlock("streak_4");
+    if (streak.currentStreak >= 12) unlock("streak_12");
+  }, [streak.currentStreak, unlock]);
+
   const trackFeature = useCallback((featureId: string) => {
     setMasteryFeatures((prev) => {
       if (prev.has(featureId)) return prev;
