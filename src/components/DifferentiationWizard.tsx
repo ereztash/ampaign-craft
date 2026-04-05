@@ -107,6 +107,22 @@ const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProp
     if (currentPhase.aiEnrichment) {
       await callAi(currentPhase.id);
       if (currentPhase.id === "synthesis") return; // onComplete called in callAi
+      // If AI failed, don't block — user can still proceed (insights will be empty)
+      if (aiError) return; // stay on phase, show error + skip button
+    }
+    setDirection(1);
+    setPhaseIndex((i) => Math.min(i + 1, PHASES.length - 1));
+  };
+
+  const handleSkipAi = () => {
+    // Skip AI enrichment and continue with local-only results
+    setAiError(null);
+    setAiInsights([]);
+    if (currentPhase.id === "synthesis") {
+      // Generate without AI
+      const finalResult = generateDifferentiation(formData, aiResults);
+      onComplete(finalResult);
+      return;
     }
     setDirection(1);
     setPhaseIndex((i) => Math.min(i + 1, PHASES.length - 1));
@@ -178,7 +194,14 @@ const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProp
                   <>
                     <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
                     <p className="text-sm text-destructive">{aiError}</p>
-                    <Button onClick={() => callAi("synthesis")}>{isHe ? "נסה שוב" : "Try Again"}</Button>
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <Button onClick={() => { setAiError(null); callAi("synthesis"); }}>
+                        {isHe ? "🔄 נסה שוב" : "🔄 Try Again"}
+                      </Button>
+                      <Button variant="outline" onClick={handleSkipAi}>
+                        {isHe ? "צור דוח בלי AI" : "Generate without AI"}
+                      </Button>
+                    </div>
                   </>
                 ) : (
                   <>
@@ -223,13 +246,24 @@ const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProp
       )}
 
       {/* AI Error */}
+      {/* AI Error with retry + skip */}
       {aiError && !isSynthesisPhase && (
         <Card className="border-destructive/30 bg-destructive/5">
-          <CardContent className="p-4 flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm text-destructive">{aiError}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t("diffError")}</p>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm text-destructive">{aiError}</p>
+                <p className="text-xs text-muted-foreground mt-1">{t("diffError")}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => { setAiError(null); handleNext(); }}>
+                {isHe ? "🔄 נסה שוב" : "🔄 Try again"}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleSkipAi} className="text-muted-foreground">
+                {isHe ? "המשך בלי AI →" : "Continue without AI →"}
+              </Button>
             </div>
           </CardContent>
         </Card>
