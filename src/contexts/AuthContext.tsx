@@ -1,11 +1,14 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
 
 interface AuthContextValue {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  tier: PricingTier;
+  canUse: (feature: Feature) => boolean;
   signUp: (email: string, password: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -17,6 +20,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tier, setTier] = useState<PricingTier>("free");
+
+  const canUse = useCallback((feature: Feature) => canAccess(tier, feature), [tier]);
 
   useEffect(() => {
     // Get initial session
@@ -27,9 +33,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
+      if (s?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", s.user.id)
+          .single();
+        const storedTier = profile?.display_name;
+        if (storedTier === "pro" || storedTier === "business") {
+          setTier(storedTier);
+        }
+      } else {
+        setTier("free");
+      }
       setLoading(false);
     });
 
@@ -64,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, tier, canUse, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

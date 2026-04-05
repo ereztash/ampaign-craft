@@ -19,4 +19,16 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom"],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          charts: ["recharts"],
+          pdf: ["jspdf", "html2canvas"],
+          ui: ["framer-motion", "@radix-ui/react-dialog", "@radix-ui/react-tabs"],
+        },
+      },
+    },
+  },
 }));

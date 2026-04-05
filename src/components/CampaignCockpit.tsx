@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useCampaignTracking, MetricComparison } from "@/hooks/useCampaignTracking";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
+import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus, Plus, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Plus, BarChart3, Lock } from "lucide-react";
 
 const METRICS = ["CPC", "CPL", "CPA", "CTR", "CVR", "Impressions", "Clicks", "Conversions"];
 
@@ -15,6 +17,7 @@ const CampaignCockpit = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { plans } = useSavedPlans();
+  const { canUse, checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const { metrics, addMetric, getComparison } = useCampaignTracking(selectedPlanId);
 
@@ -60,6 +63,21 @@ const CampaignCockpit = () => {
         </div>
       </div>
 
+      {!canUse("campaignCockpit") && (
+        <Card className="border-dashed border-primary/20">
+          <CardContent className="text-center py-8">
+            <Lock className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground mb-3">
+              {isHe ? "Campaign Cockpit זמין בתוכנית Business" : "Campaign Cockpit is available in the Business plan"}
+            </p>
+            <Button onClick={() => checkAccess("campaignCockpit", "business")} variant="outline">
+              {isHe ? "שדרג עכשיו" : "Upgrade Now"}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {canUse("campaignCockpit") && <>
       {/* Plan Selector */}
       <Select value={selectedPlanId || ""} onValueChange={setSelectedPlanId}>
         <SelectTrigger>
@@ -172,6 +190,8 @@ const CampaignCockpit = () => {
           )}
         </>
       )}
+    </>}
+    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} />
     </div>
   );
 };

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getWhatsAppTemplates, getWhatsAppCostEstimate, WhatsAppTemplate } from "@/lib/whatsappTemplates";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
+import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Check, MessageCircle, Calculator } from "lucide-react";
+import { Copy, Check, MessageCircle, Calculator, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 interface WhatsAppTemplatesPanelProps {
@@ -14,11 +16,13 @@ interface WhatsAppTemplatesPanelProps {
 const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplatesPanelProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
+  const { canUse, checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
   const templates = getWhatsAppTemplates();
   const costEstimate = getWhatsAppCostEstimate(monthlyConversations);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const copyTemplate = (template: WhatsAppTemplate) => {
+    if (!checkAccess("whatsappTemplates", "business")) return;
     navigator.clipboard.writeText(template.template[language]);
     setCopiedId(template.stage);
     toast.success(isHe ? "התבנית הועתקה!" : "Template copied!");
@@ -26,6 +30,7 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
   };
 
   return (
+    <>
     <Card className="mt-4 border-green-500/20">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm">
@@ -76,6 +81,8 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
         </div>
       </CardContent>
     </Card>
+    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} />
+    </>
   );
 };
 

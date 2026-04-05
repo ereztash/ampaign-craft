@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { FunnelResult } from "@/types/funnel";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
+import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Send, Loader2, Sparkles } from "lucide-react";
+import { Bot, Send, Loader2, Sparkles, Lock } from "lucide-react";
 
 interface AiCoachChatProps {
   result: FunnelResult;
@@ -36,6 +38,7 @@ const QUICK_PROMPTS = {
 const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
+  const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,6 +51,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || loading) return;
+    if (!checkAccess("aiCoachMessages", "pro")) return;
 
     const userMsg: ChatMessage = { role: "user", content: text.trim() };
     setMessages((prev) => [...prev, userMsg]);
@@ -82,6 +86,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   };
 
   return (
+    <>
     <Card className="flex flex-col h-[500px]">
       <CardHeader className="pb-3 shrink-0">
         <CardTitle className="flex items-center gap-2 text-base">
@@ -169,6 +174,8 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         </div>
       </CardContent>
     </Card>
+    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} />
+    </>
   );
 };
 

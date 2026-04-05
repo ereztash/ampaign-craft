@@ -62,9 +62,12 @@ const Index = () => {
       <a href="#main-content" className="skip-to-content">
         {t("skipToContent")}
       </a>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md">
+        Skip to main content
+      </a>
       <Header onSavedPlans={() => setState("savedPlans")} />
       <OnboardingOverlay />
-      <div id="main-content" ref={mainContentRef} tabIndex={-1} className="outline-none">
+      <main id="main-content" role="main" ref={mainContentRef} tabIndex={-1} className="outline-none" aria-live="polite">
       {state === "landing" && (
         <LandingPage onStart={() => setState("form")} onStartWithSegment={handleStartWithSegment} onLoadLastPlan={handleLoadLastPlan} />
       )}
@@ -90,7 +93,7 @@ const Index = () => {
           onLoadPlan={handleLoadPlan}
         />
       )}
-      </div>
+      </main>
     </div>
   );
 };

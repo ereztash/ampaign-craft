@@ -1,12 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
-import BrandDiagnosticTab from "@/components/BrandDiagnosticTab";
-import PlanningTab from "@/components/PlanningTab";
-import ContentTab from "@/components/ContentTab";
-import AnalyticsTab from "@/components/AnalyticsTab";
-import AiCoachChat from "@/components/AiCoachChat";
-import WhatsAppTemplatesPanel from "@/components/WhatsAppTemplatesPanel";
-import StylomeExtractor from "@/components/StylomeExtractor";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import AdaptiveTabNav from "@/components/AdaptiveTabNav";
+
+const BrandDiagnosticTab = lazy(() => import("@/components/BrandDiagnosticTab"));
+const PlanningTab = lazy(() => import("@/components/PlanningTab"));
+const ContentTab = lazy(() => import("@/components/ContentTab"));
+const AnalyticsTab = lazy(() => import("@/components/AnalyticsTab"));
+const AiCoachChat = lazy(() => import("@/components/AiCoachChat"));
+const WhatsAppTemplatesPanel = lazy(() => import("@/components/WhatsAppTemplatesPanel"));
+const StylomeExtractor = lazy(() => import("@/components/StylomeExtractor"));
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -21,6 +22,8 @@ import { getSocialProof } from "@/lib/socialProofData";
 import { calculateRoi } from "@/lib/roiCalculator";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
+import { useFeatureGate } from "@/hooks/useFeatureGate";
+import PaywallModal from "@/components/PaywallModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -68,6 +71,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const socialProof = useMemo(() => getSocialProof(result.formData.businessField || "other"), [result.formData.businessField]);
   const roiEstimate = useMemo(() => calculateRoi(result.formData), [result.formData]);
   const { unlock, trackFeature } = useAchievements(language);
+  const featureGate = useFeatureGate();
   const { savePlan: savePlanToStore, plans: savedPlans } = useSavedPlans();
 
   // Auto-trigger achievements on mount
@@ -112,6 +116,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   };
 
   const exportPdf = async () => {
+    if (!featureGate.checkAccess("pdfExport", "pro")) return;
     const html2canvas = (await import("html2canvas")).default;
     const jsPDF = (await import("jspdf")).default;
     const el = document.getElementById("results-content");
@@ -142,6 +147,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
     reducedMotion ? {} : { initial: { scaleX: 0 }, animate: { scaleX: 1 }, transition: { delay } };
 
   return (
+    <>
     <div className="min-h-screen px-4 pt-24 pb-12">
       <div className="mx-auto max-w-5xl" id="results-content">
         {/* Header */}
@@ -193,6 +199,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
         {/* === 6 CONSOLIDATED TABS === */}
         <Tabs defaultValue={defaultTab} className="mb-8" onValueChange={handleTabChange}>
           <AdaptiveTabNav tabs={tabs} />
+          <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
 
           {/* Tab 1: Strategy + Tips (collapsible) */}
           <TabsContent value="strategy" className="mt-6">
@@ -422,6 +429,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               </CardContent>
             </Card>
           </TabsContent>
+          </Suspense>
         </Tabs>
 
         {/* Disclaimer */}
@@ -472,6 +480,8 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
         )}
       </div>
     </div>
+    <PaywallModal open={featureGate.paywallOpen} onOpenChange={featureGate.setPaywallOpen} feature={featureGate.paywallFeature} requiredTier={featureGate.paywallTier} />
+    </>
   );
 };
 
