@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 
 interface ResultsDashboardProps {
   result: FunnelResult;
+  defaultTab?: string;
   onEdit: () => void;
   onNewPlan: () => void;
 }
@@ -59,7 +60,7 @@ const NEURO_LABELS: Record<string, { emoji: string; vector: { he: string; en: st
   retention: { emoji: "🔵", vector: { he: "אוקסיטוצין", en: "Oxytocin" }, desc: { he: "אמון מתמשך: הישאר איתנו", en: "Ongoing trust: stay with us" } },
 };
 
-const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) => {
+const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
   const { profile } = useUserProfile();
   const reducedMotion = useReducedMotion();
@@ -72,7 +73,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
   // Adaptive tabs (6 consolidated tabs)
   const tabs = getTabConfig(result, profile);
-  const defaultTab = tabs[0]?.id || "strategy";
+  const defaultTab = routeTab || tabs[0]?.id || "strategy";
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
 
