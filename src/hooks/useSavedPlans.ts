@@ -92,7 +92,7 @@ export function useSavedPlans() {
           id: plan.id,
           user_id: user.id,
           name: plan.name,
-          result: plan.result as unknown as Record<string, unknown>,
+          result: JSON.parse(JSON.stringify(plan.result)),
           created_at: plan.savedAt,
         }]);
       }
