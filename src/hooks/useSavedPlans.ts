@@ -88,13 +88,13 @@ export function useSavedPlans() {
       };
 
       if (user) {
-        await supabase.from("saved_plans").insert({
+        await supabase.from("saved_plans").insert([{
           id: plan.id,
           user_id: user.id,
           name: plan.name,
           result: plan.result as unknown as Record<string, unknown>,
           created_at: plan.savedAt,
-        });
+        }]);
       }
 
       // Always save locally as cache
