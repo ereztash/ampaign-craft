@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowRight, Save, Loader2, User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Save, Loader2, User, Shield, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, tier, setTier, isLocalAuth } = useAuth();
   const { language } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -31,31 +31,66 @@ const Profile = () => {
   // Load profile
   useEffect(() => {
     if (!user) return;
+
     const load = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("id", user.id)
-        .single();
-      if (data?.display_name) setDisplayName(data.display_name);
+      if (isLocalAuth) {
+        // Local auth: use displayName from user object
+        setDisplayName(user.displayName || user.email.split("@")[0]);
+        setLoading(false);
+        return;
+      }
+
+      // Supabase auth
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", user.id)
+          .single();
+        if (data?.display_name) setDisplayName(data.display_name);
+      } catch { /* ignore */ }
       setLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, isLocalAuth]);
 
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ display_name: displayName, updated_at: new Date().toISOString() })
-      .eq("id", user.id);
-    setSaving(false);
 
-    if (error) {
-      toast({ title: isHe ? "שגיאה בשמירה" : "Error saving", variant: "destructive" });
-    } else {
+    if (isLocalAuth) {
+      // Update local user
+      const raw = localStorage.getItem("funnelforge-users");
+      if (raw) {
+        const users = JSON.parse(raw);
+        const updated = users.map((u: { id: string }) =>
+          u.id === user.id ? { ...u, displayName } : u
+        );
+        localStorage.setItem("funnelforge-users", JSON.stringify(updated));
+      }
+      setSaving(false);
       toast({ title: isHe ? "הפרופיל עודכן בהצלחה" : "Profile updated successfully" });
+      return;
+    }
+
+    // Supabase save
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ display_name: displayName, updated_at: new Date().toISOString() })
+        .eq("id", user.id);
+      setSaving(false);
+
+      if (error) {
+        toast({ title: isHe ? "שגיאה בשמירה" : "Error saving", variant: "destructive" });
+      } else {
+        toast({ title: isHe ? "הפרופיל עודכן בהצלחה" : "Profile updated successfully" });
+      }
+    } catch {
+      setSaving(false);
+      toast({ title: isHe ? "שגיאה בחיבור" : "Connection error", variant: "destructive" });
     }
   };
 
@@ -66,6 +101,9 @@ const Profile = () => {
       </div>
     );
   }
+
+  const tierColors = { free: "bg-muted", pro: "bg-primary", business: "bg-amber-500" };
+  const tierLabels = { free: "Free", pro: "Pro", business: "Business" };
 
   return (
     <div className="min-h-screen bg-background" dir={isHe ? "rtl" : "ltr"}>
@@ -87,7 +125,7 @@ const Profile = () => {
             {/* Email (read-only) */}
             <div className="space-y-2">
               <Label>{isHe ? "אימייל" : "Email"}</Label>
-              <Input value={user?.email ?? ""} disabled className="bg-muted" />
+              <Input value={user?.email ?? ""} disabled className="bg-muted" dir="ltr" />
             </div>
 
             {/* Display name */}
@@ -99,6 +137,32 @@ const Profile = () => {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={isHe ? "הכנס שם תצוגה" : "Enter display name"}
               />
+            </div>
+
+            {/* Tier */}
+            <div className="space-y-2">
+              <Label>{isHe ? "מנוי" : "Subscription Tier"}</Label>
+              <div className="flex items-center gap-2">
+                <Badge className={`${tierColors[tier]} text-white`}>
+                  {tier === "pro" ? <Shield className="h-3 w-3 me-1" /> : tier === "business" ? <Crown className="h-3 w-3 me-1" /> : null}
+                  {tierLabels[tier]}
+                </Badge>
+                {isLocalAuth && tier === "free" && (
+                  <Button variant="outline" size="sm" onClick={() => setTier("pro")} className="text-xs">
+                    {isHe ? "שדרג ל-Pro (לוקאלי)" : "Upgrade to Pro (local)"}
+                  </Button>
+                )}
+                {isLocalAuth && tier === "pro" && (
+                  <Button variant="outline" size="sm" onClick={() => setTier("business")} className="text-xs">
+                    {isHe ? "שדרג ל-Business (לוקאלי)" : "Upgrade to Business (local)"}
+                  </Button>
+                )}
+              </div>
+              {isLocalAuth && (
+                <p className="text-xs text-muted-foreground">
+                  {isHe ? "מצב לוקאלי — שינוי tier מיידי לצורכי בדיקה" : "Local mode — tier changes instantly for testing"}
+                </p>
+              )}
             </div>
 
             <Button onClick={handleSave} disabled={saving} className="w-full gap-2">

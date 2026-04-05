@@ -43,7 +43,8 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
     if (result.error) {
       setError(result.error);
     } else if (mode === "register") {
-      setSuccess(isHe ? "נרשמת בהצלחה! בדוק את האימייל לאישור." : "Registered! Check your email for confirmation.");
+      setSuccess(isHe ? "נרשמת בהצלחה!" : "Registered successfully!");
+      setTimeout(() => onOpenChange(false), 1000);
     } else {
       onOpenChange(false);
     }
