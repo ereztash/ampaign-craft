@@ -78,6 +78,16 @@ const StylomeExtractor = () => {
     const result = analyzeSamples(samples);
     setProfile(result);
     setStep("profile");
+    // Persist voice profile for cross-module personalization
+    try {
+      localStorage.setItem("funnelforge-stylome-voice", JSON.stringify({
+        register: result.style.register,
+        dugriScore: result.metrics.dugriScore,
+        cognitiveStyle: result.style.cognitiveStyle,
+        emotionalIntensity: result.style.emotionalIntensity,
+        codeMixingIndex: result.metrics.codeMixingIndex,
+      }));
+    } catch { /* ignore */ }
   };
 
   const copyPrompt = () => {

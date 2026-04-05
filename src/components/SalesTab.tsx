@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/engine/salesPipelineEngine";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
+import { DifferentiationResult } from "@/types/differentiation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,13 @@ interface SalesTabProps {
 const SalesTab = ({ result }: SalesTabProps) => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const diffResult = useMemo<DifferentiationResult | null>(() => {
+    try { const raw = localStorage.getItem("funnelforge-differentiation-result"); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  }, []);
+  const stylomeVoice = useMemo<StylomeVoice | null>(() => {
+    try { const raw = localStorage.getItem("funnelforge-stylome-voice"); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  }, []);
+  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
   const pipeline = useMemo(() => generateSalesPipeline(result, graph), [result, graph]);
   const closingFrameworks = useMemo(() => getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c"), [pipeline.salesType, result.formData.audienceType]);
   const buyerPersonality = useMemo(() => detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [result.formData]);
@@ -38,8 +45,23 @@ const SalesTab = ({ result }: SalesTabProps) => {
 
   const formatCurrency = (n: number) => `₪${n.toLocaleString()}`;
 
+  const hasDiff = !!diffResult;
+
   return (
     <div className="space-y-6">
+      {/* Personalization upgrade CTA */}
+      {!hasDiff && (
+        <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-3 text-center">
+          <p className="text-xs text-muted-foreground" dir="auto">
+            {isHe
+              ? "💡 השלם את שאלון הבידול כדי לקבל סקריפטים עם שמות מתחרים, מנגנון הבידול שלך, וויתורים מודעים"
+              : "💡 Complete the differentiation questionnaire for scripts with competitor names, your mechanism, and tradeoffs"}
+            {" → "}
+            <a href="/differentiate" className="text-primary font-medium underline">{isHe ? "התחל" : "Start"}</a>
+          </p>
+        </div>
+      )}
+
       {/* Sales Type Badge */}
       <div className="flex items-center gap-3 flex-wrap">
         <Badge variant="outline" className="text-sm px-3 py-1">

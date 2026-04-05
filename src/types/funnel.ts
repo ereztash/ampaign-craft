@@ -186,6 +186,8 @@ export interface FunnelResult {
   formData: FormData;
   personalBrand?: PersonalBrandData;
   neuroStorytelling?: NeuroStorytellingData;
+  /** Linked differentiation result (if user completed /differentiate) */
+  differentiationId?: string;
 }
 
 export interface SavedPlan {

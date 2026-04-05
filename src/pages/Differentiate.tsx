@@ -26,6 +26,8 @@ const Differentiate = () => {
   const handleComplete = (res: DifferentiationResult) => {
     setResult(res);
     setView("results");
+    // Persist for cross-module personalization (Sales + Content use this)
+    try { localStorage.setItem("funnelforge-differentiation-result", JSON.stringify(res)); } catch { /* ignore */ }
   };
 
   const handleReset = () => {

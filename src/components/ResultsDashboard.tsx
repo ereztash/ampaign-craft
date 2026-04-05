@@ -26,7 +26,8 @@ import { getEventsForField } from "@/lib/israeliMarketCalendar";
 import { generateCLGStrategy } from "@/engine/clgEngine";
 import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import { personalizeResult } from "@/engine/funnelEngine";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
+import { DifferentiationResult } from "@/types/differentiation";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
@@ -73,8 +74,25 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
 
+  // Load saved differentiation + stylome from localStorage (if available)
+  const diffResult = useMemo<DifferentiationResult | null>(() => {
+    try {
+      const raw = localStorage.getItem("funnelforge-differentiation-result");
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, []);
+  const stylomeVoice = useMemo<StylomeVoice | null>(() => {
+    try {
+      const raw = localStorage.getItem("funnelforge-stylome-voice");
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, []);
+
   // Knowledge graph + personalized result
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const graph = useMemo(
+    () => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice, { visitCount: profile.visitCount, streak: 0, mastery: 0, segment: profile.userSegment }),
+    [result.formData, diffResult, stylomeVoice, profile.visitCount, profile.userSegment],
+  );
   const personalizedResult = useMemo(() => personalizeResult(result, graph), [result, graph]);
 
   // MOAT features (memoized — only recompute when result changes)
