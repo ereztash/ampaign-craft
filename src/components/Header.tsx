@@ -62,9 +62,9 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
             {/* Auth button */}
             {user ? (
               <div className="flex items-center gap-1.5">
-                <span className="hidden sm:inline text-xs text-muted-foreground max-w-[120px] truncate">
-                  {user.email}
-                </span>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/profile")} title={isHe ? "פרופיל" : "Profile"}>
+                  <UserCircle className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="sm" onClick={signOut} title={isHe ? "התנתק" : "Sign out"}>
                   <LogOut className="h-4 w-4" />
                 </Button>
