@@ -153,26 +153,95 @@ const PIPELINE_CONFIGS: Record<SalesPipelineResult["salesType"], {
 // Objection Scripts
 // ═══════════════════════════════════════════════
 
-function getObjectionScripts(salesType: SalesPipelineResult["salesType"]): ObjectionScript[] {
+import { UserKnowledgeGraph, getFieldNameHe, getFieldNameEn, formatPrice } from "./userKnowledgeGraph";
+
+function getObjectionScripts(salesType: SalesPipelineResult["salesType"], graph?: UserKnowledgeGraph): ObjectionScript[] {
+  const g = graph;
+  const fieldHe = g ? getFieldNameHe(g.business.field) : "";
+  const fieldEn = g ? getFieldNameEn(g.business.field) : "";
+  const priceStr = g ? formatPrice(g.business.price) : "X";
+  const product = g?.business.product?.slice(0, 60) || "";
+  const competitor = g?.differentiation?.competitors?.[0] || "";
+  const mechanism = g?.differentiation?.mechanismStatement?.mechanism || "";
+  const painHe = g?.derived.industryPainPoints?.[0]?.he || "הבעיה הזו";
+  const painEn = g?.derived.industryPainPoints?.[0]?.en || "this problem";
+  const monthlySaving = g ? formatPrice(Math.round(g.business.price * 0.3)) : "X";
+
   const scripts: ObjectionScript[] = [
     { objection: { he: "יקר לי", en: "It's too expensive" },
-      response: { he: "אני מבין. כמה עולה לך לא לפתור את הבעיה הזו? הלקוחות שלנו חוסכים X תוך חודש ראשון.", en: "I understand. How much does it cost you NOT to solve this? Our clients save X within the first month." },
+      response: {
+        he: g
+          ? `אני מבין. בעלי עסקי ${fieldHe} כמוך שמשקיעים ${priceStr} רואים החזר תוך 30 יום בממוצע. כמה עולה לך ${painHe} כל חודש?`
+          : "אני מבין. כמה עולה לך לא לפתור את הבעיה הזו? הלקוחות שלנו חוסכים X תוך חודש ראשון.",
+        en: g
+          ? `I understand. ${fieldEn} business owners like you who invest ${priceStr} see returns within 30 days on average. How much is ${painEn} costing you each month?`
+          : "I understand. How much does it cost you NOT to solve this? Our clients save X within the first month.",
+      },
       technique: "Reframe to cost of inaction", emoji: "💰" },
     { objection: { he: "אני צריך לחשוב על זה", en: "I need to think about it" },
-      response: { he: "בהחלט. מה בדיוק היית רוצה לבדוק? אולי אני יכול לעזור עם המידע הנכון.", en: "Absolutely. What specifically would you like to check? Maybe I can help with the right info." },
+      response: {
+        he: g
+          ? `בהחלט. רוב בעלי עסקי ${fieldHe} שואלים על ${painHe}. מה הדבר שהכי חשוב לך לבדוק — המחיר, ההתאמה, או התוצאות?`
+          : "בהחלט. מה בדיוק היית רוצה לבדוק? אולי אני יכול לעזור עם המידע הנכון.",
+        en: g
+          ? `Absolutely. Most ${fieldEn} owners ask about ${painEn}. What matters most — price, fit, or results?`
+          : "Absolutely. What specifically would you like to check? Maybe I can help with the right info.",
+      },
       technique: "Isolate the real objection", emoji: "🤔" },
     { objection: { he: "ניסיתי משהו דומה ולא עבד", en: "I tried something similar and it didn't work" },
-      response: { he: "תגיד לי מה לא עבד — כי זה בדיוק מה שאנחנו עושים אחרת.", en: "Tell me what didn't work — because that's exactly what we do differently." },
+      response: {
+        he: g && mechanism
+          ? `זה בדיוק מה שאנחנו עושים אחרת. ${mechanism}. תספר לי מה לא עבד — בגישה הקודמת כנראה חסר הדבר הזה.`
+          : g
+            ? `מובן. ספר לי מה לא עבד — כי בתחום ה${fieldHe} יש 3 דברים שבדרך כלל נופלים: ${painHe}. אנחנו פותרים את זה אחרת.`
+            : "תגיד לי מה לא עבד — כי זה בדיוק מה שאנחנו עושים אחרת.",
+        en: g && mechanism
+          ? `That's exactly what makes us different. ${mechanism}. Tell me what didn't work — the previous approach was likely missing this.`
+          : g
+            ? `I see. Tell me what didn't work — in ${fieldEn}, the top 3 failure points are usually around ${painEn}. We address that differently.`
+            : "Tell me what didn't work — because that's exactly what we do differently.",
+      },
       technique: "Differentiate & validate", emoji: "🔄" },
     { objection: { he: "אין לי זמן עכשיו", en: "I don't have time right now" },
-      response: { he: "דווקא בגלל זה — הפתרון שלנו חוסך X שעות בשבוע. 15 דקות?", en: "That's exactly why — our solution saves X hours per week. 15 minutes?" },
+      response: {
+        he: g
+          ? `דווקא בגלל זה — בעלי עסקי ${fieldHe} שעובדים איתנו חוסכים ${monthlySaving} בחודש. 15 דקות כדי לראות אם זה רלוונטי?`
+          : "דווקא בגלל זה — הפתרון שלנו חוסך X שעות בשבוע. 15 דקות?",
+        en: g
+          ? `That's exactly why — ${fieldEn} owners working with us save ${monthlySaving}/month. 15 minutes to see if it's relevant?`
+          : "That's exactly why — our solution saves X hours per week. 15 minutes?",
+      },
       technique: "Time as investment", emoji: "⏰" },
   ];
+
+  // Competitor-specific objection (only if differentiation data exists)
+  if (competitor && g?.differentiation) {
+    const tradeoff = g.differentiation.tradeoffs?.[0];
+    scripts.push({
+      objection: { he: `למה לא ללכת עם ${competitor}?`, en: `Why not go with ${competitor}?` },
+      response: {
+        he: tradeoff
+          ? `שאלה מצוינת. ${competitor} מצוינים ב-X. אנחנו בחרנו במודע לוותר על ${tradeoff.weakness} כדי ש${tradeoff.reframe}. זה עובד הכי טוב ל${tradeoff.beneficiary}.`
+          : `שאלה מצוינת. ${competitor} הם שחקנים רציניים. ההבדל העיקרי — ${mechanism || "הגישה שלנו שונה מהותית"}.`,
+        en: tradeoff
+          ? `Great question. ${competitor} excels at X. We deliberately chose to trade ${tradeoff.weakness} so that ${tradeoff.reframe}. This works best for ${tradeoff.beneficiary}.`
+          : `Great question. ${competitor} is a serious player. The core difference — ${mechanism || "our approach is fundamentally different"}.`,
+      },
+      technique: "Tradeoff-based competitive framing", emoji: "⚔️",
+    });
+  }
 
   if (salesType === "enterprise") {
     scripts.push({
       objection: { he: "צריך אישור מההנהלה / Procurement", en: "Need management / Procurement approval" },
-      response: { he: "מצוין — בוא נכין ביחד one-pager עם ROI שאתה יכול להעביר.", en: "Great — let's prepare a one-pager with ROI together." },
+      response: {
+        he: g
+          ? `מצוין — בוא נכין ביחד one-pager עם ROI שמראה איך ${product || "הפתרון"} חוסך ${monthlySaving} בחודש. אני אתאים אותו ל-CFO.`
+          : "מצוין — בוא נכין ביחד one-pager עם ROI שאתה יכול להעביר.",
+        en: g
+          ? `Great — let's prepare a one-pager showing how ${product || "the solution"} saves ${monthlySaving}/month. I'll tailor it for the CFO.`
+          : "Great — let's prepare a one-pager with ROI together.",
+      },
       technique: "Enable the champion", emoji: "📊",
     });
   }
@@ -215,11 +284,19 @@ function getSalesAutomations(salesType: SalesPipelineResult["salesType"]): Sales
 // Closing Tips
 // ═══════════════════════════════════════════════
 
-function getClosingTips(salesType: SalesPipelineResult["salesType"]): { he: string; en: string }[] {
+function getClosingTips(salesType: SalesPipelineResult["salesType"], graph?: UserKnowledgeGraph): { he: string; en: string }[] {
+  const g = graph;
+  const fieldHe = g ? getFieldNameHe(g.business.field) : "";
+  const priceStr = g ? formatPrice(g.business.price) : "₪X";
+  const painHe = g?.derived.industryPainPoints?.[0]?.he || "הבעיה";
+  const painEn = g?.derived.industryPainPoints?.[0]?.en || "the problem";
+
   const tips: { he: string; en: string }[] = [
     { he: "חוק 80/20: 80% הקשבה, 20% דיבור. מי ששואל — שולט", en: "80/20 Rule: 80% listening, 20% talking. Whoever asks questions, controls" },
     { he: "Follow-up תוך 5 דקות = סיכוי סגירה x21 גבוה יותר", en: "Follow-up within 5 min = 21x higher close rate" },
-    { he: "אל תמכור פיצ'רים — מכור תוצאות. 'תחסוך 10 שעות' > 'יש אוטומציה'", en: "Don't sell features — sell outcomes. 'Save 10 hours' > 'We have automation'" },
+    g
+      ? { he: `אל תמכור פיצ'רים — מכור תוצאות. '${painHe} נפתר' > רשימת יכולות`, en: `Don't sell features — sell outcomes. '${painEn} solved' > feature list` }
+      : { he: "אל תמכור פיצ'רים — מכור תוצאות. 'תחסוך 10 שעות' > 'יש אוטומציה'", en: "Don't sell features — sell outcomes. 'Save 10 hours' > 'We have automation'" },
   ];
 
   if (salesType !== "transactional") {
@@ -381,7 +458,7 @@ export function detectBuyerPersonality(audienceType: string, businessField: stri
 // Main Generator
 // ═══════════════════════════════════════════════
 
-export function generateSalesPipeline(result: FunnelResult): SalesPipelineResult {
+export function generateSalesPipeline(result: FunnelResult, graph?: UserKnowledgeGraph): SalesPipelineResult {
   const formData = result.formData;
   const salesType = detectSalesType(formData);
   const config = PIPELINE_CONFIGS[salesType];
@@ -401,10 +478,10 @@ export function generateSalesPipeline(result: FunnelResult): SalesPipelineResult
       cycleLength: config.cycleDays,
       winRate: config.winRate,
     },
-    objectionScripts: getObjectionScripts(salesType),
+    objectionScripts: getObjectionScripts(salesType, graph),
     automations: getSalesAutomations(salesType),
     salesType,
-    closingTips: getClosingTips(salesType),
+    closingTips: getClosingTips(salesType, graph),
   };
 }
 

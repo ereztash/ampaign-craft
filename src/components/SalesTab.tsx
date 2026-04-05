@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/engine/salesPipelineEngine";
+import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,8 @@ interface SalesTabProps {
 const SalesTab = ({ result }: SalesTabProps) => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
-  const pipeline = useMemo(() => generateSalesPipeline(result), [result]);
+  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const pipeline = useMemo(() => generateSalesPipeline(result, graph), [result, graph]);
   const closingFrameworks = useMemo(() => getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c"), [pipeline.salesType, result.formData.audienceType]);
   const buyerPersonality = useMemo(() => detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [result.formData]);
   const personalityProfile = BUYER_PERSONALITIES.find((p) => p.id === buyerPersonality)!;

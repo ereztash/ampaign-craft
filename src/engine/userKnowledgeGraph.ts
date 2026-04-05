@@ -1,0 +1,326 @@
+// ═══════════════════════════════════════════════
+// User Knowledge Graph — Central Intelligence Layer
+// Cross-references ALL user data sources into one unified structure
+// that feeds every personalization module
+// ═══════════════════════════════════════════════
+
+import { FormData } from "@/types/funnel";
+import { DifferentiationResult, MechanismStatement, TradeoffDeclaration, HiddenValueScore, CompetitorArchetype, BuyingCommitteeRoleId } from "@/types/differentiation";
+
+// === TYPES ===
+
+export interface StylomeVoice {
+  register: "formal" | "casual" | "mixed";
+  dugriScore: number; // 0-1
+  cognitiveStyle: "concrete" | "abstract" | "balanced";
+  emotionalIntensity: "low" | "medium" | "high";
+  codeMixingIndex: number; // 0-100
+}
+
+export interface UserBehavior {
+  visitCount: number;
+  streak: number;
+  mastery: number; // 0-100
+  segment: string;
+  stageOfChange: "precontemplation" | "contemplation" | "preparation" | "action" | "maintenance";
+}
+
+export interface DifferentiationContext {
+  mechanismStatement: MechanismStatement | null;
+  competitors: string[];
+  tradeoffs: TradeoffDeclaration[];
+  hiddenValues: HiddenValueScore[];
+  competitorArchetypes: CompetitorArchetype[];
+  committeeRoles: BuyingCommitteeRoleId[];
+}
+
+export interface DerivedInsights {
+  framingPreference: "loss" | "gain" | "balanced";
+  complexityLevel: "simple" | "standard" | "advanced";
+  identityStatement: { he: string; en: string };
+  topPainPoint: { he: string; en: string };
+  industryPainPoints: { he: string; en: string }[];
+  priceContext: { formatted: string; isHighTicket: boolean; monthlyEquivalent: string };
+}
+
+export interface UserKnowledgeGraph {
+  business: {
+    field: string;
+    product: string;
+    price: number;
+    audience: string;
+    ageRange: [number, number];
+    budget: string;
+    goal: string;
+    channels: string[];
+    experience: string;
+    salesModel: string;
+  };
+  differentiation: DifferentiationContext | null;
+  voice: StylomeVoice | null;
+  behavior: UserBehavior;
+  derived: DerivedInsights;
+}
+
+// === INDUSTRY KNOWLEDGE ===
+
+const INDUSTRY_PAIN_POINTS: Record<string, { he: string; en: string }[]> = {
+  fashion: [
+    { he: "צילומי מוצר שלא מוכרים", en: "Product photos that don't convert" },
+    { he: "תחרות מחירים מול שיין/עלי", en: "Price competition vs Shein/Ali" },
+    { he: "החזרות גבוהות (25-40%)", en: "High returns (25-40%)" },
+    { he: "עונתיות — מכירות נופלות בין עונות", en: "Seasonality — sales drop between seasons" },
+  ],
+  tech: [
+    { he: "מחזור מכירה ארוך (3-12 חודשים)", en: "Long sales cycle (3-12 months)" },
+    { he: "קושי להסביר ערך טכני למחליטים לא טכניים", en: "Difficulty explaining technical value to non-technical buyers" },
+    { he: "CAC גבוה — עולה ₪500-5,000 לליד", en: "High CAC — ₪500-5,000 per lead" },
+    { he: "Churn — לקוחות עוזבים אחרי 6 חודשים", en: "Churn — customers leave after 6 months" },
+  ],
+  food: [
+    { he: "מרווח נמוך (15-25%)", en: "Low margins (15-25%)" },
+    { he: "תלות במיקום ובמזג אוויר", en: "Location and weather dependency" },
+    { he: "תחרות על UGC ותמונות אוכל", en: "Competition for UGC and food photos" },
+    { he: "שימור לקוחות — חזרה רק 30% מהלקוחות", en: "Retention — only 30% return" },
+  ],
+  services: [
+    { he: "קושי לכמת ערך (לא מוצר פיזי)", en: "Difficulty quantifying value (not physical product)" },
+    { he: "תלות באמון אישי — בלי פגישה אין סגירה", en: "Trust dependency — no close without meeting" },
+    { he: "scalability מוגבל — שעות = הכנסה", en: "Limited scalability — hours = revenue" },
+    { he: "אין הבדלה — כולם אומרים 'שירות אישי'", en: "No differentiation — everyone says 'personal service'" },
+  ],
+  education: [
+    { he: "completion rate נמוך (5-15% בקורסים דיגיטליים)", en: "Low completion rate (5-15% in digital courses)" },
+    { he: "תחרות מול תוכן חינמי ב-YouTube", en: "Competition vs free YouTube content" },
+    { he: "קושי להוכיח ROI ללומד", en: "Difficulty proving ROI to learner" },
+    { he: "עונתיות — ספטמבר > יולי", en: "Seasonality — September > July" },
+  ],
+  health: [
+    { he: "רגולציה — לא ניתן להבטיח תוצאות", en: "Regulation — can't promise results" },
+    { he: "אמון נמוך במודעות — צריך social proof חזק", en: "Low ad trust — needs strong social proof" },
+    { he: "מחזור החלטה רגשי, לא רציונלי", en: "Emotional decision cycle, not rational" },
+    { he: "שימור — 60% עוזבים אחרי חודש", en: "Retention — 60% leave after one month" },
+  ],
+  realEstate: [
+    { he: "ליד יקר מאוד (₪100-500)", en: "Very expensive leads (₪100-500)" },
+    { he: "מחזור מכירה ארוך (חודשים)", en: "Long sales cycle (months)" },
+    { he: "תלות בשוק מאקרו (ריבית, מלחמה)", en: "Macro market dependency (interest rates, conflict)" },
+    { he: "אמינות — הרבה 'מומחים' מזויפים בשוק", en: "Credibility — many fake 'experts' in market" },
+  ],
+  tourism: [
+    { he: "עונתיות קיצונית (קיץ vs חורף)", en: "Extreme seasonality (summer vs winter)" },
+    { he: "תחרות גלובלית — Booking, Airbnb", en: "Global competition — Booking, Airbnb" },
+    { he: "ביקורות שליליות הורסות", en: "Negative reviews are devastating" },
+    { he: "מחיר משתנה — dynamic pricing מורכב", en: "Price fluctuation — complex dynamic pricing" },
+  ],
+  personalBrand: [
+    { he: "פגיעות — החשיפה האישית מפחידה", en: "Vulnerability — personal exposure is scary" },
+    { he: "קשה לתמחר 'ידע'", en: "Hard to price 'knowledge'" },
+    { he: "burnout מתוכן — כמה פעמים בשבוע לפרסם?", en: "Content burnout — how often to post?" },
+    { he: "תלות בפלטפורמה אחת (אינסטגרם / טיקטוק)", en: "Platform dependency (Instagram / TikTok)" },
+  ],
+  other: [
+    { he: "קושי לזהות את קהל היעד המדויק", en: "Difficulty identifying exact target audience" },
+    { he: "תקציב שיווק מוגבל ולא יודע איפה לשים אותו", en: "Limited marketing budget, unsure where to allocate" },
+    { he: "אין benchmark — לא יודע אם התוצאות טובות", en: "No benchmark — unsure if results are good" },
+    { he: "תחרות גוברת — חדשים נכנסים כל הזמן", en: "Growing competition — new entrants constantly" },
+  ],
+};
+
+const IDENTITY_TEMPLATES: Record<string, { he: string; en: string }> = {
+  fashion: { he: "מותג אופנה ישראלי שמדבר ל{audience}", en: "Israeli fashion brand speaking to {audience}" },
+  tech: { he: "חברת טכנולוגיה שפותרת {painPoint}", en: "Tech company solving {painPoint}" },
+  food: { he: "עסק קולינרי שמביא {value}", en: "Culinary business delivering {value}" },
+  services: { he: "נותן שירות מקצועי שמתמחה ב{product}", en: "Professional service specializing in {product}" },
+  education: { he: "מחנך/ת שמלמד/ת {product}", en: "Educator teaching {product}" },
+  health: { he: "מומחה/ית בריאות שעוזר/ת ל{audience}", en: "Health expert helping {audience}" },
+  realEstate: { he: "איש/ת נדל\"ן שמתמקד/ת ב{audience}", en: "Real estate professional focused on {audience}" },
+  tourism: { he: "עסק תיירות שמציע {product}", en: "Tourism business offering {product}" },
+  personalBrand: { he: "מותג אישי בתחום ה{product}", en: "Personal brand in {product}" },
+  other: { he: "עסק שמציע {product} ל{audience}", en: "Business offering {product} to {audience}" },
+};
+
+// === BUILDER ===
+
+export function buildUserKnowledgeGraph(
+  formData: FormData,
+  differentiationResult?: DifferentiationResult | null,
+  stylomeVoice?: StylomeVoice | null,
+  userBehavior?: Partial<UserBehavior>,
+): UserKnowledgeGraph {
+  const field = formData.businessField || "other";
+  const price = formData.averagePrice || 0;
+
+  // Build differentiation context
+  const differentiation: DifferentiationContext | null = differentiationResult
+    ? {
+        mechanismStatement: differentiationResult.mechanismStatement,
+        competitors: differentiationResult.formData.topCompetitors.filter(Boolean),
+        tradeoffs: differentiationResult.tradeoffDeclarations,
+        hiddenValues: differentiationResult.hiddenValueProfile,
+        competitorArchetypes: differentiationResult.competitorMap,
+        committeeRoles: differentiationResult.committeeNarratives.map((n) => n.role),
+      }
+    : null;
+
+  // Build behavior
+  const behavior: UserBehavior = {
+    visitCount: userBehavior?.visitCount ?? 1,
+    streak: userBehavior?.streak ?? 0,
+    mastery: userBehavior?.mastery ?? 0,
+    segment: userBehavior?.segment ?? "new-beginner",
+    stageOfChange: detectStageOfChange(userBehavior),
+  };
+
+  // Build derived insights
+  const derived = buildDerivedInsights(formData, differentiation, stylomeVoice, behavior);
+
+  return {
+    business: {
+      field,
+      product: formData.productDescription || "",
+      price,
+      audience: formData.audienceType || "b2c",
+      ageRange: formData.ageRange || [25, 55],
+      budget: formData.budgetRange || "medium",
+      goal: formData.mainGoal || "sales",
+      channels: formData.existingChannels || [],
+      experience: formData.experienceLevel || "intermediate",
+      salesModel: formData.salesModel || "oneTime",
+    },
+    differentiation,
+    voice: stylomeVoice || null,
+    behavior,
+    derived,
+  };
+}
+
+// === DERIVED INSIGHTS ===
+
+function buildDerivedInsights(
+  formData: FormData,
+  diff: DifferentiationContext | null,
+  voice: StylomeVoice | null,
+  behavior: UserBehavior,
+): DerivedInsights {
+  const field = formData.businessField || "other";
+  const price = formData.averagePrice || 0;
+  const audience = formData.audienceType || "b2c";
+
+  // Framing preference: loss vs gain
+  const framingPreference = deriveFramingPreference(formData, voice, behavior);
+
+  // Complexity level
+  const complexityLevel = formData.experienceLevel === "beginner" ? "simple"
+    : formData.experienceLevel === "advanced" ? "advanced" : "standard";
+
+  // Identity statement
+  const identityStatement = buildIdentityStatement(formData, diff);
+
+  // Top pain point
+  const topPainPoint = diff?.tradeoffs?.[0]
+    ? { he: diff.tradeoffs[0].weakness, en: diff.tradeoffs[0].weakness }
+    : (INDUSTRY_PAIN_POINTS[field]?.[0] || INDUSTRY_PAIN_POINTS.other[0]);
+
+  // Industry pain points
+  const industryPainPoints = INDUSTRY_PAIN_POINTS[field] || INDUSTRY_PAIN_POINTS.other;
+
+  // Price context
+  const priceContext = {
+    formatted: `₪${price.toLocaleString()}`,
+    isHighTicket: (audience === "b2b" && price > 2000) || (audience === "b2c" && price > 500),
+    monthlyEquivalent: formData.salesModel === "subscription" ? `₪${price}/חודש` : `₪${price}`,
+  };
+
+  return {
+    framingPreference,
+    complexityLevel,
+    identityStatement,
+    topPainPoint,
+    industryPainPoints,
+    priceContext,
+  };
+}
+
+function deriveFramingPreference(
+  formData: FormData,
+  voice: StylomeVoice | null,
+  behavior: UserBehavior,
+): "loss" | "gain" | "balanced" {
+  let lossScore = 0;
+
+  // Dugri people respond to loss framing
+  if (voice && voice.dugriScore > 0.6) lossScore += 2;
+  // Low budget = risk-averse = loss framing
+  if (formData.budgetRange === "low") lossScore += 1;
+  // Beginners fear loss more
+  if (formData.experienceLevel === "beginner") lossScore += 1;
+  // Health/services — risk-averse industries
+  if (formData.businessField === "health" || formData.businessField === "services") lossScore += 1;
+
+  // Advanced + high budget = gain framing
+  if (formData.experienceLevel === "advanced") lossScore -= 1;
+  if (formData.budgetRange === "high" || formData.budgetRange === "veryHigh") lossScore -= 1;
+  // Tech/personalBrand — growth-oriented
+  if (formData.businessField === "tech" || formData.businessField === "personalBrand") lossScore -= 1;
+
+  if (lossScore >= 2) return "loss";
+  if (lossScore <= -1) return "gain";
+  return "balanced";
+}
+
+function buildIdentityStatement(
+  formData: FormData,
+  diff: DifferentiationContext | null,
+): { he: string; en: string } {
+  // If differentiation mechanism exists, use it
+  if (diff?.mechanismStatement?.oneLiner?.he) {
+    return diff.mechanismStatement.oneLiner;
+  }
+
+  // Build from template
+  const field = formData.businessField || "other";
+  const template = IDENTITY_TEMPLATES[field] || IDENTITY_TEMPLATES.other;
+  const product = formData.productDescription?.slice(0, 50) || field;
+  const audience = formData.audienceType === "b2b" ? "עסקים" : formData.audienceType === "both" ? "עסקים וצרכנים" : "צרכנים";
+  const audienceEn = formData.audienceType === "b2b" ? "businesses" : formData.audienceType === "both" ? "businesses and consumers" : "consumers";
+
+  return {
+    he: template.he.replace("{audience}", audience).replace("{product}", product).replace("{painPoint}", INDUSTRY_PAIN_POINTS[field]?.[0]?.he || "בעיות").replace("{value}", "ערך"),
+    en: template.en.replace("{audience}", audienceEn).replace("{product}", product).replace("{painPoint}", INDUSTRY_PAIN_POINTS[field]?.[0]?.en || "problems").replace("{value}", "value"),
+  };
+}
+
+function detectStageOfChange(behavior?: Partial<UserBehavior>): UserBehavior["stageOfChange"] {
+  if (!behavior) return "contemplation";
+  const { visitCount = 1, streak = 0, mastery = 0 } = behavior;
+  if (mastery > 60 && streak >= 4) return "maintenance";
+  if (mastery > 30 || streak >= 2) return "action";
+  if (visitCount >= 3) return "preparation";
+  if (visitCount >= 2) return "contemplation";
+  return "precontemplation";
+}
+
+// === HELPERS FOR CONSUMERS ===
+
+export function getFieldNameHe(field: string): string {
+  const names: Record<string, string> = {
+    fashion: "אופנה", tech: "טכנולוגיה", food: "מזון", services: "שירותים",
+    education: "חינוך", health: "בריאות", realEstate: "נדל\"ן",
+    tourism: "תיירות", personalBrand: "מיתוג אישי", other: "עסקים",
+  };
+  return names[field] || "עסקים";
+}
+
+export function getFieldNameEn(field: string): string {
+  const names: Record<string, string> = {
+    fashion: "fashion", tech: "tech", food: "food & beverage", services: "services",
+    education: "education", health: "health & wellness", realEstate: "real estate",
+    tourism: "tourism", personalBrand: "personal brand", other: "business",
+  };
+  return names[field] || "business";
+}
+
+export function formatPrice(price: number): string {
+  return `₪${price.toLocaleString()}`;
+}
