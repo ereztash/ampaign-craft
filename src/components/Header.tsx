@@ -3,11 +3,10 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
-import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award, UserCircle, Menu, Crosshair } from "lucide-react";
+import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface HeaderProps {
@@ -21,99 +20,70 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isHe = language === "he";
-
-  const closeMenu = () => setMobileMenuOpen(false);
-
-  // Shared nav items used in both desktop & mobile
-  const NavActions = ({ mobile = false }: { mobile?: boolean }) => {
-    const btnClass = mobile ? "w-full justify-start h-11 text-sm" : "";
-    const btnSize = mobile ? "default" as const : "sm" as const;
-
-    return (
-      <>
-        <Button variant="ghost" size={btnSize} onClick={() => { navigate("/differentiate"); closeMenu(); }} className={`gap-2 ${btnClass}`}>
-          <Crosshair className="h-4 w-4" />
-          <span className={mobile ? "" : "hidden sm:inline"}>{t("differentiationAgent")}</span>
-        </Button>
-        {onSavedPlans && (
-          <Button variant="ghost" size={btnSize} onClick={() => { onSavedPlans(); closeMenu(); }} className={`gap-2 ${btnClass}`}>
-            <BookMarked className="h-4 w-4" />
-            {(mobile || true) && <span className={mobile ? "" : "hidden sm:inline"}>{t("savedPlans")}</span>}
-          </Button>
-        )}
-        <Button variant="ghost" size={btnSize} onClick={() => { setBadgesOpen(true); closeMenu(); }} className={`gap-2 ${btnClass}`} title={isHe ? "הישגים" : "Achievements"}>
-          <Award className="h-4 w-4" />
-          {mobile && <span>{isHe ? "הישגים" : "Achievements"}</span>}
-        </Button>
-        <Button variant="ghost" size={btnSize} onClick={() => { toggleDarkMode(); if (mobile) closeMenu(); }} className={`gap-2 ${btnClass}`} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}>
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          {mobile && <span>{isDark ? (isHe ? "מצב בהיר" : "Light Mode") : (isHe ? "מצב כהה" : "Dark Mode")}</span>}
-        </Button>
-        <Button variant="outline" size={btnSize} onClick={() => { setLanguage(language === "he" ? "en" : "he"); if (mobile) closeMenu(); }} className={`gap-2 ${btnClass}`}>
-          <Globe className="h-4 w-4" />
-          {language === "he" ? "EN" : "עב"}
-        </Button>
-
-        {mobile && <Separator className="my-1" />}
-
-        {user ? (
-          <>
-            <Button variant="ghost" size={btnSize} onClick={() => { navigate("/profile"); closeMenu(); }} className={`gap-2 ${btnClass}`} title={isHe ? "פרופיל" : "Profile"}>
-              <UserCircle className="h-4 w-4" />
-              {mobile && <span>{isHe ? "פרופיל" : "Profile"}</span>}
-            </Button>
-            <Button variant="ghost" size={btnSize} onClick={() => { signOut(); closeMenu(); }} className={`gap-2 ${btnClass}`} title={isHe ? "התנתק" : "Sign out"}>
-              <LogOut className="h-4 w-4" />
-              {mobile && <span>{isHe ? "התנתק" : "Sign Out"}</span>}
-            </Button>
-          </>
-        ) : (
-          <Button variant="ghost" size={btnSize} onClick={() => { setAuthOpen(true); closeMenu(); }} className={`gap-2 ${btnClass}`}>
-            <LogIn className="h-4 w-4" />
-            <span className={mobile ? "" : "hidden sm:inline"}>{isHe ? "התחבר" : "Sign In"}</span>
-          </Button>
-        )}
-      </>
-    );
-  };
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 glass-card">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+        <div className="container mx-auto flex h-14 items-center justify-between px-4">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg funnel-gradient">
-              <span className="text-lg font-bold text-accent-foreground">F</span>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(user ? "/dashboard" : "/")}>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient">
+              <span className="text-base font-bold text-accent-foreground">F</span>
             </div>
-            <span className="text-xl font-bold text-foreground">{t("appName")}</span>
+            <span className="text-lg font-bold text-foreground">{t("appName")}</span>
           </div>
 
-          {/* Desktop nav (hidden on mobile) */}
-          <div className="hidden sm:flex items-center gap-2">
-            <NavActions />
-          </div>
-
-          {/* Mobile hamburger (visible on mobile only) */}
-          <div className="flex sm:hidden items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-10 min-w-[44px]">
+          {/* Clean 3-item nav: Language + UserMenu (Reference: Vercel) */}
+          <div className="flex items-center gap-2">
+            {/* Language toggle */}
+            <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-9 min-w-[44px]">
               <Globe className="h-4 w-4" />
               {language === "he" ? "EN" : "עב"}
             </Button>
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="default" className="h-10 w-10 p-0" aria-label="Open menu">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side={isHe ? "right" : "left"} className="w-[280px] pt-12">
-                <nav className="flex flex-col gap-1">
-                  <NavActions mobile />
-                </nav>
-              </SheetContent>
-            </Sheet>
+
+            {/* User menu dropdown */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full p-0">
+                    <UserCircle className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isHe ? "start" : "end"} className="w-48">
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <Settings className="h-4 w-4 me-2" />
+                    {isHe ? "דשבורד" : "Dashboard"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/plans")}>
+                    {isHe ? "תוכניות שמורות" : "Saved Plans"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setBadgesOpen(true)}>
+                    <Award className="h-4 w-4 me-2" />
+                    {isHe ? "הישגים" : "Achievements"}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={toggleDarkMode}>
+                    {isDark ? <Sun className="h-4 w-4 me-2" /> : <Moon className="h-4 w-4 me-2" />}
+                    {isDark ? (isHe ? "מצב בהיר" : "Light Mode") : (isHe ? "מצב כהה" : "Dark Mode")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <UserCircle className="h-4 w-4 me-2" />
+                    {isHe ? "פרופיל" : "Profile"}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => signOut()} className="text-destructive">
+                    <LogOut className="h-4 w-4 me-2" />
+                    {isHe ? "התנתק" : "Sign Out"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => setAuthOpen(true)} className="gap-1.5 h-9">
+                <LogIn className="h-4 w-4" />
+                {isHe ? "התחבר" : "Sign In"}
+              </Button>
+            )}
           </div>
         </div>
       </header>

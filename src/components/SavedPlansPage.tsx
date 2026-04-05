@@ -60,7 +60,7 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-3xl font-extrabold text-foreground">{t("savedPlans")}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{t("savedPlans")}</h1>
               <p className="text-muted-foreground">
                 {plans.length} {language === "he" ? "תוכניות" : "plans"}
               </p>

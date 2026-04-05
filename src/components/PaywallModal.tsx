@@ -60,7 +60,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
             {isHe ? `שדרג ל-${tier.name.he}` : `Upgrade to ${tier.name.en}`}
           </Button>
 
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {isHe ? "ניתן לבטל בכל עת" : "Cancel anytime"}
           </p>
         </div>

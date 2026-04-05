@@ -218,10 +218,10 @@ const StylomeExtractor = () => {
                   <CardContent className="flex items-start gap-3 p-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="text-[10px]">
+                        <Badge variant="outline" className="text-xs">
                           {CONTEXT_LABELS[sample.context][language]}
                         </Badge>
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           {sample.wordCount} {isHe ? "מילים" : "words"}
                         </span>
                       </div>
@@ -267,27 +267,27 @@ const StylomeExtractor = () => {
               <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{profile.metrics.avgSentenceLength}</div>
-                  <div className="text-[10px] text-muted-foreground">{isHe ? "אורך משפט ממוצע" : "Avg sentence length"}</div>
+                  <div className="text-xs text-muted-foreground">{isHe ? "אורך משפט ממוצע" : "Avg sentence length"}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{Math.round(profile.metrics.dugriScore * 100)}%</div>
-                  <div className="text-[10px] text-muted-foreground">{isHe ? "ציון דוגרי" : "Dugri Score"}</div>
+                  <div className="text-xs text-muted-foreground">{isHe ? "ציון דוגרי" : "Dugri Score"}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{profile.metrics.codeMixingIndex}%</div>
-                  <div className="text-[10px] text-muted-foreground">{isHe ? "ערבוב שפות" : "Code-Mixing"}</div>
+                  <div className="text-xs text-muted-foreground">{isHe ? "ערבוב שפות" : "Code-Mixing"}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{profile.metrics.lexicalDiversity}</div>
-                  <div className="text-[10px] text-muted-foreground">{isHe ? "מגוון מילוני" : "Lexical Diversity"}</div>
+                  <div className="text-xs text-muted-foreground">{isHe ? "מגוון מילוני" : "Lexical Diversity"}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{Math.round(profile.metrics.shortSentenceRatio * 100)}%</div>
-                  <div className="text-[10px] text-muted-foreground">{isHe ? "משפטים קצרים" : "Short sentences"}</div>
+                  <div className="text-xs text-muted-foreground">{isHe ? "משפטים קצרים" : "Short sentences"}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{Math.round(profile.metrics.longSentenceRatio * 100)}%</div>
-                  <div className="text-[10px] text-muted-foreground">{isHe ? "משפטים ארוכים" : "Long sentences"}</div>
+                  <div className="text-xs text-muted-foreground">{isHe ? "משפטים ארוכים" : "Long sentences"}</div>
                 </div>
               </div>
             </CardContent>

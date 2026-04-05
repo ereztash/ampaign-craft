@@ -90,7 +90,7 @@ const Dashboard = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-bold text-foreground text-lg" dir="auto">{nextStep.title[language]}</h3>
-                <Badge className="text-[10px] bg-amber-500 text-white">{isHe ? "מומלץ" : "Recommended"}</Badge>
+                <Badge className="text-xs bg-amber-500 text-white">{isHe ? "מומלץ" : "Recommended"}</Badge>
               </div>
               <p className="text-sm text-muted-foreground" dir="auto">{nextStep.description[language]}</p>
             </div>
@@ -105,7 +105,7 @@ const Dashboard = () => {
               <Rocket className="h-5 w-5 text-primary shrink-0" />
               <div>
                 <p className="text-sm font-medium">{isHe ? "תוכנית חדשה" : "New Plan"}</p>
-                <p className="text-[10px] text-muted-foreground">~2 {isHe ? "דקות" : "min"}</p>
+                <p className="text-xs text-muted-foreground">~2 {isHe ? "דקות" : "min"}</p>
               </div>
             </CardContent>
           </Card>
@@ -114,7 +114,7 @@ const Dashboard = () => {
               <Crosshair className="h-5 w-5 text-amber-500 shrink-0" />
               <div>
                 <p className="text-sm font-medium">{isHe ? (hasDiff ? "עדכן בידול" : "גלה בידול") : (hasDiff ? "Update Diff" : "Discover Diff")}</p>
-                <p className="text-[10px] text-muted-foreground">~10 {isHe ? "דקות" : "min"}</p>
+                <p className="text-xs text-muted-foreground">~10 {isHe ? "דקות" : "min"}</p>
               </div>
             </CardContent>
           </Card>
@@ -162,8 +162,8 @@ const Dashboard = () => {
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mod.done ? "bg-accent/20" : "bg-muted"}`}>
                     <mod.icon className={`h-5 w-5 ${mod.done ? mod.color : "text-muted-foreground"}`} />
                   </div>
-                  <span className="text-[10px] text-muted-foreground">{mod.label}</span>
-                  {i < 4 && <span className="text-muted-foreground text-[10px] absolute" style={{ marginLeft: "3rem" }}>→</span>}
+                  <span className="text-xs text-muted-foreground">{mod.label}</span>
+                  {i < 4 && <span className="text-muted-foreground text-xs absolute" style={{ marginLeft: "3rem" }}>→</span>}
                 </div>
               ))}
             </div>
@@ -182,7 +182,7 @@ const Dashboard = () => {
             <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate(`/plans/${plan.id}`)}>
               <CardContent className="p-3">
                 <p className="text-sm font-medium truncate">{plan.name}</p>
-                <p className="text-[10px] text-muted-foreground">{new Date(plan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}</p>
+                <p className="text-xs text-muted-foreground">{new Date(plan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}</p>
               </CardContent>
             </Card>
           ))}

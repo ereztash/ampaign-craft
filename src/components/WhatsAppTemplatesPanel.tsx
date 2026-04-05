@@ -64,7 +64,7 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
               {tmpl.template[language]}
             </pre>
             <div className="mt-1.5 flex items-center gap-2">
-              <Badge variant="outline" className="text-[10px]">{tmpl.timing[language]}</Badge>
+              <Badge variant="outline" className="text-xs">{tmpl.timing[language]}</Badge>
             </div>
           </div>
         ))}

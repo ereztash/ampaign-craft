@@ -218,7 +218,7 @@ function HiddenValueSliders({ formData, onUpdate }: { formData: DifferentiationF
               onChange={(e) => updateValue(hv.id, Number(e.target.value))}
               className="w-full accent-primary"
             />
-            <div className="flex justify-between text-[10px] text-muted-foreground">
+            <div className="flex justify-between text-xs text-muted-foreground">
               <span>{language === "he" ? "לא חשוב" : "Not important"}</span>
               <span>{language === "he" ? "קריטי" : "Critical"}</span>
             </div>

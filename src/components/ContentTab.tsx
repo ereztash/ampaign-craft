@@ -200,7 +200,7 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
                     {copyQA.risks.map((risk, i) => (
                       <div key={i} className={`rounded-lg border p-2.5 ${risk.severity === "high" ? "border-destructive/30 bg-destructive/5" : "border-amber-500/20"}`}>
                         <div className="text-xs font-medium text-foreground">{risk.message[language]}</div>
-                        <div className="text-[10px] text-accent mt-1">{isHe ? "תיקון:" : "Fix:"} {risk.fix[language]}</div>
+                        <div className="text-xs text-accent mt-1">{isHe ? "תיקון:" : "Fix:"} {risk.fix[language]}</div>
                       </div>
                     ))}
                   </div>
@@ -214,7 +214,7 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
                       <div key={i} className="flex items-center justify-between text-xs border-b pb-1">
                         <span className="text-muted-foreground">{item.rule}</span>
                         <span className="font-medium">{item.score}pts</span>
-                        <span className="text-[10px] text-muted-foreground max-w-[50%] text-end">{item.tip[language]}</span>
+                        <span className="text-xs text-muted-foreground max-w-[50%] text-end">{item.tip[language]}</span>
                       </div>
                     ))}
                   </div>

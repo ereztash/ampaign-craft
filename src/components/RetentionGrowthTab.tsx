@@ -35,11 +35,11 @@ const RetentionGrowthTab = ({ result }: Props) => {
           <div className="flex gap-6 text-center">
             <div>
               <div className="text-2xl font-bold text-accent">{retention.projectedImpact.projectedChurnReduction}%</div>
-              <div className="text-[10px] text-muted-foreground">{isHe ? "צמצום נטישה" : "Churn Reduction"}</div>
+              <div className="text-xs text-muted-foreground">{isHe ? "צמצום נטישה" : "Churn Reduction"}</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-primary">{retention.projectedImpact.ltvMultiplier}×</div>
-              <div className="text-[10px] text-muted-foreground">LTV</div>
+              <div className="text-xs text-muted-foreground">LTV</div>
             </div>
           </div>
           <p className="text-sm text-muted-foreground flex-1" dir="auto">{retention.projectedImpact.additionalRevenue[language]}</p>
@@ -51,7 +51,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             🚀 {isHe ? `Onboarding (${retention.onboarding.type})` : `Onboarding (${retention.onboarding.type})`}
-            <Badge variant="outline" className="text-[10px]">Time to Value: {retention.onboarding.timeToValue}</Badge>
+            <Badge variant="outline" className="text-xs">Time to Value: {retention.onboarding.timeToValue}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -59,20 +59,20 @@ const RetentionGrowthTab = ({ result }: Props) => {
             <div key={i} className="flex items-start gap-3 rounded-lg border p-3">
               <div className="flex flex-col items-center shrink-0">
                 <span className="text-lg">{step.emoji}</span>
-                <Badge variant="outline" className="text-[10px] mt-1">{isHe ? `יום ${step.day}` : `Day ${step.day}`}</Badge>
+                <Badge variant="outline" className="text-xs mt-1">{isHe ? `יום ${step.day}` : `Day ${step.day}`}</Badge>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium">{step.name[language]}</span>
                   <div className="flex items-center gap-1">
-                    <Badge variant="outline" className="text-[10px]">{step.channel}</Badge>
+                    <Badge variant="outline" className="text-xs">{step.channel}</Badge>
                     <Button size="sm" variant="ghost" onClick={() => copyText(step.template[language], i)} className="h-6 w-6 p-0">
                       {copiedIdx === i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     </Button>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground whitespace-pre-line" dir="auto">{step.template[language]}</p>
-                <p className="text-[10px] text-primary mt-1">{isHe ? "מטרה:" : "Goal:"} {step.goal[language]}</p>
+                <p className="text-xs text-primary mt-1">{isHe ? "מטרה:" : "Goal:"} {step.goal[language]}</p>
               </div>
             </div>
           ))}
@@ -97,9 +97,9 @@ const RetentionGrowthTab = ({ result }: Props) => {
                 <div key={i} className={`rounded-lg border p-2.5 ${signal.risk === "critical" ? "border-destructive/30 bg-destructive/5" : signal.risk === "high" ? "border-amber-500/20" : ""}`}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-medium" dir="auto">{signal.signal[language]}</span>
-                    <Badge variant={signal.risk === "critical" ? "destructive" : "outline"} className="text-[10px]">{signal.risk}</Badge>
+                    <Badge variant={signal.risk === "critical" ? "destructive" : "outline"} className="text-xs">{signal.risk}</Badge>
                   </div>
-                  <p className="text-[10px] text-muted-foreground" dir="auto">{signal.intervention[language]}</p>
+                  <p className="text-xs text-muted-foreground" dir="auto">{signal.intervention[language]}</p>
                 </div>
               ))}
               <div className="mt-3 pt-3 border-t">
@@ -129,7 +129,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
           </div>
           <div className="bg-muted/30 rounded-lg p-3">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] text-muted-foreground">{isHe ? "תבנית WhatsApp:" : "WhatsApp Template:"}</span>
+              <span className="text-xs text-muted-foreground">{isHe ? "תבנית WhatsApp:" : "WhatsApp Template:"}</span>
               <Button size="sm" variant="ghost" onClick={() => copyText(retention.referralBlueprint.template[language], 50)} className="h-6">
                 {copiedIdx === 50 ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
               </Button>
@@ -173,7 +173,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
               {retention.loyaltyStrategy.tiers.map((tier, i) => (
                 <div key={i} className="rounded-lg border p-2 text-center">
                   <div className="text-sm font-bold">{tier.name[language]}</div>
-                  <div className="text-[10px] text-muted-foreground">{tier.threshold}</div>
+                  <div className="text-xs text-muted-foreground">{tier.threshold}</div>
                   <div className="text-xs text-accent mt-1">{tier.benefit[language]}</div>
                 </div>
               ))}
@@ -200,9 +200,9 @@ const RetentionGrowthTab = ({ result }: Props) => {
                   <span className="text-lg">{trigger.emoji}</span>
                   <div className="flex-1">
                     <div className="text-xs font-medium">{trigger.trigger[language]}</div>
-                    <div className="text-[10px] text-muted-foreground">{trigger.timing[language]} → {trigger.action[language]}</div>
+                    <div className="text-xs text-muted-foreground">{trigger.timing[language]} → {trigger.action[language]}</div>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">{trigger.channel}</Badge>
+                  <Badge variant="outline" className="text-xs">{trigger.channel}</Badge>
                 </div>
               ))}
             </CardContent>

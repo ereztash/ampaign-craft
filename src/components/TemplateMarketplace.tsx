@@ -117,13 +117,13 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-1.5 mb-3">
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs">
                     {FIELD_LABELS[tmpl.businessField]?.[language] || tmpl.businessField}
                   </Badge>
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs">
                     {GOAL_LABELS[tmpl.mainGoal]?.[language] || tmpl.mainGoal}
                   </Badge>
-                  <Badge variant="outline" className="text-[10px]">{tmpl.budgetRange}</Badge>
+                  <Badge variant="outline" className="text-xs">{tmpl.budgetRange}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">

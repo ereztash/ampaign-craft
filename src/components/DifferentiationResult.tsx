@@ -134,7 +134,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
                 <p className="text-xs text-muted-foreground mb-2">{isHe ? "ארכיטיפ:" : "Archetype:"} {comp.archetype}</p>
                 {comp.counter_strategy && (
                   <div className="rounded-lg bg-accent/5 border border-accent/20 p-2.5">
-                    <div className="text-[10px] text-accent font-medium mb-1">{isHe ? "אסטרטגיית נגד:" : "Counter-strategy:"}</div>
+                    <div className="text-xs text-accent font-medium mb-1">{isHe ? "אסטרטגיית נגד:" : "Counter-strategy:"}</div>
                     <p className="text-xs" dir="auto">{comp.counter_strategy}</p>
                   </div>
                 )}

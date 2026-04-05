@@ -188,7 +188,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
       <div className="mx-auto max-w-5xl" id="results-content">
         {/* Header */}
         <motion.div {...motionProps} className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-extrabold text-foreground sm:text-4xl">{t("resultsTitle")}</h1>
+          <h1 className="mb-2 text-3xl font-bold text-foreground sm:text-4xl">{t("resultsTitle")}</h1>
           <p className="text-lg text-muted-foreground">{t("resultsSubtitle")}</p>
           <div className="mt-4 inline-block rounded-full bg-primary/10 px-6 py-2">
             <span className="font-bold text-primary">{result.funnelName[language]}</span>
@@ -355,9 +355,9 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                           {NEURO_LABELS[stageId] && (
                             <div className="flex items-center gap-1.5 mt-0.5">
                               <span className="text-xs">{NEURO_LABELS[stageId].emoji}</span>
-                              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{NEURO_LABELS[stageId].vector[language]}</span>
-                              <span className="text-[10px] text-muted-foreground">—</span>
-                              <span className="text-[10px] text-muted-foreground italic">{NEURO_LABELS[stageId].desc[language]}</span>
+                              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{NEURO_LABELS[stageId].vector[language]}</span>
+                              <span className="text-xs text-muted-foreground">—</span>
+                              <span className="text-xs text-muted-foreground italic">{NEURO_LABELS[stageId].desc[language]}</span>
                             </div>
                           )}
                         </div>
@@ -384,7 +384,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                               {tools.length > 0 && (
                                 <div className="mt-2 flex flex-wrap gap-1.5">
                                   {tools.map((tool, ti) => (
-                                    <span key={ti} className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                                    <span key={ti} className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                                       🇮🇱 {tool.tool}
                                     </span>
                                   ))}
@@ -452,7 +452,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                         <div className="text-sm font-medium">{event.name[language]}</div>
                         <p className="text-xs text-muted-foreground">{event.recommendation[language]}</p>
                         {event.budgetMultiplier !== 1.0 && (
-                          <Badge variant={event.budgetMultiplier > 1 ? "default" : "outline"} className="mt-1 text-[10px]">
+                          <Badge variant={event.budgetMultiplier > 1 ? "default" : "outline"} className="mt-1 text-xs">
                             {isHe ? "תקציב" : "Budget"} ×{event.budgetMultiplier}
                           </Badge>
                         )}
@@ -468,7 +468,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
                   🔄 {flywheel.typeLabel[language]}
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs">
                     {isHe ? `צמצום נטישה ~${flywheel.churnReduction}%` : `~${flywheel.churnReduction}% churn reduction`}
                   </Badge>
                 </CardTitle>
@@ -479,7 +479,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                     <div key={i} className="rounded-xl border p-2.5 text-center">
                       <div className="text-lg mb-1">{step.emoji}</div>
                       <div className="text-xs font-medium">{step.name[language]}</div>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">{step.description[language]}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{step.description[language]}</p>
                     </div>
                   ))}
                 </div>
@@ -492,7 +492,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm flex items-center gap-2">
                     👥 {isHe ? "אסטרטגיית קהילה (CLG)" : "Community-Led Growth (CLG)"}
-                    <Badge className="text-[10px]">
+                    <Badge className="text-xs">
                       LTV ×{clgStrategy.ltvImpact.multiplier}
                     </Badge>
                   </CardTitle>
@@ -503,7 +503,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                   <div className="space-y-1.5">
                     {clgStrategy.roadmap.map((week) => (
                       <div key={week.week} className="flex items-start gap-2 text-xs">
-                        <Badge variant="outline" className="text-[10px] shrink-0">{isHe ? `שבוע ${week.week}` : `Week ${week.week}`}</Badge>
+                        <Badge variant="outline" className="text-xs shrink-0">{isHe ? `שבוע ${week.week}` : `Week ${week.week}`}</Badge>
                         <span className="text-muted-foreground">{week.title[language]}: {week.milestone[language]}</span>
                       </div>
                     ))}

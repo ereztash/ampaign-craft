@@ -62,7 +62,7 @@ const AchievementBadgesPanel = ({ open, onOpenChange }: AchievementBadgesPanelPr
             >
               <div className="text-2xl mb-1">{a.emoji}</div>
               <div className="text-xs font-semibold text-foreground">{a.name[language]}</div>
-              <div className="text-[10px] text-muted-foreground mt-0.5">{a.description[language]}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">{a.description[language]}</div>
               {a.unlockedAt && (
                 <Badge variant="outline" className="mt-1.5 text-[9px]">
                   {new Date(a.unlockedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}

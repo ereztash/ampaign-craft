@@ -97,7 +97,7 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-foreground truncate">{ds.name}</div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="outline" className="text-[10px]">
+                    <Badge variant="outline" className="text-xs">
                       {typeLabels[ds.schema.detectedType]?.[language]}
                     </Badge>
                     <span>{ds.rows.length} {isHe ? "שורות" : "rows"}</span>

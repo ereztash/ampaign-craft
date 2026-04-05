@@ -146,14 +146,14 @@ const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProp
           {PHASES.map((phase, i) => (
             <div key={phase.id} className="flex flex-col items-center gap-1">
               <div
-                className={`${isMobile ? "w-7 h-7 text-[10px]" : "w-8 h-8 text-xs"} rounded-full flex items-center justify-center font-bold transition-colors ${
+                className={`${isMobile ? "w-7 h-7 text-xs" : "w-8 h-8 text-xs"} rounded-full flex items-center justify-center font-bold transition-colors ${
                   i <= phaseIndex ? "text-white" : "text-muted-foreground bg-muted"
                 }`}
                 style={i <= phaseIndex ? { backgroundColor: phase.color } : undefined}
               >
                 {i < phaseIndex ? "✓" : phase.number}
               </div>
-              <span className="text-[10px] text-muted-foreground hidden sm:block">{phase.title[language]}</span>
+              <span className="text-xs text-muted-foreground hidden sm:block">{phase.title[language]}</span>
             </div>
           ))}
         </div>

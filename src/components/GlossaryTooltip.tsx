@@ -24,7 +24,7 @@ const GlossaryTooltip = ({ termKey }: GlossaryTooltipProps) => {
           <div className="font-semibold text-xs">{term.term[language]}</div>
           <div className="text-xs text-muted-foreground">{term.definition[language]}</div>
           {term.example && (
-            <div className="text-[10px] text-muted-foreground italic">{term.example[language]}</div>
+            <div className="text-xs text-muted-foreground italic">{term.example[language]}</div>
           )}
         </div>
       </TooltipContent>

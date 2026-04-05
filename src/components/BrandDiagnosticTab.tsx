@@ -233,7 +233,7 @@ const BrandDiagnosticTab = ({ personalBrand }: BrandDiagnosticTabProps) => {
           </CardHeader>
           <CardContent>
             <div className="mb-6 text-center">
-              <div className="text-6xl font-extrabold text-primary">{result.totalScore}</div>
+              <div className="text-6xl font-bold text-primary">{result.totalScore}</div>
               <div className="text-sm text-muted-foreground">{language === "he" ? "מתוך 10" : "out of 10"}</div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

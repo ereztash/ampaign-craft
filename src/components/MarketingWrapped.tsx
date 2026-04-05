@@ -91,22 +91,22 @@ const MarketingWrapped = ({ plans }: MarketingWrappedProps) => {
           <div className="rounded-xl bg-primary/10 p-3 text-center">
             <Target className="h-5 w-5 mx-auto text-primary mb-1" />
             <div className="text-2xl font-bold text-foreground">{plans.length}</div>
-            <div className="text-[10px] text-muted-foreground">{isHe ? "משפכים" : "Funnels"}</div>
+            <div className="text-xs text-muted-foreground">{isHe ? "משפכים" : "Funnels"}</div>
           </div>
           <div className="rounded-xl bg-accent/10 p-3 text-center">
             <TrendingUp className="h-5 w-5 mx-auto text-accent mb-1" />
             <div className="text-2xl font-bold text-foreground">{healthScore.total}</div>
-            <div className="text-[10px] text-muted-foreground">{isHe ? "ציון בריאות" : "Health Score"}</div>
+            <div className="text-xs text-muted-foreground">{isHe ? "ציון בריאות" : "Health Score"}</div>
           </div>
           <div className="rounded-xl bg-destructive/10 p-3 text-center">
             <div className="text-xl mb-1">🔥</div>
             <div className="text-2xl font-bold text-foreground">{streak.currentStreak}</div>
-            <div className="text-[10px] text-muted-foreground">{isHe ? "שבועות streak" : "Week streak"}</div>
+            <div className="text-xs text-muted-foreground">{isHe ? "שבועות streak" : "Week streak"}</div>
           </div>
           <div className="rounded-xl bg-primary/10 p-3 text-center">
             <Fingerprint className="h-5 w-5 mx-auto text-primary mb-1" />
             <div className="text-2xl font-bold text-foreground">{unlockedCount}/{totalCount}</div>
-            <div className="text-[10px] text-muted-foreground">{isHe ? "הישגים" : "Achievements"}</div>
+            <div className="text-xs text-muted-foreground">{isHe ? "הישגים" : "Achievements"}</div>
           </div>
         </div>
 

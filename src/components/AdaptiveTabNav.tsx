@@ -25,7 +25,7 @@ const AdaptiveTabNav = ({ tabs }: AdaptiveTabNavProps) => {
           {tab.badge && (
             <Badge
               variant="secondary"
-              className="ml-1 h-4 px-1 text-[10px] leading-none bg-accent/20 text-accent-foreground"
+              className="ml-1 h-4 px-1 text-xs leading-none bg-accent/20 text-accent-foreground"
             >
               {tab.badge[language]}
             </Badge>

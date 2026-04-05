@@ -54,7 +54,7 @@ const Landing = () => {
           </motion.div>
 
           {/* Cortisol — pain/scroll-stop */}
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl" dir="auto">
+          <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl" dir="auto">
             {isHe ? "משקיע בשיווק ולא רואה תוצאות?" : "Investing in marketing with no results?"}
           </h1>
 

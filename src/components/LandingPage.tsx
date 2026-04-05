@@ -85,7 +85,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
           {/* Returning user greeting */}
           {profile.isReturningUser ? (
             <>
-              <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
                 {language === "he" ? "ברוך שובך!" : "Welcome Back!"}
               </h1>
               <p className="mb-6 text-lg text-muted-foreground sm:text-xl">
@@ -204,7 +204,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
             </>
           ) : (
             <>
-              <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
                 {t("heroTitle")}
               </h1>
               <p className="mb-6 text-lg text-muted-foreground sm:text-xl">
@@ -254,7 +254,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
               className="w-full rounded-2xl p-6 text-start transition-all hover:shadow-lg border-2 border-amber-500/40 hover:border-amber-500 bg-gradient-to-br from-amber-500/10 to-transparent relative overflow-hidden"
             >
               <div className="absolute top-3 end-3">
-                <span className="rounded-full bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1">
+                <span className="rounded-full bg-amber-500 text-white text-xs font-bold px-2.5 py-1">
                   {isHe ? "מומלץ" : "RECOMMENDED"}
                 </span>
               </div>

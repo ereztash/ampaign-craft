@@ -96,7 +96,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
                         {stage.name[language]}
                       </span>
                       {stage.conversionRate < 100 && (
-                        <Badge variant="outline" className="text-[10px]">
+                        <Badge variant="outline" className="text-xs">
                           {stage.conversionRate}% → {t("conversionToNext")}
                         </Badge>
                       )}
@@ -110,7 +110,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
                       ))}
                     </div>
                     {stage.avgDaysInStage > 0 && (
-                      <div className="mt-1.5 text-[10px] text-muted-foreground/60">
+                      <div className="mt-1.5 text-xs text-muted-foreground/60">
                         ~{stage.avgDaysInStage} {t("daysUnit")}
                       </div>
                     )}
@@ -146,7 +146,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
               <div key={i} className="rounded-xl border p-3 text-center">
                 <kpi.icon className={cn("h-4 w-4 mx-auto mb-1", kpi.color)} />
                 <div className="text-lg font-bold text-foreground">{kpi.value}</div>
-                <div className="text-[10px] text-muted-foreground">{kpi.label}</div>
+                <div className="text-xs text-muted-foreground">{kpi.label}</div>
               </div>
             ))}
           </div>
@@ -197,7 +197,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
                 {script.response[language]}
               </p>
               <div className="mt-1.5">
-                <Badge variant="outline" className="text-[10px]">{script.technique}</Badge>
+                <Badge variant="outline" className="text-xs">{script.technique}</Badge>
               </div>
             </div>
           ))}
@@ -221,7 +221,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
                   {isHe ? "טריגר:" : "Trigger:"} {auto.trigger[language]}
                 </div>
                 <div className="text-sm font-medium text-foreground">{auto.action[language]}</div>
-                <Badge variant="outline" className="mt-1 text-[10px]">{auto.tool}</Badge>
+                <Badge variant="outline" className="mt-1 text-xs">{auto.tool}</Badge>
               </div>
             </div>
           ))}
@@ -257,11 +257,11 @@ const SalesTab = ({ result }: SalesTabProps) => {
           <p className="text-xs text-muted-foreground">{personalityProfile.traits[language]}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="rounded-lg bg-accent/5 border border-accent/20 p-2.5">
-              <div className="text-[10px] text-accent font-medium mb-1">{isHe ? "✅ איך למכור:" : "✅ How to sell:"}</div>
+              <div className="text-xs text-accent font-medium mb-1">{isHe ? "✅ איך למכור:" : "✅ How to sell:"}</div>
               <p className="text-xs text-foreground">{personalityProfile.sellTo[language]}</p>
             </div>
             <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-2.5">
-              <div className="text-[10px] text-destructive font-medium mb-1">{isHe ? "❌ מה להימנע:" : "❌ What to avoid:"}</div>
+              <div className="text-xs text-destructive font-medium mb-1">{isHe ? "❌ מה להימנע:" : "❌ What to avoid:"}</div>
               <p className="text-xs text-foreground">{personalityProfile.avoid[language]}</p>
             </div>
           </div>
@@ -283,19 +283,19 @@ const SalesTab = ({ result }: SalesTabProps) => {
                 <span className="text-sm font-medium flex items-center gap-2">
                   <span>{fw.emoji}</span> {fw.name[language]}
                 </span>
-                <Badge variant="outline" className="text-[10px]">{fw.vectorLabel[language]}</Badge>
+                <Badge variant="outline" className="text-xs">{fw.vectorLabel[language]}</Badge>
               </div>
               <p className="text-xs text-muted-foreground mb-2">{fw.psychology[language]}</p>
               <div className="bg-accent/5 rounded-lg p-2.5 mb-1.5">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-accent font-medium">{isHe ? "סקריפט:" : "Script:"}</span>
-                  <Button size="sm" variant="ghost" onClick={() => copyScript(fw.script[language], 100 + i)} className="h-6 text-[10px] gap-1">
+                  <span className="text-xs text-accent font-medium">{isHe ? "סקריפט:" : "Script:"}</span>
+                  <Button size="sm" variant="ghost" onClick={() => copyScript(fw.script[language], 100 + i)} className="h-6 text-xs gap-1">
                     {copiedIdx === 100 + i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                   </Button>
                 </div>
                 <p className="text-xs text-foreground" dir="auto">{fw.script[language]}</p>
               </div>
-              <p className="text-[10px] text-muted-foreground">{isHe ? "מתאים ל:" : "Best for:"} {fw.bestFor[language]}</p>
+              <p className="text-xs text-muted-foreground">{isHe ? "מתאים ל:" : "Best for:"} {fw.bestFor[language]}</p>
             </div>
           ))}
         </CardContent>

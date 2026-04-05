@@ -189,7 +189,7 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
               {schema.columns.map((col) => (
                 <Badge key={col.name} variant="outline" className="gap-1">
                   <span>{col.name}</span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     ({roleLabels[col.role || "dimension"]?.[language]})
                   </span>
                 </Badge>

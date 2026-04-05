@@ -61,13 +61,13 @@ const PricingIntelligenceTab = ({ result }: Props) => {
             {pricing.tierStructure.tiers.map((tier, i) => (
               <div key={i} className={`rounded-xl border-2 p-4 text-center ${tier.isPrimary ? "border-primary bg-primary/5 relative" : tier.isDecoy ? "border-muted opacity-75" : "border-border"}`}>
                 {tier.isPrimary && (
-                  <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px]">
+                  <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs">
                     {isHe ? "הכי פופולרי" : "Most Popular"}
                   </Badge>
                 )}
                 <div className="text-sm font-medium mb-1">{tier.name[language]}</div>
                 <div className="text-2xl font-bold text-foreground">₪{tier.price}</div>
-                <div className="text-[10px] text-muted-foreground mb-2">
+                <div className="text-xs text-muted-foreground mb-2">
                   {isHe ? "שנתי:" : "Annual:"} ₪{tier.annualPrice} ({tier.annualDiscount}% {isHe ? "הנחה" : "off"})
                 </div>
                 <div className="text-xs text-muted-foreground text-start space-y-1">
@@ -75,7 +75,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
                     <div key={j}>✓ {f[language]}</div>
                   ))}
                 </div>
-                <div className="text-[10px] text-primary mt-2">{tier.targetSegment[language]}</div>
+                <div className="text-xs text-primary mt-2">{tier.targetSegment[language]}</div>
               </div>
             ))}
           </div>
@@ -103,7 +103,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
                 <div key={i} className="flex items-center justify-between rounded-lg border p-2.5">
                   <div>
                     <div className="text-xs font-medium">{bonus.name[language]}</div>
-                    <div className="text-[10px] text-muted-foreground">{bonus.description[language]}</div>
+                    <div className="text-xs text-muted-foreground">{bonus.description[language]}</div>
                   </div>
                   <Badge variant="outline">₪{bonus.anchoredValue}</Badge>
                 </div>
@@ -129,7 +129,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           <CardTitle className="text-sm flex items-center gap-2">
             <Shield className="h-4 w-4 text-accent" />
             {pricing.guarantee.label[language]}
-            <Badge variant="outline" className="text-[10px]">{isHe ? "אמון:" : "Trust:"} {pricing.guarantee.trustScore}/10</Badge>
+            <Badge variant="outline" className="text-xs">{isHe ? "אמון:" : "Trust:"} {pricing.guarantee.trustScore}/10</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -154,14 +154,14 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           <Tabs defaultValue="landing_page">
             <TabsList className="h-8 w-full justify-start gap-1 bg-muted/50">
               {pricing.priceFramingScripts.map((s) => (
-                <TabsTrigger key={s.context} value={s.context} className="text-[10px] px-2">{s.label[language]}</TabsTrigger>
+                <TabsTrigger key={s.context} value={s.context} className="text-xs px-2">{s.label[language]}</TabsTrigger>
               ))}
             </TabsList>
             {pricing.priceFramingScripts.map((script, i) => (
               <TabsContent key={script.context} value={script.context} className="mt-3">
                 <div className="bg-muted/30 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge variant="outline" className="text-[10px]">{script.principle}</Badge>
+                    <Badge variant="outline" className="text-xs">{script.principle}</Badge>
                     <Button size="sm" variant="ghost" onClick={() => copyText(script.script[language], i)} className="h-6">
                       {copiedIdx === i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     </Button>
@@ -181,7 +181,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
             <CardTitle className="text-sm flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               {isHe ? "כלכלת מנוי" : "Subscription Economics"}
-              <Badge variant={pricing.subscriptionEconomics.health === "healthy" ? "default" : "destructive"} className="text-[10px]">
+              <Badge variant={pricing.subscriptionEconomics.health === "healthy" ? "default" : "destructive"} className="text-xs">
                 {pricing.subscriptionEconomics.health}
               </Badge>
             </CardTitle>
@@ -190,15 +190,15 @@ const PricingIntelligenceTab = ({ result }: Props) => {
             <div className="grid grid-cols-3 gap-3 text-center">
               <div>
                 <div className="text-lg font-bold">₪{pricing.subscriptionEconomics.projectedLTV.toLocaleString()}</div>
-                <div className="text-[10px] text-muted-foreground">LTV</div>
+                <div className="text-xs text-muted-foreground">LTV</div>
               </div>
               <div>
                 <div className="text-lg font-bold">₪{pricing.subscriptionEconomics.recommendedCAC.toLocaleString()}</div>
-                <div className="text-[10px] text-muted-foreground">CAC {isHe ? "מומלץ" : "Target"}</div>
+                <div className="text-xs text-muted-foreground">CAC {isHe ? "מומלץ" : "Target"}</div>
               </div>
               <div>
                 <div className="text-lg font-bold">{pricing.subscriptionEconomics.ltvCacRatio}:1</div>
-                <div className="text-[10px] text-muted-foreground">LTV:CAC</div>
+                <div className="text-xs text-muted-foreground">LTV:CAC</div>
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2" dir="auto">{pricing.subscriptionEconomics.recommendation[language]}</p>
