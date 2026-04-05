@@ -459,9 +459,9 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
       </div>
 
       {/* AI Coach Floating Button + Panel */}
-      <div className="fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
         {coachOpen ? (
-          <div className="w-[380px] max-h-[550px] animate-in slide-in-from-bottom-4">
+          <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[70vh] sm:max-h-[550px] animate-in slide-in-from-bottom-4">
             <div className="flex justify-end mb-1">
               <Button size="sm" variant="ghost" onClick={() => setCoachOpen(false)} className="text-xs">
                 {isHe ? "סגור" : "Close"} ✕

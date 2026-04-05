@@ -98,9 +98,9 @@ const CampaignCockpit = () => {
               <CardTitle className="text-sm">{isHe ? "הוסף מדד בפועל" : "Add Actual Metric"}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-2 flex-wrap">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                 <Select value={inputMetric} onValueChange={setInputMetric}>
-                  <SelectTrigger className="w-[130px]">
+                  <SelectTrigger className="w-full sm:w-[130px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -114,10 +114,10 @@ const CampaignCockpit = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={isHe ? "ערך בפועל" : "Actual value"}
-                  className="w-[140px]"
+                  className="w-full sm:w-[140px]"
                 />
                 <Select value={inputChannel} onValueChange={setInputChannel}>
-                  <SelectTrigger className="w-[130px]">
+                  <SelectTrigger className="w-full sm:w-[130px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -126,7 +126,7 @@ const CampaignCockpit = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                <Button onClick={handleAdd} size="sm" className="gap-1">
+                <Button onClick={handleAdd} size="default" className="gap-1 h-10 col-span-2 sm:col-span-1">
                   <Plus className="h-3.5 w-3.5" />
                   {isHe ? "הוסף" : "Add"}
                 </Button>

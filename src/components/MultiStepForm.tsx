@@ -208,14 +208,14 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
                     type="number" min={13} max={80}
                     value={formData.ageRange[0]}
                     onChange={(e) => update({ ageRange: [Number(e.target.value), formData.ageRange[1]] })}
-                    className="w-24"
+                    className="w-20 sm:w-24"
                   />
                   <span className="text-muted-foreground">–</span>
                   <Input
                     type="number" min={13} max={80}
                     value={formData.ageRange[1]}
                     onChange={(e) => update({ ageRange: [formData.ageRange[0], Number(e.target.value)] })}
-                    className="w-24"
+                    className="w-20 sm:w-24"
                   />
                 </div>
               </div>

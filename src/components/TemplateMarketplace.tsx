@@ -68,9 +68,9 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 flex-wrap">
+      <div className="grid grid-cols-2 sm:flex gap-3">
         <Select value={fieldFilter} onValueChange={setFieldFilter}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="w-full sm:w-[150px]">
             <SelectValue placeholder={isHe ? "תחום" : "Industry"} />
           </SelectTrigger>
           <SelectContent>
@@ -81,7 +81,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
           </SelectContent>
         </Select>
         <Select value={goalFilter} onValueChange={setGoalFilter}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue placeholder={isHe ? "מטרה" : "Goal"} />
           </SelectTrigger>
           <SelectContent>

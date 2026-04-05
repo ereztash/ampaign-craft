@@ -87,7 +87,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
 
   return (
     <>
-    <Card className="flex flex-col h-[500px]">
+    <Card className="flex flex-col h-[60vh] sm:h-[500px]">
       <CardHeader className="pb-3 shrink-0">
         <CardTitle className="flex items-center gap-2 text-base">
           <Bot className="h-5 w-5 text-primary" />
