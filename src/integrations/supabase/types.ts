@@ -16,91 +16,51 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
-          id: string
-          display_name: string | null
-          experience_level: string | null
-          visit_count: number
           created_at: string
+          display_name: string | null
+          id: string
           updated_at: string
+          visit_count: number | null
         }
         Insert: {
-          id: string
-          display_name?: string | null
-          experience_level?: string | null
-          visit_count?: number
           created_at?: string
+          display_name?: string | null
+          id: string
           updated_at?: string
+          visit_count?: number | null
         }
         Update: {
-          id?: string
-          display_name?: string | null
-          experience_level?: string | null
-          visit_count?: number
           created_at?: string
+          display_name?: string | null
+          id?: string
           updated_at?: string
+          visit_count?: number | null
         }
         Relationships: []
       }
       saved_plans: {
         Row: {
+          created_at: string
           id: string
-          user_id: string
           name: string
           result: Json
-          created_at: string
+          user_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
-          user_id: string
           name: string
           result: Json
-          created_at?: string
+          user_id: string
         }
         Update: {
+          created_at?: string
           id?: string
-          user_id?: string
           name?: string
           result?: Json
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "saved_plans_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      user_preferences: {
-        Row: {
-          user_id: string
-          language: string
-          dark_mode: string
-          onboarding_dismissed: boolean
-        }
-        Insert: {
-          user_id: string
-          language?: string
-          dark_mode?: string
-          onboarding_dismissed?: boolean
-        }
-        Update: {
           user_id?: string
-          language?: string
-          dark_mode?: string
-          onboarding_dismissed?: boolean
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_preferences_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
-        ]
+        Relationships: []
       }
     }
     Views: {

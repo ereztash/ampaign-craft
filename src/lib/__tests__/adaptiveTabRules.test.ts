@@ -37,9 +37,15 @@ const defaultProfile: UserProfile = {
   isReturningUser: false,
   visitCount: 1,
   savedPlanCount: 0,
-  segment: "new-beginner",
+  userSegment: "new-beginner",
   lastPlanSummary: null,
   isMobile: false,
+  lastVisitDate: null,
+  lastFormData: null,
+  currentFormData: null,
+  experienceLevel: "",
+  prefersReducedMotion: false,
+  achievements: [],
 };
 
 describe("getTabConfig", () => {

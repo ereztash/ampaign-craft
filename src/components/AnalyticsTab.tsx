@@ -52,7 +52,7 @@ const AnalyticsTab = ({ meta, auth, result, isSimplified }: AnalyticsTabProps) =
             {auth && meta.selectedAccountId && (
               <MetaMonitor
                 result={result}
-                accountId={selectedAccountId}
+                accountId={meta.selectedAccountId}
                 accessToken={auth.accessToken}
               />
             )}
