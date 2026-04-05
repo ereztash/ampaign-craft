@@ -73,7 +73,7 @@ function inferColumnRole(name: string, type: ColumnDef["type"]): ColumnDef["role
   if (type === "number" || METRIC_KEYWORDS.some((k) => lower.includes(k))) return "metric";
   if (DIMENSION_KEYWORDS.some((k) => lower.includes(k))) return "dimension";
 
-  return type === "number" ? "metric" : "dimension";
+  return (type as string) === "number" ? "metric" : "dimension";
 }
 
 function detectDatasetType(columns: ColumnDef[]): DatasetSchema["detectedType"] {

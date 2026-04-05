@@ -215,7 +215,7 @@ function getChannelsForStage(
       });
     }
     // WhatsApp — dominant messaging channel in Israel (99% penetration)
-    if (isB2C || audienceType === "both") {
+    if (isB2C || (audienceType as string) === "both") {
       channels.push({
         channel: "whatsapp",
         name: { he: "וואטסאפ ביזנס – מעורבות", en: "WhatsApp Business – Engagement" },

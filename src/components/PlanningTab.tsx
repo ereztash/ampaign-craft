@@ -8,7 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 interface PlanningTabProps {
   barData: { name: string; budget: number; fill: string }[];
   pieData: { name: string; value: number }[];
-  kpis: { name: { he: string; en: string }; target: string }[];
+  kpis: { name: { he: string; en: string }; target: string; confidence?: string }[];
   benchmarks: IndustryBenchmark[];
 }
 
