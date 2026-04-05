@@ -27,13 +27,13 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
             <div className={`text-4xl font-bold ${scoreColor(result.differentiationStrength)}`}>
               {result.differentiationStrength}
             </div>
-            <div className="text-xs text-muted-foreground">{t("diffScore")}</div>
+            <div className="text-xs text-muted-foreground" dir="auto">{t("diffScore")}</div>
           </div>
           <div className="text-center">
             <div className={`text-4xl font-bold ${scoreColor(result.claimVerificationScore)}`}>
               {result.claimVerificationScore}
             </div>
-            <div className="text-xs text-muted-foreground">{t("diffClaimScore")}</div>
+            <div className="text-xs text-muted-foreground" dir="auto">{t("diffClaimScore")}</div>
           </div>
         </div>
         <div className="flex-1">
@@ -65,13 +65,13 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
               )}
               {result.mechanismStatement.mechanism && (
                 <div>
-                  <div className="text-xs font-semibold text-muted-foreground mb-1">{isHe ? "מנגנון:" : "Mechanism:"}</div>
+                  <div className="text-xs font-semibold text-muted-foreground mb-1" dir="auto">{isHe ? "מנגנון:" : "Mechanism:"}</div>
                   <p className="text-sm" dir="auto">{result.mechanismStatement.mechanism}</p>
                 </div>
               )}
               {result.mechanismStatement.proof && (
                 <div>
-                  <div className="text-xs font-semibold text-muted-foreground mb-1">{isHe ? "הוכחה:" : "Proof:"}</div>
+                  <div className="text-xs font-semibold text-muted-foreground mb-1" dir="auto">{isHe ? "הוכחה:" : "Proof:"}</div>
                   <p className="text-sm" dir="auto">{result.mechanismStatement.proof}</p>
                 </div>
               )}

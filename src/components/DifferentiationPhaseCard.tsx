@@ -22,6 +22,7 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
       case "text":
         return (
           <Input
+            id={`diff-${q.id}`}
             value={(formData as Record<string, string>)[q.id] || ""}
             onChange={(e) => onUpdate({ [q.id]: e.target.value })}
             placeholder={q.placeholder?.[language]}
@@ -32,6 +33,7 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
       case "textarea":
         return (
           <Textarea
+            id={`diff-${q.id}`}
             value={(formData as Record<string, string>)[q.id] || ""}
             onChange={(e) => onUpdate({ [q.id]: e.target.value })}
             placeholder={q.placeholder?.[language]}
@@ -45,8 +47,10 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {q.options?.map((opt) => (
               <button
+                type="button"
                 key={opt.value}
                 onClick={() => onUpdate({ [q.id]: opt.value })}
+                aria-pressed={(formData as Record<string, string>)[q.id] === opt.value}
                 className={`rounded-lg border p-3 text-sm text-start transition-colors ${
                   (formData as Record<string, string>)[q.id] === opt.value
                     ? "border-primary bg-primary/10 font-medium"
@@ -91,7 +95,7 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
               {q.normalizingFrame[language]}
             </div>
           )}
-          <label className="text-sm font-medium text-foreground" dir="auto">
+          <label htmlFor={`diff-${q.id}`} className="text-sm font-medium text-foreground" dir="auto">
             {q.label[language]}
             {q.required && <span className="text-destructive ms-1">*</span>}
           </label>
@@ -249,8 +253,10 @@ function CompetitorArchetypeSelector({ formData, onUpdate, options }: { formData
             <div className="grid grid-cols-1 gap-1.5">
               {options.map((opt) => (
                 <button
+                  type="button"
                   key={opt.value}
                   onClick={() => setArchetype(comp, opt.value)}
+                  aria-pressed={current?.archetype === opt.value}
                   className={`text-start rounded-md border p-2 text-xs transition-colors ${
                     current?.archetype === opt.value ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
                   }`}
@@ -284,8 +290,10 @@ function BuyingCommitteeSelector({ formData, onUpdate, options }: { formData: Di
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       {options.map((opt) => (
         <button
+          type="button"
           key={opt.value}
           onClick={() => toggle(opt.value)}
+          aria-pressed={selectedIds.has(opt.value as BuyingCommitteeRoleId)}
           className={`text-start rounded-lg border p-3 text-sm transition-colors ${
             selectedIds.has(opt.value as BuyingCommitteeRoleId) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
           }`}

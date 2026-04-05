@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { DifferentiationFormData, DifferentiationResult, initialDifferentiationFormData, AiPhase2Result, AiPhase3Result, AiPhase4Result, AiPhase5Result } from "@/types/differentiation";
 import { PHASES } from "@/engine/differentiationPhases";
 import { generateDifferentiation, AiResults } from "@/engine/differentiationEngine";
@@ -22,6 +23,7 @@ interface DifferentiationWizardProps {
 const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProps) => {
   const { t, language, isRTL } = useLanguage();
   const reducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
   const isHe = language === "he";
 
   const [phaseIndex, setPhaseIndex] = useState(0);
@@ -121,14 +123,14 @@ const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProp
   const isSynthesisPhase = currentPhase.id === "synthesis";
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className={`max-w-2xl mx-auto ${isMobile ? "space-y-4 px-1" : "space-y-6"}`}>
       {/* Progress bar */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           {PHASES.map((phase, i) => (
             <div key={phase.id} className="flex flex-col items-center gap-1">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                className={`${isMobile ? "w-7 h-7 text-[10px]" : "w-8 h-8 text-xs"} rounded-full flex items-center justify-center font-bold transition-colors ${
                   i <= phaseIndex ? "text-white" : "text-muted-foreground bg-muted"
                 }`}
                 style={i <= phaseIndex ? { backgroundColor: phase.color } : undefined}
