@@ -8,6 +8,7 @@ const AnalyticsTab = lazy(() => import("@/components/AnalyticsTab"));
 const AiCoachChat = lazy(() => import("@/components/AiCoachChat"));
 const WhatsAppTemplatesPanel = lazy(() => import("@/components/WhatsAppTemplatesPanel"));
 const StylomeExtractor = lazy(() => import("@/components/StylomeExtractor"));
+const SalesTab = lazy(() => import("@/components/SalesTab"));
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -413,6 +414,11 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           {/* Tab 5: Brand DNA (conditional) */}
           <TabsContent value="branddna" className="mt-6">
             <BrandDiagnosticTab personalBrand={result.personalBrand} />
+          </TabsContent>
+
+          {/* Tab: Sales Pipeline */}
+          <TabsContent value="sales" className="mt-6">
+            <SalesTab result={result} />
           </TabsContent>
 
           {/* Tab 6: Stylome */}

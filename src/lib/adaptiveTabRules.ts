@@ -73,13 +73,24 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       simplifiedMode: isBeginner,
     },
 
+    // Sales — pipeline, forecasting, objection scripts, automations
+    {
+      id: "sales",
+      labelKey: "tabSales",
+      visible: true,
+      priority: formData.mainGoal === "sales" || formData.mainGoal === "leads" ? 12 : 35,
+      badge: formData.mainGoal === "sales" || formData.mainGoal === "leads"
+        ? { he: "חדש!", en: "New!" }
+        : { he: "חדש", en: "New" },
+      simplifiedMode: isBeginner,
+    },
+
     // Stylome — personal style fingerprint + system prompt
     {
       id: "stylome",
       labelKey: "tabStylome",
       visible: true,
       priority: isBeginner ? 52 : isAdvanced ? 45 : 56,
-      badge: { he: "חדש", en: "New" },
       simplifiedMode: isBeginner,
     },
   ];

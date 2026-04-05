@@ -299,6 +299,25 @@ export const translations = {
   stylomeSubtitle: { he: "מחלץ טביעת סגנון אישית — הדבק דגימות כתיבה וקבל System Prompt לשכפול הקול שלך", en: "Personal style fingerprint — paste writing samples and get a System Prompt to clone your voice" },
   beginnerStylomeTitle: { he: "מחלץ טביעת סגנון", en: "Style Fingerprint" },
   beginnerStylomeSubtitle: { he: "הדבק טקסטים שכתבת (וואטסאפ, אימייל, פוסט) וקבל פרומפט AI שכותב כמוך", en: "Paste texts you've written (WhatsApp, email, post) and get an AI prompt that writes like you" },
+
+  // Sales Tab
+  tabSales: { he: "מכירות", en: "Sales" },
+  salesSubtitle: { he: "Pipeline מכירות, תחזיות, סקריפטים ואוטומציות", en: "Sales pipeline, forecasting, scripts & automations" },
+  salesPipeline: { he: "Pipeline מכירות", en: "Sales Pipeline" },
+  salesForecast: { he: "תחזית חודשית", en: "Monthly Forecast" },
+  salesObjections: { he: "סקריפטים להתמודדות עם התנגדויות", en: "Objection Handling Scripts" },
+  salesAutomations: { he: "אוטומציות מכירה", en: "Sales Automations" },
+  salesClosingTips: { he: "טיפים לסגירת עסקאות", en: "Deal Closing Tips" },
+  salesType: { he: "סוג מכירה", en: "Sales Type" },
+  monthlyDeals: { he: "עסקאות צפויות/חודש", en: "Expected Deals/Month" },
+  avgDealSize: { he: "גודל עסקה ממוצע", en: "Avg Deal Size" },
+  pipelineValue: { he: "ערך Pipeline", en: "Pipeline Value" },
+  expectedRevenue: { he: "הכנסה צפויה/חודש", en: "Expected Revenue/Month" },
+  cycleLength: { he: "אורך מחזור מכירה", en: "Sales Cycle Length" },
+  winRate: { he: "אחוז סגירה", en: "Win Rate" },
+  daysUnit: { he: "ימים", en: "days" },
+  conversionToNext: { he: "המרה לשלב הבא", en: "Conversion to next stage" },
+  salesNewBadge: { he: "חדש!", en: "New!" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

@@ -49,29 +49,30 @@ const defaultProfile: UserProfile = {
 };
 
 describe("getTabConfig", () => {
-  it("returns exactly 5 tabs for non-personalBrand (tech)", () => {
+  it("returns exactly 6 tabs for non-personalBrand (tech)", () => {
     const tabs = getTabConfig(makeResult(), defaultProfile);
-    expect(tabs).toHaveLength(5);
+    expect(tabs).toHaveLength(6);
     const ids = tabs.map((t) => t.id);
     expect(ids).toContain("strategy");
     expect(ids).toContain("planning");
     expect(ids).toContain("content");
     expect(ids).toContain("analytics");
+    expect(ids).toContain("sales");
     expect(ids).toContain("stylome");
   });
 
-  it("returns 5 tabs when branddna conditions not met (tech field)", () => {
+  it("returns 6 tabs when branddna conditions not met (tech field)", () => {
     const tabs = getTabConfig(makeResult({ businessField: "tech" }), defaultProfile);
     const ids = tabs.map((t) => t.id);
     expect(ids).not.toContain("branddna");
-    expect(tabs).toHaveLength(5);
+    expect(tabs).toHaveLength(6);
   });
 
   it("includes branddna for personalBrand", () => {
     const tabs = getTabConfig(makeResult({ businessField: "personalBrand" }), defaultProfile);
     const ids = tabs.map((t) => t.id);
     expect(ids).toContain("branddna");
-    expect(tabs).toHaveLength(6);
+    expect(tabs).toHaveLength(7);
   });
 
   it("includes branddna for services", () => {
@@ -108,6 +109,21 @@ describe("getTabConfig", () => {
       expect(tab.labelKey).toBeTruthy();
       expect(typeof tab.visible).toBe("boolean");
       expect(typeof tab.priority).toBe("number");
+    }
+  });
+
+  it("sales tab gets New! badge when goal is sales", () => {
+    const tabs = getTabConfig(makeResult({ mainGoal: "sales" }), defaultProfile);
+    const sales = tabs.find((t) => t.id === "sales");
+    expect(sales).toBeDefined();
+    expect(sales?.badge?.en).toBe("New!");
+  });
+
+  it("sales tab is promoted (priority ≤ 15) when goal is sales/leads", () => {
+    for (const mainGoal of ["sales", "leads"] as const) {
+      const tabs = getTabConfig(makeResult({ mainGoal }), defaultProfile);
+      const sales = tabs.find((t) => t.id === "sales");
+      expect(sales!.priority).toBeLessThanOrEqual(15);
     }
   });
 
