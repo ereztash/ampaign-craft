@@ -40,6 +40,12 @@ const defaultProfile: UserProfile = {
   userSegment: "new-beginner",
   lastPlanSummary: null,
   isMobile: false,
+  lastVisitDate: null,
+  lastFormData: null,
+  currentFormData: null,
+  experienceLevel: "",
+  prefersReducedMotion: false,
+  achievements: [],
 };
 
 describe("getTabConfig", () => {
