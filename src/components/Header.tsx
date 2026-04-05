@@ -16,6 +16,7 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
   const { language, setLanguage, t } = useLanguage();
   const { isDark, toggle: toggleDarkMode } = useDarkMode();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const isHe = language === "he";
