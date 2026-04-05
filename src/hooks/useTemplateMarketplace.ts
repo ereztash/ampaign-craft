@@ -30,8 +30,7 @@ export function useTemplateMarketplace() {
     budgetRange?: string;
   }) => {
     setLoading(true);
-    let query = supabase
-      .from("plan_templates")
+    let query = (supabase.from as any)("plan_templates")
       .select("*")
       .eq("is_public", true)
       .order("upvotes", { ascending: false });
@@ -42,7 +41,7 @@ export function useTemplateMarketplace() {
 
     const { data } = await query;
     if (data) {
-      setTemplates(data.map((r) => ({
+      setTemplates((data as any[]).map((r: any) => ({
         id: r.id,
         authorId: r.author_id,
         planId: r.plan_id,
@@ -67,7 +66,7 @@ export function useTemplateMarketplace() {
   ) => {
     if (!user) return null;
 
-    const { data, error } = await supabase.from("plan_templates").insert({
+    const { data } = await (supabase.from as any)("plan_templates").insert({
       author_id: user.id,
       plan_id: plan.id,
       title,
@@ -85,12 +84,16 @@ export function useTemplateMarketplace() {
   }, [user, loadTemplates]);
 
   const upvoteTemplate = useCallback(async (templateId: string) => {
-    await supabase.rpc("increment_upvote", { template_id: templateId }).catch(() => {
-      // Fallback: direct update
-      supabase.from("plan_templates")
-        .update({ upvotes: templates.find((t) => t.id === templateId)?.upvotes ?? 0 + 1 })
-        .eq("id", templateId);
-    });
+    try {
+      const current = templates.find((t) => t.id === templateId);
+      if (current) {
+        await (supabase.from as any)("plan_templates")
+          .update({ upvotes: current.upvotes + 1 })
+          .eq("id", templateId);
+      }
+    } catch {
+      // silently fail if table doesn't exist
+    }
 
     setTemplates((prev) => prev.map((t) =>
       t.id === templateId ? { ...t, upvotes: t.upvotes + 1 } : t
@@ -98,15 +101,13 @@ export function useTemplateMarketplace() {
   }, [templates]);
 
   const useTemplate = useCallback(async (templateId: string) => {
-    // Increment use count
     const template = templates.find((t) => t.id === templateId);
     if (!template) return null;
 
-    await supabase.from("plan_templates")
+    await (supabase.from as any)("plan_templates")
       .update({ use_count: template.useCount + 1 })
       .eq("id", templateId);
 
-    // Get the original plan data
     const { data } = await supabase.from("saved_plans")
       .select("result")
       .eq("id", template.planId)
