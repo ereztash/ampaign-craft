@@ -1,6 +1,7 @@
 import MetaConnect from "@/components/MetaConnect";
 import MetaMonitor from "@/components/MetaMonitor";
 import DataAnalysisTab from "@/components/DataAnalysisTab";
+import CampaignCockpit from "@/components/CampaignCockpit";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { MetaAuthState, MetaAdAccount } from "@/types/meta";
@@ -68,6 +69,13 @@ const AnalyticsTab = ({ meta, auth, result, isSimplified }: AnalyticsTabProps) =
           {t("analyticsDataSection")}
         </h3>
         <DataAnalysisTab />
+      </div>
+
+      <Separator />
+
+      {/* Section 3: Campaign Cockpit */}
+      <div>
+        <CampaignCockpit />
       </div>
     </div>
   );

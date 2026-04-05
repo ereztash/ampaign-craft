@@ -62,6 +62,90 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_tracking: {
+        Row: {
+          id: string
+          user_id: string
+          plan_id: string
+          stage_id: string
+          channel: string
+          metric: string
+          projected_value: string
+          actual_value: number
+          date: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plan_id: string
+          stage_id: string
+          channel: string
+          metric: string
+          projected_value: string
+          actual_value: number
+          date: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plan_id?: string
+          stage_id?: string
+          channel?: string
+          metric?: string
+          projected_value?: string
+          actual_value?: number
+          date?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      plan_templates: {
+        Row: {
+          id: string
+          author_id: string
+          plan_id: string
+          title: string
+          description: string
+          business_field: string
+          main_goal: string
+          budget_range: string
+          upvotes: number
+          use_count: number
+          is_public: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          author_id: string
+          plan_id: string
+          title: string
+          description: string
+          business_field: string
+          main_goal: string
+          budget_range: string
+          upvotes?: number
+          use_count?: number
+          is_public?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          author_id?: string
+          plan_id?: string
+          title?: string
+          description?: string
+          business_field?: string
+          main_goal?: string
+          budget_range?: string
+          upvotes?: number
+          use_count?: number
+          is_public?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
