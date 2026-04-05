@@ -5,7 +5,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult, SavedPlan, ExperienceLevel } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database, Zap, Flame } from "lucide-react";
+import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database, Zap, Flame, Crosshair } from "lucide-react";
 import { motion } from "framer-motion";
 import { getTotalUsers } from "@/lib/socialProofData";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
@@ -16,9 +16,10 @@ interface LandingPageProps {
   onStart: () => void;
   onStartWithSegment?: (segment: ExperienceLevel) => void;
   onLoadLastPlan?: (result: FunnelResult) => void;
+  onStartDifferentiation?: () => void;
 }
 
-const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPageProps) => {
+const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDifferentiation }: LandingPageProps) => {
   const { t, language, isRTL } = useLanguage();
   const isHe = language === "he";
   const { profile } = useUserProfile();
@@ -237,15 +238,83 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
         )}
       </section>
 
-      {/* Segment Picker — MECE: Builder / Amplifier / Analyst */}
+      {/* ═══ Dual Path — Differentiation-First (recommended) or Quick Start ═══ */}
+      <section className="container mx-auto px-4 pb-8">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold text-foreground sm:text-3xl" dir="auto">
+            {isHe ? "בחר את הנתיב שלך" : "Choose Your Path"}
+          </h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 max-w-3xl mx-auto mb-6">
+          {/* Path B: Differentiation-First (recommended) */}
+          <motion.div {...(reducedMotion ? {} : { initial: { opacity: 0, x: isRTL ? 20 : -20 }, whileInView: { opacity: 1, x: 0 }, viewport: { once: true } })}>
+            <button
+              onClick={() => onStartDifferentiation ? onStartDifferentiation() : onStart()}
+              className="w-full rounded-2xl p-6 text-start transition-all hover:shadow-lg border-2 border-amber-500/40 hover:border-amber-500 bg-gradient-to-br from-amber-500/10 to-transparent relative overflow-hidden"
+            >
+              <div className="absolute top-3 end-3">
+                <span className="rounded-full bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1">
+                  {isHe ? "מומלץ" : "RECOMMENDED"}
+                </span>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/20">
+                  <Crosshair className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground" dir="auto">
+                    {isHe ? "נתיב מלא: בידול → שיווק" : "Full Path: Differentiation → Marketing"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1" dir="auto">
+                    {isHe
+                      ? "גלה את הבידול האמיתי שלך (10 דק') → קבל תוכנית שיווק מותאמת לגמרי עם סקריפטים מוכנים להעתקה"
+                      : "Discover your real differentiation (10 min) → Get a fully personalized marketing plan with copy-paste scripts"}
+                  </p>
+                  <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {isHe ? "~12 דקות" : "~12 min"}</span>
+                    <span className="flex items-center gap-1"><Zap className="h-3 w-3 text-amber-500" /> {isHe ? "תוצאות מדויקות ×3" : "3× more precise results"}</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </motion.div>
+
+          {/* Path A: Quick Start */}
+          <motion.div {...(reducedMotion ? {} : { initial: { opacity: 0, x: isRTL ? -20 : 20 }, whileInView: { opacity: 1, x: 0 }, viewport: { once: true }, transition: { delay: 0.1 } })}>
+            <button
+              onClick={onStart}
+              className="w-full rounded-2xl p-6 text-start transition-all hover:shadow-lg border-2 border-border hover:border-primary/50 h-full"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                  <Rocket className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground" dir="auto">
+                    {isHe ? "התחלה מהירה" : "Quick Start"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1" dir="auto">
+                    {isHe
+                      ? "קבל תוכנית שיווק מותאמת לתעשייה שלך תוך 2 דקות. תוכל לשדרג עם בידול בכל שלב"
+                      : "Get an industry-tailored marketing plan in 2 minutes. Upgrade with differentiation anytime"}
+                  </p>
+                  <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {isHe ? "~2 דקות" : "~2 min"}</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Segment Picker — for quick start path refinement */}
       <section className="container mx-auto px-4 pb-12">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
-            {isHe ? "איפה אתה בדרך?" : "Where are you on the journey?"}
+          <h2 className="text-xl font-bold text-foreground sm:text-2xl text-muted-foreground">
+            {isHe ? "או בחר לפי רמת ניסיון:" : "Or choose by experience level:"}
           </h2>
-          <p className="mt-2 text-muted-foreground">
-            {isHe ? "בחר את הנתיב שמתאים לך — נתאים את החוויה" : "Choose your path — we'll tailor the experience"}
-          </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[

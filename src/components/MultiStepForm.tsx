@@ -4,7 +4,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FormData, initialFormData, Channel } from "@/types/funnel";
-import { getVisibleSteps, canProceed, shouldShowAgeRange, shouldShowAveragePrice } from "@/lib/adaptiveFormRules";
+import { getVisibleSteps, canProceed, shouldShowAgeRange, shouldShowAveragePrice, getDifferentiationPreFill } from "@/lib/adaptiveFormRules";
 import { getProgressColor } from "@/lib/colorSemantics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,9 +35,14 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
     if (profile.isReturningUser && profile.lastFormData) {
       return { ...profile.lastFormData };
     }
-    // Auto-set b2c for personalBrand
+    // Pre-fill from differentiation data (Path B)
+    const diffPreFill = getDifferentiationPreFill();
+    if (diffPreFill) {
+      return { ...initialFormData, ...diffPreFill };
+    }
     return initialFormData;
   });
+  const [hasDiffPreFill] = useState(() => !!getDifferentiationPreFill());
   const [direction, setDirection] = useState(1);
   const [showPrefill, setShowPrefill] = useState(profile.isReturningUser && !!profile.lastFormData);
 
@@ -398,6 +403,18 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
                 {language === "he" ? "כן" : "Yes"}
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Differentiation pre-fill banner (Path B) */}
+        {hasDiffPreFill && !showPrefill && (
+          <div className="mb-6 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 flex items-center gap-3" dir="auto">
+            <span className="text-lg">🎯</span>
+            <p className="text-sm text-foreground">
+              {isRTL
+                ? "הבידול שלך מזין את הטופס — כמה שדות כבר מלאים מראש"
+                : "Your differentiation is feeding the form — some fields are pre-filled"}
+            </p>
           </div>
         )}
 

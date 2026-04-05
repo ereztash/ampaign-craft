@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { FormData, FunnelResult, ExperienceLevel } from "@/types/funnel";
-import { generateFunnel } from "@/engine/funnelEngine";
+import { generateFunnel, personalizeResult } from "@/engine/funnelEngine";
+import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Header from "@/components/Header";
@@ -33,8 +34,11 @@ const Index = () => {
   const handleFormComplete = useCallback((data: FormData) => {
     setFormDataCache(data);
     persistFormData(data);
-    const funnelResult = generateFunnel(data);
-    setResult(funnelResult);
+    const rawResult = generateFunnel(data);
+    // Auto-personalize with knowledge graph (differentiation + stylome if available)
+    const graph = buildUserKnowledgeGraph(data);
+    const personalized = personalizeResult(rawResult, graph);
+    setResult(personalized);
     setState("processing");
   }, [persistFormData]);
 
@@ -57,6 +61,11 @@ const Index = () => {
     setState("form");
   }, [setExperienceLevel]);
 
+  const handleStartDifferentiation = useCallback(() => {
+    // Navigate to differentiation page — after completion, user returns to build funnel
+    window.location.href = "/differentiate";
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <a href="#main-content" className="skip-to-content">
@@ -69,7 +78,7 @@ const Index = () => {
       <OnboardingOverlay />
       <main id="main-content" role="main" ref={mainContentRef} tabIndex={-1} className="outline-none" aria-live="polite">
       {state === "landing" && (
-        <LandingPage onStart={() => setState("form")} onStartWithSegment={handleStartWithSegment} onLoadLastPlan={handleLoadLastPlan} />
+        <LandingPage onStart={() => setState("form")} onStartWithSegment={handleStartWithSegment} onLoadLastPlan={handleLoadLastPlan} onStartDifferentiation={handleStartDifferentiation} />
       )}
       {state === "form" && (
         <MultiStepForm

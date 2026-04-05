@@ -240,6 +240,28 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           </CardContent>
         </Card>
 
+        {/* Differentiation Upgrade CTA (for Path A users) */}
+        {!diffResult && (
+          <Card className="mb-4 border-dashed border-2 border-amber-500/30 bg-amber-500/5">
+            <CardContent className="flex flex-col sm:flex-row items-center gap-3 p-4">
+              <span className="text-2xl">🎯</span>
+              <div className="flex-1 text-center sm:text-start">
+                <p className="text-sm font-medium text-foreground" dir="auto">
+                  {isHe ? "רוצה סקריפטים עם שמות המתחרים שלך והבידול האמיתי?" : "Want scripts with your competitor names and real differentiation?"}
+                </p>
+                <p className="text-xs text-muted-foreground" dir="auto">
+                  {isHe ? "10 דקות שישדרגו את כל התוצאות — hooks, קופי, סקריפטי מכירה" : "10 minutes that will upgrade all results — hooks, copy, sales scripts"}
+                </p>
+              </div>
+              <a href="/differentiate" className="shrink-0">
+                <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white">
+                  {isHe ? "השלם בידול →" : "Complete Differentiation →"}
+                </Button>
+              </a>
+            </CardContent>
+          </Card>
+        )}
+
         {/* === CONSOLIDATED TABS === */}
         <Tabs defaultValue={defaultTab} className="mb-8" onValueChange={handleTabChange}>
           <AdaptiveTabNav tabs={tabs} />

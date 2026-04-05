@@ -228,9 +228,27 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
         </TabsContent>
       </Tabs>
 
-      {/* Back Button */}
+      {/* Continue to Marketing Plan — Primary CTA */}
+      <Card className="border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-transparent">
+        <CardContent className="p-6 text-center space-y-3">
+          <h3 className="text-lg font-bold" dir="auto">
+            {isHe ? "הבידול שלך מוכן — בוא נבנה תוכנית שיווק מותאמת" : "Your differentiation is ready — let's build a tailored marketing plan"}
+          </h3>
+          <p className="text-sm text-muted-foreground" dir="auto">
+            {isHe
+              ? "כל הסקריפטים, הנוסחאות וה-hooks ישתמשו בבידול שגילינו"
+              : "All scripts, formulas, and hooks will use the differentiation we discovered"}
+          </p>
+          <Button size="lg" onClick={() => { window.location.href = "/"; }} className="gap-2 funnel-gradient border-0 text-accent-foreground">
+            <Sparkles className="h-5 w-5" />
+            {isHe ? "המשך לתוכנית שיווק →" : "Continue to Marketing Plan →"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Secondary: Back */}
       <div className="flex justify-center">
-        <Button variant="outline" onClick={onBack} className="gap-2">
+        <Button variant="ghost" size="sm" onClick={onBack} className="gap-2 text-muted-foreground">
           <ArrowLeft className="h-4 w-4" />
           {isHe ? "חזור לתחילת התהליך" : "Back to Start"}
         </Button>
