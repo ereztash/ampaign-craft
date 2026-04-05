@@ -237,6 +237,21 @@ html, body {
     transform: scale(1.03);
   }
 
+  /* Micro-interactions (Reference: Raycast) */
+  .card-hover {
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  .dark .card-hover:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  .btn-press:active {
+    transform: scale(0.98);
+  }
+
   .glass-card {
     @apply bg-card/80 backdrop-blur-sm border border-border/50;
   }

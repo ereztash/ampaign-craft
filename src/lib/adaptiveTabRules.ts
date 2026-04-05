@@ -8,6 +8,7 @@ export interface TabConfig {
   priority: number; // lower = shown first
   badge?: { he: string; en: string };
   simplifiedMode?: boolean; // true = show beginner-friendly simplified view
+  group?: "strategy" | "content" | "growth"; // super-tab grouping
 }
 
 /**
@@ -32,6 +33,8 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       labelKey: "tabStrategy",
       visible: true,
       priority: 10,
+      group: "strategy",
+      group: "strategy",
     },
 
     // Planning — budget charts + KPIs + Israeli benchmarks
@@ -41,6 +44,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       visible: true,
       priority: formData.mainGoal === "sales" ? 15 : 30,
       badge: formData.mainGoal === "sales" ? { he: "מומלץ", en: "Key" } : undefined,
+      group: "strategy",
     },
 
     // Content — hooks + Copy Lab + Neuro-Story (nested sub-tabs)
@@ -51,6 +55,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       priority: isBeginner ? 40 : formData.mainGoal === "awareness" ? 15 : 50,
       badge: !isBeginner && formData.mainGoal === "awareness" ? { he: "מומלץ", en: "Key" } : undefined,
       simplifiedMode: isBeginner,
+      group: "content",
     },
 
     // Analytics — Meta monitor + Data import/analysis
@@ -61,6 +66,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       priority: isAdvanced ? 8 : isBeginner ? 55 : 60,
       badge: isAdvanced ? { he: "מומלץ", en: "Key" } : undefined,
       simplifiedMode: isBeginner,
+      group: "strategy",
     },
 
     // Brand DNA — conditional: personal brands/services only
@@ -71,6 +77,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       priority: showBrandDna && isIntermediate ? 12 : isBeginner ? 70 : 999,
       badge: showBrandDna && isIntermediate ? { he: "מומלץ", en: "Recommended" } : undefined,
       simplifiedMode: isBeginner,
+      group: "content",
     },
 
     // Sales — pipeline, forecasting, objection scripts, automations
@@ -79,6 +86,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       labelKey: "tabSales",
       visible: true,
       priority: formData.mainGoal === "sales" || formData.mainGoal === "leads" ? 12 : 35,
+      group: "growth",
       badge: formData.mainGoal === "sales" || formData.mainGoal === "leads"
         ? { he: "חדש!", en: "New!" }
         : { he: "חדש", en: "New" },
@@ -92,6 +100,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       visible: true,
       priority: formData.mainGoal === "sales" ? 14 : 40,
       simplifiedMode: isBeginner,
+      group: "growth",
     },
 
     // Retention & Growth — onboarding, churn prevention, referrals, loyalty
@@ -101,6 +110,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       visible: formData.salesModel === "subscription" || formData.mainGoal === "loyalty",
       priority: formData.salesModel === "subscription" ? 13 : formData.mainGoal === "loyalty" ? 15 : 45,
       simplifiedMode: isBeginner,
+      group: "growth",
     },
 
     // Stylome — personal style fingerprint + system prompt
@@ -110,6 +120,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       visible: true,
       priority: isBeginner ? 52 : isAdvanced ? 45 : 56,
       simplifiedMode: isBeginner,
+      group: "content",
     },
   ];
 

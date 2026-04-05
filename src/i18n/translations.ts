@@ -355,6 +355,9 @@ export const translations = {
   // Pricing & Retention tabs
   tabPricing: { he: "תמחור", en: "Pricing" },
   tabRetention: { he: "שימור וצמיחה", en: "Retention" },
+  groupStrategy: { he: "אסטרטגיה", en: "Strategy" },
+  groupContent: { he: "תוכן", en: "Content" },
+  groupGrowth: { he: "צמיחה", en: "Growth" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

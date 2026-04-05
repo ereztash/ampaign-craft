@@ -238,7 +238,21 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
         )}
       </section>
 
-      {/* ═══ Dual Path — Differentiation-First (recommended) or Quick Start ═══ */}
+      {/* ═══ Single CTA — no decision forks (Reference: Notion onboarding) ═══ */}
+      <section className="container mx-auto px-4 pb-12 text-center">
+        <Button size="lg" onClick={onStart} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
+          <Sparkles className="h-5 w-5" />
+          {isHe ? "בנה את התוכנית שלי — בחינם" : "Build My Plan — Free"}
+        </Button>
+        <p className="text-xs text-muted-foreground mt-2">
+          {isHe ? "ללא כרטיס אשראי · 2 דקות · שאלון הבידול זמין בפנים" : "No credit card · 2 min · Differentiation available inside"}
+        </p>
+      </section>
+
+      {/* Removed: Dual Path, Segment Picker, Data Intelligence — too many choices */}
+      {/* Experience level is now asked as first wizard question */}
+
+      {/*
       <section className="container mx-auto px-4 pb-8">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-foreground sm:text-3xl" dir="auto">
@@ -395,7 +409,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
             </div>
           </button>
         </motion.div>
-      </section>
+      */}
 
       {/* Features */}
       <section className="container mx-auto px-4 pb-20">
