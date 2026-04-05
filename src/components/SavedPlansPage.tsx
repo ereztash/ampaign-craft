@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { SavedPlan, FunnelResult } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,23 +17,14 @@ interface SavedPlansPageProps {
   onLoadPlan: (result: FunnelResult) => void;
 }
 
-const STORAGE_KEY = "funnelforge-plans";
-
 const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
   const { t, language } = useLanguage();
-  const [plans, setPlans] = useState<SavedPlan[]>([]);
+  const { plans, deletePlan: deletePlanFromStore } = useSavedPlans();
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
 
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    setPlans(stored);
-  }, []);
-
   const deletePlan = (id: string) => {
-    const updated = plans.filter((p) => p.id !== id);
-    setPlans(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    deletePlanFromStore(id);
     setCompareIds((prev) => prev.filter((cid) => cid !== id));
     toast.success(t("planDeleted"));
   };

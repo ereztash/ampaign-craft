@@ -4,6 +4,7 @@ import PlanningTab from "@/components/PlanningTab";
 import ContentTab from "@/components/ContentTab";
 import AnalyticsTab from "@/components/AnalyticsTab";
 import AiCoachChat from "@/components/AiCoachChat";
+import WhatsAppTemplatesPanel from "@/components/WhatsAppTemplatesPanel";
 import StylomeExtractor from "@/components/StylomeExtractor";
 import AdaptiveTabNav from "@/components/AdaptiveTabNav";
 import { useMetaAuth } from "@/hooks/useMetaAuth";
@@ -18,6 +19,7 @@ import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
 import { calculateHealthScore, getHealthScoreColor } from "@/engine/healthScoreEngine";
 import { getSocialProof } from "@/lib/socialProofData";
 import { calculateRoi } from "@/lib/roiCalculator";
+import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +68,7 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
   const socialProof = useMemo(() => getSocialProof(result.formData.businessField || "other"), [result.formData.businessField]);
   const roiEstimate = useMemo(() => calculateRoi(result.formData), [result.formData]);
   const { unlock, trackFeature } = useAchievements(language);
+  const { savePlan: savePlanToStore, plans: savedPlans } = useSavedPlans();
 
   // Auto-trigger achievements on mount
   useEffect(() => {
@@ -101,14 +104,11 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
     return acc;
   }, []), [result.stages, language]);
 
-  const savePlan = () => {
-    const plans = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-    plans.push({ id: result.id, name: result.funnelName[language], result, savedAt: new Date().toISOString() });
-    localStorage.setItem("funnelforge-plans", JSON.stringify(plans));
+  const savePlan = async () => {
+    await savePlanToStore(result, result.funnelName[language]);
     toast.success(t("planSaved"));
     trackFeature("plan_saved");
-    // Check for 5 plans achievement
-    if (plans.length >= 5) unlock("five_plans");
+    if (savedPlans.length + 1 >= 5) unlock("five_plans");
   };
 
   const exportPdf = async () => {
@@ -341,6 +341,11 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
                 </div>
               </CardContent>
             </Card>
+
+            {/* WhatsApp Templates (if WhatsApp channel is recommended) */}
+            {result.stages.some((s) => s.channels.some((c) => c.channel === "whatsapp")) && (
+              <WhatsAppTemplatesPanel />
+            )}
 
             {/* Collapsible Tips */}
             <Collapsible open={tipsOpen} onOpenChange={setTipsOpen} className="mt-6">

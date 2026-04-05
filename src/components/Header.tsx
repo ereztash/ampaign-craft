@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
-import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, User } from "lucide-react";
+import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
+import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDarkMode } from "@/hooks/useDarkMode";
 
@@ -15,6 +16,7 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
   const { isDark, toggle: toggleDarkMode } = useDarkMode();
   const { user, signOut } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
+  const [badgesOpen, setBadgesOpen] = useState(false);
   const isHe = language === "he";
 
   return (
@@ -34,6 +36,9 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
                 <span className="hidden sm:inline">{t("savedPlans")}</span>
               </Button>
             )}
+            <Button variant="ghost" size="sm" onClick={() => setBadgesOpen(true)} title={isHe ? "הישגים" : "Achievements"}>
+              <Award className="h-4 w-4" />
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -73,6 +78,7 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
       </header>
 
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+      <AchievementBadgesPanel open={badgesOpen} onOpenChange={setBadgesOpen} />
     </>
   );
 };

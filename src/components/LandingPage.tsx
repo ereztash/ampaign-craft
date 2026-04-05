@@ -177,11 +177,19 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan }: LandingPag
               )}
 
               {/* Marketing Wrapped */}
-              {savedPlans.length >= 2 && (
+              {savedPlans.length >= 2 ? (
                 <div className="mx-auto mb-8 max-w-lg">
                   <MarketingWrapped plans={savedPlans} />
                 </div>
-              )}
+              ) : savedPlans.length === 1 ? (
+                <div className="mx-auto mb-8 max-w-lg rounded-xl border border-accent/20 bg-accent/5 p-4 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {isHe
+                      ? "🎁 שמור עוד תוכנית אחת כדי לפתוח את Marketing Wrapped שלך"
+                      : "🎁 Save one more plan to unlock your Marketing Wrapped"}
+                  </p>
+                </div>
+              ) : null}
 
               <div className="flex flex-wrap justify-center gap-4">
                 <Button
