@@ -55,7 +55,7 @@ export function useSavedPlans() {
                   id: p.id,
                   user_id: user.id,
                   name: p.name,
-                  result: p.result as unknown as Record<string, unknown>,
+                  result: JSON.parse(JSON.stringify(p.result)),
                   created_at: p.savedAt,
                 }])
               )
