@@ -153,8 +153,21 @@ const SalesTab = ({ result }: SalesTabProps) => {
         </CardContent>
       </Card>
 
+      {/* ═══ Group B: Selling Toolkit (collapsible) ═══ */}
+      <Collapsible defaultOpen>
+        <Card>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span>🎯 {isHe ? "ארגז כלי מכירה" : "Selling Toolkit"}</span>
+                <ChevronDown className="h-4 w-4" />
+              </CardTitle>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+
       {/* ═══ Section 3: Objection Scripts ═══ */}
-      <Card>
+      <Card className="border-0 shadow-none">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <MessageSquare className="h-4 w-4 text-destructive" />
@@ -215,8 +228,25 @@ const SalesTab = ({ result }: SalesTabProps) => {
         </CardContent>
       </Card>
 
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      {/* ═══ Group C: Psychology (collapsible) ═══ */}
+      <Collapsible>
+        <Card>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span>🧠 {isHe ? "פסיכולוגיית מכירה" : "Sales Psychology"}</span>
+                <ChevronDown className="h-4 w-4" />
+              </CardTitle>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+
       {/* ═══ Section 5: Buyer Personality ═══ */}
-      <Card className="border-primary/10">
+      <Card className="border-0 shadow-none border-primary/10">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
@@ -293,6 +323,10 @@ const SalesTab = ({ result }: SalesTabProps) => {
                 </div>
               ))}
             </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
           </CollapsibleContent>
         </Card>
       </Collapsible>

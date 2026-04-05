@@ -375,8 +375,21 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               })}
             </div>
 
+            {/* ═══ Section B: Toolkit (collapsible) ═══ */}
+            <Collapsible className="mt-6">
+              <Card className="border-primary/20">
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">🛠️ {isHe ? "ערכת כלים ישראלית" : "Israeli Toolkit"}</span>
+                      <ChevronDown className="h-4 w-4 transition-transform" />
+                    </CardTitle>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+
             {/* Israeli Tools */}
-            <Card className="mt-6 border-primary/20">
+            <Card className="border-0 shadow-none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">🇮🇱 {t("israeliToolsTitle")}</CardTitle>
                 <p className="text-sm text-muted-foreground">{t("israeliToolsSubtitle")}</p>
@@ -474,7 +487,11 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
               </Card>
             )}
 
-            {/* Collapsible Tips */}
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
+
+            {/* ═══ Section C: Tips (collapsible) ═══ */}
             <Collapsible open={tipsOpen} onOpenChange={setTipsOpen} className="mt-6">
               <Card>
                 <CollapsibleTrigger asChild>
@@ -564,24 +581,28 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-3">
-        <Button variant="outline" onClick={onEdit} className="gap-2">
-          <Edit className="h-4 w-4" /> {t("editPlan")}
-        </Button>
-        <Button variant="outline" onClick={exportPdf} className="gap-2">
-          <Download className="h-4 w-4" /> {t("exportPdf")}
-        </Button>
-        <Button variant="outline" onClick={savePlan} className="gap-2">
-          <Save className="h-4 w-4" /> {t("savePlan")}
-        </Button>
-        <Button variant="outline" onClick={sharePlan} className="gap-2">
-          <Share2 className="h-4 w-4" /> {t("sharePlan")}
-        </Button>
-        <Button onClick={onNewPlan} className="gap-2 funnel-gradient border-0 text-accent-foreground">
-          <Plus className="h-4 w-4" /> {t("newPlan")}
-        </Button>
+      {/* Sticky Action Bar — always visible */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 glass-card border-t" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        <div className="mx-auto flex max-w-5xl items-center justify-center gap-2 px-4 py-2.5">
+          <Button variant="outline" size="sm" onClick={onEdit} className="gap-1.5">
+            <Edit className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("editPlan")}</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportPdf} className="gap-1.5">
+            <Download className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("exportPdf")}</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={savePlan} className="gap-1.5">
+            <Save className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("savePlan")}</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={sharePlan} className="gap-1.5">
+            <Share2 className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("sharePlan")}</span>
+          </Button>
+          <Button size="sm" onClick={onNewPlan} className="gap-1.5 funnel-gradient border-0 text-accent-foreground">
+            <Plus className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("newPlan")}</span>
+          </Button>
+        </div>
       </div>
+      {/* Bottom spacer for sticky bar */}
+      <div className="h-16" />
 
       {/* AI Coach Floating Button + Panel */}
       <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">

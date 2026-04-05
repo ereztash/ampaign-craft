@@ -67,11 +67,19 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
 
   const next = () => {
     setDirection(1);
-    setStepIndex((s) => Math.min(s + 1, totalSteps - 1));
+    setStepIndex((s) => {
+      const next = Math.min(s + 1, totalSteps - 1);
+      try { localStorage.setItem("funnelforge-form-step", String(next)); } catch { /* ignore */ }
+      return next;
+    });
   };
   const prev = () => {
     setDirection(-1);
-    setStepIndex((s) => Math.max(s - 1, 0));
+    setStepIndex((s) => {
+      const prev = Math.max(s - 1, 0);
+      try { localStorage.setItem("funnelforge-form-step", String(prev)); } catch { /* ignore */ }
+      return prev;
+    });
   };
 
   const isLastStep = stepIndex === totalSteps - 1;
@@ -396,7 +404,13 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         {/* Progress with neuro-spectrum color */}
         <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
           <span>{t("step")} {stepIndex + 1} {t("of")} {totalSteps}</span>
-          <span>{Math.round(progressPercent)}%</span>
+          <span className="text-xs">
+            {stepIndex < totalSteps - 2
+              ? (isRTL ? `~${totalSteps - stepIndex - 1} צעדים נותרו` : `~${totalSteps - stepIndex - 1} steps left`)
+              : stepIndex === totalSteps - 2
+                ? (isRTL ? "צעד אחרון!" : "Last step!")
+                : (isRTL ? "סיימנו!" : "Done!")}
+          </span>
         </div>
         <div className="mb-8 h-2 overflow-hidden rounded-full bg-muted">
           <div

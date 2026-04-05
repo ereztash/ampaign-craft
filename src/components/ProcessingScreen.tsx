@@ -14,6 +14,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
   const reducedMotion = useReducedMotion();
   const [progress, setProgress] = useState(0);
   const [msgIndex, setMsgIndex] = useState(0);
+  const [celebrating, setCelebrating] = useState(false);
   const isHe = language === "he";
 
   // Contextual messages based on formData (Health-Tech pattern)
@@ -26,7 +27,8 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setTimeout(onComplete, 400);
+          setCelebrating(true);
+          setTimeout(onComplete, 2000);
           return 100;
         }
         return prev + 2;
@@ -46,6 +48,44 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
     : progress < 66
     ? "hsl(var(--primary)), hsl(var(--chart-4))"        // oxytocin→insight (blue→purple)
     : "hsl(var(--accent)), hsl(var(--primary))";         // dopamine→trust (green→blue)
+
+  // Celebration state
+  if (celebrating) {
+    const fieldName = formData?.businessField
+      ? (isHe ? getFieldNameForCelebration(formData.businessField, true) : getFieldNameForCelebration(formData.businessField, false))
+      : "";
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4">
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          className="flex flex-col items-center text-center"
+        >
+          <div className="text-6xl mb-4">🎉</div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
+            {isHe ? "התוכנית שלך מוכנה!" : "Your plan is ready!"}
+          </h2>
+          <p className="text-lg text-muted-foreground" dir="auto">
+            {fieldName
+              ? (isHe ? `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות` : `Personalized ${fieldName} marketing plan — let's see the results`)
+              : (isHe ? "בוא נראה מה בנינו" : "Let's see what we built")}
+          </p>
+          <div className="mt-4 flex gap-2">
+            {["🚀", "📊", "💡", "🎯", "✨"].map((e, i) => (
+              <motion.span
+                key={i}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 * i }}
+                className="text-2xl"
+              >{e}</motion.span>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (reducedMotion) {
     // Static fallback for reduced motion
@@ -170,6 +210,17 @@ function getContextualMessages(formData: FormData, isHe: boolean): string[] {
     `Tailoring ${exp.en} recommendations...`,
     `Generating your action plan!`,
   ];
+}
+
+function getFieldNameForCelebration(field: string, isHe: boolean): string {
+  const map: Record<string, { he: string; en: string }> = {
+    fashion: { he: "אופנה", en: "fashion" }, tech: { he: "טכנולוגיה", en: "tech" },
+    food: { he: "מזון", en: "food" }, services: { he: "שירותים", en: "services" },
+    education: { he: "חינוך", en: "education" }, health: { he: "בריאות", en: "health" },
+    realEstate: { he: "נדל\"ן", en: "real estate" }, tourism: { he: "תיירות", en: "tourism" },
+    personalBrand: { he: "מיתוג אישי", en: "personal brand" }, other: { he: "עסקים", en: "business" },
+  };
+  return isHe ? (map[field]?.he || "") : (map[field]?.en || "");
 }
 
 export default ProcessingScreen;
