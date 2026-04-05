@@ -51,13 +51,13 @@ export function useSavedPlans() {
           if (newPlans.length > 0) {
             await Promise.all(
               newPlans.map((p) =>
-                supabase.from("saved_plans").insert({
+                supabase.from("saved_plans").insert([{
                   id: p.id,
                   user_id: user.id,
                   name: p.name,
                   result: p.result as unknown as Record<string, unknown>,
                   created_at: p.savedAt,
-                })
+                }])
               )
             );
             supaPlans.push(...newPlans);
