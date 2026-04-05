@@ -9,6 +9,8 @@ const AiCoachChat = lazy(() => import("@/components/AiCoachChat"));
 const WhatsAppTemplatesPanel = lazy(() => import("@/components/WhatsAppTemplatesPanel"));
 const StylomeExtractor = lazy(() => import("@/components/StylomeExtractor"));
 const SalesTab = lazy(() => import("@/components/SalesTab"));
+const PricingIntelligenceTab = lazy(() => import("@/components/PricingIntelligenceTab"));
+const RetentionGrowthTab = lazy(() => import("@/components/RetentionGrowthTab"));
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -577,6 +579,20 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           {/* Tab: Sales Pipeline */}
           <TabsContent value="sales" className="mt-6">
             <SalesTab result={result} />
+          </TabsContent>
+
+          {/* Tab: Pricing Intelligence */}
+          <TabsContent value="pricing" className="mt-6">
+            <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
+              <PricingIntelligenceTab result={personalizedResult} />
+            </Suspense>
+          </TabsContent>
+
+          {/* Tab: Retention & Growth */}
+          <TabsContent value="retention" className="mt-6">
+            <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
+              <RetentionGrowthTab result={personalizedResult} />
+            </Suspense>
           </TabsContent>
 
           {/* Tab 6: Stylome */}

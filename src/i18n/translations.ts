@@ -351,6 +351,10 @@ export const translations = {
   diffAntiStatement: { he: "אנחנו במודע לא:", en: "We deliberately do NOT:" },
   diffNextSteps: { he: "צעדים הבאים", en: "Next Steps" },
   diffProRequired: { he: "סוכן הבידול זמין למנויי Pro", en: "Differentiation Agent available for Pro subscribers" },
+
+  // Pricing & Retention tabs
+  tabPricing: { he: "תמחור", en: "Pricing" },
+  tabRetention: { he: "שימור וצמיחה", en: "Retention" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

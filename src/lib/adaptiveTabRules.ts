@@ -85,6 +85,24 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       simplifiedMode: isBeginner,
     },
 
+    // Pricing Intelligence — pricing model, tiers, offer stack, guarantee
+    {
+      id: "pricing",
+      labelKey: "tabPricing",
+      visible: true,
+      priority: formData.mainGoal === "sales" ? 14 : 40,
+      simplifiedMode: isBeginner,
+    },
+
+    // Retention & Growth — onboarding, churn prevention, referrals, loyalty
+    {
+      id: "retention",
+      labelKey: "tabRetention",
+      visible: formData.salesModel === "subscription" || formData.mainGoal === "loyalty",
+      priority: formData.salesModel === "subscription" ? 13 : formData.mainGoal === "loyalty" ? 15 : 45,
+      simplifiedMode: isBeginner,
+    },
+
     // Stylome — personal style fingerprint + system prompt
     {
       id: "stylome",
