@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { generateSalesPipeline, getSalesTypeLabel, SalesPipelineResult } from "@/engine/salesPipelineEngine";
+import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/engine/salesPipelineEngine";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   TrendingUp, DollarSign, Clock, Target, ChevronDown, Copy, Check,
-  Zap, MessageSquare, ArrowRight, Lightbulb,
+  Zap, MessageSquare, ArrowRight, Lightbulb, Brain, Users,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,9 @@ const SalesTab = ({ result }: SalesTabProps) => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
   const pipeline = useMemo(() => generateSalesPipeline(result), [result]);
+  const closingFrameworks = useMemo(() => getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c"), [pipeline.salesType, result.formData.audienceType]);
+  const buyerPersonality = useMemo(() => detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [result.formData]);
+  const personalityProfile = BUYER_PERSONALITIES.find((p) => p.id === buyerPersonality)!;
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
 
@@ -188,7 +191,63 @@ const SalesTab = ({ result }: SalesTabProps) => {
         </CardContent>
       </Card>
 
-      {/* ═══ Section 5: Closing Tips ═══ */}
+      {/* ═══ Section 5: Buyer Personality ═══ */}
+      <Card className="border-primary/10">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" />
+            {isHe ? "פרופיל קונה" : "Buyer Personality"}: {personalityProfile.emoji} {personalityProfile.name[language]}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-xs text-muted-foreground">{personalityProfile.traits[language]}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="rounded-lg bg-accent/5 border border-accent/20 p-2.5">
+              <div className="text-[10px] text-accent font-medium mb-1">{isHe ? "✅ איך למכור:" : "✅ How to sell:"}</div>
+              <p className="text-xs text-foreground">{personalityProfile.sellTo[language]}</p>
+            </div>
+            <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-2.5">
+              <div className="text-[10px] text-destructive font-medium mb-1">{isHe ? "❌ מה להימנע:" : "❌ What to avoid:"}</div>
+              <p className="text-xs text-foreground">{personalityProfile.avoid[language]}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ═══ Section 6: Neuro-Closing Frameworks ═══ */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Brain className="h-4 w-4 text-purple-500" />
+            {isHe ? "טכניקות סגירה נוירו-פסיכולוגיות" : "Neuro-Psychological Closing Techniques"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {closingFrameworks.map((fw, i) => (
+            <div key={i} className="rounded-xl border p-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm font-medium flex items-center gap-2">
+                  <span>{fw.emoji}</span> {fw.name[language]}
+                </span>
+                <Badge variant="outline" className="text-[10px]">{fw.vectorLabel[language]}</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">{fw.psychology[language]}</p>
+              <div className="bg-accent/5 rounded-lg p-2.5 mb-1.5">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] text-accent font-medium">{isHe ? "סקריפט:" : "Script:"}</span>
+                  <Button size="sm" variant="ghost" onClick={() => copyScript(fw.script[language], 100 + i)} className="h-6 text-[10px] gap-1">
+                    {copiedIdx === 100 + i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                </div>
+                <p className="text-xs text-foreground" dir="auto">{fw.script[language]}</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground">{isHe ? "מתאים ל:" : "Best for:"} {fw.bestFor[language]}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* ═══ Section 7: Closing Tips ═══ */}
       <Collapsible open={tipsOpen} onOpenChange={setTipsOpen}>
         <Card>
           <CollapsibleTrigger asChild>

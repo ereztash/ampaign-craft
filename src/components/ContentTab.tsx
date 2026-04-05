@@ -1,11 +1,17 @@
+import { useState } from "react";
 import CopyLabTab from "@/components/CopyLabTab";
 import NeuroStorytellingTab from "@/components/NeuroStorytellingTab";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { neuroVectorColors } from "@/lib/colorSemantics";
 import { FunnelResult } from "@/types/funnel";
+import { analyzeCopy } from "@/engine/copyQAEngine";
+import { scoreHebrewCopy, getHebrewCopyRules } from "@/lib/hebrewCopyOptimizer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { ShieldCheck, Languages } from "lucide-react";
 
 interface ContentTabProps {
   result: FunnelResult;
@@ -14,6 +20,16 @@ interface ContentTabProps {
 
 const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
   const { t, language } = useLanguage();
+  const isHe = language === "he";
+  const [copyText, setCopyText] = useState("");
+  const [copyQA, setCopyQA] = useState<ReturnType<typeof analyzeCopy> | null>(null);
+  const [hebrewScore, setHebrewScore] = useState<ReturnType<typeof scoreHebrewCopy> | null>(null);
+
+  const runCopyAudit = () => {
+    if (!copyText.trim()) return;
+    setCopyQA(analyzeCopy(copyText));
+    setHebrewScore(scoreHebrewCopy(copyText));
+  };
 
   return (
     <Tabs defaultValue="hooks">
@@ -29,6 +45,10 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
             {t("contentSubNavNeuro")}
           </TabsTrigger>
         )}
+        <TabsTrigger value="copyqa" className="text-xs px-3 gap-1">
+          <ShieldCheck className="h-3 w-3" />
+          {isHe ? "בדיקת קופי" : "Copy QA"}
+        </TabsTrigger>
       </TabsList>
 
       {/* Hooks */}
@@ -128,6 +148,82 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
           )}
         </TabsContent>
       )}
+      {/* Copy QA + Hebrew Optimizer */}
+      <TabsContent value="copyqa" className="mt-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              {isHe ? "בדיקת איכות קופי + אופטימיזציה לעברית" : "Copy Quality Audit + Hebrew Optimization"}
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {isHe ? "הדבק את הטקסט השיווקי שלך — נבדוק אותו מול 6 מדדים נוירו-פסיכולוגיים + 8 כללי עברית" : "Paste your marketing copy — we'll audit it against 6 neuro-psychological metrics + 8 Hebrew rules"}
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              value={copyText}
+              onChange={(e) => setCopyText(e.target.value)}
+              placeholder={isHe ? "הדבק כאן את הטקסט השיווקי שלך..." : "Paste your marketing copy here..."}
+              className="min-h-[120px]"
+              dir="auto"
+            />
+            <Button onClick={runCopyAudit} disabled={!copyText.trim()}>
+              {isHe ? "בדוק עכשיו" : "Audit Now"}
+            </Button>
+
+            {copyQA && (
+              <div className="space-y-4">
+                {/* Score */}
+                <div className="flex items-center gap-4">
+                  <div className={`text-3xl font-bold ${copyQA.score >= 60 ? "text-accent" : copyQA.score >= 40 ? "text-amber-500" : "text-destructive"}`}>
+                    {copyQA.score}/100
+                  </div>
+                  <span className="text-sm text-muted-foreground">{isHe ? "ציון קופי" : "Copy Score"}</span>
+                  {hebrewScore && (
+                    <>
+                      <div className={`text-3xl font-bold ${hebrewScore.total >= 60 ? "text-accent" : hebrewScore.total >= 40 ? "text-amber-500" : "text-destructive"}`}>
+                        {hebrewScore.total}/100
+                      </div>
+                      <span className="text-sm text-muted-foreground flex items-center gap-1">
+                        <Languages className="h-3 w-3" />
+                        {isHe ? "ציון עברית" : "Hebrew Score"}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* Risks */}
+                {copyQA.risks.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-semibold text-destructive">{isHe ? "סיכונים שזוהו:" : "Risks detected:"}</h4>
+                    {copyQA.risks.map((risk, i) => (
+                      <div key={i} className={`rounded-lg border p-2.5 ${risk.severity === "high" ? "border-destructive/30 bg-destructive/5" : "border-amber-500/20"}`}>
+                        <div className="text-xs font-medium text-foreground">{risk.message[language]}</div>
+                        <div className="text-[10px] text-accent mt-1">{isHe ? "תיקון:" : "Fix:"} {risk.fix[language]}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Hebrew breakdown */}
+                {hebrewScore && (
+                  <div className="space-y-1.5">
+                    <h4 className="text-xs font-semibold text-muted-foreground">{isHe ? "פירוט עברית:" : "Hebrew breakdown:"}</h4>
+                    {hebrewScore.breakdown.map((item, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs border-b pb-1">
+                        <span className="text-muted-foreground">{item.rule}</span>
+                        <span className="font-medium">{item.score}pts</span>
+                        <span className="text-[10px] text-muted-foreground max-w-[50%] text-end">{item.tip[language]}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
     </Tabs>
   );
 };

@@ -21,6 +21,10 @@ import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
 import { calculateHealthScore, getHealthScoreColor } from "@/engine/healthScoreEngine";
 import { getSocialProof } from "@/lib/socialProofData";
 import { calculateRoi } from "@/lib/roiCalculator";
+import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
+import { getEventsForField } from "@/lib/israeliMarketCalendar";
+import { generateCLGStrategy } from "@/engine/clgEngine";
+import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
@@ -69,6 +73,10 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
 
   // MOAT features (memoized — only recompute when result changes)
   const healthScore = useMemo(() => calculateHealthScore(result), [result]);
+  const costOfInaction = useMemo(() => calculateCostOfInaction(result), [result]);
+  const marketEvents = useMemo(() => getEventsForField(result.formData.businessField || "other"), [result.formData.businessField]);
+  const clgStrategy = useMemo(() => generateCLGStrategy(result.formData), [result.formData]);
+  const flywheel = useMemo(() => generateRetentionFlywheel(result.formData), [result.formData]);
   const socialProof = useMemo(() => getSocialProof(result.formData.businessField || "other"), [result.formData.businessField]);
   const roiEstimate = useMemo(() => calculateRoi(result.formData), [result.formData]);
   const { unlock, trackFeature } = useAchievements(language);
@@ -197,7 +205,18 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
           </Card>
         </motion.div>
 
-        {/* === 6 CONSOLIDATED TABS === */}
+        {/* Cost of Inaction Banner */}
+        <Card className="mb-6 border-destructive/20 bg-destructive/5">
+          <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4">
+            <span className="text-2xl">🔥</span>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground" dir="auto">{costOfInaction.lossFramedMessage[language]}</p>
+              <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{costOfInaction.comparisonMessage[language]}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* === CONSOLIDATED TABS === */}
         <Tabs defaultValue={defaultTab} className="mb-8" onValueChange={handleTabChange}>
           <AdaptiveTabNav tabs={tabs} />
           <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
@@ -353,6 +372,82 @@ const ResultsDashboard = ({ result, onEdit, onNewPlan }: ResultsDashboardProps) 
             {/* WhatsApp Templates (if WhatsApp channel is recommended) */}
             {result.stages.some((s) => s.channels.some((c) => c.channel === "whatsapp")) && (
               <WhatsAppTemplatesPanel />
+            )}
+
+            {/* Israeli Market Calendar */}
+            {marketEvents.length > 0 && (
+              <Card className="mt-4 border-amber-500/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    📅 {isHe ? "לוח שיווק ישראלי — אירועים קרובים" : "Israeli Marketing Calendar — Upcoming Events"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {marketEvents.slice(0, 3).map((event) => (
+                    <div key={event.id} className="flex items-start gap-3 rounded-lg border p-2.5">
+                      <span className="text-lg">{event.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium">{event.name[language]}</div>
+                        <p className="text-xs text-muted-foreground">{event.recommendation[language]}</p>
+                        {event.budgetMultiplier !== 1.0 && (
+                          <Badge variant={event.budgetMultiplier > 1 ? "default" : "outline"} className="mt-1 text-[10px]">
+                            {isHe ? "תקציב" : "Budget"} ×{event.budgetMultiplier}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Retention Flywheel */}
+            <Card className="mt-4">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  🔄 {flywheel.typeLabel[language]}
+                  <Badge variant="outline" className="text-[10px]">
+                    {isHe ? `צמצום נטישה ~${flywheel.churnReduction}%` : `~${flywheel.churnReduction}% churn reduction`}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {flywheel.steps.map((step, i) => (
+                    <div key={i} className="rounded-xl border p-2.5 text-center">
+                      <div className="text-lg mb-1">{step.emoji}</div>
+                      <div className="text-xs font-medium">{step.name[language]}</div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{step.description[language]}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* CLG Strategy (if suitable) */}
+            {clgStrategy.suitable && (
+              <Card className="mt-4 border-purple-500/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    👥 {isHe ? "אסטרטגיית קהילה (CLG)" : "Community-Led Growth (CLG)"}
+                    <Badge className="text-[10px]">
+                      LTV ×{clgStrategy.ltvImpact.multiplier}
+                    </Badge>
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">{clgStrategy.reason[language]}</p>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground mb-2">{isHe ? "פלטפורמה מומלצת:" : "Recommended platform:"} <strong>{clgStrategy.platform[language]}</strong></p>
+                  <div className="space-y-1.5">
+                    {clgStrategy.roadmap.map((week) => (
+                      <div key={week.week} className="flex items-start gap-2 text-xs">
+                        <Badge variant="outline" className="text-[10px] shrink-0">{isHe ? `שבוע ${week.week}` : `Week ${week.week}`}</Badge>
+                        <span className="text-muted-foreground">{week.title[language]}: {week.milestone[language]}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
             {/* Collapsible Tips */}
