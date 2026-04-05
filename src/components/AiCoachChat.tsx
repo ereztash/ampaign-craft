@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { FunnelResult } from "@/types/funnel";
+import { DifferentiationResult } from "@/types/differentiation";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
+import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
 import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,20 +22,70 @@ interface ChatMessage {
   content: string;
 }
 
-const QUICK_PROMPTS = {
-  he: [
-    "מה לעשות השבוע?",
-    "איך לשפר את ה-CPC?",
-    "תכתוב לי פוסט עם הוק התנהגותי",
-    "איך להגדיל מעורבות באינסטגרם?",
-  ],
-  en: [
-    "What should I do this week?",
-    "How to improve my CPC?",
-    "Write a post with a behavioral hook",
-    "How to increase Instagram engagement?",
-  ],
-};
+function getSmartPrompts(graph: UserKnowledgeGraph, isHe: boolean): string[] {
+  const field = isHe ? graph.derived.identityStatement.he.slice(0, 30) : graph.business.field;
+  const pain = isHe ? graph.derived.topPainPoint.he : graph.derived.topPainPoint.en;
+  const channels = graph.business.channels.slice(0, 2).join(" + ");
+  const hasDiff = !!graph.differentiation;
+
+  if (isHe) {
+    return [
+      `תכתוב לי 3 פוסטים ל${channels || "רשתות חברתיות"} עם הוקים מותאמים`,
+      `איך מתמודדים עם "${pain}" בתחום שלי?`,
+      hasDiff ? "תכתוב לי pitch של 30 שניות מבוסס על הבידול שלי" : "תכתוב לי pitch של 30 שניות",
+      `מה 3 הפעולות הכי דחופות לשבוע הקרוב?`,
+    ];
+  }
+  return [
+    `Write 3 posts for ${channels || "social media"} with tailored hooks`,
+    `How to tackle "${pain}" in my field?`,
+    hasDiff ? "Write a 30-second pitch based on my differentiation" : "Write a 30-second pitch",
+    "What are the 3 most urgent actions for this week?",
+  ];
+}
+
+function buildCoachContext(graph: UserKnowledgeGraph, healthScore?: number, stylomePrompt?: string) {
+  const ctx: Record<string, string | number | undefined> = {
+    businessField: graph.business.field,
+    productDescription: graph.business.product,
+    averagePrice: graph.business.price,
+    audienceType: graph.business.audience,
+    budgetRange: graph.business.budget,
+    mainGoal: graph.business.goal,
+    experienceLevel: graph.business.experience,
+    salesModel: graph.business.salesModel,
+    existingChannels: graph.business.channels.join(", "),
+    healthScore,
+    identityStatement: graph.derived.identityStatement.he,
+    topPainPoint: graph.derived.topPainPoint.he,
+    industryPains: graph.derived.industryPainPoints.map((p) => p.he).join("; "),
+    framingPreference: graph.derived.framingPreference,
+    complexityLevel: graph.derived.complexityLevel,
+    stageOfChange: graph.behavior.stageOfChange,
+    buyerPersonality: graph.differentiation ? "detected" : undefined,
+  };
+
+  // Differentiation context
+  if (graph.differentiation) {
+    const d = graph.differentiation;
+    if (d.mechanismStatement?.oneLiner?.he) ctx.mechanism = d.mechanismStatement.oneLiner.he;
+    if (d.mechanismStatement?.antiStatement) ctx.antiStatement = d.mechanismStatement.antiStatement;
+    if (d.competitors.length > 0) ctx.competitors = d.competitors.join(", ");
+    if (d.tradeoffs.length > 0) ctx.tradeoffs = d.tradeoffs.map((t) => `${t.weakness} → ${t.reframe}`).join("; ");
+    if (d.hiddenValues.length > 0) ctx.topHiddenValues = d.hiddenValues.slice(0, 3).map((v) => `${v.valueId}:${v.score}`).join(", ");
+  }
+
+  // Voice context
+  if (graph.voice) {
+    ctx.voiceRegister = graph.voice.register;
+    ctx.dugriScore = graph.voice.dugriScore;
+    ctx.codeMixing = graph.voice.codeMixingIndex;
+  }
+
+  if (stylomePrompt) ctx.stylomePrompt = stylomePrompt.slice(0, 500);
+
+  return ctx;
+}
 
 const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) => {
   const { language } = useLanguage();
@@ -44,6 +96,16 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Build knowledge graph for rich context
+  const diffResult = useMemo<DifferentiationResult | null>(() => {
+    try { const raw = localStorage.getItem("funnelforge-differentiation-result"); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  }, []);
+  const stylomeVoice = useMemo<StylomeVoice | null>(() => {
+    try { const raw = localStorage.getItem("funnelforge-stylome-voice"); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  }, []);
+  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
+  const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe), [graph, isHe]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -63,15 +125,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
       const { data, error: fnError } = await supabase.functions.invoke("ai-coach", {
         body: {
           message: text.trim(),
-          context: {
-            businessField: result.formData.businessField,
-            mainGoal: result.formData.mainGoal,
-            audienceType: result.formData.audienceType,
-            budgetRange: result.formData.budgetRange,
-            experienceLevel: result.formData.experienceLevel,
-            healthScore,
-            stylomePrompt: stylomePrompt?.slice(0, 500),
-          },
+          context: buildCoachContext(graph, healthScore, stylomePrompt),
         },
       });
 
@@ -109,7 +163,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
                 {isHe ? "שאל אותי כל שאלה על השיווק שלך:" : "Ask me anything about your marketing:"}
               </p>
               <div className="grid grid-cols-2 gap-2">
-                {QUICK_PROMPTS[language].map((prompt, i) => (
+                {quickPrompts.map((prompt, i) => (
                   <button
                     key={i}
                     onClick={() => sendMessage(prompt)}

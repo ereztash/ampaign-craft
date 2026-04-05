@@ -22,34 +22,85 @@ Deno.serve(async (req) => {
   try {
     const { message, context } = await req.json();
 
-    // Build system prompt from user context
+    // Build system prompt from full user knowledge graph
     const systemParts: string[] = [
-      "אתה מאמן שיווק דיגיטלי ישראלי מומחה. אתה מדבר בעברית בסגנון ישיר ודוגרי.",
-      "אתה מבוסס על מדע התנהגותי (Cialdini, Kahneman) ונוירוקופירייטינג.",
+      "אתה מאמן שיווק דיגיטלי ישראלי מומחה שמכיר את העסק של המשתמש לעומק.",
+      "אתה מבוסס על מדע התנהגותי (Cialdini, Kahneman), נוירוקופירייטינג, ופסיכולוגיית מכירות (SPIN, Challenger).",
       "תמיד תן 3 פעולות ספציפיות וניתנות ליישום מיידי.",
-      "השתמש במונחים בעברית עם מונחים מקצועיים באנגלית בסוגריים.",
+      "",
+      "=== כללי תקשורת ===",
     ];
 
-    if (context?.businessField) {
-      systemParts.push(`העסק של המשתמש בתחום: ${context.businessField}`);
+    // Voice adaptation
+    if (context?.voiceRegister === "casual" || (context?.dugriScore && context.dugriScore > 0.6)) {
+      systemParts.push("דבר בסגנון ישיר, דוגרי, קצר. בלי ליטופים. תכלס.");
+    } else if (context?.voiceRegister === "formal") {
+      systemParts.push("דבר בסגנון מקצועי ומנומס. השתמש בשפה פורמלית.");
+    } else {
+      systemParts.push("דבר בעברית בסגנון ישיר אך מקצועי.");
     }
-    if (context?.mainGoal) {
-      systemParts.push(`המטרה העיקרית: ${context.mainGoal}`);
+
+    if (context?.codeMixing && context.codeMixing > 25) {
+      systemParts.push("המשתמש רגיל למונחים באנגלית — אפשר לשלב (CPC, ROAS, funnel, conversion).");
+    } else {
+      systemParts.push("המשתמש מעדיף עברית טהורה — תרגם מונחים מקצועיים לעברית.");
     }
-    if (context?.audienceType) {
-      systemParts.push(`סוג קהל יעד: ${context.audienceType}`);
+
+    // Complexity adaptation
+    if (context?.complexityLevel === "simple") {
+      systemParts.push("המשתמש מתחיל — הסבר פשוט, ללא ז'רגון, צעד אחד בכל פעם.");
+    } else if (context?.complexityLevel === "advanced") {
+      systemParts.push("המשתמש מתקדם — דבר ברמה גבוהה, אל תפשט מדי.");
     }
-    if (context?.budgetRange) {
-      systemParts.push(`טווח תקציב: ${context.budgetRange}`);
+
+    // Framing preference (Behavioral Economics)
+    if (context?.framingPreference === "loss") {
+      systemParts.push("המשתמש מגיב חזק ל-loss framing — הדגש מה הוא מפסיד, לא מה ירוויח.");
+    } else if (context?.framingPreference === "gain") {
+      systemParts.push("המשתמש מגיב לצמיחה — הדגש פוטנציאל ואפסייד, לא הפסדים.");
     }
-    if (context?.experienceLevel) {
-      systemParts.push(`רמת ניסיון: ${context.experienceLevel}`);
+
+    systemParts.push("");
+    systemParts.push("=== מידע על העסק ===");
+
+    // Business context
+    if (context?.businessField) systemParts.push(`תחום: ${context.businessField}`);
+    if (context?.productDescription) systemParts.push(`מוצר/שירות: ${context.productDescription}`);
+    if (context?.averagePrice) systemParts.push(`מחיר ממוצע: ₪${context.averagePrice}`);
+    if (context?.audienceType) systemParts.push(`קהל יעד: ${context.audienceType}`);
+    if (context?.salesModel) systemParts.push(`מודל מכירות: ${context.salesModel}`);
+    if (context?.budgetRange) systemParts.push(`טווח תקציב: ${context.budgetRange}`);
+    if (context?.mainGoal) systemParts.push(`מטרה עיקרית: ${context.mainGoal}`);
+    if (context?.existingChannels) systemParts.push(`ערוצים קיימים: ${context.existingChannels}`);
+    if (context?.healthScore) systemParts.push(`ציון בריאות שיווקית: ${context.healthScore}/100`);
+
+    // Identity & Pain Points
+    if (context?.identityStatement) systemParts.push(`\nזהות המותג: ${context.identityStatement}`);
+    if (context?.topPainPoint) systemParts.push(`כאב עיקרי: ${context.topPainPoint}`);
+    if (context?.industryPains) systemParts.push(`כאבים תעשייתיים: ${context.industryPains}`);
+
+    // Differentiation context (if available)
+    if (context?.mechanism) {
+      systemParts.push("\n=== בידול (מאומת) ===");
+      systemParts.push(`הצהרת מנגנון: ${context.mechanism}`);
+      if (context.antiStatement) systemParts.push(`מה שאנחנו במודע לא עושים: ${context.antiStatement}`);
+      if (context.competitors) systemParts.push(`מתחרים: ${context.competitors}`);
+      if (context.tradeoffs) systemParts.push(`ויתורים מודעים: ${context.tradeoffs}`);
+      if (context.topHiddenValues) systemParts.push(`ערכים נסתרים מובילים: ${context.topHiddenValues}`);
+      systemParts.push("כשאתה כותב תוכן או סקריפטים — השתמש בבידול הזה. הוא מאומת.");
     }
-    if (context?.healthScore) {
-      systemParts.push(`ציון בריאות שיווקית נוכחי: ${context.healthScore}/100`);
+
+    // Stage of change (Motivational Interviewing)
+    if (context?.stageOfChange === "precontemplation") {
+      systemParts.push("\nהמשתמש בשלב מודעות — שאל שאלות, אל תדחוף לפעולה.");
+    } else if (context?.stageOfChange === "action" || context?.stageOfChange === "maintenance") {
+      systemParts.push("\nהמשתמש בשלב פעולה — תן צעדים קונקרטיים ומיידיים.");
     }
+
+    // Stylome
     if (context?.stylomePrompt) {
-      systemParts.push(`סגנון כתיבה של המשתמש:\n${context.stylomePrompt}`);
+      systemParts.push(`\n=== סגנון כתיבה של המשתמש ===\n${context.stylomePrompt}`);
+      systemParts.push("כשאתה כותב תוכן בשם המשתמש — חקה את הסגנון הזה.");
     }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
