@@ -14,7 +14,7 @@ export function useAdaptiveTheme() {
     const el = document.documentElement;
 
     // Segment: new-beginner | new-intermediate | new-advanced | returning
-    el.setAttribute("data-segment", profile.segment || "new-beginner");
+    el.setAttribute("data-segment", profile.userSegment || "new-beginner");
 
     // Business field from last form data
     const field = profile.lastFormData?.businessField || "";
