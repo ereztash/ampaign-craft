@@ -85,12 +85,17 @@ export function useTemplateMarketplace() {
   }, [user, loadTemplates]);
 
   const upvoteTemplate = useCallback(async (templateId: string) => {
-    await supabase.rpc("increment_upvote", { template_id: templateId }).catch(() => {
-      // Fallback: direct update
-      supabase.from("plan_templates")
-        .update({ upvotes: templates.find((t) => t.id === templateId)?.upvotes ?? 0 + 1 })
-        .eq("id", templateId);
-    });
+    // Direct update (plan_templates table may not exist yet)
+    try {
+      const current = templates.find((t) => t.id === templateId);
+      if (current) {
+        await supabase.from("plan_templates" as any)
+          .update({ upvotes: current.upvotes + 1 } as any)
+          .eq("id", templateId);
+      }
+    } catch {
+      // silently fail if table doesn't exist
+    }
 
     setTemplates((prev) => prev.map((t) =>
       t.id === templateId ? { ...t, upvotes: t.upvotes + 1 } : t
