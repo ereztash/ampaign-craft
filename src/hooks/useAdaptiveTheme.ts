@@ -47,7 +47,7 @@ export function useAdaptiveTheme() {
       el.removeAttribute("data-experience");
     };
   }, [
-    profile.segment,
+    profile.userSegment,
     profile.lastFormData?.businessField,
     profile.lastFormData?.audienceType,
     profile.lastFormData?.experienceLevel,
