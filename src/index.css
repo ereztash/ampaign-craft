@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -213,7 +213,7 @@ html, body {
 
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Heebo', 'Inter', sans-serif;
   }
 
   [dir="rtl"] {
@@ -224,6 +224,17 @@ html, body {
 @layer utilities {
   .funnel-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+
+  .cta-warm {
+    background: hsl(25, 95%, 53%);
+    color: white;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  .cta-warm:hover {
+    background: hsl(25, 95%, 46%);
+    transform: scale(1.03);
   }
 
   .glass-card {

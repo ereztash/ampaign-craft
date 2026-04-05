@@ -4,6 +4,10 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
+import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { generateFunnel } from "@/engine/funnelEngine";
+import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { SavedPlan } from "@/types/funnel";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -27,6 +31,22 @@ const Dashboard = () => {
   const lastPlan = savedPlans.length > 0 ? [...savedPlans].sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())[0] : null;
   const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
 
+  // Personalized greeting from knowledge graph
+  const graph = useMemo(() => {
+    if (profile.lastFormData) return buildUserKnowledgeGraph(profile.lastFormData);
+    return null;
+  }, [profile.lastFormData]);
+
+  const healthScore = useMemo(() => {
+    if (lastPlan) return calculateHealthScore(lastPlan.result);
+    return null;
+  }, [lastPlan]);
+
+  const nextStep = useMemo(() => {
+    const dummyGraph = graph || buildUserKnowledgeGraph({ businessField: "", audienceType: "b2c", ageRange: [25, 55], interests: "", productDescription: "", averagePrice: 0, salesModel: "oneTime", budgetRange: "medium", mainGoal: "sales", existingChannels: [], experienceLevel: "beginner" });
+    return getRecommendedNextStep(dummyGraph, hasDiff, savedPlans.length, new Set(mastery.features || []));
+  }, [graph, hasDiff, savedPlans.length, mastery.features]);
+
   return (
     <div className="min-h-screen bg-background">
       <Header onSavedPlans={() => navigate("/plans")} />
@@ -36,10 +56,12 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-foreground" dir="auto">
-              {isHe ? "ברוך שובך!" : "Welcome Back!"}
+              {graph?.derived.identityStatement?.[language] || (isHe ? "ברוך שובך!" : "Welcome Back!")}
             </h1>
             <p className="text-sm text-muted-foreground" dir="auto">
-              {isHe ? "הנה מה שחדש מאז הביקור האחרון שלך" : "Here's what's new since your last visit"}
+              {healthScore
+                ? `${isHe ? "ציון בריאות שיווקית:" : "Marketing Health Score:"} ${healthScore.total}/100 (${healthScore.tier})`
+                : (isHe ? "הנה מה שחדש מאז הביקור האחרון שלך" : "Here's what's new since your last visit")}
             </p>
           </div>
           {streak.currentStreak > 0 && (
@@ -59,32 +81,40 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Dual Path CTAs */}
-        <div className="grid gap-4 sm:grid-cols-2 mb-6">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-amber-500/30 hover:border-amber-500" onClick={() => navigate("/differentiate")}>
-            <CardContent className="p-5 flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
-                <Crosshair className="h-5 w-5 text-amber-600" />
+        {/* Dynamic Next Step CTA (adaptive) */}
+        <Card className="mb-6 cursor-pointer hover:shadow-lg transition-all border-2 border-amber-500/30 hover:border-amber-500 bg-gradient-to-r from-amber-500/5 to-transparent" onClick={() => navigate(nextStep.route)}>
+          <CardContent className="p-5 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/20">
+              <Crosshair className={`h-6 w-6 ${nextStep.color}`} />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-foreground text-lg" dir="auto">{nextStep.title[language]}</h3>
+                <Badge className="text-[10px] bg-amber-500 text-white">{isHe ? "מומלץ" : "Recommended"}</Badge>
               </div>
+              <p className="text-sm text-muted-foreground" dir="auto">{nextStep.description[language]}</p>
+            </div>
+            <span className="text-muted-foreground text-lg">→</span>
+          </CardContent>
+        </Card>
+
+        {/* Secondary quick actions */}
+        <div className="grid gap-3 sm:grid-cols-2 mb-6">
+          <Card className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate("/wizard")}>
+            <CardContent className="p-3 flex items-center gap-3">
+              <Rocket className="h-5 w-5 text-primary shrink-0" />
               <div>
-                <h3 className="font-bold text-foreground" dir="auto">{isHe ? "בידול → שיווק" : "Differentiation → Marketing"}</h3>
-                <p className="text-xs text-muted-foreground" dir="auto">
-                  {hasDiff
-                    ? (isHe ? "יש לך בידול — רוצה לעדכן?" : "You have differentiation — want to update?")
-                    : (isHe ? "~12 דקות. תוצאות מדויקות ×3" : "~12 min. 3× more precise results")}
-                </p>
+                <p className="text-sm font-medium">{isHe ? "תוכנית חדשה" : "New Plan"}</p>
+                <p className="text-[10px] text-muted-foreground">~2 {isHe ? "דקות" : "min"}</p>
               </div>
             </CardContent>
           </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate("/wizard")}>
-            <CardContent className="p-5 flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                <Rocket className="h-5 w-5 text-primary" />
-              </div>
+          <Card className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate("/differentiate")}>
+            <CardContent className="p-3 flex items-center gap-3">
+              <Crosshair className="h-5 w-5 text-amber-500 shrink-0" />
               <div>
-                <h3 className="font-bold text-foreground" dir="auto">{isHe ? "התחלה מהירה" : "Quick Start"}</h3>
-                <p className="text-xs text-muted-foreground" dir="auto">{isHe ? "~2 דקות. תוכנית שיווק מיידית" : "~2 min. Instant marketing plan"}</p>
+                <p className="text-sm font-medium">{isHe ? (hasDiff ? "עדכן בידול" : "גלה בידול") : (hasDiff ? "Update Diff" : "Discover Diff")}</p>
+                <p className="text-[10px] text-muted-foreground">~10 {isHe ? "דקות" : "min"}</p>
               </div>
             </CardContent>
           </Card>

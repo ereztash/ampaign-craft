@@ -39,8 +39,8 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero */}
-      <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden px-4 pt-16">
+      {/* Hero — Neuro-Storytelling Arc: Cortisol → Oxytocin → Dopamine */}
+      <section className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-4 pt-16">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-1/2 top-1/4 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
         </div>
@@ -53,32 +53,29 @@ const Landing = () => {
             <Sparkles className="h-10 w-10 text-accent-foreground" />
           </motion.div>
 
+          {/* Cortisol — pain/scroll-stop */}
           <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl" dir="auto">
-            {isHe ? "מערכת צמיחה עסקית שלמה" : "Complete Business Growth System"}
+            {isHe ? "משקיע בשיווק ולא רואה תוצאות?" : "Investing in marketing with no results?"}
           </h1>
+
+          {/* Oxytocin — trust/empathy */}
           <p className="mb-6 text-lg text-muted-foreground sm:text-xl max-w-xl mx-auto" dir="auto">
             {isHe
-              ? "בידול → שיווק → מכירות → תמחור → שימור. הכל מותאם אישית, הכל מוכן להעתקה."
-              : "Differentiation → Marketing → Sales → Pricing → Retention. All personalized, all copy-paste ready."}
+              ? `אנחנו מבינים. ${totalUsers.toLocaleString()}+ בעלי עסקים ישראליים הרגישו בדיוק ככה — ובנו תוכנית שעובדת.`
+              : `We get it. ${totalUsers.toLocaleString()}+ Israeli business owners felt exactly the same — and built a plan that works.`}
           </p>
 
-          {/* Social proof */}
-          <p className="mb-8 text-sm text-muted-foreground">
-            <span className="inline-flex h-2 w-2 rounded-full bg-accent animate-pulse me-2" />
-            {isHe
-              ? `${totalUsers.toLocaleString()}+ עסקים ישראליים כבר משתמשים`
-              : `${totalUsers.toLocaleString()}+ Israeli businesses already using`}
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-8 funnel-gradient border-0 text-accent-foreground">
+          {/* Dopamine — CTA (single, warm orange) */}
+          <div className="flex flex-col items-center gap-2">
+            <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
               <Sparkles className="h-5 w-5" />
-              {isHe ? "התחל בחינם" : "Start Free"}
+              {isHe ? "בנה את התוכנית שלי — בחינם" : "Build My Plan — Free"}
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/differentiate")} className="gap-2">
-              <Crosshair className="h-5 w-5 text-amber-500" />
-              {isHe ? "התחל מבידול (מומלץ)" : "Start with Differentiation"}
-            </Button>
+            <p className="text-xs text-muted-foreground" dir="auto">
+              {isHe
+                ? `ללא כרטיס אשראי · 2 דקות · ${totalUsers.toLocaleString()}+ עסקים כבר בפנים`
+                : `No credit card · 2 minutes · ${totalUsers.toLocaleString()}+ businesses already in`}
+            </p>
           </div>
 
           <motion.div {...(reducedMotion ? {} : { animate: { y: [0, 8, 0] }, transition: { repeat: Infinity, duration: 2 } })} className="mt-12">
@@ -113,6 +110,61 @@ const Landing = () => {
               {i < modules.length - 1 && <span>→</span>}
             </span>
           ))}
+        </div>
+      </section>
+
+      {/* Authentic Social Proof — "כאן היה אמור להיות testimonial" */}
+      <section className="container mx-auto px-4 py-12">
+        <Card className="max-w-2xl mx-auto border-dashed border-2 border-amber-500/30 bg-amber-500/5">
+          <CardContent className="p-8 text-center space-y-4">
+            <div className="text-3xl">🚧</div>
+            <p className="text-lg font-bold text-foreground" dir="auto">
+              {isHe
+                ? "כאן היה אמור להיות testimonial מרגש עם 47% שיפור בלידים."
+                : "Here was supposed to be a testimonial with 47% lead improvement."}
+            </p>
+            <p className="text-sm text-muted-foreground" dir="auto">
+              {isHe
+                ? "אבל אנחנו חדשים. עוד אין. בואו תהיו הראשונים שמשאירים ביקורת — ובתמורה תקבלו את המערכת בחינם לחודשיים."
+                : "But we're new. None yet. Be the first to leave a review — and get the system free for 2 months."}
+            </p>
+            <Button onClick={() => navigate("/wizard")} className="gap-2 cta-warm">
+              {isHe ? "הצטרף כ-Early Adopter →" : "Join as Early Adopter →"}
+            </Button>
+            <div className="flex flex-wrap justify-center gap-4 pt-4 text-xs text-muted-foreground">
+              <span>🧠 21 {isHe ? "מנועי אינטליגנציה" : "intelligence engines"}</span>
+              <span>🌍 31 {isHe ? "דומיינים מוטמעים" : "embedded domains"}</span>
+              <span>🇮🇱 40 {isHe ? "שדות ידע ישראלי" : "Israeli knowledge fields"}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Before/After — Neuro Vectors: Cortisol → Bridge → Dopamine */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto grid gap-4 sm:grid-cols-2">
+          <Card className="border-destructive/20 bg-destructive/5">
+            <CardContent className="p-5">
+              <div className="text-sm font-bold text-destructive mb-2" dir="auto">🔴 {isHe ? "לפני" : "Before"}</div>
+              <ul className="space-y-2 text-sm text-muted-foreground" dir="auto">
+                <li>{isHe ? "מבזבז שעות על פוסטים שאף אחד לא רואה" : "Wasting hours on posts nobody sees"}</li>
+                <li>{isHe ? "לא יודע כמה לגבות" : "Don't know how much to charge"}</li>
+                <li>{isHe ? "מאבד לקוחות למתחרים" : "Losing customers to competitors"}</li>
+                <li>{isHe ? "לא יודע מה עושים קודם" : "Don't know what to do first"}</li>
+              </ul>
+            </CardContent>
+          </Card>
+          <Card className="border-accent/20 bg-accent/5">
+            <CardContent className="p-5">
+              <div className="text-sm font-bold text-accent mb-2" dir="auto">🟢 {isHe ? "אחרי" : "After"}</div>
+              <ul className="space-y-2 text-sm text-foreground" dir="auto">
+                <li>{isHe ? "תוכנית שיווק מותאמת לתעשייה שלך" : "Marketing plan tailored to your industry"}</li>
+                <li>{isHe ? "סקריפטי מכירה מוכנים להעתקה" : "Copy-paste sales scripts"}</li>
+                <li>{isHe ? "תמחור מבוסס על דאטה ישראלי" : "Pricing based on Israeli market data"}</li>
+                <li>{isHe ? "לקוחות שחוזרים — עם תוכנית שימור" : "Returning customers — with retention plan"}</li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -167,9 +219,9 @@ const Landing = () => {
         <h2 className="text-2xl font-bold text-foreground mb-4" dir="auto">
           {isHe ? "מוכן להתחיל?" : "Ready to Start?"}
         </h2>
-        <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-8 funnel-gradient border-0 text-accent-foreground">
+        <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
           <Sparkles className="h-5 w-5" />
-          {isHe ? "התחל בחינם — 2 דקות" : "Start Free — 2 Minutes"}
+          {isHe ? "בנה את התוכנית שלי — בחינם" : "Build My Plan — Free"}
         </Button>
       </section>
     </div>
