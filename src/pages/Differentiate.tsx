@@ -20,7 +20,6 @@ const Differentiate = () => {
   const [result, setResult] = useState<DifferentiationResult | null>(null);
 
   const handleStart = () => {
-    if (!checkAccess("differentiationAgent", "pro")) return;
     setView("wizard");
   };
 

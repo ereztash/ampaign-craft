@@ -36,7 +36,7 @@ export const TIERS: TierConfig[] = [
       whatsappTemplates: false,
       campaignCockpit: false,
       templatePublishing: false,
-      differentiationAgent: false,
+      differentiationAgent: true,
     },
   },
   {
