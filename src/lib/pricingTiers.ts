@@ -13,6 +13,7 @@ export interface TierConfig {
     whatsappTemplates: boolean;
     campaignCockpit: boolean;
     templatePublishing: boolean;
+    differentiationAgent: boolean;
   };
 }
 
@@ -35,6 +36,7 @@ export const TIERS: TierConfig[] = [
       whatsappTemplates: false,
       campaignCockpit: false,
       templatePublishing: false,
+      differentiationAgent: false,
     },
   },
   {
@@ -47,7 +49,8 @@ export const TIERS: TierConfig[] = [
       { he: "מאמן שיווק AI (50 הודעות/חודש)", en: "AI Marketing Coach (50 msgs/month)" },
       { he: "ייצוא PDF", en: "PDF export" },
       { he: "Marketing Wrapped", en: "Marketing Wrapped" },
-      { he: "כל הטאבים ללא הגבלה", en: "All tabs unlimited" },
+      { he: "כ�� הטאבים ללא הגבלה", en: "All tabs unlimited" },
+      { he: "סוכן בידול B2B", en: "B2B Differentiation Agent" },
     ],
     limits: {
       maxFunnels: Infinity,
@@ -56,6 +59,7 @@ export const TIERS: TierConfig[] = [
       whatsappTemplates: false,
       campaignCockpit: false,
       templatePublishing: false,
+      differentiationAgent: true,
     },
   },
   {
@@ -77,6 +81,7 @@ export const TIERS: TierConfig[] = [
       whatsappTemplates: true,
       campaignCockpit: true,
       templatePublishing: true,
+      differentiationAgent: true,
     },
   },
 ];

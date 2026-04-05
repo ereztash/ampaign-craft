@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
-import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award, UserCircle, Menu } from "lucide-react";
+import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award, UserCircle, Menu, Crosshair } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -33,6 +33,10 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
 
     return (
       <>
+        <Button variant="ghost" size={btnSize} onClick={() => { navigate("/differentiate"); closeMenu(); }} className={`gap-2 ${btnClass}`}>
+          <Crosshair className="h-4 w-4" />
+          <span className={mobile ? "" : "hidden sm:inline"}>{t("differentiationAgent")}</span>
+        </Button>
         {onSavedPlans && (
           <Button variant="ghost" size={btnSize} onClick={() => { onSavedPlans(); closeMenu(); }} className={`gap-2 ${btnClass}`}>
             <BookMarked className="h-4 w-4" />

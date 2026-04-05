@@ -12,6 +12,7 @@ import LoadingFallback from "@/components/LoadingFallback";
 
 const Index = lazy(() => import("./pages/Index"));
 const Profile = lazy(() => import("./pages/Profile"));
+const Differentiate = lazy(() => import("./pages/Differentiate"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/differentiate" element={<Differentiate />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
