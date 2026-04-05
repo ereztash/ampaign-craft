@@ -4,9 +4,9 @@ import {
   getTopHiddenValues, calculateDifferentiationStrength, selectContraryMetrics,
   suggestHybridCategory, generateDifferentiation,
 } from "../differentiationEngine";
-import { PHASES, getPhaseById } from "../differentiationPhases";
-import { HIDDEN_VALUES, COMPETITOR_ARCHETYPES, BUYING_COMMITTEE_ROLES, FAKE_DIFFERENTIATION_SIGNALS, REAL_DIFFERENTIATION_SIGNALS, HYBRID_CATEGORIES, CONTRARY_METRICS, NORMALIZING_FRAMES } from "../differentiationKnowledge";
-import { ClaimExample, HiddenValueScore, DifferentiationFormData, initialDifferentiationFormData } from "@/types/differentiation";
+import { PHASES, getPhaseById, getQuestionsForPhase } from "../differentiationPhases";
+import { HIDDEN_VALUES, COMPETITOR_ARCHETYPES, BUYING_COMMITTEE_ROLES, FAKE_DIFFERENTIATION_SIGNALS, REAL_DIFFERENTIATION_SIGNALS, HYBRID_CATEGORIES, CONTRARY_METRICS, NORMALIZING_FRAMES, B2C_COMPETITOR_ARCHETYPES, B2C_HIDDEN_VALUES, B2C_CONTRARY_METRICS, INFLUENCE_NETWORK_ROLES, getHiddenValuesForMode, getCompetitorArchetypesForMode, getContraryMetricsForMode } from "../differentiationKnowledge";
+import { ClaimExample, HiddenValueScore, DifferentiationFormData, initialDifferentiationFormData, detectMarketMode } from "@/types/differentiation";
 
 function makeFormData(overrides: Partial<DifferentiationFormData> = {}): DifferentiationFormData {
   return { ...initialDifferentiationFormData, businessName: "TestCo", industry: "SaaS", currentPositioning: "We are the best", ...overrides };
@@ -231,5 +231,141 @@ describe("PHASES config", () => {
     expect(PHASES[2].aiEnrichment).toBe(true);
     expect(PHASES[3].aiEnrichment).toBe(true);
     expect(PHASES[4].aiEnrichment).toBe(true);
+  });
+});
+
+// === B2C UNIFIED FRAMEWORK ===
+
+describe("detectMarketMode", () => {
+  it("detects B2B", () => {
+    expect(detectMarketMode("b2b")).toBe("b2b");
+    expect(detectMarketMode("b2b_enterprise")).toBe("b2b");
+    expect(detectMarketMode("b2b_smb")).toBe("b2b");
+    expect(detectMarketMode("b2b_gov")).toBe("b2b");
+  });
+
+  it("detects B2C", () => {
+    expect(detectMarketMode("b2c")).toBe("b2c");
+    expect(detectMarketMode("b2c_ecommerce")).toBe("b2c");
+    expect(detectMarketMode("b2c_service")).toBe("b2c");
+    expect(detectMarketMode("b2c_creator")).toBe("b2c");
+  });
+
+  it("detects hybrid", () => {
+    expect(detectMarketMode("both")).toBe("hybrid");
+    expect(detectMarketMode("b2b2c")).toBe("hybrid");
+  });
+});
+
+describe("getHiddenValuesForMode", () => {
+  it("B2B returns 8 values", () => {
+    expect(getHiddenValuesForMode("b2b")).toHaveLength(8);
+  });
+
+  it("B2C returns 12 values (6 universal + 6 B2C)", () => {
+    expect(getHiddenValuesForMode("b2c")).toHaveLength(12);
+  });
+
+  it("hybrid returns 14 values (all)", () => {
+    expect(getHiddenValuesForMode("hybrid")).toHaveLength(14);
+  });
+
+  it("B2C values include convenience and aesthetic", () => {
+    const b2c = getHiddenValuesForMode("b2c");
+    expect(b2c.some((v) => v.id === "convenience")).toBe(true);
+    expect(b2c.some((v) => v.id === "aesthetic")).toBe(true);
+  });
+
+  it("B2B values include autonomy and empathy", () => {
+    const b2b = getHiddenValuesForMode("b2b");
+    expect(b2b.some((v) => v.id === "autonomy")).toBe(true);
+    expect(b2b.some((v) => v.id === "empathy")).toBe(true);
+  });
+});
+
+describe("getCompetitorArchetypesForMode", () => {
+  it("B2B returns 5 archetypes", () => {
+    expect(getCompetitorArchetypesForMode("b2b")).toHaveLength(5);
+  });
+
+  it("B2C returns 5 archetypes", () => {
+    expect(getCompetitorArchetypesForMode("b2c")).toHaveLength(5);
+  });
+
+  it("hybrid returns 10 archetypes", () => {
+    expect(getCompetitorArchetypesForMode("hybrid")).toHaveLength(10);
+  });
+});
+
+describe("getContraryMetricsForMode", () => {
+  it("B2B returns 5 metrics", () => {
+    expect(getContraryMetricsForMode("b2b")).toHaveLength(5);
+  });
+
+  it("B2C returns 5 metrics", () => {
+    const b2c = getContraryMetricsForMode("b2c");
+    expect(b2c).toHaveLength(5);
+    expect(b2c.some((m) => m.name.en.includes("Repeat"))).toBe(true);
+  });
+});
+
+describe("B2C Knowledge Base completeness", () => {
+  it("B2C has 5 competitor archetypes with bilingual content", () => {
+    expect(B2C_COMPETITOR_ARCHETYPES).toHaveLength(5);
+    for (const a of B2C_COMPETITOR_ARCHETYPES) {
+      expect(a.description.he).toBeTruthy();
+      expect(a.description.en).toBeTruthy();
+      expect(a.counterStrategy).toBeTruthy();
+    }
+  });
+
+  it("B2C has 6 hidden values with bilingual probes", () => {
+    expect(B2C_HIDDEN_VALUES).toHaveLength(6);
+    for (const v of B2C_HIDDEN_VALUES) {
+      expect(v.probe.he).toBeTruthy();
+      expect(v.probe.en).toBeTruthy();
+    }
+  });
+
+  it("B2C has 5 contrary metrics bilingual", () => {
+    expect(B2C_CONTRARY_METRICS).toHaveLength(5);
+    for (const m of B2C_CONTRARY_METRICS) {
+      expect(m.name.he).toBeTruthy();
+      expect(m.description.en).toBeTruthy();
+    }
+  });
+
+  it("influence network has 6 roles", () => {
+    expect(INFLUENCE_NETWORK_ROLES).toHaveLength(6);
+  });
+});
+
+describe("Phase questions adapt to B2C", () => {
+  it("Phase 2 swaps lostDealReason for negativeReviewTheme in B2C", () => {
+    const b2cForm = { ...makeFormData(), targetMarket: "b2c" as const };
+    const questions = getQuestionsForPhase("contradiction", b2cForm);
+    expect(questions.some((q) => q.id === "negativeReviewTheme")).toBe(true);
+    expect(questions.some((q) => q.id === "lostDealReason")).toBe(false);
+  });
+
+  it("Phase 4 swaps buyingCommittee for influenceNetwork in B2C", () => {
+    const b2cForm = { ...makeFormData(), targetMarket: "b2c_ecommerce" as const };
+    const questions = getQuestionsForPhase("mapping", b2cForm);
+    expect(questions.some((q) => q.id === "influenceNetwork")).toBe(true);
+    expect(questions.some((q) => q.id === "buyingCommittee")).toBe(false);
+  });
+
+  it("Phase 4 keeps buyingCommittee for B2B", () => {
+    const b2bForm = makeFormData();
+    const questions = getQuestionsForPhase("mapping", b2bForm);
+    expect(questions.some((q) => q.id === "buyingCommittee")).toBe(true);
+  });
+
+  it("B2C contrary metrics use B2C set", () => {
+    const b2cForm = { ...makeFormData(), targetMarket: "b2c" as const };
+    const metrics = selectContraryMetrics(b2cForm);
+    expect(metrics.length).toBeGreaterThanOrEqual(2);
+    // Should not include B2B-only metrics
+    expect(metrics.some((m) => m.name.en.includes("Budget Expansion"))).toBe(false);
   });
 });

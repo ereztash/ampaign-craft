@@ -73,8 +73,15 @@ Deno.serve(async (req) => {
 
 // deno-lint-ignore no-explicit-any
 function buildSystemPrompt(phase: string, formData: any, _previousResults: any): string {
+  const target = formData?.targetMarket || "b2b";
+  const marketMode = target === "both" || target === "b2b2c" ? "hybrid" : target.startsWith("b2c") ? "b2c" : "b2b";
+
   const base = [
-    "You are a B2B differentiation strategist. You analyze businesses to find their REAL differentiation — not what they claim, but what they can prove.",
+    marketMode === "b2c"
+      ? "You are a consumer brand strategist. You analyze brands to find their REAL distinctiveness — not adjective branding, but memorable mechanisms that drive repeat purchases and word-of-mouth."
+      : marketMode === "hybrid"
+        ? "You are a unified B2B+B2C differentiation strategist. You understand both committee-based enterprise buying and consumer impulse decisions."
+        : "You are a B2B differentiation strategist. You analyze businesses to find their REAL differentiation — not what they claim, but what they can prove.",
     "You are direct, analytical, and evidence-based. A weak claim is worse than no claim.",
     "",
     `Business: ${formData.businessName || "Unknown"}`,

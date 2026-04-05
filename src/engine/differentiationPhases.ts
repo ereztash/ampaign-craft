@@ -3,7 +3,7 @@
 // 5 phases with questions, AI enrichment flags
 // ═══════════════════════════════════════════════
 
-import { PhaseConfig, PhaseId, PhaseQuestion, DifferentiationFormData } from "@/types/differentiation";
+import { PhaseConfig, PhaseId, PhaseQuestion, DifferentiationFormData, detectMarketMode } from "@/types/differentiation";
 
 // === PHASE 1: SURFACE LAYER ===
 
@@ -17,10 +17,15 @@ const PHASE_1_QUESTIONS: PhaseQuestion[] = [
   { id: "targetMarket", type: "select", required: true,
     label: { he: "שוק יעד", en: "Target Market" },
     options: [
+      { value: "b2c", label: { he: "B2C — צרכנים", en: "B2C — Consumers" } },
+      { value: "b2c_ecommerce", label: { he: "B2C — חנות אונליין", en: "B2C — E-commerce" } },
+      { value: "b2c_service", label: { he: "B2C — שירותים", en: "B2C — Services" } },
+      { value: "b2c_creator", label: { he: "B2C — יוצר/מותג אישי", en: "B2C — Creator/Personal Brand" } },
       { value: "b2b", label: { he: "B2B כללי", en: "General B2B" } },
       { value: "b2b_enterprise", label: { he: "B2B Enterprise", en: "B2B Enterprise" } },
       { value: "b2b_smb", label: { he: "B2B SMB", en: "B2B SMB" } },
       { value: "b2b_gov", label: { he: "B2B ממשלתי", en: "B2B Government" } },
+      { value: "both", label: { he: "B2B + B2C (היברידי)", en: "B2B + B2C (Hybrid)" } },
     ] },
   { id: "companySize", type: "select", required: true,
     label: { he: "גודל החברה שלך", en: "Your Company Size" },
@@ -171,7 +176,57 @@ export function getPhaseById(id: PhaseId): PhaseConfig {
   return PHASES.find((p) => p.id === id) || PHASES[0];
 }
 
-export function getQuestionsForPhase(phaseId: PhaseId, _formData: DifferentiationFormData): PhaseQuestion[] {
+export function getQuestionsForPhase(phaseId: PhaseId, formData: DifferentiationFormData): PhaseQuestion[] {
   const phase = getPhaseById(phaseId);
+  const mode = detectMarketMode(formData.targetMarket);
+
+  // Phase 2: swap lostDealReason for B2C variants
+  if (phaseId === "contradiction" && mode === "b2c") {
+    return phase.questions.map((q) => {
+      if (q.id === "lostDealReason") {
+        return {
+          ...q, id: "negativeReviewTheme",
+          label: { he: "מה התלונה הנפוצה ביותר?", en: "What's the most common complaint?" },
+          placeholder: { he: "מה הביקורת השלילית שחוזרת על עצמה?", en: "What negative review keeps coming back?" },
+        };
+      }
+      return q;
+    });
+  }
+
+  // Phase 4: swap buying committee for influence network in B2C
+  if (phaseId === "mapping" && mode === "b2c") {
+    return phase.questions.map((q) => {
+      if (q.id === "buyingCommittee") {
+        return {
+          ...q, id: "influenceNetwork",
+          label: { he: "מי משפיע על ההחלטה לקנות?", en: "Who influences the buying decision?" },
+          helperText: { he: "סמן את הגורמים שמשפיעים על הלקוחות שלך", en: "Mark the factors that influence your customers" },
+          options: [
+            { value: "self", label: { he: "🛒 הקונה עצמו", en: "🛒 Self (Primary Buyer)" } },
+            { value: "household_gatekeeper", label: { he: "🏠 שומר סף ביתי (בן/בת זוג, הורה)", en: "🏠 Household Gatekeeper (spouse, parent)" } },
+            { value: "peer_circle", label: { he: "👥 מעגל חברים", en: "👥 Peer Circle" } },
+            { value: "digital_influencer", label: { he: "📱 משפיען דיגיטלי", en: "📱 Digital Influencer" } },
+            { value: "algorithm", label: { he: "🤖 אלגוריתם (פיד, חיפוש)", en: "🤖 Algorithm (feed, search)" } },
+            { value: "culture_zeitgeist", label: { he: "🌊 רוח התקופה / טרנד", en: "🌊 Culture / Zeitgeist / Trend" } },
+          ],
+        };
+      }
+      if (q.id === "decisionLatency") {
+        return {
+          ...q, id: "decisionSpeed",
+          label: { he: "כמה מהר הלקוח מחליט?", en: "How fast does the customer decide?" },
+          options: [
+            { value: "impulse", label: { he: "אימפולסיבי (שניות-דקות)", en: "Impulse (seconds-minutes)" } },
+            { value: "same_day", label: { he: "באותו יום", en: "Same day" } },
+            { value: "days", label: { he: "ימים", en: "Days" } },
+            { value: "weeks", label: { he: "שבועות", en: "Weeks" } },
+          ],
+        };
+      }
+      return q;
+    });
+  }
+
   return phase.questions;
 }

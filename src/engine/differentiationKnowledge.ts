@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════
-// B2B Differentiation Agent — Embedded Knowledge Base
-// Cross-domain: Sales Psychology × Behavioral Economics × Org Theory
+// Differentiation Agent — Embedded Knowledge Base (B2B + B2C)
+// Cross-domain: Sales Psychology × Behavioral Economics × Consumer Behavior × Brand Theory
 // ═══════════════════════════════════════════════
 
-import { HiddenValueType, CompetitorArchetypeId, BuyingCommitteeRoleId } from "@/types/differentiation";
+import { HiddenValueType, CompetitorArchetypeId, BuyingCommitteeRoleId, InfluenceNetworkRoleId, MarketMode, B2CCompetitorArchetypeId } from "@/types/differentiation";
 
 // === HIDDEN VALUES (8 buyer decision drivers) ===
 
@@ -208,3 +208,162 @@ export const NORMALIZING_FRAMES = {
     en: "When you look at competitors, what do they do that causes you discomfort? Not envy — discomfort.",
   },
 } as const;
+
+// ═══════════════════════════════════════════════
+// B2C KNOWLEDGE (Consumer Markets)
+// ═══════════════════════════════════════════════
+
+// === B2C HIDDEN VALUES (6 new) ===
+
+export const B2C_HIDDEN_VALUES: readonly HiddenValueDef[] = [
+  { id: "convenience", he: "נוחות", en: "Convenience",
+    probe: { he: "כמה קל לקנות ממך? כמה צעדים עד לרכישה?", en: "How easy is it to buy from you? How many steps to purchase?" },
+    signals: ["one-click purchase", "fast delivery", "easy returns", "mobile-first"] },
+  { id: "aesthetic", he: "אסתטיקה", en: "Aesthetic",
+    probe: { he: "האם המוצר/אריזה/חנות שלך גורמים לאנשים לצלם ולשתף?", en: "Does your product/packaging/store make people photograph and share?" },
+    signals: ["instagram-worthy packaging", "brand design language", "unboxing experience"] },
+  { id: "belonging", he: "שייכות", en: "Belonging",
+    probe: { he: "האם הלקוחות שלך מרגישים חלק מקהילה/שבט?", en: "Do your customers feel part of a community/tribe?" },
+    signals: ["community group", "brand hashtag usage", "user meetups", "exclusive membership"] },
+  { id: "self_expression", he: "ביטוי עצמי", en: "Self-Expression",
+    probe: { he: "מה המוצר שלך אומר על מי שקונה אותו?", en: "What does your product say about the person who buys it?" },
+    signals: ["visible brand logo", "customization options", "lifestyle association"] },
+  { id: "guilt_free", he: "ללא אשמה", en: "Guilt-Free",
+    probe: { he: "האם הלקוח יכול להרגיש טוב עם הרכישה? (אתי, בריא, ירוק)", en: "Can the customer feel good about the purchase? (ethical, healthy, green)" },
+    signals: ["sustainability claims", "ethical sourcing", "health benefits", "carbon neutral"] },
+  { id: "instant_gratification", he: "סיפוק מיידי", en: "Instant Gratification",
+    probe: { he: "כמה מהר הלקוח מרגיש את הערך אחרי הרכישה?", en: "How quickly does the customer feel value after purchase?" },
+    signals: ["same-day delivery", "instant download", "immediate results", "quick onboarding"] },
+];
+
+// === B2C COMPETITOR ARCHETYPES (5) ===
+
+export interface B2CCompetitorArchetypeDef {
+  id: B2CCompetitorArchetypeId;
+  he: string;
+  en: string;
+  description: { he: string; en: string };
+  dangerSign: string;
+  counterStrategy: string;
+}
+
+export const B2C_COMPETITOR_ARCHETYPES: readonly B2CCompetitorArchetypeDef[] = [
+  { id: "category_king", he: "מלך הקטגוריה", en: "The Category King",
+    description: { he: "שולט בשם הקטגוריה במוח הצרכן", en: "Owns the category name in consumers' minds" },
+    dangerSign: "People use their brand name as the category name",
+    counterStrategy: "Create a sub-category or redefine the job-to-be-done. Don't compete in their category — create yours." },
+  { id: "price_anchor", he: "עוגן המחיר", en: "The Price Anchor",
+    description: { he: "האופציה הכי זולה שמגדירה ציפיות מחיר", en: "Cheapest option that sets price expectations" },
+    dangerSign: "Customers compare your price to theirs first",
+    counterStrategy: "Make the value gap visible. Show total cost of cheap: quality, returns, support. Frame as investment vs expense." },
+  { id: "lifestyle_brand", he: "מותג סגנון חיים", en: "The Lifestyle Brand",
+    description: { he: "מוכר זהות, לא מוצר", en: "Sells identity, not product" },
+    dangerSign: "Customers buy for the logo, not the product",
+    counterStrategy: "Out-authentic them. Serve a sub-identity they ignore. Build on substance over image." },
+  { id: "platform_aggregator", he: "הפלטפורמה", en: "The Platform/Aggregator",
+    description: { he: "מרקטפלייס שממסחר את המוכרים", en: "Marketplace that commoditizes sellers" },
+    dangerSign: "Customers find you through them, not directly",
+    counterStrategy: "Build direct relationships and owned channels. Create experiences the platform can't replicate." },
+  { id: "creator_led", he: "מותג של יוצר", en: "The Creator-Led Brand",
+    description: { he: "מותג עם קהל מובנה דרך משפיען/יוצר", en: "Brand with built-in audience via influencer/creator" },
+    dangerSign: "Has distribution (followers) you don't",
+    counterStrategy: "Emphasize substance over personality. Build community, not following. Show what happens when the creator moves on." },
+];
+
+// === B2C INFLUENCE NETWORK ROLES (6) ===
+
+export interface InfluenceNetworkRoleDef {
+  id: InfluenceNetworkRoleId;
+  he: string;
+  en: string;
+  primaryConcern: string;
+  informationNeed: string;
+}
+
+export const INFLUENCE_NETWORK_ROLES: readonly InfluenceNetworkRoleDef[] = [
+  { id: "self", he: "הקונה עצמו", en: "Self (Primary Buyer)",
+    primaryConcern: "Does this solve my need/desire?",
+    informationNeed: "Product page, reviews, trial/demo, price transparency" },
+  { id: "household_gatekeeper", he: "שומר הסף הביתי", en: "Household Gatekeeper",
+    primaryConcern: "Can we afford this? Is it worth it?",
+    informationNeed: "Price justification, value comparison, return policy" },
+  { id: "peer_circle", he: "מעגל חברים", en: "Peer Circle",
+    primaryConcern: "What will they think of this choice?",
+    informationNeed: "Social proof, trending status, peer reviews" },
+  { id: "digital_influencer", he: "משפיען דיגיטלי", en: "Digital Influencer",
+    primaryConcern: "Is this authentic enough to recommend?",
+    informationNeed: "Product quality, brand story, visual appeal, affiliate terms" },
+  { id: "algorithm", he: "אלגוריתם", en: "Algorithm",
+    primaryConcern: "Is this content engaging enough to surface?",
+    informationNeed: "SEO, social signals, engagement rate, relevance scoring" },
+  { id: "culture_zeitgeist", he: "רוח התקופה", en: "Culture/Zeitgeist",
+    primaryConcern: "Is this culturally relevant right now?",
+    informationNeed: "Trend alignment, cultural moment, seasonal relevance" },
+];
+
+// === B2C CONTRARY METRICS (5) ===
+
+export const B2C_CONTRARY_METRICS: readonly ContraryMetricDef[] = [
+  { name: { he: "שיעור רכישה חוזרת", en: "Repeat Purchase Rate" },
+    description: { he: "כמה לקוחות חוזרים לקנות שוב בלי שמבקשים?", en: "How many customers return to buy again without being asked?" },
+    target: "30%+", whyContrary: "Most track acquisition. This tracks loyalty proof." },
+  { name: { he: "חיפוש מותג אורגני", en: "Organic Brand Search Volume" },
+    description: { he: "כמה אנשים מחפשים אותך בשם בגוגל?", en: "How many people search for you by name on Google?" },
+    target: "+20%/quarter", whyContrary: "Most track paid reach. This tracks if people remember you." },
+  { name: { he: "שיעור שיתוף חברתי", en: "Social Sharing Rate" },
+    description: { he: "כמה לקוחות משתפים את המוצר ברשתות בלי שמבקשים?", en: "How many customers share the product on social without being asked?" },
+    target: "5%+", whyContrary: "Most track NPS. This tracks unprompted advocacy." },
+  { name: { he: "כמות UGC", en: "User-Generated Content Count" },
+    description: { he: "כמה תכנים לקוחות יוצרים עליך ספונטנית?", en: "How much content do customers create about you spontaneously?" },
+    target: "10+/month", whyContrary: "Most track testimonials they collected. This tracks organic love." },
+  { name: { he: "מדד רגישות מחיר", en: "Price Sensitivity Index" },
+    description: { he: "האם הלקוחות היו משלמים יותר? כמה יותר?", en: "Would customers pay more? How much more?" },
+    target: "+15% willingness", whyContrary: "Most compete on price. This measures brand premium power." },
+];
+
+// === B2C NORMALIZING FRAMES ===
+
+export const B2C_NORMALIZING_FRAMES = {
+  supply_chain: {
+    he: "רוב המותגים בתחום שלך יש להם לפחות חלק אחד בשרשרת האספקה שהם מעדיפים שהלקוחות לא ידעו עליו. מה החלק הזה אצלך?",
+    en: "Most brands in your category have at least one part of their supply chain they prefer customers not know about. What is that for you?",
+  },
+  quality_gap: {
+    he: "כל מותג יודע על פער אחד בין מה שהוא מבטיח למה שהלקוח באמת מקבל. מה הפער הזה אצלך?",
+    en: "Every brand knows about a gap between what they promise and what the customer actually gets. What is that gap for you?",
+  },
+  customer_disappointment: {
+    he: "מה הביקורת הכי כואבת שקיבלת? זו שאתה יודע שיש בה אמת.",
+    en: "What is the most painful review you received? The one you know has some truth in it.",
+  },
+  price_anxiety: {
+    he: "כשאתה רואה את המחיר של המתחרה הזול ביותר — מה אתה מרגיש? לא כעס, אלא חרדה.",
+    en: "When you see your cheapest competitor's price — what do you feel? Not anger, but anxiety.",
+  },
+} as const;
+
+// ═══════════════════════════════════════════════
+// MODE-FILTER FUNCTIONS
+// ═══════════════════════════════════════════════
+
+export function getHiddenValuesForMode(mode: MarketMode): HiddenValueDef[] {
+  const universal = HIDDEN_VALUES.filter((v) =>
+    ["legitimacy", "risk", "identity", "cognitive_ease", "status", "narrative"].includes(v.id)
+  );
+  if (mode === "b2b") return [...universal, ...HIDDEN_VALUES.filter((v) => ["autonomy", "empathy"].includes(v.id))];
+  if (mode === "b2c") return [...universal, ...B2C_HIDDEN_VALUES];
+  // hybrid: all
+  return [...universal, ...HIDDEN_VALUES.filter((v) => ["autonomy", "empathy"].includes(v.id)), ...B2C_HIDDEN_VALUES];
+}
+
+export function getCompetitorArchetypesForMode(mode: MarketMode): (CompetitorArchetypeDef | B2CCompetitorArchetypeDef)[] {
+  if (mode === "b2b") return [...COMPETITOR_ARCHETYPES];
+  if (mode === "b2c") return [...B2C_COMPETITOR_ARCHETYPES];
+  return [...COMPETITOR_ARCHETYPES, ...B2C_COMPETITOR_ARCHETYPES];
+}
+
+export function getContraryMetricsForMode(mode: MarketMode): ContraryMetricDef[] {
+  if (mode === "b2b") return [...CONTRARY_METRICS];
+  if (mode === "b2c") return [...B2C_CONTRARY_METRICS];
+  return [...CONTRARY_METRICS.slice(0, 3), ...B2C_CONTRARY_METRICS.slice(0, 3)];
+}

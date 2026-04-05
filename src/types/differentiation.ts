@@ -1,6 +1,21 @@
 // ═══════════════════════════════════════════════
-// B2B Differentiation Agent — Type Definitions
+// Differentiation Agent — Type Definitions (B2B + B2C Unified)
 // ═══════════════════════════════════════════════
+
+// === MARKET MODE DETECTION ===
+
+export type MarketContext =
+  | "b2b" | "b2b_enterprise" | "b2b_smb" | "b2b_gov"
+  | "b2c" | "b2c_ecommerce" | "b2c_saas" | "b2c_service" | "b2c_creator"
+  | "b2b2c" | "both";
+
+export type MarketMode = "b2b" | "b2c" | "hybrid";
+
+export function detectMarketMode(target: MarketContext): MarketMode {
+  if (target === "both" || target === "b2b2c") return "hybrid";
+  if (target.startsWith("b2c")) return "b2c";
+  return "b2b";
+}
 
 // === FORM DATA ===
 
@@ -8,7 +23,7 @@ export interface DifferentiationFormData {
   // Phase 1: Surface Layer
   businessName: string;
   industry: string;
-  targetMarket: "b2b" | "b2b_enterprise" | "b2b_smb" | "b2b_gov";
+  targetMarket: MarketContext;
   companySize: "solo" | "2-10" | "11-50" | "51-200" | "200+";
   currentPositioning: string;
   topCompetitors: string[];
@@ -17,7 +32,9 @@ export interface DifferentiationFormData {
   // Phase 2: Contradiction-Loss
   claimExamples: ClaimExample[];
   customerQuote: string;
-  lostDealReason: string;
+  lostDealReason: string; // B2B
+  negativeReviewTheme: string; // B2C: most common complaint
+  returnReason: string; // B2C: why customers return/cancel
   competitorOverlap: string;
 
   // Phase 3: Hidden Layer
@@ -27,8 +44,11 @@ export interface DifferentiationFormData {
 
   // Phase 4: Market Mapping
   competitorArchetypes: CompetitorArchetype[];
-  buyingCommitteeMap: BuyingCommitteeRole[];
-  decisionLatency: "days" | "weeks" | "months" | "quarters";
+  buyingCommitteeMap?: BuyingCommitteeRole[]; // B2B only
+  influenceNetwork?: InfluenceNetworkRole[]; // B2C only
+  decisionLatency: "days" | "weeks" | "months" | "quarters"; // B2B scale
+  decisionSpeed?: "impulse" | "same_day" | "days" | "weeks"; // B2C scale
+  discoveryChannels?: string[]; // B2C: how customers find you
 
   // Phase 5: Synthesis (AI generates, user confirms)
   confirmedTradeoffs: TradeoffDeclaration[];
@@ -46,13 +66,18 @@ export const initialDifferentiationFormData: DifferentiationFormData = {
   claimExamples: [],
   customerQuote: "",
   lostDealReason: "",
+  negativeReviewTheme: "",
+  returnReason: "",
   competitorOverlap: "",
   ashamedPains: [],
   hiddenValues: [],
   internalFriction: "",
   competitorArchetypes: [],
   buyingCommitteeMap: [],
+  influenceNetwork: [],
   decisionLatency: "weeks",
+  decisionSpeed: "days",
+  discoveryChannels: [],
   confirmedTradeoffs: [],
   selectedHybridCategory: "",
 };
@@ -69,14 +94,23 @@ export interface ClaimExample {
 // === HIDDEN VALUES ===
 
 export type HiddenValueType =
+  // Universal (B2B + B2C)
   | "legitimacy"
   | "risk"
   | "identity"
   | "cognitive_ease"
-  | "autonomy"
   | "status"
+  | "narrative"
+  // B2B-weighted
+  | "autonomy"
   | "empathy"
-  | "narrative";
+  // B2C-specific
+  | "convenience"
+  | "aesthetic"
+  | "belonging"
+  | "self_expression"
+  | "guilt_free"
+  | "instant_gratification";
 
 export interface HiddenValueScore {
   valueId: HiddenValueType;
@@ -86,12 +120,38 @@ export interface HiddenValueScore {
 
 // === COMPETITOR ARCHETYPES ===
 
-export type CompetitorArchetypeId =
+// B2B competitor archetypes
+export type B2BCompetitorArchetypeId =
   | "laser_focused"
   | "quiet_vendor"
   | "hidden_cost_engineer"
   | "political_disruptor"
   | "unexpected_joiner";
+
+// B2C competitor archetypes
+export type B2CCompetitorArchetypeId =
+  | "category_king"
+  | "price_anchor"
+  | "lifestyle_brand"
+  | "platform_aggregator"
+  | "creator_led";
+
+export type CompetitorArchetypeId = B2BCompetitorArchetypeId | B2CCompetitorArchetypeId;
+
+// B2C influence network (replaces buying committee)
+export type InfluenceNetworkRoleId =
+  | "self"
+  | "household_gatekeeper"
+  | "peer_circle"
+  | "digital_influencer"
+  | "algorithm"
+  | "culture_zeitgeist";
+
+export interface InfluenceNetworkRole {
+  role: InfluenceNetworkRoleId;
+  importance: number; // 1-5
+  strategy: string;
+}
 
 export interface CompetitorArchetype {
   name: string;

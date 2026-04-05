@@ -10,7 +10,8 @@ import {
   TradeoffDeclaration, NextStep, AshamedPainInsight, CompetitorArchetype,
   BuyingCommitteeRole, AiPhase2Result, AiPhase3Result, AiPhase4Result, AiPhase5Result,
 } from "@/types/differentiation";
-import { CONTRARY_METRICS, HYBRID_CATEGORIES } from "./differentiationKnowledge";
+import { CONTRARY_METRICS, HYBRID_CATEGORIES, getContraryMetricsForMode } from "./differentiationKnowledge";
+import { detectMarketMode } from "@/types/differentiation";
 
 // ═══ CLAIM VERIFICATION ═══
 
@@ -73,7 +74,8 @@ export function calculateDifferentiationStrength(
 // ═══ CONTRARY METRICS SELECTION ═══
 
 export function selectContraryMetrics(formData: DifferentiationFormData): ContraryMetric[] {
-  const metrics = [...CONTRARY_METRICS];
+  const mode = detectMarketMode(formData.targetMarket);
+  const metrics = [...getContraryMetricsForMode(mode)];
 
   // Prioritize based on context
   const prioritized: ContraryMetric[] = [];

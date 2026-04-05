@@ -321,8 +321,8 @@ export const translations = {
 
   // Differentiation Agent
   differentiationAgent: { he: "סוכן בידול", en: "Differentiation" },
-  diffPageTitle: { he: "סוכן בידול B2B", en: "B2B Differentiation Agent" },
-  diffPageSubtitle: { he: "5 שלבים לגלות את הבידול האמיתי שלך — לא מה שאתה טוען, אלא מה שאתה יכול להוכיח", en: "5 phases to discover your real differentiation — not what you claim, but what you can prove" },
+  diffPageTitle: { he: "סוכן בידול", en: "Differentiation Agent" },
+  diffPageSubtitle: { he: "5 שלבים לגלות את הבידול האמיתי שלך — B2B או B2C, לא מה שאתה טוען, אלא מה שאתה יכול להוכיח", en: "5 phases to discover your real differentiation — B2B or B2C, not what you claim, but what you can prove" },
   diffStartCta: { he: "התחל תהליך בידול", en: "Start Differentiation Process" },
   diffPhase1Title: { he: "שכבת פנים", en: "Surface Layer" },
   diffPhase2Title: { he: "מבחן הסתירה", en: "Contradiction Test" },
