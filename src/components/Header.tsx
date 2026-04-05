@@ -3,7 +3,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
-import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award } from "lucide-react";
+import { Globe, BookMarked, Sun, Moon, LogIn, LogOut, Award, UserCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useDarkMode } from "@/hooks/useDarkMode";
 
