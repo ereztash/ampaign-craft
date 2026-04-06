@@ -47,7 +47,7 @@ const ModuleHub = () => {
       <Header />
 
       {/* Hero — adapts to auth state */}
-      <section className="relative flex min-h-[60vh] flex-col items-center justify-center overflow-hidden px-4 pt-20">
+      <section className="relative flex min-h-[40vh] sm:min-h-[60vh] flex-col items-center justify-center overflow-hidden px-4 pt-20">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-1/2 top-1/4 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
         </div>
@@ -97,7 +97,7 @@ const ModuleHub = () => {
       {/* Recommended Next Step (for authenticated users) */}
       {user && (
         <section className="container mx-auto px-4 py-4 max-w-2xl">
-          <Card className="border-2 border-amber-500/30 bg-amber-500/5 cursor-pointer hover:shadow-lg transition-all" onClick={() => navigate(nextStep.route)}>
+          <Card role="button" tabIndex={0} className="border-2 border-amber-500/30 bg-amber-500/5 cursor-pointer hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-primary" onClick={() => navigate(nextStep.route)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate(nextStep.route); }}>
             <CardContent className="p-5 flex items-center gap-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
                 <Sparkles className="h-5 w-5 text-amber-500" />

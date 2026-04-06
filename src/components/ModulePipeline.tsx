@@ -45,10 +45,14 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
         {...(reducedMotion ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { delay: index * 0.1 } })}
       >
         <Card
-          className={`cursor-pointer transition-all hover:shadow-lg hover:translate-y-[-2px] border-2 ${
+          role="button"
+          tabIndex={0}
+          aria-label={`${mod.label[language]} — ${mod.completed ? "completed" : "start"}`}
+          className={`cursor-pointer transition-all hover:shadow-lg hover:translate-y-[-2px] border-2 focus:outline-none focus:ring-2 focus:ring-primary ${
             mod.completed ? "border-accent/40 bg-accent/5" : "border-border hover:border-primary/50"
           }`}
           onClick={() => navigate(mod.route)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate(mod.route); }}
         >
           <CardContent className="p-4 text-center relative">
             {mod.completed && (
@@ -78,12 +82,20 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
   return (
     <div className="space-y-6">
       {/* Row 1: Differentiation → Marketing → Sales */}
-      <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4 ${isRTL ? "sm:direction-rtl" : ""}`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 ${isRTL ? "sm:direction-rtl" : ""}`}>
         {modules.slice(0, 3).map((mod, i) => (
-          <div key={mod.id} className="flex items-center gap-2">
-            <div className="flex-1">{renderNode(mod, i)}</div>
+          <div key={mod.id}>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">{renderNode(mod, i)}</div>
+              {i < 2 && (
+                <ArrowLeft className={`h-4 w-4 text-muted-foreground hidden sm:block shrink-0 ${isRTL ? "" : "rotate-180"}`} />
+              )}
+            </div>
+            {/* Mobile vertical connector */}
             {i < 2 && (
-              <ArrowLeft className={`h-4 w-4 text-muted-foreground hidden sm:block shrink-0 ${isRTL ? "" : "rotate-180"}`} />
+              <div className="flex justify-center py-1 sm:hidden">
+                <div className="h-4 w-0.5 bg-border" />
+              </div>
             )}
           </div>
         ))}
@@ -103,12 +115,19 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
       )}
 
       {/* Row 2: Pricing → Retention */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto ${isRTL ? "sm:direction-rtl" : ""}`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 max-w-md mx-auto ${isRTL ? "sm:direction-rtl" : ""}`}>
         {modules.slice(3).map((mod, i) => (
-          <div key={mod.id} className="flex items-center gap-2">
-            <div className="flex-1">{renderNode(mod, i + 3)}</div>
+          <div key={mod.id}>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">{renderNode(mod, i + 3)}</div>
+              {i === 0 && (
+                <ArrowLeft className={`h-4 w-4 text-muted-foreground hidden sm:block shrink-0 ${isRTL ? "" : "rotate-180"}`} />
+            )}
+            </div>
             {i === 0 && (
-              <ArrowLeft className={`h-4 w-4 text-muted-foreground hidden sm:block shrink-0 ${isRTL ? "" : "rotate-180"}`} />
+              <div className="flex justify-center py-1 sm:hidden">
+                <div className="h-4 w-0.5 bg-border" />
+              </div>
             )}
           </div>
         ))}

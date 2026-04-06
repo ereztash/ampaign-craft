@@ -44,7 +44,12 @@ const Wizard = () => {
     <div className="min-h-screen bg-background">
       <Header />
       {state === "form" && (
-        <MultiStepForm onComplete={handleFormComplete} onBack={() => navigate("/dashboard")} />
+        <>
+          <div className="container mx-auto px-4 pt-16">
+            <BackToHub />
+          </div>
+          <MultiStepForm onComplete={handleFormComplete} onBack={() => navigate("/")} />
+        </>
       )}
       {state === "processing" && (
         <ProcessingScreen onComplete={handleProcessingComplete} formData={formDataCache || undefined} />
