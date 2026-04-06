@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
-import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings } from "lucide-react";
+import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -51,6 +51,10 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align={isHe ? "start" : "end"} className="w-48">
+                  <DropdownMenuItem onClick={() => navigate("/")}>
+                    <Home className="h-4 w-4 me-2" />
+                    {isHe ? "מרכז מודולים" : "Module Hub"}
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                     <Settings className="h-4 w-4 me-2" />
                     {isHe ? "דשבורד" : "Dashboard"}

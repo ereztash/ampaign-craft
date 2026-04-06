@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
 import Header from "@/components/Header";
+import BackToHub from "@/components/BackToHub";
 import PricingIntelligenceTab from "@/components/PricingIntelligenceTab";
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
@@ -17,6 +18,7 @@ const PricingEntry = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 pt-20 pb-16 max-w-5xl">
+        <BackToHub />
         {result ? (
           <PricingIntelligenceTab result={result} />
         ) : (

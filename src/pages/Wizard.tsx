@@ -5,6 +5,7 @@ import { generateFunnel, personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import Header from "@/components/Header";
+import BackToHub from "@/components/BackToHub";
 import MultiStepForm from "@/components/MultiStepForm";
 import ProcessingScreen from "@/components/ProcessingScreen";
 
