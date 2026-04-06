@@ -10,6 +10,7 @@ import { generateFunnel } from "@/engine/funnelEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { SavedPlan } from "@/types/funnel";
 import Header from "@/components/Header";
+import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +52,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <Header onSavedPlans={() => navigate("/plans")} />
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-4xl">
+        <BackToHub />
 
         {/* Welcome + Streak */}
         <div className="flex items-center justify-between mb-6">
