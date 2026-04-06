@@ -67,7 +67,7 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
       {datasets.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center gap-4 p-12 text-center">
-            <FileSpreadsheet className="h-12 w-12 text-muted-foreground/30" />
+            <FileSpreadsheet className="h-12 w-12 text-muted-foreground" />
             <div>
               <p className="font-medium text-foreground">
                 {isHe ? "אין נתונים מיובאים" : "No imported data"}

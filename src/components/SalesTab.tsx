@@ -110,13 +110,13 @@ const SalesTab = ({ result }: SalesTabProps) => {
                       ))}
                     </div>
                     {stage.avgDaysInStage > 0 && (
-                      <div className="mt-1.5 text-xs text-muted-foreground/60">
+                      <div className="mt-1.5 text-xs text-muted-foreground">
                         ~{stage.avgDaysInStage} {t("daysUnit")}
                       </div>
                     )}
                   </div>
                   {i < pipeline.stages.length - 1 && (
-                    <div className="text-center text-muted-foreground/30 text-lg">↓</div>
+                    <div className="text-center text-muted-foreground text-lg">↓</div>
                   )}
                 </div>
               );

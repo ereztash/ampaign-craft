@@ -15,7 +15,7 @@ const GlossaryTooltip = ({ termKey }: GlossaryTooltipProps) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button type="button" className="inline-flex items-center text-muted-foreground/50 hover:text-primary transition-colors ml-0.5">
+        <button type="button" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors ml-0.5">
           <HelpCircle className="h-3 w-3" />
         </button>
       </TooltipTrigger>

@@ -90,6 +90,18 @@ export function getVisibleSteps(formData: Partial<FormData>): StepConfig[] {
       continue;
     }
 
+    // Skip budget step for advanced users (auto-set high)
+    if (step.id === "budget" && formData.experienceLevel === "advanced") {
+      continue;
+    }
+
+    // Skip businessField + audience if differentiation pre-fill exists
+    const diffPreFill = getDifferentiationPreFill();
+    if (diffPreFill) {
+      if (step.id === "businessField" && diffPreFill.businessField) continue;
+      if (step.id === "audience" && diffPreFill.audienceType) continue;
+    }
+
     result.push(step);
   }
 
