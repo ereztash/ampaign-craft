@@ -33,7 +33,7 @@ class ErrorBoundary extends Component<Props, State> {
             <AlertTriangle className="h-12 w-12 text-destructive mx-auto" />
             <h1 className="text-2xl font-bold text-foreground">משהו השתבש</h1>
             <p className="text-muted-foreground">Something went wrong</p>
-            <p className="text-xs text-muted-foreground/60 font-mono">{this.state.error?.message}</p>
+            <p className="text-xs text-muted-foreground font-mono">{this.state.error?.message}</p>
             <div className="flex gap-3 justify-center">
               <Button onClick={this.handleReset}>נסה שוב / Try Again</Button>
               <Button variant="outline" onClick={() => window.location.reload()}>

@@ -35,7 +35,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
         }
         return prev + 2;
       });
-    }, 60);
+    }, 40);
     return () => clearInterval(interval);
   }, [onComplete]);
 

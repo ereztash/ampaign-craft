@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import ModuleProgressStrip from "@/components/ModuleProgressStrip";
 
 interface HeaderProps {
   onSavedPlans?: () => void;
@@ -91,6 +92,9 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
           </div>
         </div>
       </header>
+      <div className="fixed top-14 left-0 right-0 z-40" style={{ top: "calc(3.5rem + env(safe-area-inset-top))" }}>
+        <ModuleProgressStrip />
+      </div>
 
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
       <AchievementBadgesPanel open={badgesOpen} onOpenChange={setBadgesOpen} />

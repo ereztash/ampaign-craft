@@ -101,7 +101,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
       ) : filtered.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="text-center py-12">
-            <Store className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+            <Store className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
               {isHe ? "אין תבניות עדיין — היה הראשון לפרסם!" : "No templates yet — be the first to publish!"}
             </p>

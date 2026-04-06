@@ -66,7 +66,7 @@ const CampaignCockpit = () => {
       {!canUse("campaignCockpit") && (
         <Card className="border-dashed border-primary/20">
           <CardContent className="text-center py-8">
-            <Lock className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
+            <Lock className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground mb-3">
               {isHe ? "Campaign Cockpit זמין בתוכנית Business" : "Campaign Cockpit is available in the Business plan"}
             </p>
