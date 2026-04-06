@@ -10,14 +10,17 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 
+const ModuleHub = lazy(() => import("./pages/ModuleHub"));
 const Index = lazy(() => import("./pages/Index"));
-const Landing = lazy(() => import("./pages/Landing"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Wizard = lazy(() => import("./pages/Wizard"));
 const Plans = lazy(() => import("./pages/Plans"));
 const PlanView = lazy(() => import("./pages/PlanView"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Differentiate = lazy(() => import("./pages/Differentiate"));
+const SalesEntry = lazy(() => import("./pages/SalesEntry"));
+const PricingEntry = lazy(() => import("./pages/PricingEntry"));
+const RetentionEntry = lazy(() => import("./pages/RetentionEntry"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -34,14 +37,17 @@ const App = () => (
             <BrowserRouter>
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/landing" element={<Landing />} />
+                  <Route path="/" element={<ModuleHub />} />
+                  <Route path="/legacy" element={<Index />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/wizard" element={<Wizard />} />
                   <Route path="/plans" element={<Plans />} />
                   <Route path="/plans/:planId" element={<PlanView />} />
                   <Route path="/plans/:planId/:tab" element={<PlanView />} />
                   <Route path="/differentiate" element={<Differentiate />} />
+                  <Route path="/sales" element={<SalesEntry />} />
+                  <Route path="/pricing" element={<PricingEntry />} />
+                  <Route path="/retention" element={<RetentionEntry />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -27,7 +27,7 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
         <div className="container mx-auto flex h-14 items-center justify-between px-4">
           {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(user ? "/dashboard" : "/")}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient">
               <span className="text-base font-bold text-accent-foreground">F</span>
             </div>
