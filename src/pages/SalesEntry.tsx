@@ -6,6 +6,7 @@ import BackToHub from "@/components/BackToHub";
 import SalesTab from "@/components/SalesTab";
 import { Button } from "@/components/ui/button";
 import { TrendingUp } from "lucide-react";
+import Illustration from "@/components/ui/illustration";
 import { useNavigate } from "react-router-dom";
 
 const SalesEntry = () => {
@@ -23,7 +24,7 @@ const SalesEntry = () => {
           <SalesTab result={result} />
         ) : (
           <div className="text-center py-16 space-y-4">
-            <TrendingUp className="h-12 w-12 text-accent mx-auto" />
+            <Illustration type="sales" size={96} className="text-accent mx-auto" />
             <h2 className="text-2xl font-bold" dir="auto">{isHe ? "סקריפטי מכירה מותאמים" : "Personalized Sales Scripts"}</h2>
             <p className="text-muted-foreground max-w-md mx-auto" dir="auto">
               {isHe ? "כדי לייצר סקריפטים מותאמים, צריך קודם לבנות תוכנית שיווק" : "To generate personalized scripts, first build a marketing plan"}

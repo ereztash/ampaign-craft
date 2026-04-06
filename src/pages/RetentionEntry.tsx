@@ -6,6 +6,7 @@ import BackToHub from "@/components/BackToHub";
 import RetentionGrowthTab from "@/components/RetentionGrowthTab";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
+import Illustration from "@/components/ui/illustration";
 import { useNavigate } from "react-router-dom";
 
 const RetentionEntry = () => {
@@ -23,7 +24,7 @@ const RetentionEntry = () => {
           <RetentionGrowthTab result={result} />
         ) : (
           <div className="text-center py-16 space-y-4">
-            <Heart className="h-12 w-12 text-pink-500 mx-auto" />
+            <Illustration type="retention" size={96} className="text-pink-500 mx-auto" />
             <h2 className="text-2xl font-bold" dir="auto">{isHe ? "שימור וצמיחה" : "Retention & Growth"}</h2>
             <p className="text-muted-foreground max-w-md mx-auto" dir="auto">
               {isHe ? "כדי לייצר אסטרטגיית שימור, צריך קודם לבנות תוכנית שיווק" : "To generate a retention strategy, first build a marketing plan"}

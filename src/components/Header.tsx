@@ -24,10 +24,10 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="container mx-auto flex h-14 items-center justify-between px-4">
           {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+          <div role="button" tabIndex={0} aria-label="FunnelForge Home" className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate("/"); }}>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient">
               <span className="text-base font-bold text-accent-foreground">F</span>
             </div>

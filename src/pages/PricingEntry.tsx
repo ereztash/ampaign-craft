@@ -6,6 +6,7 @@ import BackToHub from "@/components/BackToHub";
 import PricingIntelligenceTab from "@/components/PricingIntelligenceTab";
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
+import Illustration from "@/components/ui/illustration";
 import { useNavigate } from "react-router-dom";
 
 const PricingEntry = () => {
@@ -23,7 +24,7 @@ const PricingEntry = () => {
           <PricingIntelligenceTab result={result} />
         ) : (
           <div className="text-center py-16 space-y-4">
-            <DollarSign className="h-12 w-12 text-emerald-500 mx-auto" />
+            <Illustration type="analytics" size={96} className="text-emerald-500 mx-auto" />
             <h2 className="text-2xl font-bold" dir="auto">{isHe ? "אינטליגנציית תמחור" : "Pricing Intelligence"}</h2>
             <p className="text-muted-foreground max-w-md mx-auto" dir="auto">
               {isHe ? "כדי לייצר אסטרטגיית תמחור, צריך קודם לבנות תוכנית שיווק" : "To generate a pricing strategy, first build a marketing plan"}
