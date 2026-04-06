@@ -53,7 +53,7 @@ const CopyLabTab = ({ copyLab }: CopyLabTabProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span>📝</span> {t("copyFormulas")}
+            <span role="img" aria-hidden="true">📝</span> {t("copyFormulas")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -94,7 +94,7 @@ const CopyLabTab = ({ copyLab }: CopyLabTabProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span>⚡</span> {t("writingTechniques")}
+            <span role="img" aria-hidden="true">⚡</span> {t("writingTechniques")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

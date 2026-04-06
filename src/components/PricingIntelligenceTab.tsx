@@ -152,11 +152,13 @@ const PricingIntelligenceTab = ({ result }: Props) => {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="landing_page">
-            <TabsList className="h-8 w-full justify-start gap-1 bg-muted/50">
-              {pricing.priceFramingScripts.map((s) => (
-                <TabsTrigger key={s.context} value={s.context} className="text-xs px-2">{s.label[language]}</TabsTrigger>
-              ))}
-            </TabsList>
+            <div className="overflow-x-auto -mx-1 px-1">
+              <TabsList className="h-8 w-max min-w-full justify-start gap-1 bg-muted/50">
+                {pricing.priceFramingScripts.map((s) => (
+                  <TabsTrigger key={s.context} value={s.context} className="text-xs px-2">{s.label[language]}</TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
             {pricing.priceFramingScripts.map((script, i) => (
               <TabsContent key={script.context} value={script.context} className="mt-3">
                 <div className="bg-muted/30 rounded-lg p-3">

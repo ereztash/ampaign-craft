@@ -90,6 +90,15 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
   const isLastStep = stepIndex === totalSteps - 1;
   const canGoNext = currentStep ? canProceed(currentStep.id, formData) : false;
 
+  const stepTimeEstimates: Record<string, number> = {
+    businessField: 15, experienceLevel: 10, audience: 20,
+    product: 25, budget: 10, goal: 15, channels: 20,
+  };
+  const remainingSeconds = visibleSteps
+    .slice(stepIndex)
+    .reduce((sum, s) => sum + (stepTimeEstimates[s.id] || 15), 0);
+  const remainingMinutes = Math.max(1, Math.round(remainingSeconds / 60));
+
   const handleSubmit = () => {
     if (canGoNext) onComplete(formData);
   };
@@ -409,7 +418,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         {/* Differentiation pre-fill banner (Path B) */}
         {hasDiffPreFill && !showPrefill && (
           <div className="mb-6 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 flex items-center gap-3" dir="auto">
-            <span className="text-lg">🎯</span>
+            <span className="text-lg" role="img" aria-hidden="true">🎯</span>
             <p className="text-sm text-foreground">
               {isRTL
                 ? "הבידול שלך מזין את הטופס — כמה שדות כבר מלאים מראש"
@@ -422,11 +431,11 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
         <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
           <span>{t("step")} {stepIndex + 1} {t("of")} {totalSteps}</span>
           <span className="text-xs">
-            {stepIndex < totalSteps - 2
-              ? (isRTL ? `~${totalSteps - stepIndex - 1} צעדים נותרו` : `~${totalSteps - stepIndex - 1} steps left`)
+            {isLastStep
+              ? (isRTL ? "סיימנו!" : "Done!")
               : stepIndex === totalSteps - 2
                 ? (isRTL ? "צעד אחרון!" : "Last step!")
-                : (isRTL ? "סיימנו!" : "Done!")}
+                : (isRTL ? `~${remainingMinutes} דק׳ נותרו` : `~${remainingMinutes} min left`)}
           </span>
         </div>
         <div className="mb-8 h-2 overflow-hidden rounded-full bg-muted">

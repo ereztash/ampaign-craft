@@ -29,7 +29,7 @@ const Plans = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-3xl">
-        <BackToHub />
+        <BackToHub currentPage={language === "he" ? "תוכניות שמורות" : "Saved Plans"} />
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-foreground" dir="auto">
             {isHe ? "התוכניות שלי" : "My Plans"} ({plans.length})
