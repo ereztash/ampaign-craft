@@ -34,7 +34,6 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       visible: true,
       priority: 10,
       group: "strategy",
-      group: "strategy",
     },
 
     // Planning — budget charts + KPIs + Israeli benchmarks

@@ -23,7 +23,7 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
         return (
           <Input
             id={`diff-${q.id}`}
-            value={(formData as Record<string, string>)[q.id] || ""}
+            value={(formData as unknown as Record<string, string>)[q.id] || ""}
             onChange={(e) => onUpdate({ [q.id]: e.target.value })}
             placeholder={q.placeholder?.[language]}
             dir="auto"
@@ -34,7 +34,7 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
         return (
           <Textarea
             id={`diff-${q.id}`}
-            value={(formData as Record<string, string>)[q.id] || ""}
+            value={(formData as unknown as Record<string, string>)[q.id] || ""}
             onChange={(e) => onUpdate({ [q.id]: e.target.value })}
             placeholder={q.placeholder?.[language]}
             className="min-h-[80px]"
@@ -50,9 +50,9 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
                 type="button"
                 key={opt.value}
                 onClick={() => onUpdate({ [q.id]: opt.value })}
-                aria-pressed={(formData as Record<string, string>)[q.id] === opt.value}
+                aria-pressed={(formData as unknown as Record<string, string>)[q.id] === opt.value}
                 className={`rounded-lg border p-3 text-sm text-start transition-colors ${
-                  (formData as Record<string, string>)[q.id] === opt.value
+                  (formData as unknown as Record<string, string>)[q.id] === opt.value
                     ? "border-primary bg-primary/10 font-medium"
                     : "border-border hover:border-primary/50"
                 }`}

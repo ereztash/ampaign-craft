@@ -44,8 +44,8 @@ const Dashboard = () => {
 
   const nextStep = useMemo(() => {
     const dummyGraph = graph || buildUserKnowledgeGraph({ businessField: "", audienceType: "b2c", ageRange: [25, 55], interests: "", productDescription: "", averagePrice: 0, salesModel: "oneTime", budgetRange: "medium", mainGoal: "sales", existingChannels: [], experienceLevel: "beginner" });
-    return getRecommendedNextStep(dummyGraph, hasDiff, savedPlans.length, new Set(mastery.features || []));
-  }, [graph, hasDiff, savedPlans.length, mastery.features]);
+    return getRecommendedNextStep(dummyGraph, hasDiff, savedPlans.length, new Set<string>());
+  }, [graph, hasDiff, savedPlans.length]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,7 +73,7 @@ const Dashboard = () => {
         {pulse && (
           <Card className="mb-6 border-primary/20 bg-primary/5">
             <CardContent className="p-4">
-              <p className="text-sm font-medium text-foreground" dir="auto">{pulse.title[language]}</p>
+              <p className="text-sm font-medium text-foreground" dir="auto">{pulse.greeting[language]}</p>
               {pulse.lossFramedMessages[0] && (
                 <p className="text-xs text-muted-foreground mt-1" dir="auto">{pulse.lossFramedMessages[0][language]}</p>
               )}

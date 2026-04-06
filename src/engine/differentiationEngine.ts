@@ -118,23 +118,23 @@ export function suggestHybridCategory(formData: DifferentiationFormData): Hybrid
 
   // Heuristic matching
   if (industry.includes("consult") || industry.includes("ייעוץ")) {
-    return { ...HYBRID_CATEGORIES[0], existingCategories: ["Consulting", "Product"], whitespace: "Advisory expertise with product scalability" };
+    return { name: HYBRID_CATEGORIES[0].name, description: { he: HYBRID_CATEGORIES[0].description, en: HYBRID_CATEGORIES[0].description }, existingCategories: ["Consulting", "Product"], whitespace: "Advisory expertise with product scalability" };
   }
   if (industry.includes("data") || industry.includes("analytics") || industry.includes("נתונים")) {
-    return { ...HYBRID_CATEGORIES[1], existingCategories: ["Data Analytics", "Storytelling"], whitespace: "Data insights delivered as narrative" };
+    return { name: HYBRID_CATEGORIES[1].name, description: { he: HYBRID_CATEGORIES[1].description, en: HYBRID_CATEGORIES[1].description }, existingCategories: ["Data Analytics", "Storytelling"], whitespace: "Data insights delivered as narrative" };
   }
   if (industry.includes("security") || industry.includes("cyber") || industry.includes("אבטח")) {
-    return { ...HYBRID_CATEGORIES[2], existingCategories: ["Security", "UX"], whitespace: "Security without friction" };
+    return { name: HYBRID_CATEGORIES[2].name, description: { he: HYBRID_CATEGORIES[2].description, en: HYBRID_CATEGORIES[2].description }, existingCategories: ["Security", "UX"], whitespace: "Security without friction" };
   }
   if (positioning.includes("local") || positioning.includes("ישראל") || positioning.includes("מקומי")) {
-    return { ...HYBRID_CATEGORIES[4], existingCategories: ["Local Market", "Global Method"], whitespace: "Local depth with global scale" };
+    return { name: HYBRID_CATEGORIES[4].name, description: { he: HYBRID_CATEGORIES[4].description, en: HYBRID_CATEGORIES[4].description }, existingCategories: ["Local Market", "Global Method"], whitespace: "Local depth with global scale" };
   }
   if (industry.includes("tech") || industry.includes("saas") || industry.includes("טכנו")) {
-    return { ...HYBRID_CATEGORIES[6], existingCategories: ["Technical", "Human"], whitespace: "Engineering precision with human understanding" };
+    return { name: HYBRID_CATEGORIES[6].name, description: { he: HYBRID_CATEGORIES[6].description, en: HYBRID_CATEGORIES[6].description }, existingCategories: ["Technical", "Human"], whitespace: "Engineering precision with human understanding" };
   }
 
   // Default: Simplicity-Complexity
-  return { ...HYBRID_CATEGORIES[8], existingCategories: ["Simple Interface", "Complex Problem"], whitespace: "Accessibility for complex domains" };
+  return { name: HYBRID_CATEGORIES[8].name, description: { he: HYBRID_CATEGORIES[8].description, en: HYBRID_CATEGORIES[8].description }, existingCategories: ["Simple Interface", "Complex Problem"], whitespace: "Accessibility for complex domains" };
 }
 
 // ═══ MAIN GENERATOR ═══

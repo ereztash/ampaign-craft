@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { Badge } from "@/components/ui/badge";
 import AdaptiveTabNav from "@/components/AdaptiveTabNav";
 
 const BrandDiagnosticTab = lazy(() => import("@/components/BrandDiagnosticTab"));
