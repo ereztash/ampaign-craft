@@ -19,7 +19,7 @@ const SalesEntry = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 pt-20 pb-16 max-w-5xl">
-        <BackToHub />
+        <BackToHub currentPage={language === "he" ? "מכירות" : "Sales"} />
         {result ? (
           <SalesTab result={result} />
         ) : (

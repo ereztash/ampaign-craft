@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FormData } from "@/types/funnel";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 interface ProcessingScreenProps {
@@ -15,6 +16,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [msgIndex, setMsgIndex] = useState(0);
   const [celebrating, setCelebrating] = useState(false);
+  const [showContinue, setShowContinue] = useState(false);
   const isHe = language === "he";
 
   // Contextual messages based on formData (Health-Tech pattern)
@@ -28,7 +30,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
         if (prev >= 100) {
           clearInterval(interval);
           setCelebrating(true);
-          setTimeout(onComplete, 2000);
+          setTimeout(() => setShowContinue(true), 2000);
           return 100;
         }
         return prev + 2;
@@ -62,7 +64,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           transition={{ type: "spring", stiffness: 200, damping: 15 }}
           className="flex flex-col items-center text-center"
         >
-          <div className="text-6xl mb-4">🎉</div>
+          <div className="text-6xl mb-4" role="img" aria-label="celebration">🎉</div>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
             {isHe ? "התוכנית שלך מוכנה!" : "Your plan is ready!"}
           </h2>
@@ -75,6 +77,8 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
             {["🚀", "📊", "💡", "🎯", "✨"].map((e, i) => (
               <motion.span
                 key={i}
+                role="img"
+                aria-hidden="true"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 * i }}
@@ -82,6 +86,17 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
               >{e}</motion.span>
             ))}
           </div>
+          {showContinue && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6"
+            >
+              <Button size="lg" onClick={onComplete} className="funnel-gradient text-accent-foreground font-semibold px-8">
+                {isHe ? "בוא נראה את התוצאות →" : "See your results →"}
+              </Button>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     );

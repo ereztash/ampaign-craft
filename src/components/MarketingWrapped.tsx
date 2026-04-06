@@ -99,7 +99,7 @@ const MarketingWrapped = ({ plans }: MarketingWrappedProps) => {
             <div className="text-xs text-muted-foreground">{isHe ? "ציון בריאות" : "Health Score"}</div>
           </div>
           <div className="rounded-xl bg-destructive/10 p-3 text-center">
-            <div className="text-xl mb-1">🔥</div>
+            <div className="text-xl mb-1" role="img" aria-hidden="true">🔥</div>
             <div className="text-2xl font-bold text-foreground">{streak.currentStreak}</div>
             <div className="text-xs text-muted-foreground">{isHe ? "שבועות streak" : "Week streak"}</div>
           </div>

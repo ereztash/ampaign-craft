@@ -36,7 +36,7 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
         <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
           <CardContent className="p-6">
             <div className="flex items-start gap-3">
-              <span className="text-2xl">⚛️</span>
+              <span className="text-2xl" role="img" aria-hidden="true">⚛️</span>
               <div>
                 <div className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
                   {t("neuroAxiom")}
@@ -108,7 +108,7 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span>🧬</span> {t("neuroPromptGenerator")}
+            <span role="img" aria-hidden="true">🧬</span> {t("neuroPromptGenerator")}
           </CardTitle>
           <p className="text-sm text-muted-foreground">{t("neuroPromptDesc")}</p>
         </CardHeader>
@@ -177,7 +177,7 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span>⚖️</span> {t("neuroEntropy")}
+            <span role="img" aria-hidden="true">⚖️</span> {t("neuroEntropy")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">

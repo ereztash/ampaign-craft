@@ -236,7 +236,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
         {/* Cost of Inaction Banner */}
         <Card className="mb-6 border-destructive/20 bg-destructive/5">
           <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4">
-            <span className="text-2xl">🔥</span>
+            <span className="text-2xl" role="img" aria-hidden="true">🔥</span>
             <div className="flex-1">
               <p className="text-sm font-medium text-foreground" dir="auto">{costOfInaction.lossFramedMessage[language]}</p>
               <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{costOfInaction.comparisonMessage[language]}</p>
@@ -248,7 +248,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
         {!diffResult && (
           <Card className="mb-4 border-dashed border-2 border-amber-500/30 bg-amber-500/5">
             <CardContent className="flex flex-col sm:flex-row items-center gap-3 p-4">
-              <span className="text-2xl">🎯</span>
+              <span className="text-2xl" role="img" aria-hidden="true">🎯</span>
               <div className="flex-1 text-center sm:text-start">
                 <p className="text-sm font-medium text-foreground" dir="auto">
                   {isHe ? "רוצה סקריפטים עם שמות המתחרים שלך והבידול האמיתי?" : "Want scripts with your competitor names and real differentiation?"}

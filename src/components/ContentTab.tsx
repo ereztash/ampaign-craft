@@ -33,7 +33,8 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
 
   return (
     <Tabs defaultValue="hooks">
-      <TabsList className="h-9 w-full justify-start gap-1 bg-muted/50">
+      <div className="overflow-x-auto -mx-1 px-1">
+        <TabsList className="h-9 w-max min-w-full justify-start gap-1 bg-muted/50">
         <TabsTrigger value="hooks" className="text-xs px-3">
           {t("contentSubNavHooks")}
         </TabsTrigger>
@@ -50,6 +51,7 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
           {isHe ? "בדיקת קופי" : "Copy QA"}
         </TabsTrigger>
       </TabsList>
+      </div>
 
       {/* Hooks */}
       <TabsContent value="hooks" className="mt-4">

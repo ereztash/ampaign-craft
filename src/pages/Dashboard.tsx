@@ -52,7 +52,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <Header onSavedPlans={() => navigate("/plans")} />
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-4xl">
-        <BackToHub />
+        <BackToHub currentPage={language === "he" ? "תוכנית שיווק" : "Marketing Plan"} />
 
         {/* Welcome + Streak */}
         <div className="flex items-center justify-between mb-6">
