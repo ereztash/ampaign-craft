@@ -1,9 +1,11 @@
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { TIERS, PricingTier, Feature } from "@/lib/pricingTiers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 interface PaywallModalProps {
   open: boolean;
@@ -14,8 +16,21 @@ interface PaywallModalProps {
 
 const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModalProps) => {
   const { language } = useLanguage();
+  const { setTier, isLocalAuth } = useAuth();
   const isHe = language === "he";
   const tier = TIERS.find((t) => t.id === requiredTier) || TIERS[1];
+
+  const handleUpgrade = () => {
+    if (isLocalAuth) {
+      // Local auth: instant tier change for testing
+      setTier(requiredTier);
+      toast.success(isHe ? `שודרגת ל-${tier.name.he}!` : `Upgraded to ${tier.name.en}!`);
+      onOpenChange(false);
+    } else {
+      // Supabase: redirect to checkout (Stripe Edge Function)
+      window.open("/pricing-plans", "_blank");
+    }
+  };
 
   const FEATURE_NAMES: Record<Feature, { he: string; en: string }> = {
     maxFunnels: { he: "משפכים ללא הגבלה", en: "Unlimited funnels" },
@@ -24,6 +39,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
     whatsappTemplates: { he: "תבניות WhatsApp", en: "WhatsApp Templates" },
     campaignCockpit: { he: "Campaign Cockpit", en: "Campaign Cockpit" },
     templatePublishing: { he: "פרסום תבניות", en: "Template Publishing" },
+    differentiationAgent: { he: "סוכן בידול", en: "Differentiation Agent" },
   };
 
   return (
@@ -56,7 +72,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
             </div>
           </div>
 
-          <Button className="w-full funnel-gradient border-0 text-accent-foreground" size="lg">
+          <Button className="w-full cta-warm" size="lg" onClick={handleUpgrade}>
             {isHe ? `שדרג ל-${tier.name.he}` : `Upgrade to ${tier.name.en}`}
           </Button>
 

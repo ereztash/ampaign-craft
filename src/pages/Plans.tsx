@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { SavedPlan } from "@/types/funnel";
@@ -12,15 +12,16 @@ const Plans = () => {
   const isHe = language === "he";
   const navigate = useNavigate();
 
+  const [refreshKey, setRefreshKey] = useState(0);
   const plans = useMemo<SavedPlan[]>(() => {
     try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]").sort((a: SavedPlan, b: SavedPlan) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()); }
     catch { return []; }
-  }, []);
+  }, [refreshKey]);
 
   const deletePlan = (id: string) => {
     const updated = plans.filter((p) => p.id !== id);
     localStorage.setItem("funnelforge-plans", JSON.stringify(updated));
-    window.location.reload();
+    setRefreshKey((k) => k + 1);
   };
 
   return (

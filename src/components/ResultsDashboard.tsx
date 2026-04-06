@@ -431,10 +431,8 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
               </CardContent>
             </Card>
 
-            {/* WhatsApp Templates (if WhatsApp channel is recommended) */}
-            {result.stages.some((s) => s.channels.some((c) => c.channel === "whatsapp")) && (
-              <WhatsAppTemplatesPanel />
-            )}
+            {/* WhatsApp Templates — always show (WhatsApp = 98% of Israeli market) */}
+            <WhatsAppTemplatesPanel />
 
             {/* Israeli Market Calendar */}
             {marketEvents.length > 0 && (

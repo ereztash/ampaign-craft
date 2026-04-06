@@ -91,7 +91,10 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   const { language } = useLanguage();
   const isHe = language === "he";
   const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try { const saved = localStorage.getItem("funnelforge-coach-messages"); return saved ? JSON.parse(saved) : []; }
+    catch { return []; }
+  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,6 +112,10 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    // Persist messages to localStorage
+    if (messages.length > 0) {
+      try { localStorage.setItem("funnelforge-coach-messages", JSON.stringify(messages.slice(-50))); } catch { /* ignore */ }
+    }
   }, [messages]);
 
   const sendMessage = async (text: string) => {
