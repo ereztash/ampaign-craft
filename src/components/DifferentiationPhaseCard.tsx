@@ -190,7 +190,23 @@ function ClaimEvidencePairs({ formData, onUpdate }: { formData: DifferentiationF
 
 function HiddenValueSliders({ formData, onUpdate }: { formData: DifferentiationFormData; onUpdate: (p: Partial<DifferentiationFormData>) => void }) {
   const { language } = useLanguage();
+  const isHe = language === "he";
   const values = formData.hiddenValues;
+
+  // Emoji icons make each value instantly recognizable
+  const VALUE_ICONS: Record<string, string> = {
+    legitimacy: "\u{1F3C6}", risk: "\u{1F6E1}\uFE0F", identity: "\u{1F6A9}", cognitive_ease: "\u{1F4A1}",
+    autonomy: "\u{1F3AE}", status: "\u{2B50}", empathy: "\u{1F91D}", narrative: "\u{1F4D6}",
+    convenience: "\u{26A1}", aesthetic: "\u{1F3A8}", belonging: "\u{1F465}", self_expression: "\u{1F58C}\uFE0F",
+    guilt_free: "\u{1F33F}", instant_gratification: "\u{1F381}",
+  };
+
+  // 3 clear levels instead of confusing 1-5 slider
+  const LEVELS = [
+    { score: 1, he: "לא משפיע", en: "Low impact", color: "border-border text-muted-foreground" },
+    { score: 3, he: "חשוב", en: "Important", color: "border-primary/50 text-primary bg-primary/5" },
+    { score: 5, he: "קריטי", en: "Critical", color: "border-amber-500 text-amber-600 bg-amber-50 dark:bg-amber-500/10" },
+  ];
 
   const updateValue = (valueId: HiddenValueType, score: number) => {
     const existing = values.find((v) => v.valueId === valueId);
@@ -201,26 +217,51 @@ function HiddenValueSliders({ formData, onUpdate }: { formData: DifferentiationF
     }
   };
 
+  const ratedCount = values.filter((v) => v.score > 0).length;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      {/* Progress hint */}
+      <p className="text-xs text-muted-foreground text-center" dir="auto">
+        {isHe
+          ? `${ratedCount}/${HIDDEN_VALUES.length} דורגו — לחצו על הרמה המתאימה`
+          : `${ratedCount}/${HIDDEN_VALUES.length} rated — tap the right level`}
+      </p>
+
       {HIDDEN_VALUES.map((hv) => {
         const current = values.find((v) => v.valueId === hv.id);
+        const currentScore = current?.score || 0;
+        const icon = VALUE_ICONS[hv.id] || "";
+
         return (
-          <div key={hv.id} className="rounded-lg border p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{hv[language]}</span>
-              <Badge variant="outline">{current?.score || 1}/5</Badge>
+          <div key={hv.id} className="rounded-xl border p-3 space-y-2">
+            {/* Probe question as primary label (plain language) */}
+            <div className="flex items-start gap-2">
+              <span className="text-lg leading-none mt-0.5">{icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground leading-snug" dir="auto">
+                  {hv.probe[language]}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">{hv[language]}</p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground italic" dir="auto">{hv.probe[language]}</p>
-            <input
-              type="range" min={1} max={5} step={1}
-              value={current?.score || 1}
-              onChange={(e) => updateValue(hv.id, Number(e.target.value))}
-              className="w-full accent-primary"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>{language === "he" ? "לא חשוב" : "Not important"}</span>
-              <span>{language === "he" ? "קריטי" : "Critical"}</span>
+
+            {/* 3-level tap selector instead of slider */}
+            <div className="flex gap-2">
+              {LEVELS.map((level) => (
+                <button
+                  key={level.score}
+                  type="button"
+                  onClick={() => updateValue(hv.id, level.score)}
+                  className={`flex-1 rounded-lg border-2 py-1.5 px-2 text-xs font-medium transition-all ${
+                    currentScore === level.score
+                      ? level.color + " shadow-sm"
+                      : "border-transparent bg-muted/50 text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  {level[language]}
+                </button>
+              ))}
             </div>
           </div>
         );
