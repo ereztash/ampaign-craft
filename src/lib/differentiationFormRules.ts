@@ -10,11 +10,11 @@ export function canProceedPhase(phaseId: PhaseId, formData: DifferentiationFormD
       return (
         formData.businessName.trim().length > 0 &&
         formData.industry.trim().length > 0 &&
-        formData.targetMarket !== "" &&
-        formData.companySize !== "" &&
+        !!formData.targetMarket &&
+        !!formData.companySize &&
         formData.currentPositioning.trim().length > 10 &&
         formData.topCompetitors.filter((c) => c.trim().length > 0).length >= 1 &&
-        formData.priceRange !== ""
+        !!formData.priceRange
       );
     case "contradiction":
       return (
@@ -31,7 +31,7 @@ export function canProceedPhase(phaseId: PhaseId, formData: DifferentiationFormD
       return (
         formData.competitorArchetypes.length >= 1 &&
         formData.buyingCommitteeMap.length >= 2 &&
-        formData.decisionLatency !== ""
+        !!formData.decisionLatency
       );
     case "synthesis":
       return true; // AI-generated, always can proceed

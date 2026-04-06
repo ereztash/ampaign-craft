@@ -24,6 +24,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
     whatsappTemplates: { he: "תבניות WhatsApp", en: "WhatsApp Templates" },
     campaignCockpit: { he: "Campaign Cockpit", en: "Campaign Cockpit" },
     templatePublishing: { he: "פרסום תבניות", en: "Template Publishing" },
+    differentiationAgent: { he: "סוכן בידול", en: "Differentiation Agent" },
   };
 
   return (
