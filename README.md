@@ -42,10 +42,14 @@ UserKnowledgeGraph cross-references all user data (FormData + Differentiation + 
 ## Routes
 
 ```
-/                    → Marketing landing page (SEO + conversion)
+/                    → Module hub (main entry point)
+/legacy              → Original marketing landing page
 /dashboard           → Returning user hub (pulse + progress + last plan)
 /wizard              → Quick Start funnel wizard (2 min)
 /differentiate       → Differentiation wizard (10 min, recommended)
+/sales               → Sales module entry
+/pricing             → Pricing module entry
+/retention           → Retention module entry
 /plans               → Saved plans list
 /plans/:id           → Plan results dashboard
 /plans/:id/:tab      → Deep link to specific tab (shareable)
@@ -56,7 +60,7 @@ UserKnowledgeGraph cross-references all user data (FormData + Differentiation + 
 
 ```
 src/
-├── engine/          # 21 pure-logic engines
+├── engine/          # 22 pure-logic engines
 │   ├── funnelEngine.ts              # Core funnel generation + personalizeResult
 │   ├── salesPipelineEngine.ts       # Sales pipeline + neuro-closing + DISC + personalized scripts
 │   ├── pricingIntelligenceEngine.ts # Pricing model + tiers + offer stack + guarantee + framing
@@ -77,6 +81,7 @@ src/
 │   ├── stylomeEngine.ts             # Writing style fingerprint extractor
 │   ├── guidanceEngine.ts            # Meta Ads KPI remediation
 │   ├── gapEngine.ts                 # Performance gap analysis
+│   ├── nextStepEngine.ts            # Personalized next-step recommendations
 │   └── dataImportEngine.ts          # CSV/Excel data ingestion
 ├── lib/             # Data libraries & utilities
 │   ├── israeliMarketCalendar.ts     # 12 Israeli events with budget multipliers
@@ -90,11 +95,13 @@ src/
 │   ├── roiCalculator.ts             # Industry-specific ROI estimation
 │   ├── whatsappTemplates.ts         # Hebrew WhatsApp funnel templates
 │   ├── pricingTiers.ts              # Free/Pro/Business tier definitions
-│   └── ...                          # glossary, socialProof, colorSemantics
-├── components/      # 45+ React components
-├── pages/           # 9 route pages (Landing, Dashboard, Wizard, Plans, PlanView, Differentiate, Profile)
-├── hooks/           # 11 custom hooks
-├── contexts/        # Auth (dual: Supabase + local) + UserProfile + Language
+│   ├── smartDefaults.ts             # Adaptive form defaults by business type
+│   ├── minimalFormDefaults.ts       # Minimal-mode form defaults
+│   └── ...                          # glossary, socialProofData, colorSemantics, utils
+├── components/      # 94 React components
+├── pages/           # 13 pages (ModuleHub, Dashboard, Wizard, Plans, PlanView, Differentiate, SalesEntry, PricingEntry, RetentionEntry, Profile, Landing, Index, NotFound)
+├── hooks/           # 12 custom hooks
+├── contexts/        # Auth (dual: Supabase + local) + UserProfile
 ├── i18n/            # 290+ bilingual translation keys (Hebrew + English)
 ├── integrations/    # Supabase client + types
 └── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention)
@@ -147,14 +154,14 @@ supabase/functions/  # 5 Edge Functions
 | Metric | Value |
 |--------|-------|
 | Lines of code | ~30,000 |
-| TypeScript files | ~190 |
-| Engines | 21 |
+| TypeScript files | ~198 |
+| Engines | 22 |
 | Tests | 333 (100% pass) |
-| Components | 45+ |
-| Pages | 9 |
-| Routes | 9 |
+| Components | 94 |
+| Pages | 13 |
+| Routes | 12 |
 | Tabs | 8 |
-| Hooks | 11 |
+| Hooks | 12 |
 | Translation keys | 290+ (he + en) |
 | Edge Functions | 5 |
 | Knowledge domains | 31 |
