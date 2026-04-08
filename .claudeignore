@@ -1,0 +1,33 @@
+# Package manager lock files (large, not useful for code understanding)
+package-lock.json
+bun.lock
+bun.lockb
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+
+# Git internals
+.git/
+
+# Test coverage reports
+coverage/
+
+# Static research assets
+public/research/
+
+# shadcn/ui auto-generated primitives (boilerplate, rarely need to read)
+src/components/ui/
+
+# Editor config
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
+# Logs
+*.log
