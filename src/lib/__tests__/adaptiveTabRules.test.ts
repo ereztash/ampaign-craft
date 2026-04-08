@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { getTabConfig } from "../adaptiveTabRules";
-import { FunnelResult, FormData } from "@/types/funnel";
+import { FunnelResult, FormData, ReaderProfile, EntropyGuide } from "@/types/funnel";
 import { UserProfile } from "@/contexts/UserProfileContext";
 
 function makeResult(overrides: Partial<FormData> = {}): FunnelResult {
@@ -25,11 +25,11 @@ function makeResult(overrides: Partial<FormData> = {}): FunnelResult {
     totalBudget: { min: 0, max: 0 },
     overallTips: [],
     hookTips: [],
-    copyLab: { readerProfile: {} as any, formulas: [], writingTechniques: [] },
+    copyLab: { readerProfile: {} as unknown as ReaderProfile, formulas: [], writingTechniques: [] },
     kpis: [],
     createdAt: "",
     formData,
-    neuroStorytelling: { vectors: [], promptTemplates: [], entropyGuide: {} as any, axiom: { he: "", en: "" } },
+    neuroStorytelling: { vectors: [], promptTemplates: [], entropyGuide: {} as unknown as EntropyGuide, axiom: { he: "", en: "" } },
   };
 }
 

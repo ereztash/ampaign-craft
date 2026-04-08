@@ -35,7 +35,7 @@ interface TemplateMarketplaceProps {
 const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
-  const { templates, loading, loadTemplates, upvoteTemplate, useTemplate } = useTemplateMarketplace();
+  const { templates, loading, loadTemplates, upvoteTemplate, useTemplate: applyTemplate } = useTemplateMarketplace();
   const [fieldFilter, setFieldFilter] = useState<string>("all");
   const [goalFilter, setGoalFilter] = useState<string>("all");
 
@@ -46,7 +46,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
   });
 
   const handleUse = async (template: PlanTemplate) => {
-    const planData = await useTemplate(template.id);
+    const planData = await applyTemplate(template.id);
     if (planData && onUseTemplate) {
       onUseTemplate(planData);
       toast.success(isHe ? "התבנית נטענה!" : "Template loaded!");
