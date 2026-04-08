@@ -5,6 +5,28 @@ import { safeParseJson } from "@/lib/utils";
 
 const LOCAL_KEY = "funnelforge-tracking";
 
+interface CampaignTrackingRow {
+  id: string;
+  plan_id: string;
+  stage_id: string;
+  channel: string;
+  metric: string;
+  projected_value: string;
+  actual_value: number;
+  date: string;
+  user_id: string;
+}
+
+type AdhocQuery = Promise<{ data: CampaignTrackingRow[] | null }> & {
+  eq(column: string, value: unknown): AdhocQuery;
+  order(column: string, options: { ascending: boolean }): AdhocQuery;
+};
+type AdhocFrom = (table: string) => {
+  select(cols: string): AdhocQuery;
+  insert(data: Record<string, unknown>): Promise<void>;
+};
+const adhocFrom = (supabase as unknown as { from: AdhocFrom }).from.bind(supabase);
+
 export interface TrackedMetric {
   id: string;
   planId: string;
@@ -48,14 +70,14 @@ export function useCampaignTracking(planId: string | null) {
     setLoading(true);
 
     if (user) {
-      const { data } = await (supabase.from as any)("campaign_tracking")
+      const { data } = await adhocFrom("campaign_tracking")
         .select("*")
         .eq("plan_id", planId)
         .eq("user_id", user.id)
         .order("date", { ascending: false });
 
       if (data) {
-        setMetrics((data as any[]).map((r: any) => ({
+        setMetrics(data.map((r) => ({
           id: r.id,
           planId: r.plan_id,
           stageId: r.stage_id,
@@ -87,7 +109,7 @@ export function useCampaignTracking(planId: string | null) {
     };
 
     if (user) {
-      await (supabase.from as any)("campaign_tracking").insert({
+      await adhocFrom("campaign_tracking").insert({
         id: entry.id,
         user_id: user.id,
         plan_id: planId,
