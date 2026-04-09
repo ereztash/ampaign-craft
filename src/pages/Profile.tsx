@@ -25,9 +25,9 @@ const PageComponent = () => {
   // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate("/hub");
+      navigate("/");
     }
-  }, [authLoading, user, router]);
+  }, [authLoading, user, navigate]);
 
   // Load profile
   useEffect(() => {
@@ -109,7 +109,7 @@ const PageComponent = () => {
   return (
     <div className="min-h-screen bg-background" dir={isHe ? "rtl" : "ltr"}>
       <div className="container mx-auto max-w-lg px-4 py-20">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/hub")} className="mb-6 gap-2">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="mb-6 gap-2">
           <ArrowRight className={`h-4 w-4 ${isHe ? "" : "rotate-180"}`} />
           {isHe ? "חזרה לדף הראשי" : "Back to home"}
         </Button>

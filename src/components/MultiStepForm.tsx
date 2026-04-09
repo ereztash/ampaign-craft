@@ -22,9 +22,10 @@ import {
 interface MultiStepFormProps {
   onComplete: (data: FormData) => void;
   onBack: () => void;
+  embeddedInShell?: boolean;
 }
 
-const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
+const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormProps) => {
   const { t, language, isRTL } = useLanguage();
   const { profile, updateFormData } = useUserProfile();
   const reducedMotion = useReducedMotion();
@@ -396,7 +397,7 @@ const MultiStepForm = ({ onComplete, onBack }: MultiStepFormProps) => {
   };
 
   return (
-    <div className="min-h-screen px-4 pt-24 pb-12">
+    <div className={`min-h-screen px-4 pb-12 ${embeddedInShell ? "pt-4" : "pt-24"}`}>
       <div className="mx-auto max-w-2xl">
         {/* Returning user pre-fill banner */}
         {showPrefill && (

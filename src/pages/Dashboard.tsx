@@ -6,7 +6,6 @@ import { useAchievements } from "@/hooks/useAchievements";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
-import { generateFunnel } from "@/engine/funnelEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { SavedPlan } from "@/types/funnel";
 import BackToHub from "@/components/BackToHub";

@@ -64,7 +64,7 @@ const PageComponent = () => {
 
   const handleStartDifferentiation = useCallback(() => {
     // Navigate to differentiation page — after completion, user returns to build funnel
-    window.location.href = "/growth/differentiate";
+    window.location.href = "/differentiate";
   }, []);
 
   return (

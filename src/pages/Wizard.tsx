@@ -173,7 +173,7 @@ const Wizard = () => {
               {isHe ? "← חזרה לבחירת מסלול" : "← Back to track selection"}
             </Button>
           </div>
-          <MultiStepForm onComplete={handleFormComplete} onBack={() => setState("trackSelect")} />
+          <MultiStepForm onComplete={handleFormComplete} onBack={() => setState("trackSelect")} embeddedInShell />
         </>
       )}
 
