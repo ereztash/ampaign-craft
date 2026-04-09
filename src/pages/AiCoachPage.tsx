@@ -22,8 +22,8 @@ const AiCoachPage = () => {
       const plans: SavedPlan[] = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
       const sorted = plans.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
       if (sorted[0]?.result) return sorted[0].result;
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error("Failed to load saved plans:", err);
     }
     if (profile.lastFormData) {
       const raw = generateFunnel(profile.lastFormData);

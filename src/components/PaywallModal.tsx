@@ -21,13 +21,13 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
   const tier = TIERS.find((t) => t.id === requiredTier) || TIERS[1];
 
   const handleUpgrade = () => {
-    if (isLocalAuth) {
-      // Local auth: instant tier change for testing
+    if (import.meta.env.DEV && isLocalAuth) {
+      // Dev-only: instant tier change for testing
       setTier(requiredTier);
       toast.success(isHe ? `שודרגת ל-${tier.name.he}!` : `Upgraded to ${tier.name.en}!`);
       onOpenChange(false);
     } else {
-      // Supabase: redirect to checkout (Stripe Edge Function)
+      // Redirect to checkout (Stripe Edge Function)
       window.open("/pricing-plans", "_blank");
     }
   };

@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { SavedPlan } from "@/types/funnel";
@@ -42,8 +42,8 @@ const Dashboard = () => {
   }, [lastPlan]);
 
   const nextStep = useMemo(() => {
-    const dummyGraph = graph || buildUserKnowledgeGraph({ businessField: "", audienceType: "b2c", ageRange: [25, 55], interests: "", productDescription: "", averagePrice: 0, salesModel: "oneTime", budgetRange: "medium", mainGoal: "sales", existingChannels: [], experienceLevel: "beginner" });
-    return getRecommendedNextStep(dummyGraph, hasDiff, savedPlans.length, new Set<string>());
+    const fallbackGraph = graph || buildDefaultKnowledgeGraph();
+    return getRecommendedNextStep(fallbackGraph, hasDiff, savedPlans.length, new Set<string>());
   }, [graph, hasDiff, savedPlans.length]);
 
   return (

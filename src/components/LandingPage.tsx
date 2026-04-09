@@ -53,8 +53,8 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
         );
         onLoadLastPlan(sorted[0].result);
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("Failed to load last plan:", err);
     }
   };
 

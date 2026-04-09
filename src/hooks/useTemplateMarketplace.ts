@@ -118,8 +118,8 @@ export function useTemplateMarketplace() {
           .update({ upvotes: current.upvotes + 1 })
           .eq("id", templateId);
       }
-    } catch {
-      // silently fail if table doesn't exist
+    } catch (err) {
+      console.warn("Template upvote failed (table may not exist):", err);
     }
 
     setTemplates((prev) => prev.map((t) =>

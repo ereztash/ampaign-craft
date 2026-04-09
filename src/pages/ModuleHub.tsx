@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { buildDefaultKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { useAchievements } from "@/hooks/useAchievements";
 import { getTotalUsers } from "@/lib/socialProofData";
@@ -39,8 +39,8 @@ const PageComponent = () => {
   const planCount = (() => { if (typeof window === "undefined") return 0; try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]").length; } catch { return 0; } })();
 
   const nextStep = useMemo(() => {
-    const dummyGraph = graph || buildUserKnowledgeGraph({ businessField: "", audienceType: "b2c", ageRange: [25, 55], interests: "", productDescription: "", averagePrice: 0, salesModel: "oneTime", budgetRange: "medium", mainGoal: "sales", existingChannels: [], experienceLevel: "beginner" });
-    return getRecommendedNextStep(dummyGraph, hasDiff, planCount, new Set((mastery as any).features || []));
+    const fallbackGraph = graph || buildDefaultKnowledgeGraph();
+    return getRecommendedNextStep(fallbackGraph, hasDiff, planCount, new Set((mastery as any).features || []));
   }, [graph, hasDiff, planCount, (mastery as any).features]);
 
   return (
