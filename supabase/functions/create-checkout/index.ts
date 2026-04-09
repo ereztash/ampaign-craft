@@ -10,9 +10,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const PRICE_IDS: Record<string, string> = {
-  pro: Deno.env.get("STRIPE_PRICE_PRO") || "price_pro_placeholder",
-  business: Deno.env.get("STRIPE_PRICE_BUSINESS") || "price_business_placeholder",
+const STRIPE_PRICE_PRO = Deno.env.get("STRIPE_PRICE_PRO");
+const STRIPE_PRICE_BUSINESS = Deno.env.get("STRIPE_PRICE_BUSINESS");
+
+const PRICE_IDS: Record<string, string | undefined> = {
+  pro: STRIPE_PRICE_PRO,
+  business: STRIPE_PRICE_BUSINESS,
 };
 
 Deno.serve(async (req) => {
@@ -44,10 +47,13 @@ Deno.serve(async (req) => {
     const { tier } = await req.json();
     const priceId = PRICE_IDS[tier];
     if (!priceId) {
-      return new Response(JSON.stringify({ error: "Invalid tier" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: tier in PRICE_IDS ? "Stripe price not configured for this tier" : "Invalid tier" }),
+        {
+          status: tier in PRICE_IDS ? 500 : 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
     // Create Stripe Checkout Session
@@ -62,8 +68,8 @@ Deno.serve(async (req) => {
         "customer_email": user.email || "",
         "line_items[0][price]": priceId,
         "line_items[0][quantity]": "1",
-        "success_url": `${req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=success`,
-        "cancel_url": `${req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=cancel`,
+        "success_url": `${Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=success`,
+        "cancel_url": `${Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=cancel`,
         "metadata[user_id]": user.id,
         "metadata[tier]": tier,
       }),

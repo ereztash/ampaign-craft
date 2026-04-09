@@ -142,6 +142,26 @@ const IDENTITY_TEMPLATES: Record<string, { he: string; en: string }> = {
   other: { he: "עסק שמציע {product} ל{audience}", en: "Business offering {product} to {audience}" },
 };
 
+// === DEFAULTS ===
+
+export const DEFAULT_FORM_DATA: FormData = {
+  businessField: "",
+  audienceType: "b2c",
+  ageRange: [25, 55],
+  interests: "",
+  productDescription: "",
+  averagePrice: 0,
+  salesModel: "oneTime",
+  budgetRange: "medium",
+  mainGoal: "sales",
+  existingChannels: [],
+  experienceLevel: "beginner",
+};
+
+export function buildDefaultKnowledgeGraph() {
+  return buildUserKnowledgeGraph(DEFAULT_FORM_DATA);
+}
+
 // === BUILDER ===
 
 export function buildUserKnowledgeGraph(

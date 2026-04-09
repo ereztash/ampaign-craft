@@ -114,28 +114,22 @@ const PageComponent = () => {
         </div>
       </section>
 
-      {/* Authentic Social Proof — "כאן היה אמור להיות testimonial" */}
+      {/* Early Adopter CTA */}
       <section className="container mx-auto px-4 py-12">
-        <Card className="max-w-2xl mx-auto border-dashed border-2 border-amber-500/30 bg-amber-500/5">
+        <Card className="max-w-2xl mx-auto border-primary/20 bg-primary/5">
           <CardContent className="p-8 text-center space-y-4">
-            <div className="text-3xl">🚧</div>
             <p className="text-lg font-bold text-foreground" dir="auto">
               {isHe
-                ? "כאן היה אמור להיות testimonial מרגש עם 47% שיפור בלידים."
-                : "Here was supposed to be a testimonial with 47% lead improvement."}
-            </p>
-            <p className="text-sm text-muted-foreground" dir="auto">
-              {isHe
-                ? "אבל אנחנו חדשים. עוד אין. בואו תהיו הראשונים שמשאירים ביקורת — ובתמורה תקבלו את המערכת בחינם לחודשיים."
-                : "But we're new. None yet. Be the first to leave a review — and get the system free for 2 months."}
+                ? "הצטרפו ל-Early Adopters שלנו וקבלו גישה מלאה בחינם לחודשיים"
+                : "Join our Early Adopters and get full access free for 2 months"}
             </p>
             <Button onClick={() => navigate("/wizard")} className="gap-2 cta-warm">
-              {isHe ? "הצטרף כ-Early Adopter →" : "Join as Early Adopter →"}
+              {isHe ? "התחל עכשיו בחינם" : "Start Free Now"}
             </Button>
             <div className="flex flex-wrap justify-center gap-4 pt-4 text-xs text-muted-foreground">
-              <span>🧠 21 {isHe ? "מנועי אינטליגנציה" : "intelligence engines"}</span>
-              <span>🌍 31 {isHe ? "דומיינים מוטמעים" : "embedded domains"}</span>
-              <span>🇮🇱 40 {isHe ? "שדות ידע ישראלי" : "Israeli knowledge fields"}</span>
+              <span>21 {isHe ? "מנועי אינטליגנציה" : "intelligence engines"}</span>
+              <span>31 {isHe ? "דומיינים מוטמעים" : "embedded domains"}</span>
+              <span>40 {isHe ? "שדות ידע ישראלי" : "Israeli knowledge fields"}</span>
             </div>
           </CardContent>
         </Card>

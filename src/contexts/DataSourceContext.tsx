@@ -58,7 +58,11 @@ const defaultSources = (): DataSource[] => [
     status: "disconnected",
     lastSync: null,
     recordCount: 0,
-    feeds: [{ he: "בקרוב", en: "Coming soon" }],
+    feeds: [
+      { he: "ביצועי קמפיינים", en: "Campaign performance" },
+      { he: "עלות להמרה", en: "Cost per conversion" },
+      { he: "מילות מפתח", en: "Keywords" },
+    ],
   },
   {
     id: "ga4",

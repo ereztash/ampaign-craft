@@ -148,22 +148,17 @@ const PageComponent = () => {
                   {tier === "pro" ? <Shield className="h-3 w-3 me-1" /> : tier === "business" ? <Crown className="h-3 w-3 me-1" /> : null}
                   {tierLabels[tier]}
                 </Badge>
-                {isLocalAuth && tier === "free" && (
+                {import.meta.env.DEV && isLocalAuth && tier === "free" && (
                   <Button variant="outline" size="sm" onClick={() => setTier("pro")} className="text-xs">
-                    {isHe ? "שדרג ל-Pro (לוקאלי)" : "Upgrade to Pro (local)"}
+                    {isHe ? "שדרג ל-Pro (dev)" : "Upgrade to Pro (dev)"}
                   </Button>
                 )}
-                {isLocalAuth && tier === "pro" && (
+                {import.meta.env.DEV && isLocalAuth && tier === "pro" && (
                   <Button variant="outline" size="sm" onClick={() => setTier("business")} className="text-xs">
-                    {isHe ? "שדרג ל-Business (לוקאלי)" : "Upgrade to Business (local)"}
+                    {isHe ? "שדרג ל-Business (dev)" : "Upgrade to Business (dev)"}
                   </Button>
                 )}
               </div>
-              {isLocalAuth && (
-                <p className="text-xs text-muted-foreground">
-                  {isHe ? "מצב לוקאלי — שינוי tier מיידי לצורכי בדיקה" : "Local mode — tier changes instantly for testing"}
-                </p>
-              )}
             </div>
 
             <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
