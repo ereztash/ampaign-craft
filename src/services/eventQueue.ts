@@ -49,7 +49,7 @@ export async function publishEvent(
   userId: string,
   options: PublishOptions = {}
 ): Promise<{ eventId: string | null; error?: string }> {
-  const { data, error } = await supabase.rpc("publish_event" as any, {
+  const { data, error } = await (supabase.rpc as any)("publish_event", {
     p_event_type: eventType,
     p_payload: payload,
     p_user_id: userId,
@@ -120,17 +120,18 @@ export async function getEventStatus(
 
   if (!data) return { event: null };
 
+  const row = data as any;
   return {
     event: {
-      id: data.id,
-      eventType: data.event_type,
-      payload: data.payload,
-      status: data.status,
-      attempts: data.attempts,
-      createdAt: data.created_at,
-      completedAt: data.completed_at,
-      error: data.error,
-      result: data.result,
+      id: row.id,
+      eventType: row.event_type,
+      payload: row.payload,
+      status: row.status,
+      attempts: row.attempts,
+      createdAt: row.created_at,
+      completedAt: row.completed_at,
+      error: row.error,
+      result: row.result,
     },
   };
 }

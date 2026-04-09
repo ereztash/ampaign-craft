@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useUserData } from "@/hooks/useUserData";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { toDifferentiationPrefill } from "@/types/profile";
@@ -20,8 +21,19 @@ const PageComponent = () => {
   const isHe = language === "he";
   const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
   const { profile } = useUserProfile();
+  const { saveDifferentiationResult, loadDifferentiationResults } = useUserData();
   const [view, setView] = useState<ViewState>("idle");
   const [result, setResult] = useState<DifferentiationResult | null>(null);
+
+  // Load last result from DB on mount
+  useEffect(() => {
+    loadDifferentiationResults().then((results) => {
+      if (results.length > 0) {
+        const lastResult = results[0].result || results[0];
+        setResult(lastResult as DifferentiationResult);
+      }
+    });
+  }, [loadDifferentiationResults]);
 
   const handleStart = () => {
     setView("wizard");
@@ -30,8 +42,8 @@ const PageComponent = () => {
   const handleComplete = (res: DifferentiationResult) => {
     setResult(res);
     setView("results");
-    // Persist for cross-module personalization (Sales + Content use this)
-    try { localStorage.setItem("funnelforge-differentiation-result", JSON.stringify(res)); } catch { /* ignore */ }
+    // Persist to DB + localStorage
+    saveDifferentiationResult({}, res as unknown as Record<string, unknown>);
   };
 
   const handleReset = () => {

@@ -110,7 +110,7 @@ function validateBudget(
   const budget = result.totalBudget;
   if (budget && formData.averagePrice) {
     const monthlyRevenue = formData.averagePrice * 10; // rough estimate
-    if (budget > monthlyRevenue * 3) {
+    if (typeof budget === "number" && budget > monthlyRevenue * 3) {
       addFinding(
         "budget", "warning",
         "תקציב השיווק המוצע גבוה מאוד ביחס למחיר המוצר",
@@ -146,7 +146,7 @@ function validateKPIs(
           k.name?.toLowerCase?.()?.includes("ctr") || k.label?.toLowerCase?.()?.includes("ctr")
         );
         if (ctr) {
-          const ctrValue = parseFloat(String(ctr.value || ctr.target || 0));
+          const ctrValue = parseFloat(String((ctr as any).value || (ctr as any).target || 0));
           if (ctrValue > 15) {
             addFinding(
               "kpi", "warning",
