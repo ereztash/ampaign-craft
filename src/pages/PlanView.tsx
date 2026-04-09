@@ -1,13 +1,16 @@
+
 import { useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { SavedPlan } from "@/types/funnel";
 import ResultsDashboard from "@/components/ResultsDashboard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertCircle } from "lucide-react";
 
-const PlanView = () => {
-  const { planId, tab } = useParams<{ planId: string; tab?: string }>();
+const PageComponent = () => {
+  const { planId } = useParams<{ planId: string }>();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") ?? undefined;
   const { language } = useLanguage();
   const isHe = language === "he";
   const navigate = useNavigate();
@@ -45,6 +48,6 @@ const PlanView = () => {
       onNewPlan={() => navigate("/wizard")}
     />
   );
-};
+}
 
-export default PlanView;
+export default PageComponent;

@@ -1,4 +1,6 @@
+
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
 import BackToHub from "@/components/BackToHub";
@@ -6,9 +8,8 @@ import SalesTab from "@/components/SalesTab";
 import { Button } from "@/components/ui/button";
 import { TrendingUp } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
-import { useNavigate } from "react-router-dom";
 
-const SalesEntry = () => {
+const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const navigate = useNavigate();
@@ -33,6 +34,6 @@ const SalesEntry = () => {
       </main>
     </div>
   );
-};
+}
 
-export default SalesEntry;
+export default PageComponent;

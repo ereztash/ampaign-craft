@@ -3,6 +3,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { assessChurnRisk } from "@/engine/churnPredictionEngine";
+import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +21,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
 
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
   const retention = useMemo(() => generateRetentionStrategy(result.formData, graph), [result.formData, graph]);
+  const churnRisk = useMemo(() => assessChurnRisk(result.formData), [result.formData]);
 
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -45,6 +48,9 @@ const RetentionGrowthTab = ({ result }: Props) => {
           <p className="text-sm text-muted-foreground flex-1" dir="auto">{retention.projectedImpact.additionalRevenue[language]}</p>
         </CardContent>
       </Card>
+
+      {/* Churn Prediction */}
+      <ChurnPredictionCard assessment={churnRisk} />
 
       {/* Onboarding Timeline */}
       <Card>

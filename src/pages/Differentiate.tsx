@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
@@ -12,7 +13,7 @@ import { motion } from "framer-motion";
 
 type ViewState = "idle" | "wizard" | "results";
 
-const Differentiate = () => {
+const PageComponent = () => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
   const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
@@ -98,6 +99,6 @@ const Differentiate = () => {
       />
     </div>
   );
-};
+}
 
-export default Differentiate;
+export default PageComponent;

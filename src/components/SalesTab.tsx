@@ -3,6 +3,10 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/engine/salesPipelineEngine";
 import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
+import { inferDISCProfile } from "@/engine/discProfileEngine";
+import { generateClosingStrategy } from "@/engine/neuroClosingEngine";
+import { DISCProfileCard } from "@/components/DISCProfileCard";
+import { NeuroClosingCard } from "@/components/NeuroClosingCard";
 import { DifferentiationResult } from "@/types/differentiation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +36,8 @@ const SalesTab = ({ result }: SalesTabProps) => {
   const pipeline = useMemo(() => generateSalesPipeline(result, graph), [result, graph]);
   const closingFrameworks = useMemo(() => getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c"), [pipeline.salesType, result.formData.audienceType]);
   const buyerPersonality = useMemo(() => detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [result.formData]);
+  const discProfile = useMemo(() => inferDISCProfile(result.formData, graph), [result.formData, graph]);
+  const neuroClosing = useMemo(() => generateClosingStrategy(discProfile, result.formData), [discProfile, result.formData]);
   const personalityProfile = BUYER_PERSONALITIES.find((p) => p.id === buyerPersonality)!;
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
@@ -61,6 +67,9 @@ const SalesTab = ({ result }: SalesTabProps) => {
           </p>
         </div>
       )}
+
+      {/* DISC Personality Profile */}
+      <DISCProfileCard profile={discProfile} />
 
       {/* Sales Type Badge */}
       <div className="flex items-center gap-3 flex-wrap">
@@ -300,6 +309,9 @@ const SalesTab = ({ result }: SalesTabProps) => {
           ))}
         </CardContent>
       </Card>
+
+      {/* ═══ DISC-Based Neuro-Closing Strategy ═══ */}
+      <NeuroClosingCard strategy={neuroClosing} />
 
       {/* ═══ Section 7: Closing Tips ═══ */}
       <Collapsible open={tipsOpen} onOpenChange={setTipsOpen}>

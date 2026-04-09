@@ -41,16 +41,18 @@ interface LocalUserRecord {
 }
 
 function getLocalUsers(): LocalUserRecord[] {
+  if (typeof window === "undefined") return [];
   try {
     return JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || "[]");
   } catch { return []; }
 }
 
 function saveLocalUsers(users: LocalUserRecord[]) {
-  localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+  typeof window !== "undefined" && localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
 }
 
 function getLocalSession(): { userId: string; email: string } | null {
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(LOCAL_SESSION_KEY);
     return raw ? JSON.parse(raw) : null;
@@ -59,9 +61,9 @@ function getLocalSession(): { userId: string; email: string } | null {
 
 function setLocalSession(session: { userId: string; email: string } | null) {
   if (session) {
-    localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
+    typeof window !== "undefined" && localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
   } else {
-    localStorage.removeItem(LOCAL_SESSION_KEY);
+    typeof window !== "undefined" && localStorage.removeItem(LOCAL_SESSION_KEY);
   }
 }
 
@@ -131,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (s?.user && !cancelled) {
             setUser({ id: s.user.id, email: s.user.email || "", displayName: s.user.email?.split("@")[0] || "" });
             // Fetch tier from profile
-            const { data: profile } = await supabase.from("profiles").select("display_name").eq("id", s.user.id).single();
+            const { data: profile } = await ((supabase as any).from("profiles")).select("display_name").eq("id", s.user.id).single();
             if (profile?.display_name === "pro" || profile?.display_name === "business") {
               setTierState(profile.display_name);
             }
@@ -142,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (cancelled) return;
             if (sess?.user) {
               setUser({ id: sess.user.id, email: sess.user.email || "", displayName: sess.user.email?.split("@")[0] || "" });
-              const { data: prof } = await supabase.from("profiles").select("display_name").eq("id", sess.user.id).single();
+              const { data: prof } = await ((supabase as any).from("profiles")).select("display_name").eq("id", sess.user.id).single();
               if (prof?.display_name === "pro" || prof?.display_name === "business") {
                 setTierState(prof.display_name);
               }
@@ -188,7 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) return { error: error.message };
         const { data: { user: newUser } } = await supabase.auth.getUser();
         if (newUser) {
-          await supabase.from("profiles").upsert({ id: newUser.id, display_name: email.split("@")[0], visit_count: 1 });
+          await ((supabase as any).from("profiles")).upsert({ id: newUser.id, display_name: email.split("@")[0], visit_count: 1 });
         }
         return { error: null };
       } catch (err) {

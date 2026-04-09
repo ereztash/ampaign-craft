@@ -19,6 +19,33 @@ export interface PlanTemplate {
   planData?: SavedPlan;
 }
 
+interface PlanTemplateRow {
+  id: string;
+  author_id: string;
+  plan_id: string;
+  title: string;
+  description: string;
+  business_field: string;
+  main_goal: string;
+  budget_range: string;
+  upvotes: number;
+  use_count: number;
+  is_public: boolean;
+  created_at: string;
+}
+
+type AdhocSingle = Promise<{ data: PlanTemplateRow | null; error: unknown }>;
+type AdhocQuery = Promise<{ data: PlanTemplateRow[] | null; error: unknown }> & {
+  eq(column: string, value: unknown): AdhocQuery;
+  order(column: string, options: { ascending: boolean }): AdhocQuery;
+};
+type AdhocFrom = (table: string) => {
+  select(cols: string): AdhocQuery;
+  insert(data: Record<string, unknown>): { select(): { single(): AdhocSingle } };
+  update(data: Record<string, unknown>): AdhocQuery;
+};
+const adhocFrom = (supabase as unknown as { from: AdhocFrom }).from.bind(supabase);
+
 export function useTemplateMarketplace() {
   const { user } = useAuth();
   const [templates, setTemplates] = useState<PlanTemplate[]>([]);
@@ -30,7 +57,7 @@ export function useTemplateMarketplace() {
     budgetRange?: string;
   }) => {
     setLoading(true);
-    let query = (supabase.from as any)("plan_templates")
+    let query = adhocFrom("plan_templates")
       .select("*")
       .eq("is_public", true)
       .order("upvotes", { ascending: false });
@@ -41,7 +68,7 @@ export function useTemplateMarketplace() {
 
     const { data } = await query;
     if (data) {
-      setTemplates((data as any[]).map((r: any) => ({
+      setTemplates(data.map((r) => ({
         id: r.id,
         authorId: r.author_id,
         planId: r.plan_id,
@@ -66,7 +93,7 @@ export function useTemplateMarketplace() {
   ) => {
     if (!user) return null;
 
-    const { data } = await (supabase.from as any)("plan_templates").insert({
+    const { data } = await adhocFrom("plan_templates").insert({
       author_id: user.id,
       plan_id: plan.id,
       title,
@@ -87,7 +114,7 @@ export function useTemplateMarketplace() {
     try {
       const current = templates.find((t) => t.id === templateId);
       if (current) {
-        await (supabase.from as any)("plan_templates")
+        await adhocFrom("plan_templates")
           .update({ upvotes: current.upvotes + 1 })
           .eq("id", templateId);
       }
@@ -104,11 +131,11 @@ export function useTemplateMarketplace() {
     const template = templates.find((t) => t.id === templateId);
     if (!template) return null;
 
-    await (supabase.from as any)("plan_templates")
+    await adhocFrom("plan_templates")
       .update({ use_count: template.useCount + 1 })
       .eq("id", templateId);
 
-    const { data } = await supabase.from("saved_plans")
+    const { data } = await ((supabase as any).from("saved_plans"))
       .select("result")
       .eq("id", template.planId)
       .single();

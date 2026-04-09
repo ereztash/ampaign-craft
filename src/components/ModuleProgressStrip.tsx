@@ -20,9 +20,9 @@ const ModuleProgressStrip = () => {
   const { language, isRTL } = useLanguage();
   const modules = useModuleStatus();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
 
-  const currentModuleId = ROUTE_TO_MODULE[location.pathname];
+  const currentModuleId = ROUTE_TO_MODULE[pathname];
 
   // Only show inside module pages (not on hub/plans/profile)
   if (!currentModuleId) return null;
@@ -39,7 +39,7 @@ const ModuleProgressStrip = () => {
             return (
               <div key={mod.id} className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}>
                 <button
-                  onClick={() => navigate(mod.route)}
+                  onClick={() => navigate("/growth" + mod.route)}
                   title={mod.label[language]}
                   aria-label={`${mod.label[language]} ${isCompleted ? "✓" : ""}`}
                   aria-current={isCurrent ? "step" : undefined}

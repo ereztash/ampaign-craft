@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { TabConfig } from "@/lib/adaptiveTabRules";
+import { TranslationKey } from "@/i18n/translations";
 import { BarChart3, FileText, TrendingUp } from "lucide-react";
 
 interface AdaptiveTabNavProps {
@@ -51,7 +52,7 @@ const AdaptiveTabNav = ({ tabs }: AdaptiveTabNavProps) => {
               }`}
             >
               <Icon className={`h-4 w-4 ${isActive ? group.color : ""}`} />
-              {t(group.labelKey as any)}
+              {t(group.labelKey as TranslationKey)}
               {group.tabs.some((tab) => tab.badge) && (
                 <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               )}
@@ -68,7 +69,7 @@ const AdaptiveTabNav = ({ tabs }: AdaptiveTabNavProps) => {
             value={tab.id}
             className="relative shrink-0 gap-1.5 text-xs sm:text-sm"
           >
-            {t(tab.labelKey as any)}
+            {t(tab.labelKey as TranslationKey)}
             {tab.badge && (
               <Badge
                 variant="secondary"

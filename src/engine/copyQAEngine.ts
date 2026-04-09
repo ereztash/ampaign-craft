@@ -3,15 +3,18 @@
 // Cross-domain: NLP × Behavioral Science × Neuroscience
 // ═══════════════════════════════════════════════
 
+import { analyzeAIDetection, type AIDetectionScore } from "./perplexityBurstiness";
+
 export interface CopyQAResult {
   score: number; // 0-100
   risks: CopyRisk[];
   strengths: string[];
   suggestions: { he: string; en: string }[];
+  aiDetection?: AIDetectionScore;
 }
 
 export interface CopyRisk {
-  type: "cortisol_overload" | "entropy_collapse" | "reactance" | "persona_mismatch" | "weak_cta" | "no_proof";
+  type: "cortisol_overload" | "entropy_collapse" | "reactance" | "persona_mismatch" | "weak_cta" | "no_proof" | "ai_detected";
   severity: "high" | "medium" | "low";
   message: { he: string; en: string };
   fix: { he: string; en: string };
@@ -128,6 +131,27 @@ export function analyzeCopy(text: string, targetPersona: "system1" | "system2" |
     score += 5;
   }
 
+  // === AI Detection Risk (SOTA² P&B Analysis) ===
+  const aiDetection = analyzeAIDetection(text);
+  if (aiDetection.humanScore < 30) {
+    risks.push({
+      type: "ai_detected", severity: "high",
+      message: { he: `ציון אנושיות נמוך (${aiDetection.humanScore}/100) — הטקסט נראה מיוצר ע\"י AI`, en: `Low humanness score (${aiDetection.humanScore}/100) — text appears AI-generated` },
+      fix: { he: "הגדל שונות באורכי משפטים, השתמש במילים פחות צפויות, והוסף מעברי טון טבעיים", en: "Increase sentence length variation, use less predictable words, and add natural tone shifts" },
+    });
+    score -= 10;
+  } else if (aiDetection.humanScore < 50) {
+    risks.push({
+      type: "ai_detected", severity: "medium",
+      message: { he: `ציון אנושיות בינוני (${aiDetection.humanScore}/100) — ייתכן שהטקסט יזוהה כ-AI`, en: `Medium humanness score (${aiDetection.humanScore}/100) — text may be flagged as AI` },
+      fix: { he: "שפר תנודתיות משפטים והוסף ביטויים ייחודיים", en: "Improve sentence variation and add unique expressions" },
+    });
+    score -= 5;
+  } else if (aiDetection.humanScore >= 70) {
+    strengths.push("human_authentic");
+    score += 5;
+  }
+
   // Clamp
   score = Math.max(0, Math.min(100, score));
 
@@ -143,5 +167,10 @@ export function analyzeCopy(text: string, targetPersona: "system1" | "system2" |
     );
   }
 
-  return { score, risks, strengths, suggestions };
+  // Add AI detection tips to suggestions
+  for (const tip of aiDetection.tips) {
+    suggestions.push(tip);
+  }
+
+  return { score, risks, strengths, suggestions, aiDetection };
 }

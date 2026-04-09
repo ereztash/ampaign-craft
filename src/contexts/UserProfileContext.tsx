@@ -56,6 +56,7 @@ const KEYS = {
 // ═══════════════════════════════════════════════
 
 function safeParseJson<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
@@ -128,7 +129,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setIsReturningUser(isReturning);
 
     // Persist updated visit info
-    localStorage.setItem(
+    typeof window !== "undefined" && localStorage.setItem(
       KEYS.userProfile,
       JSON.stringify({ visitCount: newVisitCount, lastVisitDate: new Date().toISOString() })
     );
@@ -162,7 +163,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const persistFormData = useCallback((data: FormData) => {
-    localStorage.setItem(KEYS.lastForm, JSON.stringify(data));
+    typeof window !== "undefined" && localStorage.setItem(KEYS.lastForm, JSON.stringify(data));
     setLastFormData(data);
   }, []);
 
@@ -170,7 +171,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setAchievements((prev) => {
       if (prev.includes(id)) return prev;
       const updated = [...prev, id];
-      localStorage.setItem(KEYS.achievements, JSON.stringify(updated));
+      typeof window !== "undefined" && localStorage.setItem(KEYS.achievements, JSON.stringify(updated));
       return updated;
     });
   }, []);

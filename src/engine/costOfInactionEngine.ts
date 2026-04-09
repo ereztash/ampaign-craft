@@ -5,6 +5,12 @@
 
 import { FunnelResult, FormData } from "@/types/funnel";
 
+export interface CompoundingLoss {
+  threeMonth: number;
+  sixMonth: number;
+  twelveMonth: number;
+}
+
 export interface CostOfInaction {
   monthlyWaste: number;       // ₪ wasted per month
   annualWaste: number;        // ₪ wasted per year
@@ -14,6 +20,8 @@ export interface CostOfInaction {
   comparisonMessage: { he: string; en: string };
   urgencyMessage: { he: string; en: string };
   improvementPercent: number;
+  competitorGapMessage: { he: string; en: string };
+  compoundingLoss: CompoundingLoss;
 }
 
 const WASTE_RATES: Record<string, number> = {
@@ -46,6 +54,14 @@ export function calculateCostOfInaction(result: FunnelResult): CostOfInaction {
 
   const formatNIS = (n: number) => `₪${n.toLocaleString()}`;
 
+  // Compounding loss over horizons (loss accelerates as competitors improve)
+  const compoundRate = 1.05; // 5% monthly compounding from competitor improvement
+  const compoundingLoss: CompoundingLoss = {
+    threeMonth: Math.round(monthlyWaste * ((Math.pow(compoundRate, 3) - 1) / (compoundRate - 1))),
+    sixMonth: Math.round(monthlyWaste * ((Math.pow(compoundRate, 6) - 1) / (compoundRate - 1))),
+    twelveMonth: Math.round(monthlyWaste * ((Math.pow(compoundRate, 12) - 1) / (compoundRate - 1))),
+  };
+
   return {
     monthlyWaste,
     annualWaste,
@@ -64,6 +80,11 @@ export function calculateCostOfInaction(result: FunnelResult): CostOfInaction {
       he: `כל שבוע של עיכוב = ~${formatNIS(Math.round(monthlyWaste / 4))} שנשרפים. ההפסד מצטבר`,
       en: `Every week of delay = ~${formatNIS(Math.round(monthlyWaste / 4))} burned. The loss compounds`,
     },
+    competitorGapMessage: {
+      he: `בזמן שאתה מהסס, המתחרים שלך בתחום ה${getFieldNameHe(field)} כבר מטמיעים — הפער גדל ב-5% כל חודש. עוד 6 חודשים = ${formatNIS(compoundingLoss.sixMonth)} הפסד מצטבר`,
+      en: `While you hesitate, your ${field} competitors are already implementing — the gap grows 5% monthly. In 6 months = ${formatNIS(compoundingLoss.sixMonth)} cumulative loss`,
+    },
+    compoundingLoss,
   };
 }
 

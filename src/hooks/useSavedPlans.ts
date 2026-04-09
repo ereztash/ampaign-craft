@@ -29,11 +29,11 @@ export function useSavedPlans() {
 
     if (user) {
       // Try Supabase first
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("saved_plans")
         .select("*")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false }) as { data: any[] | null; error: any };
 
       if (!error && data) {
         const supaPlans: SavedPlan[] = data.map((row) => ({
@@ -51,7 +51,7 @@ export function useSavedPlans() {
           if (newPlans.length > 0) {
             await Promise.all(
               newPlans.map((p) =>
-                supabase.from("saved_plans").insert([{
+                ((supabase as any).from("saved_plans")).insert([{
                   id: p.id,
                   user_id: user.id,
                   name: p.name,
@@ -88,7 +88,7 @@ export function useSavedPlans() {
       };
 
       if (user) {
-        await supabase.from("saved_plans").insert([{
+        await ((supabase as any).from("saved_plans")).insert([{
           id: plan.id,
           user_id: user.id,
           name: plan.name,
@@ -111,7 +111,7 @@ export function useSavedPlans() {
   const deletePlan = useCallback(
     async (id: string) => {
       if (user) {
-        await supabase.from("saved_plans").delete().eq("id", id).eq("user_id", user.id);
+        await ((supabase as any).from("saved_plans")).delete().eq("id", id).eq("user_id", user.id);
       }
 
       const local = loadLocal().filter((p) => p.id !== id);

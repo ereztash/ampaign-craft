@@ -4,6 +4,8 @@
  * Produces a clone-ready system prompt for generating content in the user's voice.
  */
 
+import { calculateBurstiness, calculatePerplexity, analyzeRegisterShifts } from "./perplexityBurstiness";
+
 export interface StylomeProfile {
   // Quantitative metrics
   metrics: {
@@ -13,6 +15,9 @@ export interface StylomeProfile {
     codeMixingIndex: number;    // % of non-Hebrew words
     dugriScore: number;         // 0-1 assertiveness scale
     lexicalDiversity: number;   // TTR (Type-Token Ratio)
+    burstiness: number;         // 0-100 sentence length variation (higher = more varied)
+    perplexityEstimate: number; // 0-100 lexical surprise (higher = more unexpected)
+    registerShiftCount: number; // Number of register transitions in text
   };
   // Qualitative features
   style: {
@@ -157,6 +162,11 @@ export function analyzeSamples(samples: StylomeSample[]): StylomeProfile {
   const uniqueWords = new Set(allWords.map((w) => w.toLowerCase()));
   const lexicalDiversity = uniqueWords.size / Math.max(totalWords, 1);
 
+  // Perplexity & Burstiness (SOTA² metrics)
+  const pbBurstiness = calculateBurstiness(allText);
+  const pbPerplexity = calculatePerplexity(allText);
+  const pbRegisterShifts = analyzeRegisterShifts(allText);
+
   // Qualitative
   const register = detectRegister(allText);
   const cognitiveStyle = detectCognitiveStyle(allText);
@@ -197,6 +207,9 @@ export function analyzeSamples(samples: StylomeSample[]): StylomeProfile {
       codeMixingIndex: Math.round(codeMixingIndex * 10) / 10,
       dugriScore: Math.round(dugriScore * 100) / 100,
       lexicalDiversity: Math.round(lexicalDiversity * 100) / 100,
+      burstiness: pbBurstiness.overallBurstiness,
+      perplexityEstimate: pbPerplexity.lexicalSurprise,
+      registerShiftCount: pbRegisterShifts.shiftCount,
     },
     style: { register, cognitiveStyle, humor, emotionalIntensity, metaphorDomains },
     patterns: { topPhrases, pragmaticMarkers, preferredOpeners, closingStyle },
@@ -250,6 +263,11 @@ function generateSystemPrompt(profile: StylomeProfile): string {
 - ערבוב שפות: ${metrics.codeMixingIndex}% (${metrics.codeMixingIndex > 10 ? "משלב הרבה מונחים באנגלית" : metrics.codeMixingIndex > 3 ? "משלב מונחים מקצועיים באנגלית" : "כותב בעיקר בעברית"})
 - ${markers}
 - ${metaphors}
+
+## תנודתיות ומגוון (Anti-AI Fingerprint)
+- ציון תנודתיות (Burstiness): ${metrics.burstiness}/100 — ${metrics.burstiness > 60 ? "שמור על שונות גבוהה באורכי משפטים" : metrics.burstiness > 30 ? "הגדל שונות באורכי משפטים" : "חייב לגוון דרמטית בין משפטים קצרים לארוכים"}
+- ציון הפתעה לשונית: ${metrics.perplexityEstimate}/100 — ${metrics.perplexityEstimate > 60 ? "השתמש במילים מפתיעות כמו הכותב" : "הוסף מילים פחות צפויות ומונחים ייחודיים"}
+${metrics.registerShiftCount > 0 ? `- מעברי רגיסטר: ${metrics.registerShiftCount} — שלב מעברי טון טבעיים בין פורמלי ללא-פורמלי` : "- כתיבה ברגיסטר אחיד — שמור על עקביות"}
 
 ## כללים
 - ${patterns.closingStyle}

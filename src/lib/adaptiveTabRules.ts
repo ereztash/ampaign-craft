@@ -106,7 +106,7 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
     {
       id: "retention",
       labelKey: "tabRetention",
-      visible: formData.salesModel === "subscription" || formData.mainGoal === "loyalty",
+      visible: true,
       priority: formData.salesModel === "subscription" ? 13 : formData.mainGoal === "loyalty" ? 15 : 45,
       simplifiedMode: isBeginner,
       group: "growth",

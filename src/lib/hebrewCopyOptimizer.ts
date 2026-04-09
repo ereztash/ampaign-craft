@@ -3,12 +3,14 @@
 // Cross-domain: Linguistics × Culture × Neuroscience
 // ═══════════════════════════════════════════════
 
+import { calculateBurstiness, calculatePerplexity, analyzeRegisterShifts } from "@/engine/perplexityBurstiness";
+
 export interface HebrewCopyRule {
   id: string;
   name: { he: string; en: string };
   description: { he: string; en: string };
   example: { he: string; en: string };
-  category: "directness" | "trust" | "emotion" | "formality" | "cultural";
+  category: "directness" | "trust" | "emotion" | "formality" | "cultural" | "stylometry";
   emoji: string;
 }
 
@@ -65,6 +67,33 @@ const HEBREW_RULES: HebrewCopyRule[] = [
     name: { he: "מודעות מגדרית בעברית", en: "Hebrew Gender Awareness" },
     description: { he: "עברית היא שפה מגדרית. פנייה בגוף שני נקבה/זכר משפיעה על תחושת הרלוונטיות", en: "Hebrew is gendered. Addressing in female/male 2nd person affects perceived relevance" },
     example: { he: "✅ 'רוצה/רוצה לגלות...' (אם לא יודעים מגדר) או פנייה ממוקדת לפי קהל היעד", en: "✅ Use inclusive forms or target by audience gender for maximum relevance" },
+  },
+  // ═══════════════════════════════════════════════
+  // SOTA² Stylometry Rules
+  // ═══════════════════════════════════════════════
+  {
+    id: "burstiness", category: "stylometry", emoji: "📊",
+    name: { he: "תנודתיות משפטים (Burstiness)", en: "Sentence Burstiness" },
+    description: { he: "טקסט אנושי מאופיין בשונות גבוהה באורכי משפטים — משפטים קצרים ופאנצ'יים לצד משפטים מורכבים. AI כותב באחידות חשודה", en: "Human text has high variance in sentence lengths — short punchy sentences alongside complex ones. AI writes with suspicious uniformity" },
+    example: { he: "✅ 'תעצור. חשוב על זה רגע. כי מה שאני עומד לספר לך עכשיו ישנה לחלוטין את הדרך שבה אתה מסתכל על השיווק הדיגיטלי של העסק שלך.' — שונות טבעית", en: "✅ 'Stop. Think about it. Because what I'm about to tell you will completely change how you look at your business's digital marketing.' — natural variation" },
+  },
+  {
+    id: "lexical_surprise", category: "stylometry", emoji: "🎲",
+    name: { he: "הפתעה לשונית (Lexical Surprise)", en: "Lexical Surprise" },
+    description: { he: "בני אדם בוחרים מילים מפתיעות ולא צפויות. AI נוטה למילים סטטיסטית 'בטוחות'. שלב מונחים ייחודיים, סלנג מקצועי וביטויים לא שגרתיים", en: "Humans choose surprising, unexpected words. AI tends toward statistically 'safe' words. Mix unique terms, industry jargon, and unusual expressions" },
+    example: { he: "❌ 'פתרון מצוין לבעיה' → ✅ 'תרופת פלא לכאב הראש התפעולי הזה' — מילים מפתיעות עוקפות ספקנות", en: "❌ 'An excellent solution' → ✅ 'A wonder drug for this operational headache' — surprising words bypass skepticism" },
+  },
+  {
+    id: "register_consistency", category: "stylometry", emoji: "🎭",
+    name: { he: "עקביות רגיסטר עם מעברים טבעיים", en: "Register Consistency with Natural Shifts" },
+    description: { he: "שמור על רגיסטר עקבי אבל הוסף מעברי טון טבעיים — למשל משפט רשמי ואז תגובה לא-פורמלית. AI שומר על רגיסטר אחיד מדי", en: "Maintain consistent register but add natural tone shifts — e.g., a formal statement followed by an informal reaction. AI keeps register too uniform" },
+    example: { he: "✅ 'המחקר מצביע על שיפור של 47% בהמרות. בקיצור? זה עובד.' — מעבר טבעי מרשמי לישיר", en: "✅ 'Research indicates a 47% conversion improvement. Bottom line? It works.' — natural shift from formal to direct" },
+  },
+  {
+    id: "morphological_complexity", category: "stylometry", emoji: "🔤",
+    name: { he: "מורכבות מורפולוגית עברית", en: "Hebrew Morphological Complexity" },
+    description: { he: "עברית מאפשרת דחיסה מורפולוגית ייחודית (ב-, כ-, ל-, מ-). שימוש מגוון בבניינים ותבניות מורפולוגיות מייצר טקסט עשיר ואותנטי", en: "Hebrew allows unique morphological compression (prefix particles). Varied use of verb stems and morphological patterns creates rich, authentic text" },
+    example: { he: "✅ 'שהתמקצעתם' (בניין התפעל + כינוי גוף) לעומת ❌ 'שאתם הפכתם למקצועיים' — דחיסה עברית אותנטית", en: "✅ Compressed Hebrew morphology vs ❌ Expanded, translated-sounding phrasing — authentic Hebrew compression" },
   },
 ];
 
@@ -128,6 +157,59 @@ export function scoreHebrewCopy(text: string): HebrewCopyScore {
   const priceScore = hasPriceFrame ? 12 : 5;
   breakdown.push({ rule: "price_framing", score: priceScore, tip: { he: hasPriceFrame ? "מסגור מחיר חכם!" : "מסגר את המחיר יחסית: 'פחות מקפה ביום' / 'חוסך ₪X'", en: hasPriceFrame ? "Smart price framing!" : "Frame price relatively: 'less than coffee/day' / 'saves ₪X'" } });
   total += priceScore;
+
+  // ═══════════════════════════════════════════════
+  // SOTA² Stylometry Scoring
+  // ═══════════════════════════════════════════════
+
+  // Burstiness: sentence length variation
+  const burstinessResult = calculateBurstiness(text);
+  const burstinessScore = burstinessResult.overallBurstiness >= 50 ? 8
+    : burstinessResult.overallBurstiness >= 30 ? 5 : 2;
+  breakdown.push({ rule: "burstiness", score: burstinessScore, tip: {
+    he: burstinessResult.overallBurstiness >= 50 ? "תנודתיות טבעית — משפטים מגוונים!" : "שנה אורכי משפטים — חלופה בין קצרים (3-8 מילים) לארוכים תייצר תחושה אנושית",
+    en: burstinessResult.overallBurstiness >= 50 ? "Natural burstiness — varied sentences!" : "Vary sentence lengths — alternate short (3-8 words) and long for a human feel",
+  }});
+  total += burstinessScore;
+
+  // Lexical surprise: unexpected word choices
+  const perplexityResult = calculatePerplexity(text);
+  const surpriseScore = perplexityResult.lexicalSurprise >= 50 ? 8
+    : perplexityResult.lexicalSurprise >= 30 ? 5 : 2;
+  breakdown.push({ rule: "lexical_surprise", score: surpriseScore, tip: {
+    he: perplexityResult.lexicalSurprise >= 50 ? "מגוון מילוני עשיר!" : "הוסף מילים פחות צפויות — סלנג מקצועי, ביטויים ייחודיים",
+    en: perplexityResult.lexicalSurprise >= 50 ? "Rich lexical diversity!" : "Add less predictable words — industry jargon, unique phrases",
+  }});
+  total += surpriseScore;
+
+  // Register consistency with natural shifts
+  const registerResult = analyzeRegisterShifts(text);
+  const regScore = registerResult.shiftCount >= 1 && registerResult.shiftCount <= 3 ? 8
+    : registerResult.shiftCount === 0 ? 4 : 3;
+  breakdown.push({ rule: "register_consistency", score: regScore, tip: {
+    he: registerResult.shiftCount >= 1 && registerResult.shiftCount <= 3
+      ? "מעברי טון טבעיים!"
+      : registerResult.shiftCount === 0
+        ? "הוסף מעבר טון — משפט רשמי ואז תגובה ישירה"
+        : "יותר מדי מעברי טון — שמור על עקביות בסיסית",
+    en: registerResult.shiftCount >= 1 && registerResult.shiftCount <= 3
+      ? "Natural tone shifts!"
+      : registerResult.shiftCount === 0
+        ? "Add a tone shift — formal statement then direct reaction"
+        : "Too many tone shifts — maintain basic consistency",
+  }});
+  total += regScore;
+
+  // Morphological complexity: Hebrew-specific compression patterns
+  const morphPatterns = /ש[א-ת]{2,}תם|ש[א-ת]{2,}נו|ב[א-ת]{3,}|כש[א-ת]{2,}|מ[א-ת]{2,}ים|ה[א-ת]{2,}ות/g;
+  const morphMatches = text.match(morphPatterns) || [];
+  const morphRatio = morphMatches.length / Math.max(sentences.length, 1);
+  const morphScore = morphRatio >= 0.5 ? 8 : morphRatio >= 0.2 ? 5 : 2;
+  breakdown.push({ rule: "morphological_complexity", score: morphScore, tip: {
+    he: morphRatio >= 0.5 ? "שימוש מצוין בדחיסה מורפולוגית עברית!" : "השתמש יותר בדחיסה עברית — 'שהתמקצעתם' במקום 'שאתם הפכתם למקצועיים'",
+    en: morphRatio >= 0.5 ? "Excellent use of Hebrew morphological compression!" : "Use more Hebrew compression — compact morphology instead of expanded phrasing",
+  }});
+  total += morphScore;
 
   return { total: Math.min(total, 100), breakdown };
 }
