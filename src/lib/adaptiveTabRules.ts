@@ -1,3 +1,4 @@
+import { BusinessFingerprint } from "@/engine/businessFingerprintEngine";
 import { FunnelResult } from "@/types/funnel";
 import { UserProfile } from "@/contexts/UserProfileContext";
 
@@ -126,4 +127,27 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
   return tabs
     .filter((tab) => tab.visible)
     .sort((a, b) => a.priority - b.priority);
+}
+
+export function getTabConfigFromFingerprint(fp: BusinessFingerprint): TabConfig[] {
+  const isSimple = fp.ux.complexity === "simple";
+  const isAdvanced = fp.ux.complexity === "advanced";
+  const showBrandDna = fp.archetype === "creator-economy" || fp.archetype === "local-b2c-service";
+
+  const isEmphasis = (id: string) => fp.ux.emphasisTabs.includes(id);
+  const isSimplified = (id: string) => fp.ux.simplifiedTabs.includes(id);
+
+  const tabs: TabConfig[] = [
+    { id: "strategy", labelKey: "tabStrategy", visible: true, priority: 10, group: "strategy" },
+    { id: "planning", labelKey: "tabPlanning", visible: true, priority: isEmphasis("planning") ? 12 : 30, badge: isEmphasis("planning") ? { he: "מומלץ", en: "Key" } : undefined, group: "strategy" },
+    { id: "content", labelKey: "tabContent", visible: true, priority: isEmphasis("content") ? 15 : 50, badge: isEmphasis("content") ? { he: "מומלץ", en: "Key" } : undefined, simplifiedMode: isSimplified("content"), group: "content" },
+    { id: "analytics", labelKey: "tabAnalytics", visible: true, priority: isAdvanced ? 8 : isSimple ? 55 : 60, badge: isAdvanced ? { he: "מומלץ", en: "Key" } : undefined, simplifiedMode: isSimplified("analytics"), group: "strategy" },
+    { id: "branddna", labelKey: "tabBrandDna", visible: showBrandDna, priority: isEmphasis("branddna") ? 12 : 70, badge: isEmphasis("branddna") ? { he: "מומלץ", en: "Recommended" } : undefined, simplifiedMode: isSimplified("branddna"), group: "content" },
+    { id: "sales", labelKey: "tabSales", visible: true, priority: isEmphasis("sales") ? 12 : 35, badge: isEmphasis("sales") ? { he: "מומלץ", en: "Key" } : undefined, simplifiedMode: isSimplified("sales"), group: "growth" },
+    { id: "pricing", labelKey: "tabPricing", visible: true, priority: isEmphasis("pricing") ? 14 : 40, simplifiedMode: isSimplified("pricing"), group: "growth" },
+    { id: "retention", labelKey: "tabRetention", visible: true, priority: isEmphasis("retention") ? 13 : 45, simplifiedMode: isSimplified("retention"), group: "growth" },
+    { id: "stylome", labelKey: "tabStylome", visible: true, priority: isSimple ? 52 : isAdvanced ? 45 : 56, simplifiedMode: isSimplified("stylome"), group: "content" },
+  ];
+
+  return tabs.filter((tab) => tab.visible).sort((a, b) => a.priority - b.priority);
 }

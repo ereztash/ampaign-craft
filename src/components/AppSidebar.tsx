@@ -14,7 +14,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, FileText, UserCircle } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle } from "lucide-react";
 
 const AppSidebar = () => {
   const { t, isRTL } = useLanguage();
@@ -71,6 +71,14 @@ const AppSidebar = () => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/dashboard")} tooltip={t("navDashboard")}>
+                  <NavLink to="/dashboard">
+                    <BarChart3 />
+                    <span>{t("navDashboard")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={nav("/plans")} tooltip={t("navSavedPlans")}>
                   <NavLink to="/plans">
                     <FileText />
@@ -99,6 +107,30 @@ const AppSidebar = () => {
                   <NavLink to="/wizard">
                     <span className="font-mono text-xs w-4 text-center">2</span>
                     <span>{t("navWizard")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/sales")} tooltip={t("navSales")}>
+                  <NavLink to="/sales">
+                    <span className="font-mono text-xs w-4 text-center">3</span>
+                    <span>{t("navSales")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/pricing")} tooltip={t("navPricing")}>
+                  <NavLink to="/pricing">
+                    <span className="font-mono text-xs w-4 text-center">4</span>
+                    <span>{t("navPricing")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/retention")} tooltip={t("navRetention")}>
+                  <NavLink to="/retention">
+                    <span className="font-mono text-xs w-4 text-center">5</span>
+                    <span>{t("navRetention")}</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

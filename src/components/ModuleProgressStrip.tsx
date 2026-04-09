@@ -39,7 +39,7 @@ const ModuleProgressStrip = () => {
             return (
               <div key={mod.id} className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}>
                 <button
-                  onClick={() => navigate("/growth" + mod.route)}
+                  onClick={() => navigate(mod.route)}
                   title={mod.label[language]}
                   aria-label={`${mod.label[language]} ${isCompleted ? "✓" : ""}`}
                   aria-current={isCurrent ? "step" : undefined}

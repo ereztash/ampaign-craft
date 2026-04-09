@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { useUserData } from "@/hooks/useUserData";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { toDifferentiationPrefill } from "@/types/profile";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { DifferentiationResult } from "@/types/differentiation";
 import DifferentiationWizard from "@/components/DifferentiationWizard";
@@ -18,6 +20,7 @@ const PageComponent = () => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
   const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
+  const { profile } = useUserProfile();
   const { saveDifferentiationResult, loadDifferentiationResults } = useUserData();
   const [view, setView] = useState<ViewState>("idle");
   const [result, setResult] = useState<DifferentiationResult | null>(null);
@@ -95,7 +98,11 @@ const PageComponent = () => {
         )}
 
         {view === "wizard" && (
-          <DifferentiationWizard onComplete={handleComplete} onBack={handleReset} />
+          <DifferentiationWizard
+            onComplete={handleComplete}
+            onBack={handleReset}
+            initialPrefill={profile.unifiedProfile ? toDifferentiationPrefill(profile.unifiedProfile) : undefined}
+          />
         )}
 
         {view === "results" && result && (

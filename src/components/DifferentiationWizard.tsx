@@ -18,16 +18,20 @@ import { ChevronLeft, ChevronRight, Loader2, Sparkles, AlertCircle, CheckCircle2
 interface DifferentiationWizardProps {
   onComplete: (result: DifferentiationResult) => void;
   onBack: () => void;
+  initialPrefill?: Partial<DifferentiationFormData>;
 }
 
-const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProps) => {
+const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: DifferentiationWizardProps) => {
   const { t, language, isRTL } = useLanguage();
   const reducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
   const isHe = language === "he";
 
   const [phaseIndex, setPhaseIndex] = useState(0);
-  const [formData, setFormData] = useState<DifferentiationFormData>(initialDifferentiationFormData);
+  const [formData, setFormData] = useState<DifferentiationFormData>({
+    ...initialDifferentiationFormData,
+    ...initialPrefill,
+  });
   const [direction, setDirection] = useState(1);
   const [aiResults, setAiResults] = useState<AiResults>({});
   const [aiLoading, setAiLoading] = useState(false);

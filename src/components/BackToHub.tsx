@@ -19,7 +19,7 @@ const ROUTE_TO_MODULE: Record<string, string> = {
 const BackToHub = ({ currentPage }: BackToHubProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isHe = language === "he";
   const Separator = isHe ? ChevronLeft : ChevronRight;
   const modules = useModuleStatus();
@@ -40,7 +40,7 @@ const BackToHub = ({ currentPage }: BackToHubProps) => {
           className="gap-1.5 text-muted-foreground hover:text-foreground h-7 px-2"
         >
           <Home className="h-3.5 w-3.5" />
-          {isHe ? "מרכז" : "Hub"}
+          {t("navCommandCenter")}
         </Button>
         {currentPage && (
           <>
@@ -59,7 +59,7 @@ const BackToHub = ({ currentPage }: BackToHubProps) => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/growth" + prevModule.route)}
+              onClick={() => navigate(prevModule.route)}
               className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs gap-1"
             >
               {isHe ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
@@ -70,7 +70,7 @@ const BackToHub = ({ currentPage }: BackToHubProps) => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/growth" + nextModule.route)}
+              onClick={() => navigate(nextModule.route)}
               className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs gap-1"
             >
               {nextModule.label[language]}
