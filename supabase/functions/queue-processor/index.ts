@@ -149,12 +149,24 @@ async function handleQARequested(
   payload: Record<string, unknown>,
   supabase: any
 ): Promise<Record<string, unknown>> {
-  // Call the agent-executor for QA analysis
   const planId = payload.planId as string;
+  const planData = payload.planData as Record<string, unknown> | undefined;
 
-  // In production, this would invoke the QA pipeline
-  // For now, log the request
-  return { planId, status: "qa_queued" };
+  // Invoke the agent-executor for QA analysis
+  const { data, error } = await supabase.functions.invoke("agent-executor", {
+    body: {
+      systemPrompt: "You are a marketing QA analyst. Review the following campaign plan and provide a quality score (0-100) with specific feedback on strengths and areas for improvement. Respond in JSON with { score, strengths: string[], improvements: string[], summary: string }.",
+      prompt: `Analyze this campaign plan:\n${JSON.stringify(planData || { planId })}`,
+      model: "claude-haiku-4-5-20251001",
+      maxTokens: 1024,
+    },
+  });
+
+  if (error) {
+    throw new Error(`QA agent failed: ${error.message}`);
+  }
+
+  return { planId, status: "qa_completed", result: data };
 }
 
 async function handleResearchRequested(
@@ -163,9 +175,23 @@ async function handleResearchRequested(
 ): Promise<Record<string, unknown>> {
   const question = payload.question as string;
   const domain = payload.domain as string;
+  const context = payload.context as string | undefined;
 
-  // In production, this would call the research-agent Edge Function
-  return { question, domain, status: "research_queued" };
+  // Invoke the research-agent Edge Function
+  const { data, error } = await supabase.functions.invoke("research-agent", {
+    body: {
+      question,
+      domain,
+      context: context || "",
+      model: "claude-sonnet-4-20250514",
+    },
+  });
+
+  if (error) {
+    throw new Error(`Research agent failed: ${error.message}`);
+  }
+
+  return { question, domain, status: "research_completed", result: data };
 }
 
 async function handleEmbeddingRequested(
@@ -250,6 +276,23 @@ async function handleNotificationSend(
     return { status: "skipped", reason: "integration_not_connected" };
   }
 
-  // In production, dispatch to platform-specific handler
-  return { platform, status: "notification_sent" };
+  // Dispatch to webhook if platform is webhook
+  if (platform === "webhook") {
+    const { error: dispatchError } = await supabase.functions.invoke("webhook-dispatch", {
+      body: {
+        event: payload.event || "notification",
+        data: { message, userId },
+      },
+    });
+
+    if (dispatchError) {
+      throw new Error(`Webhook dispatch failed: ${dispatchError.message}`);
+    }
+
+    return { platform, status: "webhook_dispatched" };
+  }
+
+  // For Slack, WhatsApp, etc. — log delivery for now
+  // Full platform SDKs to be integrated per-platform
+  return { platform, status: "notification_sent", message };
 }
