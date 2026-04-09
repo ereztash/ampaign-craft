@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -8,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, FileText, Clock, Trash2 } from "lucide-react";
 
-const Plans = () => {
+const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const Plans = () => {
         ) : (
           <div className="space-y-3">
             {plans.map((plan) => (
-              <Card key={plan.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/plans/${plan.id}`)}>
+              <Card key={plan.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/growth/plans/${plan.id}`)}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -82,6 +83,6 @@ const Plans = () => {
       </main>
     </div>
   );
-};
+}
 
-export default Plans;
+export default PageComponent;

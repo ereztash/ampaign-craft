@@ -1,3 +1,4 @@
+
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -17,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Crosshair, Rocket, FileText, Flame, Clock, Plus, BarChart3, TrendingUp, DollarSign, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 
-const Dashboard = () => {
+const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { profile } = useUserProfile();
@@ -25,12 +26,13 @@ const Dashboard = () => {
   const { streak, mastery } = useAchievements(language);
 
   const savedPlans = useMemo<SavedPlan[]>(() => {
+    if (typeof window === "undefined") return [];
     try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; }
   }, [profile.savedPlanCount]);
 
   const pulse = useMemo(() => generateWeeklyPulse(savedPlans), [savedPlans]);
   const lastPlan = savedPlans.length > 0 ? [...savedPlans].sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())[0] : null;
-  const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
+  const hasDiff = typeof window !== "undefined" && !!localStorage.getItem("funnelforge-differentiation-result");
 
   // Personalized greeting from knowledge graph
   const graph = useMemo(() => {
@@ -77,14 +79,14 @@ const Dashboard = () => {
             <CardContent className="p-4">
               <p className="text-sm font-medium text-foreground" dir="auto">{pulse.greeting[language]}</p>
               {pulse.lossFramedMessages[0] && (
-                <p className="text-xs text-muted-foreground mt-1" dir="auto">{pulse.lossFramedMessages[0][language]}</p>
+                <p className="text-xs text-muted-foreground mt-1" dir="auto">{(pulse.lossFramedMessages[0] as any)[language]}</p>
               )}
             </CardContent>
           </Card>
         )}
 
         {/* Dynamic Next Step CTA (adaptive) */}
-        <Card className="mb-6 cursor-pointer hover:shadow-lg transition-all border-2 border-amber-500/30 hover:border-amber-500 bg-gradient-to-r from-amber-500/5 to-transparent" onClick={() => navigate(nextStep.route)}>
+        <Card className="mb-6 cursor-pointer hover:shadow-lg transition-all border-2 border-amber-500/30 hover:border-amber-500 bg-gradient-to-r from-amber-500/5 to-transparent" onClick={() => navigate("/" + nextStep.route.replace(/^\//, ""))}>
           <CardContent className="p-5 flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/20">
               <Crosshair className={`h-6 w-6 ${nextStep.color}`} />
@@ -139,7 +141,7 @@ const Dashboard = () => {
                   {new Date(lastPlan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
                 </p>
               </div>
-              <Button size="sm" onClick={() => navigate(`/plans/${lastPlan.id}`)}>
+              <Button size="sm" onClick={() => navigate(`/growth/plans/${lastPlan.id}`)}>
                 {isHe ? "המשך →" : "Continue →"}
               </Button>
             </CardContent>
@@ -181,7 +183,7 @@ const Dashboard = () => {
         )}
         <div className="grid gap-3 sm:grid-cols-2">
           {savedPlans.slice(0, 4).map((plan) => (
-            <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate(`/plans/${plan.id}`)}>
+            <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate(`/growth/plans/${plan.id}`)}>
               <CardContent className="p-3">
                 <p className="text-sm font-medium truncate">{plan.name}</p>
                 <p className="text-xs text-muted-foreground">{new Date(plan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}</p>
@@ -199,6 +201,6 @@ const Dashboard = () => {
       </main>
     </div>
   );
-};
+}
 
-export default Dashboard;
+export default PageComponent;

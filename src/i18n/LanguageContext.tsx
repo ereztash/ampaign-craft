@@ -13,13 +13,14 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window === "undefined") return "he";
     const saved = localStorage.getItem("funnelforge-lang");
     return (saved === "he" || saved === "en") ? saved : "he";
   });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("funnelforge-lang", lang);
+    typeof window !== "undefined" && localStorage.setItem("funnelforge-lang", lang);
   };
 
   const t = (key: TranslationKey): string => {

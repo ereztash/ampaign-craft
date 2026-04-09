@@ -27,17 +27,21 @@ async function invokeLLM(
   userPrompt: string,
   model = "claude-sonnet-4-6"
 ): Promise<string> {
-  const { data, error } = await supabase.functions.invoke("agent-executor", {
-    body: {
+  const _resp = await fetch("/api/growth/agent-executor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
       systemPrompt,
       prompt: userPrompt,
       model,
       maxTokens: 2048,
       temperature: 0.1,
-    },
-  });
+    }),
+      });
+  const data = await _resp.json();
+  const error = _resp.ok ? null : (data?.error || _resp.statusText);
 
-  if (error) throw new Error(`LLM call failed: ${error.message}`);
+  if (error) throw new Error(`LLM call failed: ${error}`);
   return data?.text || "";
 }
 

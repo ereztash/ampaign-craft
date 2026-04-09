@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "sync:pull": "bash scripts/sync-from-corsys.sh",
+    "sync:push": "bash scripts/sync-to-corsys.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

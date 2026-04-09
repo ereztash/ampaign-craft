@@ -115,12 +115,16 @@ export async function embedPlanContent(
     return { embedded: 0 };
   }
 
-  const { data, error } = await supabase.functions.invoke("embed-content", {
-    body: { items, userId, planId: planId || result.id },
-  });
+  const _resp = await fetch("/api/growth/embed-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, userId, planId: planId || result.id }),
+      });
+  const data = await _resp.json();
+  const error = _resp.ok ? null : (data?.error || _resp.statusText);
 
   if (error) {
-    return { embedded: 0, error: error.message };
+    return { embedded: 0, error };
   }
 
   return { embedded: data?.embedded || 0 };
@@ -144,16 +148,20 @@ export async function searchSimilarContent(
   } = {}
 ): Promise<{ results: SearchResult[]; error?: string }> {
   // Generate query embedding via Edge Function
-  const { data: embedData, error: embedError } = await supabase.functions.invoke("embed-content", {
-    body: {
+  const _embedResp = await fetch("/api/growth/embed-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
       items: [{ text: query, contentType: "query" }],
       userId,
       planId: null, // don't store query embeddings
-    },
-  });
+    }),
+      });
+  const embedData = await _embedResp.json();
+  const embedError = _embedResp.ok ? null : (embedData?.error || _embedResp.statusText);
 
   if (embedError) {
-    return { results: [], error: embedError.message };
+    return { results: [], error: embedError };
   }
 
   // Use the RPC function to search

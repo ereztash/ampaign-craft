@@ -1,4 +1,6 @@
+
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
 import Header from "@/components/Header";
@@ -7,9 +9,8 @@ import RetentionGrowthTab from "@/components/RetentionGrowthTab";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
-import { useNavigate } from "react-router-dom";
 
-const RetentionEntry = () => {
+const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const navigate = useNavigate();
@@ -35,6 +36,6 @@ const RetentionEntry = () => {
       </main>
     </div>
   );
-};
+}
 
-export default RetentionEntry;
+export default PageComponent;

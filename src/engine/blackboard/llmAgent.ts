@@ -6,7 +6,6 @@
 
 import type { Blackboard, BoardSection } from "./blackboardStore";
 import type { AsyncAgentDefinition, LLMAgentConfig } from "./agentTypes";
-import { supabase } from "@/integrations/supabase/client";
 import { selectModel, calculateCostNIS, type ModelTier } from "@/services/llmRouter";
 
 // ═══════════════════════════════════════════════
@@ -45,18 +44,22 @@ export function createLLMAgent(config: LLMAgentConfig): AsyncAgentDefinition {
       const model = getModelForTier(config.modelTier);
       const maxTokens = config.maxTokens ?? modelSelection.maxTokens;
 
-      const { data, error } = await supabase.functions.invoke("agent-executor", {
-        body: {
+      const response = await fetch("/api/growth/agent-executor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           systemPrompt,
           prompt: userPrompt,
           model,
           maxTokens,
           temperature: config.temperature ?? 0,
-        },
+        }),
       });
 
-      if (error) {
-        throw new Error(`LLM agent "${config.name}" failed: ${error.message}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(`LLM agent "${config.name}" failed: ${data.error || response.statusText}`);
       }
 
       const text = data?.text || "";

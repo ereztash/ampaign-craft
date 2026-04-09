@@ -129,14 +129,18 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     setError(null);
 
     try {
-      const { data, error: fnError } = await supabase.functions.invoke("ai-coach", {
-        body: {
+      const _resp = await fetch("/api/growth/ai-coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           message: text.trim(),
           context: buildCoachContext(graph, healthScore, stylomePrompt),
-        },
+        }),
       });
+      const data = await _resp.json();
+      const fnError = _resp.ok ? null : (data?.error || _resp.statusText);
 
-      if (fnError) throw new Error(fnError.message);
+      if (fnError) throw new Error(fnError);
       const reply = data?.reply || (isHe ? "לא הצלחתי לענות. נסה שוב." : "Couldn't respond. Try again.");
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {

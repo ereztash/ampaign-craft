@@ -51,8 +51,8 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
           className={`cursor-pointer transition-all hover:shadow-lg hover:translate-y-[-2px] border-2 focus:outline-none focus:ring-2 focus:ring-primary ${
             mod.completed ? "border-accent/40 bg-accent/5" : "border-border hover:border-primary/50"
           }`}
-          onClick={() => navigate(mod.route)}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate(mod.route); }}
+          onClick={() => navigate("/growth" + mod.route)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate("/growth" + mod.route); }}
         >
           <CardContent className="p-4 text-center relative">
             {mod.completed && (

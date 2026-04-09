@@ -235,11 +235,11 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{isHe ? "תנודתיות משפטים:" : "Burstiness:"}</span>
-                        <span className="font-medium">{copyQA.aiDetection.burstiness.toFixed(1)}</span>
+                        <span className="font-medium">{(copyQA.aiDetection.burstiness as any).toFixed(1)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{isHe ? "הפתעה לקסיקלית:" : "Perplexity:"}</span>
-                        <span className="font-medium">{copyQA.aiDetection.perplexity.toFixed(1)}</span>
+                        <span className="font-medium">{(copyQA.aiDetection.perplexity as any).toFixed(1)}</span>
                       </div>
                     </div>
                   </div>

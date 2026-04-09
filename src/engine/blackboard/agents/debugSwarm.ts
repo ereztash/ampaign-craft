@@ -215,18 +215,21 @@ Respond in this exact JSON:
 }`;
 
   // Call the LLM via the agent's internal mechanism
-  const { supabase } = await import("@/integrations/supabase/client");
-  const { data, error } = await supabase.functions.invoke("agent-executor", {
-    body: {
+  const _resp = await fetch("/api/growth/agent-executor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
       systemPrompt: "You are a root-cause analysis expert for marketing funnel plans. Given a QA finding, identify the root cause in the plan data or engine logic. Be specific and concise. Respond in valid JSON only.",
       prompt,
       model: "claude-sonnet-4-6",
       maxTokens: 1024,
       temperature: 0,
-    },
-  });
+    }),
+      });
+  const data = await _resp.json();
+  const error = _resp.ok ? null : (data?.error || _resp.statusText);
 
-  if (error) throw new Error(`Analyzer failed: ${error.message}`);
+  if (error) throw new Error(`Analyzer failed: ${error}`);
 
   const parsed = parseLLMJson<DebugAnalysis>(data?.text || "{}");
   return {
@@ -276,20 +279,23 @@ Respond in this exact JSON:
   "confidence": 0.0-1.0
 }`;
 
-  const { supabase } = await import("@/integrations/supabase/client");
-  const { data, error } = await supabase.functions.invoke("agent-executor", {
-    body: {
+  const _resp2 = await fetch("/api/growth/agent-executor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
       systemPrompt: "You are a marketing plan optimization expert. Given a QA finding and its root cause, propose specific, actionable changes to fix the issue. Focus on minimal, targeted changes. Respond in valid JSON only.",
       prompt,
       model: "claude-sonnet-4-6",
       maxTokens: 1024,
       temperature: 0.1,
-    },
-  });
+    }),
+      });
+  const data2 = await _resp2.json();
+  const error2 = _resp2.ok ? null : (data2?.error || _resp2.statusText);
 
-  if (error) throw new Error(`Proposer failed: ${error.message}`);
+  if (error2) throw new Error(`Proposer failed: ${error2}`);
 
-  const parsed = parseLLMJson<DebugProposal>(data?.text || "{}");
+  const parsed = parseLLMJson<DebugProposal>(data2?.text || "{}");
   return {
     findingId: finding.id,
     description: parsed.description || { he: "הצעה", en: "Proposal" },
@@ -343,20 +349,23 @@ Respond in this exact JSON:
   "verdict": "brief summary of evaluation"
 }`;
 
-  const { supabase } = await import("@/integrations/supabase/client");
-  const { data, error } = await supabase.functions.invoke("agent-executor", {
-    body: {
+  const _resp3 = await fetch("/api/growth/agent-executor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
       systemPrompt: "You are a critical code reviewer specializing in marketing automation systems. Evaluate proposed fixes objectively. Approve only if the fix is correct, complete, and won't cause side effects. Respond in valid JSON only.",
       prompt,
       model: "claude-sonnet-4-6",
       maxTokens: 1024,
       temperature: 0,
-    },
-  });
+    }),
+      });
+  const data3 = await _resp3.json();
+  const error3 = _resp3.ok ? null : (data3?.error || _resp3.statusText);
 
-  if (error) throw new Error(`Critique failed: ${error.message}`);
+  if (error3) throw new Error(`Critique failed: ${error3}`);
 
-  const parsed = parseLLMJson<DebugCritique>(data?.text || "{}");
+  const parsed = parseLLMJson<DebugCritique>(data3?.text || "{}");
   return {
     findingId: finding.id,
     approved: parsed.approved ?? false,
