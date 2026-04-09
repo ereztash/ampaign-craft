@@ -213,6 +213,38 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
                   </div>
                 )}
 
+                {/* AI Detection (P&B Analysis) */}
+                {copyQA.aiDetection && (
+                  <div className="rounded-lg border p-3 bg-muted/30">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-xs font-semibold text-muted-foreground">
+                        {isHe ? "ניתוח AI (Perplexity & Burstiness):" : "AI Detection (Perplexity & Burstiness):"}
+                      </h4>
+                      <Badge className={`text-xs text-white ${
+                        copyQA.aiDetection.humanScore >= 70 ? "bg-green-500" :
+                        copyQA.aiDetection.humanScore >= 50 ? "bg-yellow-500" :
+                        copyQA.aiDetection.humanScore >= 30 ? "bg-orange-500" : "bg-red-500"
+                      }`}>
+                        {copyQA.aiDetection.humanScore}/100 {copyQA.aiDetection.verdict === "human" ? (isHe ? "אנושי" : "Human") :
+                          copyQA.aiDetection.verdict === "likely-human" ? (isHe ? "סביר אנושי" : "Likely Human") :
+                          copyQA.aiDetection.verdict === "uncertain" ? (isHe ? "לא ברור" : "Uncertain") :
+                          copyQA.aiDetection.verdict === "likely-ai" ? (isHe ? "סביר AI" : "Likely AI") :
+                          "AI"}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">{isHe ? "תנודתיות משפטים:" : "Burstiness:"}</span>
+                        <span className="font-medium">{copyQA.aiDetection.burstiness.toFixed(1)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">{isHe ? "הפתעה לקסיקלית:" : "Perplexity:"}</span>
+                        <span className="font-medium">{copyQA.aiDetection.perplexity.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Hebrew breakdown */}
                 {hebrewScore && (
                   <div className="space-y-1.5">
