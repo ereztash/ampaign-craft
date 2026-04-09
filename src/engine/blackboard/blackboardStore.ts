@@ -14,6 +14,8 @@ import type { ChurnRiskAssessment } from "../churnPredictionEngine";
 import type { HealthScore } from "../healthScoreEngine";
 import type { RetentionFlywheel } from "../retentionFlywheelEngine";
 import type { CopyQAResult } from "../copyQAEngine";
+import type { QAStaticResult, QAContentResult, QASecurityResult, QAOverallScore } from "@/types/qa";
+import type { ResearchSession } from "@/types/research";
 
 // ═══════════════════════════════════════════════
 // BOARD SECTIONS
@@ -36,6 +38,15 @@ export interface BlackboardState {
   healthScore: HealthScore | null;
   retentionFlywheel: RetentionFlywheel | null;
   copyQA: CopyQAResult | null;
+
+  // QA Pipeline (MAS-CC Phase 2)
+  qaStaticResult: QAStaticResult | null;
+  qaContentResult: QAContentResult | null;
+  qaSecurityResult: QASecurityResult | null;
+  qaOverallScore: QAOverallScore | null;
+
+  // Research (MAS-CC Phase 3)
+  researchSession: ResearchSession | null;
 
   // Meta
   completedAgents: string[];
@@ -137,6 +148,11 @@ function createEmptyBoard(): BlackboardState {
     healthScore: null,
     retentionFlywheel: null,
     copyQA: null,
+    qaStaticResult: null,
+    qaContentResult: null,
+    qaSecurityResult: null,
+    qaOverallScore: null,
+    researchSession: null,
     completedAgents: [],
     errors: [],
   };

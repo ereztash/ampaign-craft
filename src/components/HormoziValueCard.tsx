@@ -24,12 +24,12 @@ const DIMENSION_LABELS = {
 
 function ScoreBar({ label, score, color }: { label: string; score: number; color: string }) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <div className="flex justify-between text-sm">
-        <span className="font-medium">{label}</span>
-        <span className="text-muted-foreground">{score}/100</span>
+        <span className="font-semibold text-foreground">{label}</span>
+        <span className="font-medium text-foreground/70">{score}/100</span>
       </div>
-      <Progress value={score} className={`h-2 ${color}`} />
+      <Progress value={score} className={`h-2.5 ${color}`} />
     </div>
   );
 }
@@ -80,29 +80,29 @@ export function HormoziValueCard({ data }: HormoziValueCardProps) {
         </div>
 
         {/* Optimization Priority */}
-        <div className="rounded-md border p-3 bg-primary/5">
-          <p className="text-sm font-medium" dir="auto">
+        <div className="rounded-lg border p-4 bg-primary/5">
+          <p className="text-sm font-semibold mb-1" dir="auto">
             {language === "he" ? "עדיפות לשיפור:" : "Optimization Priority:"}
           </p>
-          <p className="text-sm text-muted-foreground" dir="auto">
+          <p className="text-sm text-foreground/80 leading-relaxed" dir="auto">
             {data.optimizationPriority[language]}
           </p>
         </div>
 
         {/* Dimension Details with Tips */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {dimensions.map(({ key, dim, color }) => (
             dim.tips.length > 0 && (
-              <div key={key} className={`rounded-md p-3 ${color}`}>
-                <p className="text-sm font-medium mb-1" dir="auto">
+              <div key={key} className={`rounded-lg p-4 ${color} border border-black/5`}>
+                <p className="text-base font-semibold mb-1.5" dir="auto">
                   {DIMENSION_LABELS[key][language]}
                 </p>
-                <p className="text-xs text-muted-foreground mb-2" dir="auto">
+                <p className="text-sm text-foreground/70 mb-3 leading-relaxed" dir="auto">
                   {dim.analysis[language]}
                 </p>
-                <ul className="space-y-1">
+                <ul className="space-y-2">
                   {dim.tips.map((tip, i) => (
-                    <li key={i} className="text-xs" dir="auto">
+                    <li key={i} className="text-sm leading-relaxed text-foreground/90" dir="auto">
                       {language === "he" ? "• " : "• "}{tip[language]}
                     </li>
                   ))}

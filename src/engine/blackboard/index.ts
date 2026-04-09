@@ -37,6 +37,26 @@ export { coiAgent } from "./agents/coiAgent";
 export { retentionAgent } from "./agents/retentionAgent";
 export { healthAgent } from "./agents/healthAgent";
 
+// QA agents (MAS-CC Phase 2)
+export { qaStaticAgent } from "./agents/qaStaticAgent";
+export { qaContentAgent } from "./agents/qaContentAgent";
+export { qaSecurityAgent } from "./agents/qaSecurityAgent";
+export { qaOrchestratorAgent } from "./agents/qaOrchestratorAgent";
+
+// Debug swarm (MAS-CC Phase 2.3)
+export { runDebugSwarm } from "./agents/debugSwarm";
+export type {
+  DebugSwarmResult,
+  DebugIteration,
+  DebugAnalysis,
+  DebugProposal,
+  DebugCritique,
+  ProposedChange,
+} from "./agents/debugSwarm";
+
+// LLM agent factory
+export { createLLMAgent, parseLLMJson } from "./llmAgent";
+
 import { Blackboard } from "./blackboardStore";
 import { AgentRunner } from "./agentRunner";
 import { AsyncAgentRunner } from "./asyncAgentRunner";
