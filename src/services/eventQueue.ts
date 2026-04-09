@@ -49,7 +49,7 @@ export async function publishEvent(
   userId: string,
   options: PublishOptions = {}
 ): Promise<{ eventId: string | null; error?: string }> {
-  const { data, error } = await supabase.rpc("publish_event" as any, {
+  const { data, error } = await (supabase.rpc as any)("publish_event", {
     p_event_type: eventType,
     p_payload: payload,
     p_user_id: userId,

@@ -165,7 +165,7 @@ export async function searchSimilarContent(
   }
 
   // Use the RPC function to search
-  const { data, error } = await supabase.rpc("match_content" as any, {
+  const { data, error } = await (supabase.rpc as any)("match_content", {
     query_embedding: embedData?.embedding,
     match_user_id: userId,
     match_threshold: options.threshold ?? 0.7,
