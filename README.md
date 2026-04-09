@@ -1,6 +1,6 @@
 # FunnelForge — Complete Business Growth System
 
-Hebrew-first platform that combines 35 cross-domain knowledge areas into a 5-module growth cycle: Differentiation → Marketing → Sales → Pricing → Retention. All personalized, all copy-paste ready. Powered by a SOTA² engine architecture with Blackboard-based agent orchestration and LLM integration.
+Hebrew-first platform that combines 40+ cross-domain knowledge areas into a 5-module growth cycle: Differentiation → Marketing → Sales → Pricing → Retention. All personalized, all copy-paste ready. Powered by a Multi-Agent System (MAS-CC) with async Blackboard orchestration, QA pipeline, research engine, and strategic moat engines.
 
 ## The 5-Module Cycle
 
@@ -38,7 +38,7 @@ Recommended pricing model, 3-tier structure with decoy, Hormozi offer stack (val
 Onboarding sequences by business type (ecommerce/SaaS/services/creator). Churn prediction engine with 3-stage model (Active → Disengaging → Silent), risk scoring across 10 industry verticals, NRR projections with/without intervention, and intervention playbooks. Referral program blueprint with WhatsApp templates, growth loop identification, loyalty program design.
 
 **Cross-Module Intelligence**
-UserKnowledgeGraph cross-references all user data (FormData + Differentiation + Stylome + DISC Profile + Behavior) and feeds every module. Blackboard Architecture orchestrates 8 specialized agents via topological dependency resolution. AI Coach has full context from all 5 modules. LLM Router dynamically selects Claude models (Haiku/Sonnet/Opus) based on task complexity.
+UserKnowledgeGraph cross-references all user data (FormData + Differentiation + Stylome + DISC Profile + Behavior) and feeds every module. Blackboard Architecture orchestrates 12+ specialized agents via topological dependency resolution with async parallel execution. AI Coach has full context from all 5 modules. LLM Router dynamically selects Claude models (Haiku/Sonnet/Opus) based on task complexity with fallback chains and cost caps.
 
 ## Routes
 
@@ -61,7 +61,7 @@ UserKnowledgeGraph cross-references all user data (FormData + Differentiation + 
 
 ```
 src/
-├── engine/          # 27 pure-logic engines
+├── engine/          # 33 pure-logic engines
 │   ├── funnelEngine.ts              # Core funnel generation + personalizeResult
 │   ├── salesPipelineEngine.ts       # Sales pipeline + neuro-closing + DISC + personalized scripts
 │   ├── pricingIntelligenceEngine.ts # Pricing model + tiers + offer stack + guarantee + framing
@@ -89,14 +89,38 @@ src/
 │   ├── neuroClosingEngine.ts        # DISC-optimized closing strategies + objection handling
 │   ├── churnPredictionEngine.ts     # 3-stage churn model (Active→Disengaging→Silent) + NRR
 │   ├── perplexityBurstiness.ts      # AI detection via Perplexity & Burstiness scoring
-│   └── blackboard/                  # Agent orchestration (Blackboard Architecture)
-│       ├── blackboardStore.ts       # Shared knowledge space with reactive updates
-│       ├── agentRunner.ts           # Topological sort + dependency-aware execution
-│       ├── index.ts                 # Public API: createDefaultPipeline, runFullPipeline
-│       └── agents/                  # 8 agent wrappers (knowledgeGraph, funnel, hormozi, disc, closing, coi, retention, health)
+│   ├── campaignAnalyticsEngine.ts   # Industry benchmark generation from saved plans
+│   ├── predictiveEngine.ts          # Success probability forecasting + budget efficiency
+│   ├── integrationEngine.ts         # Platform connection management (Slack/WhatsApp/GA/FB)
+│   ├── seoContentEngine.ts          # Keyword generation + content briefs + social calendar
+│   ├── blackboard/                  # Agent orchestration (MAS-CC Blackboard Architecture)
+│   │   ├── blackboardStore.ts       # Shared knowledge space with reactive updates
+│   │   ├── agentRunner.ts           # Sync: topological sort + dependency-aware execution
+│   │   ├── asyncAgentRunner.ts      # Async: parallel execution + timeout + retry + cost caps
+│   │   ├── circuitBreaker.ts        # 3-state breaker (closed/open/half-open) for loop control
+│   │   ├── agentTypes.ts            # AsyncAgentDefinition, AgentExecutionMeta, CircuitBreakerConfig
+│   │   ├── llmAgent.ts              # LLM agent factory (createLLMAgent) + JSON parser
+│   │   ├── index.ts                 # Public API: sync + async pipelines, QA agents, debug swarm
+│   │   └── agents/                  # 12 agents (8 core + 4 QA)
+│   │       ├── knowledgeGraphAgent, funnelAgent, hormoziAgent, discAgent
+│   │       ├── closingAgent, coiAgent, retentionAgent, healthAgent
+│   │       ├── qaStaticAgent.ts     # Heuristic QA: budget, KPIs, completeness, consistency
+│   │       ├── qaContentAgent.ts    # LLM QA: cultural fit, Hebrew quality, CTA clarity
+│   │       ├── qaSecurityAgent.ts   # Security: PII detection, injection vectors, unsafe templates
+│   │       ├── qaOrchestratorAgent.ts # Aggregates QA scores + grade (A-F) + recommendations
+│   │       └── debugSwarm.ts        # Iterative fix loop: Analyzer → Proposer → Critique
+│   └── research/                    # Cross-domain research engine
+│       ├── researchOrchestrator.ts  # Decomposes questions → dispatches sub-agents → synthesizes
+│       └── subAgents/               # 3 domain specialists
+│           ├── regulatoryAgent.ts   # Israeli advertising law, data protection, compliance
+│           ├── marketAgent.ts       # Competitor analysis, pricing benchmarks, trends
+│           └── marketingAgent.ts    # Channel effectiveness, content strategy, Israeli market
 ├── services/        # External integrations
 │   ├── aiCopyService.ts             # Context-aware LLM copy generation with P&B post-processing
-│   └── llmRouter.ts                 # Dynamic model selection (Haiku/Sonnet/Opus) + usage tracking
+│   ├── llmRouter.ts                 # Model selection (Haiku/Sonnet/Opus) + fallbacks + cost caps
+│   ├── blackboardPersistence.ts     # Save/load board state + task queue + audit log
+│   ├── semanticSearch.ts            # pgvector-powered content similarity search
+│   └── eventQueue.ts               # PostgreSQL event bus (publish/query/convenience helpers)
 ├── lib/             # Data libraries & utilities
 │   ├── israeliMarketCalendar.ts     # 12 Israeli events with budget multipliers
 │   ├── hebrewCopyOptimizer.ts       # 12 Hebrew neurolinguistics rules + scoring + stylometry
@@ -114,28 +138,39 @@ src/
 │   └── ...                          # glossary, socialProofData, colorSemantics, utils
 ├── components/      # 99 React components
 ├── pages/           # 13 pages (ModuleHub, Dashboard, Wizard, Plans, PlanView, Differentiate, SalesEntry, PricingEntry, RetentionEntry, Profile, Landing, Index, NotFound)
-├── hooks/           # 13 custom hooks (includes useAICopy)
+├── hooks/           # 14 custom hooks (includes useAICopy, useResearch)
 ├── contexts/        # Auth (dual: Supabase + local) + UserProfile
 ├── i18n/            # 290+ bilingual translation keys (Hebrew + English)
 ├── integrations/    # Supabase client + types
-└── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention)
-supabase/functions/  # 6 Edge Functions
-├── ai-coach/        # Claude marketing coach (full UserKnowledgeGraph context)
+└── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention, qa, research)
+supabase/functions/  # 10 Edge Functions
+├── ai-coach/               # Claude marketing coach (full UserKnowledgeGraph context)
 ├── differentiation-agent/  # Claude Sonnet for 5-phase differentiation
 ├── generate-copy/          # Claude API proxy for AI copy generation
 ├── meta-token-exchange/    # Meta Ads OAuth
 ├── create-checkout/        # Stripe checkout session
-└── stripe-webhook/         # Subscription management
+├── stripe-webhook/         # Subscription management
+├── agent-executor/         # Generic LLM agent executor (any Claude model)
+├── research-agent/         # Deep research via Claude Opus
+├── embed-content/          # Embedding generation + pgvector storage
+└── queue-processor/        # Event queue processor with handler registry
+supabase/migrations/
+├── 20260409_001_agent_infrastructure.sql  # agent_tasks, blackboard_snapshots, execution_log
+├── 20260409_002_campaign_analytics.sql    # campaign_benchmarks, user_integrations, notification_preferences
+├── 20260409_003_vector_search.sql         # pgvector, content_embeddings, code_embeddings, match functions
+└── 20260409_004_event_queue.sql           # event_queue with claim/complete/fail/publish/cleanup
+scripts/
+└── analyze-codebase.ts     # Extracts semantic code chunks for embedding
 ```
 
-## SOTA² Engine Architecture
+## MAS-CC: Multi-Agent System Architecture
 
-The system uses a Blackboard Architecture pattern where 8 specialized agents read from and write to a shared knowledge space:
+The system uses a Blackboard Architecture pattern where 12+ specialized agents read from and write to a shared knowledge space. Async execution runs independent agents in parallel.
 
 ```
-FormData → [Blackboard Store] → 8 Agents (topological order) → Complete Analysis
+FormData → [Blackboard Store] → Agents (parallel layers) → Complete Analysis
 
-Agents:
+Core Agents (sync, run on every plan):
 1. knowledgeGraph  (no deps)     → builds UserKnowledgeGraph
 2. funnel          (→ kGraph)    → generates personalized funnel
 3. hormozi         (→ kGraph)    → Hormozi Value Equation scoring
@@ -144,14 +179,52 @@ Agents:
 6. coi             (→ funnel)    → cost of inaction + compounding loss
 7. retention       (no deps)     → retention flywheel + churn risk
 8. health          (→ funnel)    → health score + retention readiness
+
+QA Agents (triggered separately):
+9.  qaStatic       (→ funnel)    → heuristic validation (budget, KPIs, completeness)
+10. qaContent      (→ funnel,kG) → LLM content quality review (cultural, Hebrew, CTA)
+11. qaSecurity     (→ funnel)    → PII detection, injection vectors, unsafe templates
+12. qaOrchestrator (→ 9,10,11)   → aggregates scores → grade A-F + recommendations
+
+Debug Swarm (on demand):
+Analyzer → Proposer → Critique loop with circuit breaker (max 5 iterations)
+
+Research Engine (on demand):
+Orchestrator decomposes question → 3 sub-agents (regulatory, market, marketing)
+→ parallel execution → synthesis with strategic recommendations
 ```
+
+### Async Pipeline Features
+
+- **Parallel Execution**: Independent agents run simultaneously via `Promise.allSettled`
+- **Circuit Breaker**: 3-state (closed/open/half-open) with max iterations, failure detection, cooldown
+- **Cost Caps**: Per-session NIS budget limits with automatic cost tracking
+- **Retry + Timeout**: Exponential backoff, configurable per agent
+- **Persistent State**: Blackboard snapshots + execution audit log in PostgreSQL
+
+### Event Queue
+
+PostgreSQL-based event bus replacing AWS SQS:
+- Atomic claim with `FOR UPDATE SKIP LOCKED`
+- Priority-based processing (1=highest, 10=lowest)
+- Automatic retry with exponential backoff
+- Dead letter queue for exhausted retries
+- Supported events: `plan.generated`, `plan.qa_requested`, `research.requested`, `embedding.requested`, `benchmark.update`, `notification.send`
+
+### Semantic Search (pgvector)
+
+- Content embeddings for all plan data (stages, hooks, copy, tips)
+- Code embeddings for codebase comprehension
+- Cosine similarity search via IVFFlat index
+- `match_content()` and `match_code()` PostgreSQL functions
 
 **LLM Router** dynamically selects Claude models based on task complexity:
 - **Haiku** — headlines, WhatsApp messages, social posts (fast, cheap)
-- **Sonnet** — ad copy, email sequences, landing pages (balanced)
-- **Opus** — deep analysis, strategy documents (highest quality)
+- **Sonnet** — ad copy, email sequences, landing pages, QA analysis (balanced)
+- **Opus** — deep research, strategy documents (highest quality)
+- **Fallback chains**: Opus → Sonnet → Haiku with automatic downgrade on failure
 
-## Cross-Domain Knowledge Embedded (35 domains)
+## Cross-Domain Knowledge Embedded (40+ domains)
 
 | # | Domain | Application |
 |---|--------|-------------|
@@ -189,25 +262,35 @@ Agents:
 | 32 | Stylometry | Perplexity & burstiness scoring, AI text detection, register shift analysis |
 | 33 | Personality Psychology | DISC profiling, personality-driven messaging, CTA optimization |
 | 34 | Value Engineering | Hormozi Value Equation (Dream Outcome × Likelihood / Time × Effort) |
-| 35 | Multi-Agent Systems | Blackboard architecture, topological dependency resolution, agent orchestration |
+| 35 | Multi-Agent Systems | Blackboard architecture, async parallel execution, circuit breakers |
+| 36 | Quality Assurance | Static analysis, LLM-powered content review, security scanning |
+| 37 | Israeli Regulatory | Advertising law, data protection, consumer rights compliance |
+| 38 | Market Intelligence | Competitor analysis, pricing benchmarks, industry trends |
+| 39 | SEO & Content Strategy | Keyword generation, content briefs, social calendar |
+| 40 | Predictive Analytics | Success probability forecasting, budget efficiency scoring |
+| 41 | Event-Driven Architecture | PostgreSQL queue, atomic claims, dead letter, retry patterns |
+| 42 | Vector Search | pgvector embeddings, semantic similarity, codebase comprehension |
 
 ## Key Numbers
 
 | Metric | Value |
 |--------|-------|
-| Lines of code | ~31,000 |
-| TypeScript files | ~199 |
-| Engines | 27 |
-| Tests | 483 (100% pass) |
+| Lines of code | ~38,000 |
+| TypeScript files | ~230 |
+| Engines | 33 |
+| Tests | 565 (100% pass) |
 | Components | 99 |
 | Pages | 13 |
 | Routes | 12 |
 | Tabs | 9 |
-| Hooks | 13 |
+| Hooks | 14 |
 | Translation keys | 290+ (he + en) |
-| Edge Functions | 6 |
-| Knowledge domains | 35 |
-| Blackboard agents | 8 |
+| Edge Functions | 10 |
+| SQL Migrations | 4 |
+| Knowledge domains | 42 |
+| Blackboard agents | 12 |
+| QA checks | 15+ (static + content + security) |
+| Research sub-agents | 3 (regulatory, market, marketing) |
 | Industry pain points | 40 (10 verticals × 4) |
 | WhatsApp templates | 50+ |
 | `any` types | 0 |
@@ -219,8 +302,9 @@ Agents:
 - **Animation**: Framer Motion
 - **Charts**: Recharts
 - **Routing**: react-router-dom v6 (12 routes, lazy-loaded)
-- **Backend**: Supabase (Auth, PostgreSQL, Edge Functions)
-- **AI**: Anthropic Claude (Haiku for quick tasks, Sonnet for differentiation + copy, Opus for deep analysis) — LLM Router with dynamic model selection
+- **Backend**: Supabase (Auth, PostgreSQL, Edge Functions, pgvector)
+- **AI**: Anthropic Claude (Haiku/Sonnet/Opus) via LLM Router with fallback chains + cost caps
+- **Embeddings**: OpenAI text-embedding-3-small (1536 dimensions)
 - **Auth**: Dual-mode (Supabase + local SHA-256 fallback)
 - **Ads**: Meta Graph API integration
 - **Payments**: Stripe (checkout + webhooks)
@@ -240,7 +324,7 @@ Agents:
 ```bash
 npm install
 npm run dev          # Start dev server
-npx vitest run       # Run 483 tests
+npx vitest run       # Run 565 tests
 npx tsc --noEmit     # Type check
 npx vite build       # Build for production
 ```
@@ -253,7 +337,8 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
 VITE_AI_COPY_ENABLED=true           # Enable AI copy generation
 
 # Edge Function secrets (Supabase Dashboard)
-ANTHROPIC_API_KEY=          # AI Coach + Differentiation Agent + Copy Generation
+ANTHROPIC_API_KEY=          # AI Coach + Differentiation + QA + Research + Agent Executor
+OPENAI_API_KEY=             # Embedding generation (text-embedding-3-small)
 META_APP_ID=                # Meta Ads
 META_APP_SECRET=            # Meta Ads
 STRIPE_SECRET_KEY=          # Payments
