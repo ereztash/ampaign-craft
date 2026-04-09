@@ -19,7 +19,10 @@ export type CopyTask =
   | "social-post"
   | "headline"
   | "deep-analysis"
-  | "strategy";
+  | "strategy"
+  | "qa-analysis"
+  | "research"
+  | "agent-task";
 
 export interface ModelSelection {
   model: string;
@@ -44,6 +47,9 @@ const TASK_COMPLEXITY: Record<CopyTask, { baseTier: ModelTier; maxTokens: number
   "landing-page": { baseTier: "standard", maxTokens: 4096 },
   "deep-analysis": { baseTier: "deep", maxTokens: 4096 },
   "strategy": { baseTier: "deep", maxTokens: 4096 },
+  "qa-analysis": { baseTier: "standard", maxTokens: 2048 },
+  "research": { baseTier: "deep", maxTokens: 4096 },
+  "agent-task": { baseTier: "standard", maxTokens: 2048 },
 };
 
 /**
@@ -115,4 +121,78 @@ export function getUsageHistory(): UsageRecord[] {
 
 export function getTotalCostNIS(): number {
   return getUsageHistory().reduce((sum, r) => sum + r.costNIS, 0);
+}
+
+// ═══════════════════════════════════════════════
+// FALLBACK CHAINS
+// ═══════════════════════════════════════════════
+
+const FALLBACK_ORDER: ModelTier[] = ["deep", "standard", "fast"];
+
+/**
+ * Get the fallback tier for a given tier (downgrades on failure).
+ * Returns null if no further fallback is available.
+ */
+export function getFallbackTier(currentTier: ModelTier): ModelTier | null {
+  const idx = FALLBACK_ORDER.indexOf(currentTier);
+  if (idx < 0 || idx >= FALLBACK_ORDER.length - 1) return null;
+  return FALLBACK_ORDER[idx + 1];
+}
+
+/**
+ * Select model with fallback: if the preferred tier fails,
+ * automatically downgrades to the next tier.
+ */
+export function selectModelWithFallback(
+  config: LLMRouterConfig,
+  failedTiers: ModelTier[] = []
+): ModelSelection {
+  let selection = selectModel(config);
+
+  // If the selected tier has already failed, try fallbacks
+  while (failedTiers.includes(selection.tier)) {
+    const fallback = getFallbackTier(selection.tier);
+    if (!fallback) break;
+
+    const fallbackConfig = MODEL_MAP[fallback];
+    selection = {
+      model: fallbackConfig.model,
+      tier: fallback,
+      maxTokens: selection.maxTokens,
+      estimatedCostNIS: Math.round((selection.maxTokens / 1000) * fallbackConfig.costPer1kTokens * 3.6 * 100) / 100,
+      reasoning: `${selection.reasoning} → fallback to ${fallback}`,
+    };
+  }
+
+  return selection;
+}
+
+// ═══════════════════════════════════════════════
+// COST CAP CHECK
+// ═══════════════════════════════════════════════
+
+/**
+ * Check if a proposed operation would exceed the session cost cap.
+ */
+export function wouldExceedCostCap(
+  proposedCostNIS: number,
+  currentSpendNIS: number,
+  capNIS: number
+): boolean {
+  return currentSpendNIS + proposedCostNIS > capNIS;
+}
+
+/**
+ * Calculate actual cost from token usage.
+ */
+export function calculateCostNIS(tokensUsed: number, tier: ModelTier): number {
+  const costPerToken = MODEL_MAP[tier].costPer1kTokens / 1000;
+  return Math.round(tokensUsed * costPerToken * 3.6 * 10000) / 10000;
+}
+
+/**
+ * Get the model config for a tier.
+ */
+export function getModelConfig(tier: ModelTier): { model: string; costPer1kTokens: number } {
+  return MODEL_MAP[tier];
 }
