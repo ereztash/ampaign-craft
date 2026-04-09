@@ -30,6 +30,8 @@ import { generateCLGStrategy } from "@/engine/clgEngine";
 import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import { personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
+import { calculateValueScore } from "@/engine/hormoziValueEngine";
+import { HormoziValueCard } from "@/components/HormoziValueCard";
 import { DifferentiationResult } from "@/types/differentiation";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -107,6 +109,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
   const flywheel = useMemo(() => generateRetentionFlywheel(result.formData), [result.formData]);
   const socialProof = useMemo(() => getSocialProof(result.formData.businessField || "other"), [result.formData.businessField]);
   const roiEstimate = useMemo(() => calculateRoi(result.formData), [result.formData]);
+  const hormoziValue = useMemo(() => calculateValueScore(result.formData, graph), [result.formData, graph]);
   const { unlock, trackFeature } = useAchievements(language);
   const featureGate = useFeatureGate();
   const { savePlan: savePlanToStore, plans: savedPlans } = useSavedPlans();
@@ -317,6 +320,11 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                 </div>
               </CardContent>
             </Card>
+
+            {/* Hormozi Value Equation */}
+            <div className="mb-6">
+              <HormoziValueCard data={hormoziValue} />
+            </div>
 
             {/* Social Proof */}
             <div className="mb-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">

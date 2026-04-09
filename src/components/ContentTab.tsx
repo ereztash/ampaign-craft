@@ -11,7 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Languages } from "lucide-react";
+import { ShieldCheck, Languages, Sparkles } from "lucide-react";
+import { AICopyGenerator } from "@/components/AICopyGenerator";
 
 interface ContentTabProps {
   result: FunnelResult;
@@ -49,6 +50,10 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
         <TabsTrigger value="copyqa" className="text-xs px-3 gap-1">
           <ShieldCheck className="h-3 w-3" />
           {isHe ? "בדיקת קופי" : "Copy QA"}
+        </TabsTrigger>
+        <TabsTrigger value="aicopy" className="text-xs px-3 gap-1">
+          <Sparkles className="h-3 w-3" />
+          {isHe ? "AI קופי" : "AI Copy"}
         </TabsTrigger>
       </TabsList>
       </div>
@@ -225,6 +230,11 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
             )}
           </CardContent>
         </Card>
+      </TabsContent>
+
+      {/* AI Copy Generator */}
+      <TabsContent value="aicopy" className="mt-4">
+        <AICopyGenerator funnelResult={result} />
       </TabsContent>
     </Tabs>
   );
