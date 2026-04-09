@@ -30,6 +30,8 @@ import { generateCLGStrategy } from "@/engine/clgEngine";
 import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import { personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
+import { calculateValueScore } from "@/engine/hormoziValueEngine";
+import { HormoziValueCard } from "@/components/HormoziValueCard";
 import { DifferentiationResult } from "@/types/differentiation";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -43,6 +45,7 @@ import { motion } from "framer-motion";
 import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, ChevronDown, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import BackToHub from "@/components/BackToHub";
 
 interface ResultsDashboardProps {
   result: FunnelResult;
@@ -107,6 +110,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
   const flywheel = useMemo(() => generateRetentionFlywheel(result.formData), [result.formData]);
   const socialProof = useMemo(() => getSocialProof(result.formData.businessField || "other"), [result.formData.businessField]);
   const roiEstimate = useMemo(() => calculateRoi(result.formData), [result.formData]);
+  const hormoziValue = useMemo(() => calculateValueScore(result.formData, graph), [result.formData, graph]);
   const { unlock, trackFeature } = useAchievements(language);
   const featureGate = useFeatureGate();
   const { savePlan: savePlanToStore, plans: savedPlans } = useSavedPlans();
@@ -187,6 +191,9 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
     <>
     <div className="min-h-screen px-4 pt-24 pb-12">
       <div className="mx-auto max-w-5xl" id="results-content">
+        {/* Back to Hub */}
+        <BackToHub currentPage={isHe ? "תוצאות שיווק" : "Marketing Results"} />
+
         {/* Header */}
         <motion.div {...motionProps} className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-bold text-foreground sm:text-4xl">{t("resultsTitle")}</h1>
@@ -235,12 +242,30 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
 
         {/* Cost of Inaction Banner */}
         <Card className="mb-6 border-destructive/20 bg-destructive/5">
-          <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4">
-            <span className="text-2xl" role="img" aria-hidden="true">🔥</span>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-foreground" dir="auto">{costOfInaction.lossFramedMessage[language]}</p>
-              <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{costOfInaction.comparisonMessage[language]}</p>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <span className="text-2xl" role="img" aria-hidden="true">🔥</span>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground" dir="auto">{costOfInaction.lossFramedMessage[language]}</p>
+                <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{costOfInaction.comparisonMessage[language]}</p>
+              </div>
             </div>
+            {/* Compounding loss timeline */}
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <div className="rounded-lg border border-destructive/10 p-2 text-center">
+                <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.threeMonth.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">{isHe ? "3 חודשים" : "3 months"}</div>
+              </div>
+              <div className="rounded-lg border border-destructive/10 p-2 text-center">
+                <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.sixMonth.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">{isHe ? "6 חודשים" : "6 months"}</div>
+              </div>
+              <div className="rounded-lg border border-destructive/10 p-2 text-center">
+                <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.twelveMonth.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">{isHe ? "12 חודשים" : "12 months"}</div>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground" dir="auto">{costOfInaction.competitorGapMessage[language]}</p>
           </CardContent>
         </Card>
 
@@ -313,10 +338,27 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
                         <span className="text-xs font-medium w-8">{b.score}/{b.maxScore}</span>
                       </div>
                     ))}
+                    {healthScore.retentionReadiness && (
+                      <div className="flex items-center gap-2 pt-1 border-t border-muted/20">
+                        <div className="h-1.5 flex-1 rounded-full bg-muted/30">
+                          <div
+                            className="h-1.5 rounded-full transition-all"
+                            style={{ width: `${healthScore.retentionReadiness.score}%`, background: getHealthScoreColor(healthScore.retentionReadiness.score) }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground w-24 text-end">{isHe ? "מוכנות שימור" : "Retention"}</span>
+                        <span className="text-xs font-medium w-8">{healthScore.retentionReadiness.score}%</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Hormozi Value Equation */}
+            <div className="mb-6">
+              <HormoziValueCard data={hormoziValue} />
+            </div>
 
             {/* Social Proof */}
             <div className="mb-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
