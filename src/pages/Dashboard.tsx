@@ -9,7 +9,6 @@ import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { generateFunnel } from "@/engine/funnelEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { SavedPlan } from "@/types/funnel";
-import Header from "@/components/Header";
 import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,8 +49,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onSavedPlans={() => navigate("/plans")} />
-      <main className="container mx-auto px-4 pt-24 pb-16 max-w-4xl">
+      <main className="container mx-auto px-4 pt-4 pb-16 max-w-4xl">
         <BackToHub currentPage={language === "he" ? "תוכנית שיווק" : "Marketing Plan"} />
 
         {/* Welcome + Streak */}
@@ -139,7 +137,7 @@ const Dashboard = () => {
                   {new Date(lastPlan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
                 </p>
               </div>
-              <Button size="sm" onClick={() => navigate(`/plans/${lastPlan.id}`)}>
+              <Button size="sm" onClick={() => navigate(`/strategy/${lastPlan.id}`)}>
                 {isHe ? "המשך →" : "Continue →"}
               </Button>
             </CardContent>
@@ -181,7 +179,7 @@ const Dashboard = () => {
         )}
         <div className="grid gap-3 sm:grid-cols-2">
           {savedPlans.slice(0, 4).map((plan) => (
-            <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate(`/plans/${plan.id}`)}>
+            <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate(`/strategy/${plan.id}`)}>
               <CardContent className="p-3">
                 <p className="text-sm font-medium truncate">{plan.name}</p>
                 <p className="text-xs text-muted-foreground">{new Date(plan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}</p>

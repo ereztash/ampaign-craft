@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { SavedPlan } from "@/types/funnel";
 import ResultsDashboard from "@/components/ResultsDashboard";
-import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertCircle } from "lucide-react";
 
@@ -23,8 +22,7 @@ const PlanView = () => {
   if (!plan) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
-        <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 pt-8">
           <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
           <p className="text-lg font-medium text-foreground mb-2" dir="auto">
             {isHe ? "התוכנית לא נמצאה" : "Plan not found"}
@@ -42,6 +40,7 @@ const PlanView = () => {
     <ResultsDashboard
       result={plan.result}
       defaultTab={tab}
+      embeddedInShell
       onEdit={() => navigate("/wizard")}
       onNewPlan={() => navigate("/wizard")}
     />

@@ -1,0 +1,128 @@
+import { useState, useCallback, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { useDataSources } from "@/contexts/DataSourceContext";
+import type { DataSource } from "@/contexts/DataSourceContext";
+import DataSourceCard from "@/components/DataSourceCard";
+import ConnectDataModal from "@/components/ConnectDataModal";
+import DataSourceDetail from "@/components/DataSourceDetail";
+import DataImportModal from "@/components/DataImportModal";
+import { Button } from "@/components/ui/button";
+import type { ImportedDataset } from "@/types/importedData";
+import { toast } from "sonner";
+
+const DataHub = () => {
+  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { language } = useLanguage();
+  const isHe = language === "he";
+  const navigate = useNavigate();
+  const { sources, setSourceStatus, setSourceRecords, upsertSource } = useDataSources();
+
+  const [connectOpen, setConnectOpen] = useState(false);
+  const [connectTarget, setConnectTarget] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [detailSource, setDetailSource] = useState<DataSource | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const openDetail = useCallback(
+    (s: DataSource) => {
+      setDetailSource(s);
+      setDetailOpen(true);
+      navigate(`/data/${s.id}`, { replace: true });
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    if (!sourceId) {
+      return;
+    }
+    const s = sources.find((x) => x.id === sourceId);
+    if (s) {
+      setDetailSource(s);
+      setDetailOpen(true);
+    }
+  }, [sourceId, sources]);
+
+  const handleImport = (dataset: ImportedDataset) => {
+    const n = dataset.rows?.length ?? 0;
+    setSourceStatus("manual_import", "connected", new Date().toISOString());
+    setSourceRecords("manual_import", n);
+    const base = sources.find((s) => s.id === "manual_import");
+    if (base) {
+      upsertSource({
+        ...base,
+        status: "connected",
+        lastSync: new Date().toISOString(),
+        recordCount: n,
+      });
+    }
+    toast.success(isHe ? "הייבוא הושלם" : "Import complete");
+    setImportOpen(false);
+  };
+
+  const onConnectFromCard = (s: DataSource) => {
+    if (s.id === "manual_import") {
+      setImportOpen(true);
+      return;
+    }
+    if (s.id === "business_profile") {
+      navigate("/wizard");
+      return;
+    }
+    setConnectTarget(s.id);
+    setConnectOpen(true);
+    if (s.id === "meta") {
+      setConnectOpen(false);
+      openDetail(s);
+    }
+  };
+
+  return (
+    <div className="container mx-auto max-w-5xl px-4 py-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground" dir="auto">
+            {isHe ? "מקורות הנתונים שלך" : "Your data sources"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1" dir="auto">
+            {isHe ? "חבר נתונים כדי להעשיר אסטרטגיה ותובנות." : "Connect data to enrich strategy and insights."}
+          </p>
+        </div>
+        <Button
+          onClick={() => {
+            setConnectTarget(null);
+            setConnectOpen(true);
+          }}
+          className="shrink-0"
+        >
+          {isHe ? "+ חבר חדש" : "+ Connect new"}
+        </Button>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {sources.map((s) => (
+          <DataSourceCard key={s.id} source={s} onOpen={() => openDetail(s)} onConnect={() => onConnectFromCard(s)} />
+        ))}
+      </div>
+
+      <ConnectDataModal
+        open={connectOpen}
+        onOpenChange={setConnectOpen}
+        initialPlatform={connectTarget}
+        onOpenImport={() => setImportOpen(true)}
+      />
+      <DataImportModal open={importOpen} onOpenChange={setImportOpen} onImport={handleImport} />
+      <DataSourceDetail
+        source={detailSource}
+        open={detailOpen}
+        onOpenChange={(o) => {
+          setDetailOpen(o);
+          if (!o) navigate("/data", { replace: true });
+        }}
+      />
+    </div>
+  );
+};
+
+export default DataHub;

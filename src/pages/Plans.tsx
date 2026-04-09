@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { SavedPlan } from "@/types/funnel";
-import Header from "@/components/Header";
 import BackToHub from "@/components/BackToHub";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,8 +26,7 @@ const Plans = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 pt-24 pb-16 max-w-3xl">
+      <main className="container mx-auto px-4 pt-4 pb-16 max-w-3xl">
         <BackToHub currentPage={language === "he" ? "תוכניות שמורות" : "Saved Plans"} />
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-foreground" dir="auto">
@@ -57,7 +55,7 @@ const Plans = () => {
         ) : (
           <div className="space-y-3">
             {plans.map((plan) => (
-              <Card key={plan.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/plans/${plan.id}`)}>
+              <Card key={plan.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/strategy/${plan.id}`)}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">

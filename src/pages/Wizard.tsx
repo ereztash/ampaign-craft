@@ -5,7 +5,6 @@ import { FormData, FunnelResult } from "@/types/funnel";
 import { generateFunnel, personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import Header from "@/components/Header";
 import BackToHub from "@/components/BackToHub";
 import MultiStepForm from "@/components/MultiStepForm";
 import ExpressWizard from "@/components/ExpressWizard";
@@ -46,7 +45,7 @@ const Wizard = () => {
       plans.push(plan);
       localStorage.setItem("funnelforge-plans", JSON.stringify(plans));
     } catch { /* ignore */ }
-    navigate(`/plans/${result.id}`);
+    navigate(`/strategy/${result.id}`);
   }, [result, navigate]);
 
   const handleRegenerate = useCallback(() => {
@@ -56,11 +55,9 @@ const Wizard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-
       {state === "trackSelect" && (
         <>
-          <div className="container mx-auto px-4 pt-20">
+          <div className="container mx-auto px-4 pt-4">
             <BackToHub />
           </div>
           <div className="container mx-auto px-4 pb-16 max-w-2xl">
@@ -158,7 +155,7 @@ const Wizard = () => {
 
       {state === "express" && (
         <>
-          <div className="container mx-auto px-4 pt-20">
+          <div className="container mx-auto px-4 pt-4">
             <BackToHub />
             <Button variant="ghost" size="sm" onClick={() => setState("trackSelect")} className="text-muted-foreground mb-4">
               {isHe ? "← חזרה לבחירת מסלול" : "← Back to track selection"}
@@ -170,7 +167,7 @@ const Wizard = () => {
 
       {state === "form" && (
         <>
-          <div className="container mx-auto px-4 pt-16">
+          <div className="container mx-auto px-4 pt-4">
             <BackToHub />
             <Button variant="ghost" size="sm" onClick={() => setState("trackSelect")} className="text-muted-foreground mb-2">
               {isHe ? "← חזרה לבחירת מסלול" : "← Back to track selection"}

@@ -358,6 +358,19 @@ export const translations = {
   groupStrategy: { he: "אסטרטגיה", en: "Strategy" },
   groupContent: { he: "תוכן", en: "Content" },
   groupGrowth: { he: "צמיחה", en: "Growth" },
+
+  // App shell / navigation
+  navWorkspace: { he: "סביבת עבודה", en: "Workspace" },
+  navCommandCenter: { he: "מרכז פיקוד", en: "Command Center" },
+  navDataSources: { he: "מקורות נתונים", en: "Data Sources" },
+  navStrategyCanvas: { he: "לוח אסטרטגיה", en: "Strategy Canvas" },
+  navAiCoach: { he: "מאמן AI", en: "AI Coach" },
+  navSavedPlans: { he: "תוכניות שמורות", en: "Saved Plans" },
+  navModules: { he: "מודולים", en: "Modules" },
+  navDifferentiate: { he: "בידול", en: "Differentiation" },
+  navWizard: { he: "אשף משפך", en: "Funnel wizard" },
+  navProfile: { he: "הגדרות ופרופיל", en: "Settings & Profile" },
+  navMobileLabel: { he: "ניווט ראשי", en: "Main navigation" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

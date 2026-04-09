@@ -6,6 +6,13 @@ vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (key: string) => key, isRtl: false }),
 }));
 
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({
+    setTier: vi.fn(),
+    isLocalAuth: true,
+  }),
+}));
+
 describe("PaywallModal", () => {
   it("shows feature name and required tier when open", () => {
     render(

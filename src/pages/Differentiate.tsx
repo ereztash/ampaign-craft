@@ -5,7 +5,6 @@ import { DifferentiationResult } from "@/types/differentiation";
 import DifferentiationWizard from "@/components/DifferentiationWizard";
 import DifferentiationResultView from "@/components/DifferentiationResult";
 import PaywallModal from "@/components/PaywallModal";
-import Header from "@/components/Header";
 import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { Crosshair, Sparkles, Shield, Brain, Map, Zap } from "lucide-react";
@@ -45,8 +44,7 @@ const Differentiate = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4 pt-4 pb-16">
         <BackToHub currentPage={language === "he" ? "בידול" : "Differentiation"} />
         {view === "idle" && (
           <motion.div

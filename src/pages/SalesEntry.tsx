@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
-import Header from "@/components/Header";
 import BackToHub from "@/components/BackToHub";
 import SalesTab from "@/components/SalesTab";
 import { Button } from "@/components/ui/button";
@@ -17,8 +16,7 @@ const SalesEntry = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 pt-20 pb-16 max-w-5xl">
+      <main className="container mx-auto px-4 pt-4 pb-16 max-w-5xl">
         <BackToHub currentPage={language === "he" ? "מכירות" : "Sales"} />
         {result ? (
           <SalesTab result={result} />
