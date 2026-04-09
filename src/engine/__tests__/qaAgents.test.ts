@@ -201,7 +201,7 @@ describe("qaStaticAgent — runStaticAnalysis", () => {
   it("detects B2C channels for B2B business", () => {
     const formData = makeFormData({
       audienceType: "b2b",
-      existingChannels: ["tiktok", "linkedin"],
+      existingChannels: ["tikTok", "linkedIn"],
     });
     const funnelResult = makeFunnelResult();
 

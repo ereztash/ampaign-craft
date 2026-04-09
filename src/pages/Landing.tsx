@@ -24,7 +24,7 @@ const PageComponent = () => {
   // Authenticated users go to dashboard
   useEffect(() => {
     if (user) navigate("/dashboard");
-  }, [user, router]);
+  }, [user, navigate]);
 
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true } };
 

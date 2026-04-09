@@ -9,7 +9,7 @@ import { ArrowRight, AlertCircle } from "lucide-react";
 
 const PageComponent = () => {
   const { planId } = useParams<{ planId: string }>();
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const tab = searchParams.get("tab") ?? undefined;
   const { language } = useLanguage();
   const isHe = language === "he";
