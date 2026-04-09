@@ -56,11 +56,15 @@ const DifferentiationWizard = ({ onComplete, onBack }: DifferentiationWizardProp
     setAiInsights([]);
 
     try {
-      const { data, error } = await supabase.functions.invoke("differentiation-agent", {
-        body: { phase: phaseName, formData, previousResults: aiResults },
+      const _resp = await fetch("/api/growth/differentiation-agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phase: phaseName, formData, previousResults: aiResults }),
       });
+      const data = await _resp.json();
+      const error = _resp.ok ? null : (data?.error || _resp.statusText);
 
-      if (error) throw new Error(error.message || "Edge Function error");
+      if (error) throw new Error(error || "Edge Function error");
       if (data?.error) throw new Error(data.error);
 
       const result = data?.result;

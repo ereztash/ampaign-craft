@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect, useRef } from "react";
 import { FormData, FunnelResult, ExperienceLevel } from "@/types/funnel";
 import { generateFunnel, personalizeResult } from "@/engine/funnelEngine";
@@ -15,7 +16,7 @@ import { useAdaptiveTheme } from "@/hooks/useAdaptiveTheme";
 
 type AppState = "landing" | "form" | "processing" | "results" | "savedPlans";
 
-const Index = () => {
+const PageComponent = () => {
   const [state, setState] = useState<AppState>("landing");
   const [result, setResult] = useState<FunnelResult | null>(null);
   const [formDataCache, setFormDataCache] = useState<FormData | null>(null);
@@ -63,7 +64,7 @@ const Index = () => {
 
   const handleStartDifferentiation = useCallback(() => {
     // Navigate to differentiation page — after completion, user returns to build funnel
-    window.location.href = "/differentiate";
+    window.location.href = "/growth/differentiate";
   }, []);
 
   return (
@@ -105,6 +106,6 @@ const Index = () => {
       </main>
     </div>
   );
-};
+}
 
-export default Index;
+export default PageComponent;

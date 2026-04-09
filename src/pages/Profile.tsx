@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Save, Loader2, User, Shield, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const Profile = () => {
+const PageComponent = () => {
   const { user, loading: authLoading, tier, setTier, isLocalAuth } = useAuth();
   const { language } = useLanguage();
   const navigate = useNavigate();
@@ -24,9 +25,9 @@ const Profile = () => {
   // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate("/");
+      navigate("/hub");
     }
-  }, [authLoading, user, navigate]);
+  }, [authLoading, user, router]);
 
   // Load profile
   useEffect(() => {
@@ -43,12 +44,12 @@ const Profile = () => {
       // Supabase auth
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        const { data } = await supabase
+        const { data } = await (supabase as any)
           .from("profiles")
           .select("display_name")
           .eq("id", user.id)
           .single();
-        if (data?.display_name) setDisplayName(data.display_name);
+        if ((data as any)?.display_name) setDisplayName((data as any).display_name);
       } catch { /* ignore */ }
       setLoading(false);
     };
@@ -77,7 +78,7 @@ const Profile = () => {
     // Supabase save
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("profiles")
         .update({ display_name: displayName, updated_at: new Date().toISOString() })
         .eq("id", user.id);
@@ -108,7 +109,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background" dir={isHe ? "rtl" : "ltr"}>
       <div className="container mx-auto max-w-lg px-4 py-20">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="mb-6 gap-2">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/hub")} className="mb-6 gap-2">
           <ArrowRight className={`h-4 w-4 ${isHe ? "" : "rotate-180"}`} />
           {isHe ? "חזרה לדף הראשי" : "Back to home"}
         </Button>
@@ -174,6 +175,6 @@ const Profile = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Profile;
+export default PageComponent;

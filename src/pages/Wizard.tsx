@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -17,7 +18,7 @@ import { motion } from "framer-motion";
 
 type WizardState = "trackSelect" | "express" | "form" | "processing";
 
-const Wizard = () => {
+const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { profile, persistFormData } = useUserProfile();
@@ -46,8 +47,8 @@ const Wizard = () => {
       plans.push(plan);
       localStorage.setItem("funnelforge-plans", JSON.stringify(plans));
     } catch { /* ignore */ }
-    navigate(`/plans/${result.id}`);
-  }, [result, navigate]);
+    navigate(`/growth/plans/${result.id}`);
+  }, [result, router]);
 
   const handleRegenerate = useCallback(() => {
     if (!profile.lastFormData) return;
@@ -185,6 +186,6 @@ const Wizard = () => {
       )}
     </div>
   );
-};
+}
 
-export default Wizard;
+export default PageComponent;

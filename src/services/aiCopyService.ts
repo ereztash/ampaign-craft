@@ -120,17 +120,21 @@ export async function generateCopy(request: CopyGenerationRequest): Promise<Copy
 
   const systemPrompt = buildSystemPrompt(request);
 
-  const { data, error } = await supabase.functions.invoke("generate-copy", {
-    body: {
+  const _resp = await fetch("/api/growth/generate-copy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
       prompt: request.prompt,
       systemPrompt,
       model: modelSelection.model,
       maxTokens: modelSelection.maxTokens,
-    },
-  });
+    }),
+      });
+  const data = await _resp.json();
+  const error = _resp.ok ? null : (data?.error || _resp.statusText);
 
   if (error) {
-    throw new Error(`AI copy generation failed: ${error.message}`);
+    throw new Error(`AI copy generation failed: ${error}`);
   }
 
   const text = data?.text || "";

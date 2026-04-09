@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -12,7 +13,7 @@ import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Crosshair, BarChart3, TrendingUp, DollarSign, Heart, Sparkles, ArrowDown, Check } from "lucide-react";
 
-const Landing = () => {
+const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { user } = useAuth();
@@ -22,8 +23,8 @@ const Landing = () => {
 
   // Authenticated users go to dashboard
   useEffect(() => {
-    if (user) navigate("/dashboard", { replace: true });
-  }, [user, navigate]);
+    if (user) navigate("/dashboard");
+  }, [user, router]);
 
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true } };
 
@@ -226,6 +227,6 @@ const Landing = () => {
       </section>
     </div>
   );
-};
+}
 
-export default Landing;
+export default PageComponent;

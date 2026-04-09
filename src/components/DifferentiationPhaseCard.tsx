@@ -315,8 +315,8 @@ function CompetitorArchetypeSelector({ formData, onUpdate, options }: { formData
 
 function BuyingCommitteeSelector({ formData, onUpdate, options }: { formData: DifferentiationFormData; onUpdate: (p: Partial<DifferentiationFormData>) => void; options: { value: string; label: { he: string; en: string } }[] }) {
   const { language } = useLanguage();
-  const selected = formData.buyingCommitteeMap;
-  const selectedIds = new Set(selected.map((r) => r.role));
+  const selected = formData.buyingCommitteeMap ?? [];
+  const selectedIds = new Set((selected || []).map((r) => r.role));
 
   const toggle = (roleId: string) => {
     if (selectedIds.has(roleId as BuyingCommitteeRoleId)) {

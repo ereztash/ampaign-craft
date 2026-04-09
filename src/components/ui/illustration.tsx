@@ -10,7 +10,7 @@ interface IllustrationProps {
 }
 
 const Illustration = ({ type, size = 64, className = "" }: IllustrationProps) => {
-  const illustrations: Record<string, JSX.Element> = {
+  const illustrations: Record<string, React.JSX.Element> = {
     funnel: (
       <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
         <path d="M8 12h48l-14 16v16l-20 8V28L8 12z" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.1" />

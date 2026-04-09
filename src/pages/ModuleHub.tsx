@@ -1,3 +1,4 @@
+
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -16,7 +17,7 @@ import { Sparkles, ArrowDown, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const ModuleHub = () => {
+const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { user } = useAuth();
@@ -34,13 +35,13 @@ const ModuleHub = () => {
     return null;
   }, [profile.lastFormData]);
 
-  const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
-  const planCount = (() => { try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]").length; } catch { return 0; } })();
+  const hasDiff = typeof window !== "undefined" && !!localStorage.getItem("funnelforge-differentiation-result");
+  const planCount = (() => { if (typeof window === "undefined") return 0; try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]").length; } catch { return 0; } })();
 
   const nextStep = useMemo(() => {
     const dummyGraph = graph || buildUserKnowledgeGraph({ businessField: "", audienceType: "b2c", ageRange: [25, 55], interests: "", productDescription: "", averagePrice: 0, salesModel: "oneTime", budgetRange: "medium", mainGoal: "sales", existingChannels: [], experienceLevel: "beginner" });
-    return getRecommendedNextStep(dummyGraph, hasDiff, planCount, new Set(mastery.features || []));
-  }, [graph, hasDiff, planCount, mastery.features]);
+    return getRecommendedNextStep(dummyGraph, hasDiff, planCount, new Set((mastery as any).features || []));
+  }, [graph, hasDiff, planCount, (mastery as any).features]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -97,7 +98,7 @@ const ModuleHub = () => {
       {/* Recommended Next Step (for authenticated users) */}
       {user && (
         <section className="container mx-auto px-4 py-4 max-w-2xl">
-          <Card role="button" tabIndex={0} className="border-2 border-amber-500/30 bg-amber-500/5 cursor-pointer hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-primary" onClick={() => navigate(nextStep.route)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate(nextStep.route); }}>
+          <Card role="button" tabIndex={0} className="border-2 border-amber-500/30 bg-amber-500/5 cursor-pointer hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-primary" onClick={() => navigate("/" + nextStep.route.replace(/^\//, ""))} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate("/" + nextStep.route.replace(/^\//, "")); }}>
             <CardContent className="p-5 flex items-center gap-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
                 <Sparkles className="h-5 w-5 text-amber-500" />
@@ -137,6 +138,6 @@ const ModuleHub = () => {
       </section>
     </div>
   );
-};
+}
 
-export default ModuleHub;
+export default PageComponent;
