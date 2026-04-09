@@ -37,6 +37,15 @@ export { coiAgent } from "./agents/coiAgent";
 export { retentionAgent } from "./agents/retentionAgent";
 export { healthAgent } from "./agents/healthAgent";
 
+// QA agents (MAS-CC Phase 2)
+export { qaStaticAgent } from "./agents/qaStaticAgent";
+export { qaContentAgent } from "./agents/qaContentAgent";
+export { qaSecurityAgent } from "./agents/qaSecurityAgent";
+export { qaOrchestratorAgent } from "./agents/qaOrchestratorAgent";
+
+// LLM agent factory
+export { createLLMAgent, parseLLMJson } from "./llmAgent";
+
 import { Blackboard } from "./blackboardStore";
 import { AgentRunner } from "./agentRunner";
 import { AsyncAgentRunner } from "./asyncAgentRunner";
