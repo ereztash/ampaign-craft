@@ -1,16 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { FormData, ExperienceLevel, SavedPlan } from "@/types/funnel";
+import { UnifiedProfile, fromFormData, toFormData, INITIAL_UNIFIED_PROFILE } from "@/types/profile";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-
-// ═══════════════════════════════════════════════
-// Types
-// ═══════════════════════════════════════════════
 
 export type UserSegment = "new-beginner" | "new-intermediate" | "new-advanced" | "returning";
 
 export interface UserProfile {
-  // Identity
   isReturningUser: boolean;
   visitCount: number;
   lastVisitDate: string | null;
@@ -18,15 +14,14 @@ export interface UserProfile {
   lastPlanSummary: { name: string; date: string } | null;
   savedPlanCount: number;
 
-  // Current session
   currentFormData: FormData | null;
   experienceLevel: ExperienceLevel | "";
 
-  // Device & preferences
+  unifiedProfile: UnifiedProfile | null;
+
   isMobile: boolean;
   prefersReducedMotion: boolean;
 
-  // Derived
   userSegment: UserSegment;
   achievements: string[];
 }
@@ -36,6 +31,8 @@ interface UserProfileContextType {
   updateFormData: (data: FormData | null) => void;
   setExperienceLevel: (level: ExperienceLevel | "") => void;
   persistFormData: (data: FormData) => void;
+  setUnifiedProfile: (p: UnifiedProfile) => void;
+  persistUnifiedProfile: (p: UnifiedProfile) => void;
   addAchievement: (id: string) => void;
   refreshSavedPlanCount: () => void;
 }
@@ -49,6 +46,7 @@ const KEYS = {
   lastForm: "funnelforge-last-form",
   plans: "funnelforge-plans",
   achievements: "funnelforge-achievements",
+  unifiedProfile: "funnelforge-profile",
 } as const;
 
 // ═══════════════════════════════════════════════
@@ -113,8 +111,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const [currentFormData, setCurrentFormData] = useState<FormData | null>(null);
   const [experienceLevel, setExperienceLevelState] = useState<ExperienceLevel | "">("");
   const [achievements, setAchievements] = useState<string[]>([]);
+  const [unifiedProfile, setUnifiedProfileState] = useState<UnifiedProfile | null>(null);
 
-  // Initialize from localStorage
   useEffect(() => {
     const profileData = safeParseJson<{ visitCount: number; lastVisitDate: string | null }>(
       KEYS.userProfile,
@@ -128,27 +126,32 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setLastVisitDate(profileData.lastVisitDate);
     setIsReturningUser(isReturning);
 
-    // Persist updated visit info
     typeof window !== "undefined" && localStorage.setItem(
       KEYS.userProfile,
       JSON.stringify({ visitCount: newVisitCount, lastVisitDate: new Date().toISOString() })
     );
 
-    // Load last form data
     const lastForm = safeParseJson<FormData | null>(KEYS.lastForm, null);
     setLastFormData(lastForm);
     if (lastForm?.experienceLevel) {
       setExperienceLevelState(lastForm.experienceLevel);
     }
 
-    // Load saved plans
     const plans = getSavedPlans();
     setSavedPlanCount(plans.length);
     setLastPlanSummary(getLastPlanSummary(plans));
 
-    // Load achievements
     const savedAchievements = safeParseJson<string[]>(KEYS.achievements, []);
     setAchievements(savedAchievements);
+
+    const savedUnified = safeParseJson<UnifiedProfile | null>(KEYS.unifiedProfile, null);
+    if (savedUnified) {
+      setUnifiedProfileState(savedUnified);
+    } else if (lastForm && lastForm.businessField) {
+      const migrated = fromFormData(lastForm);
+      setUnifiedProfileState(migrated);
+      typeof window !== "undefined" && localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(migrated));
+    }
   }, []);
 
   const updateFormData = useCallback((data: FormData | null) => {
@@ -165,6 +168,19 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const persistFormData = useCallback((data: FormData) => {
     typeof window !== "undefined" && localStorage.setItem(KEYS.lastForm, JSON.stringify(data));
     setLastFormData(data);
+  }, []);
+
+  const setUnifiedProfile = useCallback((p: UnifiedProfile) => {
+    setUnifiedProfileState(p);
+  }, []);
+
+  const persistUnifiedProfile = useCallback((p: UnifiedProfile) => {
+    setUnifiedProfileState(p);
+    typeof window !== "undefined" && localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(p));
+    const fd = toFormData(p);
+    typeof window !== "undefined" && localStorage.setItem(KEYS.lastForm, JSON.stringify(fd));
+    setLastFormData(fd);
+    if (p.experienceLevel) setExperienceLevelState(p.experienceLevel);
   }, []);
 
   const addAchievement = useCallback((id: string) => {
@@ -191,6 +207,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     savedPlanCount,
     currentFormData,
     experienceLevel,
+    unifiedProfile,
     isMobile,
     prefersReducedMotion,
     userSegment: deriveSegment(isReturningUser, experienceLevel),
@@ -204,6 +221,8 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         updateFormData,
         setExperienceLevel,
         persistFormData,
+        setUnifiedProfile,
+        persistUnifiedProfile,
         addAchievement,
         refreshSavedPlanCount,
       }}
