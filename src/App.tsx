@@ -10,8 +10,12 @@ import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
+import AppShell from "@/components/AppShell";
 
-const ModuleHub = lazy(() => import("./pages/ModuleHub"));
+// Pages
+const CommandCenter = lazy(() => import("./pages/CommandCenter"));
+const DataHub = lazy(() => import("./pages/DataHub"));
+const StrategyCanvas = lazy(() => import("./pages/StrategyCanvas"));
 const Index = lazy(() => import("./pages/Index"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Wizard = lazy(() => import("./pages/Wizard"));
@@ -40,7 +44,14 @@ const AnimatedRoutes = () => {
         transition={{ duration: 0.15 }}
       >
         <Routes location={location}>
-          <Route path="/" element={<ModuleHub />} />
+          {/* New data-first routes */}
+          <Route path="/" element={<CommandCenter />} />
+          <Route path="/data" element={<DataHub />} />
+          <Route path="/strategy" element={<StrategyCanvas />} />
+          <Route path="/strategy/:planId" element={<StrategyCanvas />} />
+          <Route path="/strategy/:planId/:focus" element={<StrategyCanvas />} />
+
+          {/* Existing module routes */}
           <Route path="/legacy" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/wizard" element={<Wizard />} />
@@ -69,9 +80,11 @@ const App = () => (
           <Sonner />
           <ErrorBoundary>
             <BrowserRouter>
-              <Suspense fallback={<LoadingFallback />}>
-                <AnimatedRoutes />
-              </Suspense>
+              <AppShell>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AnimatedRoutes />
+                </Suspense>
+              </AppShell>
             </BrowserRouter>
           </ErrorBoundary>
         </TooltipProvider>
