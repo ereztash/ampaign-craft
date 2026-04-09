@@ -8,7 +8,7 @@
 // TYPES
 // ═══════════════════════════════════════════════
 
-export type IntegrationPlatform = "slack" | "whatsapp" | "google_analytics" | "facebook_ads" | "mailchimp";
+export type IntegrationPlatform = "slack" | "whatsapp" | "google_analytics" | "facebook_ads" | "mailchimp" | "webhook" | "hubspot";
 
 export type IntegrationStatus = "disconnected" | "pending" | "connected" | "error";
 
@@ -161,6 +161,26 @@ export const PLATFORM_CONFIG: Record<
     availableEvents: ["plan_generated"],
     requiresOAuth: true,
   },
+  webhook: {
+    name: { he: "Webhook / Zapier", en: "Webhook / Zapier" },
+    description: {
+      he: "שלח ארועים לכל שירות חיצוני דרך webhook — תואם Zapier, Make, n8n",
+      en: "Send events to any external service via webhook — compatible with Zapier, Make, n8n",
+    },
+    icon: "link",
+    availableEvents: ["plan_generated", "qa_completed", "research_completed", "weekly_pulse"],
+    requiresOAuth: false,
+  },
+  hubspot: {
+    name: { he: "HubSpot CRM", en: "HubSpot CRM" },
+    description: {
+      he: "סנכרן אנשי קשר ועסקאות ל-CRM",
+      en: "Sync contacts and deals to CRM",
+    },
+    icon: "database",
+    availableEvents: ["plan_generated", "qa_completed"],
+    requiresOAuth: true,
+  },
 };
 
 // ═══════════════════════════════════════════════
@@ -180,7 +200,7 @@ export function formatPlanNotification(
   switch (platform) {
     case "slack":
       return {
-        text: `🎯 תוכנית שיווק חדשה נוצרה: *${planName}*${scoreText}`,
+        text: `תוכנית שיווק חדשה נוצרה: *${planName}*${scoreText}`,
         metadata: { type: "mrkdwn" },
       };
     case "whatsapp":
@@ -188,10 +208,85 @@ export function formatPlanNotification(
         text: `תוכנית שיווק חדשה נוצרה: ${planName}${scoreText}`,
         metadata: { template: "plan_notification" },
       };
+    case "webhook":
+      return {
+        text: `New marketing plan: ${planName}${scoreText}`,
+        metadata: formatWebhookPayload("plan_generated", { planName, score }),
+      };
     default:
       return {
         text: `New marketing plan: ${planName}${scoreText}`,
         metadata: {},
       };
+  }
+}
+
+// ═══════════════════════════════════════════════
+// WEBHOOK PAYLOAD FORMATTING
+// ═══════════════════════════════════════════════
+
+export interface WebhookPayload {
+  event: IntegrationEvent;
+  timestamp: string;
+  data: Record<string, unknown>;
+  source: "campaign-craft";
+  version: "1.0";
+}
+
+/**
+ * Format a generic webhook payload for outbound dispatch.
+ * Compatible with Zapier, Make (Integromat), n8n, and custom receivers.
+ */
+export function formatWebhookPayload(
+  event: IntegrationEvent,
+  data: Record<string, unknown>
+): WebhookPayload {
+  return {
+    event,
+    timestamp: new Date().toISOString(),
+    data,
+    source: "campaign-craft",
+    version: "1.0",
+  };
+}
+
+/**
+ * Build webhook payloads for all supported event types.
+ */
+export function buildEventPayload(
+  event: IntegrationEvent,
+  context: {
+    planName?: string;
+    score?: number;
+    industry?: string;
+    userId?: string;
+    summary?: string;
+  }
+): WebhookPayload {
+  switch (event) {
+    case "plan_generated":
+      return formatWebhookPayload(event, {
+        plan_name: context.planName,
+        industry: context.industry,
+        user_id: context.userId,
+      });
+    case "qa_completed":
+      return formatWebhookPayload(event, {
+        plan_name: context.planName,
+        score: context.score,
+        user_id: context.userId,
+      });
+    case "research_completed":
+      return formatWebhookPayload(event, {
+        summary: context.summary,
+        user_id: context.userId,
+      });
+    case "weekly_pulse":
+      return formatWebhookPayload(event, {
+        summary: context.summary,
+        user_id: context.userId,
+      });
+    default:
+      return formatWebhookPayload(event, context);
   }
 }
