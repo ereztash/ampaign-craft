@@ -5,6 +5,7 @@
  */
 
 import { FormData, FunnelResult } from "@/types/funnel";
+import { assessChurnRisk } from "./churnPredictionEngine";
 
 export interface HealthScoreBreakdown {
   category: string;
@@ -18,6 +19,11 @@ export interface HealthScore {
   total: number; // 0-100
   tier: "critical" | "needs-work" | "good" | "excellent";
   breakdown: HealthScoreBreakdown[];
+  retentionReadiness?: {
+    score: number; // 0-100
+    riskTier: string;
+    nrrProjection: { current: number; withIntervention: number };
+  };
 }
 
 export function calculateHealthScore(result: FunnelResult): HealthScore {
@@ -132,7 +138,18 @@ export function calculateHealthScore(result: FunnelResult): HealthScore {
   const tier: HealthScore["tier"] =
     total >= 80 ? "excellent" : total >= 60 ? "good" : total >= 40 ? "needs-work" : "critical";
 
-  return { total, tier, breakdown };
+  // Retention readiness (supplementary, doesn't affect total score)
+  const churnAssessment = assessChurnRisk(formData);
+  const retentionReadiness = {
+    score: Math.max(0, 100 - churnAssessment.riskScore),
+    riskTier: churnAssessment.riskTier,
+    nrrProjection: {
+      current: churnAssessment.nrrProjection.current,
+      withIntervention: churnAssessment.nrrProjection.withIntervention,
+    },
+  };
+
+  return { total, tier, breakdown, retentionReadiness };
 }
 
 export function getHealthScoreColor(score: number): string {

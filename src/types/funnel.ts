@@ -173,6 +173,23 @@ export interface NeuroStorytellingData {
   axiom: { he: string; en: string };
 }
 
+export interface HormoziDimension {
+  score: number;
+  analysis: { he: string; en: string };
+  tips: { he: string; en: string }[];
+}
+
+export interface HormoziValueResult {
+  dreamOutcome: HormoziDimension;
+  perceivedLikelihood: HormoziDimension;
+  timeDelay: HormoziDimension;
+  effortSacrifice: HormoziDimension;
+  overallScore: number;
+  offerGrade: "irresistible" | "strong" | "average" | "weak";
+  optimizationPriority: { he: string; en: string };
+  valueEquationDisplay: { he: string; en: string };
+}
+
 export interface FunnelResult {
   id: string;
   funnelName: { he: string; en: string };
@@ -186,6 +203,7 @@ export interface FunnelResult {
   formData: FormData;
   personalBrand?: PersonalBrandData;
   neuroStorytelling?: NeuroStorytellingData;
+  hormoziValue?: HormoziValueResult;
   /** Linked differentiation result (if user completed /differentiate) */
   differentiationId?: string;
 }

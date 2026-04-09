@@ -1,5 +1,6 @@
 import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip, CopyLabData, CopyFormula, ReaderProfile, WritingTechnique, PersonalBrandData, NeuroStorytellingData, NeuroVector, NeuroPromptTemplate, EntropyGuide } from "@/types/funnel";
 import { UserKnowledgeGraph, getFieldNameHe, getFieldNameEn, formatPrice } from "./userKnowledgeGraph";
+import { calculateValueScore } from "./hormoziValueEngine";
 
 function getBudgetRange(range: string): { min: number; max: number } {
   switch (range) {
@@ -1175,6 +1176,7 @@ export function generateFunnel(data: FormData): FunnelResult {
     formData: data,
     personalBrand: getPersonalBrandData(data),
     neuroStorytelling: getNeuroStorytellingData(data, stageDefinitions),
+    hormoziValue: calculateValueScore(data),
   };
 }
 
@@ -1356,6 +1358,8 @@ export function personalizeResult(result: FunnelResult, graph: UserKnowledgeGrap
     ...result,
     copyLab: personalizeCopyLab(result.copyLab, graph),
     hookTips: personalizeHookTips(result.hookTips, graph),
+    // Re-calculate Hormozi value with full knowledge graph context
+    hormoziValue: calculateValueScore(result.formData, graph),
   };
 }
 
