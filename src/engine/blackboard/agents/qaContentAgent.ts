@@ -26,7 +26,7 @@ export const qaContentAgent: AsyncAgentDefinition = createLLMAgent({
     ];
 
     if (graph) {
-      parts.push(`Business context: ${graph.identity?.industryLabel || "unknown"} industry, ${graph.identity?.audienceLabel || "unknown"} audience.`);
+      parts.push(`Business context: ${(graph as any).identity?.industryLabel || graph.derived?.identityStatement?.en || "unknown"} industry, ${(graph as any).identity?.audienceLabel || graph.business?.audience || "unknown"} audience.`);
     }
 
     return parts.join("\n");

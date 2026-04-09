@@ -27,7 +27,7 @@ const PageComponent = () => {
     if (!authLoading && !user) {
       navigate("/hub");
     }
-  }, [authLoading, user, router]);
+  }, [authLoading, user, navigate]);
 
   // Load profile
   useEffect(() => {

@@ -129,7 +129,7 @@ const CommandCenter = () => {
               graph={graph}
               hasDiff={hasDiff}
               planCount={plans.length}
-              masteryFeatures={new Set(mastery.features || [])}
+              masteryFeatures={new Set((mastery as any).features || [])}
             />
           </div>
           <div className="lg:col-span-2 space-y-3">

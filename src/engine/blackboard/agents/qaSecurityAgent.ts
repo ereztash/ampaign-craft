@@ -122,7 +122,8 @@ function collectTextContent(result: FunnelResult): TextItem[] {
     if (stage.name?.en) items.push({ text: stage.name.en, location: `stages[${i}].name.en` });
 
     for (const channel of (stage.channels || [])) {
-      if (channel.name) items.push({ text: channel.name, location: `stages[${i}].channels` });
+      const chName = typeof channel.name === "string" ? channel.name : channel.name?.he || channel.name?.en || "";
+      if (chName) items.push({ text: chName, location: `stages[${i}].channels` });
     }
   }
 
