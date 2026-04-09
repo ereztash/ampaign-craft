@@ -359,48 +359,18 @@ export const translations = {
   groupContent: { he: "תוכן", en: "Content" },
   groupGrowth: { he: "צמיחה", en: "Growth" },
 
-  // Command Center
-  commandCenter: { he: "מרכז בקרה", en: "Command Center" },
-  commandCenterDesc: { he: "תמונה מלאה של העסק שלך — תובנות, חסמים ופעולות מומלצות", en: "Full picture of your business — insights, bottlenecks, and recommended actions" },
-  healthScore: { he: "ציון בריאות", en: "Health Score" },
-  dataSources: { he: "מקורות מידע", en: "Data Sources" },
-  bottlenecks: { he: "חסמים", en: "Bottlenecks" },
-  quickActions: { he: "פעולות מהירות", en: "Quick Actions" },
-  connectData: { he: "חבר מידע", en: "Connect Data" },
-  insightsTitle: { he: "תובנות ופעולות מומלצות", en: "Insights & Recommended Actions" },
-  connectDataCta: { he: "חבר מקור מידע כדי לקבל תובנות", en: "Connect a data source to get insights" },
-  systemPower: { he: "עוצמת המערכת", en: "System Power" },
-  recentPlans: { he: "תוכניות אחרונות", en: "Recent Plans" },
-
-  // Data Hub
-  dataHub: { he: "מקורות מידע", en: "Data Sources" },
-  dataHubDesc: { he: "ככל שתחבר יותר מידע, המערכת תהפוך חכמה יותר", en: "The more data you connect, the smarter the system becomes" },
-  connected: { he: "מחובר", en: "Connected" },
-  notConnected: { he: "לא מחובר", en: "Not Connected" },
-  connect: { he: "חבר", en: "Connect" },
-  records: { he: "רשומות", en: "records" },
-  businessProfile: { he: "פרופיל עסקי", en: "Business Profile" },
-  dataImport: { he: "ייבוא נתונים", en: "Data Import" },
-  writingStyle: { he: "טביעת סגנון", en: "Writing Style" },
-
-  // Strategy Canvas
-  strategyCanvas: { he: "קנבס אסטרטגי", en: "Strategy Canvas" },
-  strategyCanvasDesc: { he: "מפת מודולים, חסמים וטקטיקות", en: "Module map, bottlenecks, and tactics" },
-  clickModule: { he: "לחץ על מודול כדי לצפות באסטרטגיה", en: "Click a module to view its strategy" },
-  bottlenecksAndTactics: { he: "חסמים וטקטיקות", en: "Bottlenecks & Tactics" },
-  overallScore: { he: "ציון כללי", en: "Overall Score" },
-
-  // Sidebar Navigation
-  navMain: { he: "ראשי", en: "Main" },
-  navTools: { he: "כלים", en: "Tools" },
-  navCommandCenter: { he: "מרכז בקרה", en: "Command Center" },
-  navDataSources: { he: "מקורות מידע", en: "Data Sources" },
-  navStrategyCanvas: { he: "קנבס אסטרטגי", en: "Strategy Canvas" },
-  navAiCoach: { he: "AI Coach", en: "AI Coach" },
+  // App shell / navigation
+  navWorkspace: { he: "סביבת עבודה", en: "Workspace" },
+  navCommandCenter: { he: "מרכז פיקוד", en: "Command Center" },
+  navDataSources: { he: "מקורות נתונים", en: "Data Sources" },
+  navStrategyCanvas: { he: "לוח אסטרטגיה", en: "Strategy Canvas" },
+  navAiCoach: { he: "מאמן AI", en: "AI Coach" },
   navSavedPlans: { he: "תוכניות שמורות", en: "Saved Plans" },
-  navDifferentiation: { he: "בידול", en: "Differentiation" },
-  navNewPlan: { he: "תוכנית חדשה", en: "New Plan" },
-  growthCenter: { he: "מרכז צמיחה", en: "Growth Center" },
+  navModules: { he: "מודולים", en: "Modules" },
+  navDifferentiate: { he: "בידול", en: "Differentiation" },
+  navWizard: { he: "אשף משפך", en: "Funnel wizard" },
+  navProfile: { he: "הגדרות ופרופיל", en: "Settings & Profile" },
+  navMobileLabel: { he: "ניווט ראשי", en: "Main navigation" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

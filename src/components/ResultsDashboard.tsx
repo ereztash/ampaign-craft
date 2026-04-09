@@ -52,6 +52,8 @@ interface ResultsDashboardProps {
   defaultTab?: string;
   onEdit: () => void;
   onNewPlan: () => void;
+  /** When true, removes top offset meant for legacy fixed Header */
+  embeddedInShell?: boolean;
 }
 
 const STAGE_IDS = ["awareness", "engagement", "leads", "conversion", "retention"];
@@ -64,7 +66,7 @@ const NEURO_LABELS: Record<string, { emoji: string; vector: { he: string; en: st
   retention: { emoji: "●", vector: { he: "אוקסיטוצין", en: "Oxytocin" }, desc: { he: "אמון מתמשך: הישאר איתנו", en: "Ongoing trust: stay with us" } },
 };
 
-const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: ResultsDashboardProps) => {
+const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, embeddedInShell }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
   const { profile } = useUserProfile();
   const reducedMotion = useReducedMotion();
@@ -189,7 +191,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan }: R
 
   return (
     <>
-    <div className="min-h-screen px-4 pt-24 pb-12">
+    <div className={cn("min-h-screen px-4 pb-12", embeddedInShell ? "pt-4" : "pt-24")}>
       <div className="mx-auto max-w-5xl" id="results-content">
         {/* Back to Hub */}
         <BackToHub currentPage={isHe ? "תוצאות שיווק" : "Marketing Results"} />

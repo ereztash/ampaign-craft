@@ -1,50 +1,38 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/AppSidebar";
-import MobileTabBar from "@/components/MobileTabBar";
+import { Suspense } from "react";
+import { Outlet } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/AppSidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
+import AppTopBar from "@/components/AppTopBar";
+import MobileTabBar from "@/components/MobileTabBar";
+import LoadingFallback from "@/components/LoadingFallback";
 
-interface AppShellProps {
-  children: React.ReactNode;
-}
-
-const AppShell = ({ children }: AppShellProps) => {
-  const { language, setLanguage } = useLanguage();
-  const isHe = language === "he";
-  const isMobile = useIsMobile();
+const AppShell = () => {
+  const { isRTL } = useLanguage();
 
   return (
-    <SidebarProvider defaultOpen={!isMobile}>
-      <AppSidebar />
-      <SidebarInset>
-        {/* Minimal top bar — breadcrumb area + language toggle */}
-        <header className="flex h-12 shrink-0 items-center justify-between border-b border-border px-4">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ms-1" />
+    <SidebarProvider
+      defaultOpen
+      style={
+        {
+          "--sidebar-width": "17.5rem",
+          "--sidebar-width-icon": "4rem",
+        } as React.CSSProperties
+      }
+    >
+      <div className="flex min-h-svh w-full" dir={isRTL ? "rtl" : "ltr"}>
+        <AppSidebar />
+        <SidebarInset>
+          <AppTopBar />
+          <div className="flex flex-1 flex-col pb-20 md:pb-0">
+            <Suspense fallback={<LoadingFallback />}>
+              <Outlet />
+            </Suspense>
           </div>
-          <div className="flex items-center gap-2 md:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLanguage(isHe ? "en" : "he")}
-              className="h-8 gap-1 text-xs"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              {isHe ? "EN" : "עב"}
-            </Button>
-          </div>
-        </header>
-
-        {/* Main content area */}
-        <div className={`flex-1 ${isMobile ? "pb-16" : ""}`}>
-          {children}
-        </div>
-      </SidebarInset>
-
-      {/* Mobile bottom tab bar */}
-      {isMobile && <MobileTabBar />}
+          <MobileTabBar />
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 };

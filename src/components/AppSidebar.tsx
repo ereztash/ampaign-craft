@@ -1,12 +1,11 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { useDarkMode } from "@/hooks/useDarkMode";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -14,222 +13,111 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-  useSidebar,
 } from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
-import {
-  LayoutDashboard,
-  Database,
-  Map,
-  Bot,
-  FolderOpen,
-  UserCircle,
-  Globe,
-  Sun,
-  Moon,
-  LogIn,
-  LogOut,
-  Crosshair,
-  Rocket,
-} from "lucide-react";
-
-interface NavItem {
-  id: string;
-  label: { he: string; en: string };
-  icon: React.ElementType;
-  path: string;
-  badge?: { he: string; en: string };
-}
-
-const MAIN_NAV: NavItem[] = [
-  {
-    id: "command-center",
-    label: { he: "מרכז בקרה", en: "Command Center" },
-    icon: LayoutDashboard,
-    path: "/",
-  },
-  {
-    id: "data-hub",
-    label: { he: "מקורות מידע", en: "Data Sources" },
-    icon: Database,
-    path: "/data",
-  },
-  {
-    id: "strategy",
-    label: { he: "קנבס אסטרטגי", en: "Strategy Canvas" },
-    icon: Map,
-    path: "/strategy",
-  },
-  {
-    id: "ai-coach",
-    label: { he: "AI Coach", en: "AI Coach" },
-    icon: Bot,
-    path: "/ai",
-  },
-];
-
-const SECONDARY_NAV: NavItem[] = [
-  {
-    id: "plans",
-    label: { he: "תוכניות שמורות", en: "Saved Plans" },
-    icon: FolderOpen,
-    path: "/plans",
-  },
-  {
-    id: "differentiate",
-    label: { he: "סוכן בידול", en: "Differentiation" },
-    icon: Crosshair,
-    path: "/differentiate",
-  },
-  {
-    id: "wizard",
-    label: { he: "תוכנית חדשה", en: "New Plan" },
-    icon: Rocket,
-    path: "/wizard",
-  },
-];
+import { LayoutDashboard, Database, Map, Bot, FileText, UserCircle } from "lucide-react";
 
 const AppSidebar = () => {
-  const { language, setLanguage } = useLanguage();
-  const isHe = language === "he";
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isDark, toggle: toggleDarkMode } = useDarkMode();
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const { t, isRTL } = useLanguage();
+  const { pathname } = useLocation();
+  const side = isRTL ? "right" : "left";
 
-  const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path);
-  };
-
-  const renderNavItem = (item: NavItem) => {
-    const Icon = item.icon;
-    const active = isActive(item.path);
-    return (
-      <SidebarMenuItem key={item.id}>
-        <SidebarMenuButton
-          onClick={() => navigate(item.path)}
-          isActive={active}
-          tooltip={item.label[language]}
-        >
-          <Icon className="h-4 w-4" />
-          <span>{item.label[language]}</span>
-          {item.badge && (
-            <Badge variant="secondary" className="ms-auto text-xs h-5 px-1.5">
-              {item.badge[language]}
-            </Badge>
-          )}
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    );
-  };
+  const nav = (to: string, end = false) => pathname === to || (!end && pathname.startsWith(to + "/"));
 
   return (
-    <Sidebar side={isHe ? "right" : "left"} collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              onClick={() => navigate("/")}
-              className="data-[state=open]:bg-sidebar-accent"
-            >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg funnel-gradient">
-                <span className="text-sm font-bold text-accent-foreground">F</span>
-              </div>
-              <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">FunnelForge</span>
-                <span className="text-xs text-muted-foreground">
-                  {isHe ? "מרכז צמיחה" : "Growth Center"}
-                </span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+    <Sidebar side={side} collapsible="icon" variant="sidebar" className="border-e border-sidebar-border">
+      <SidebarHeader className="border-b border-sidebar-border">
+        <NavLink to="/" className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient shrink-0">
+            <span className="text-sm font-bold text-accent-foreground">F</span>
+          </div>
+          <span className="font-bold text-sidebar-foreground group-data-[collapsible=icon]:hidden truncate">{t("appName")}</span>
+        </NavLink>
       </SidebarHeader>
-
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{isHe ? "ראשי" : "Main"}</SidebarGroupLabel>
-          <SidebarMenu>
-            {MAIN_NAV.map(renderNavItem)}
-          </SidebarMenu>
+          <SidebarGroupLabel>{t("navWorkspace")}</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/", true)} tooltip={t("navCommandCenter")}>
+                  <NavLink to="/" end>
+                    <LayoutDashboard />
+                    <span>{t("navCommandCenter")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/data")} tooltip={t("navDataSources")}>
+                  <NavLink to="/data">
+                    <Database />
+                    <span>{t("navDataSources")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/strategy")} tooltip={t("navStrategyCanvas")}>
+                  <NavLink to="/strategy">
+                    <Map />
+                    <span>{t("navStrategyCanvas")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/ai")} tooltip={t("navAiCoach")}>
+                  <NavLink to="/ai">
+                    <Bot />
+                    <span>{t("navAiCoach")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/plans")} tooltip={t("navSavedPlans")}>
+                  <NavLink to="/plans">
+                    <FileText />
+                    <span>{t("navSavedPlans")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
-
         <SidebarSeparator />
-
         <SidebarGroup>
-          <SidebarGroupLabel>{isHe ? "כלים" : "Tools"}</SidebarGroupLabel>
-          <SidebarMenu>
-            {SECONDARY_NAV.map(renderNavItem)}
-          </SidebarMenu>
+          <SidebarGroupLabel>{t("navModules")}</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/differentiate")} tooltip={t("navDifferentiate")}>
+                  <NavLink to="/differentiate">
+                    <span className="font-mono text-xs w-4 text-center">1</span>
+                    <span>{t("navDifferentiate")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/wizard")} tooltip={t("navWizard")}>
+                  <NavLink to="/wizard">
+                    <span className="font-mono text-xs w-4 text-center">2</span>
+                    <span>{t("navWizard")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
-          {/* Language toggle */}
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => setLanguage(isHe ? "en" : "he")}
-              tooltip={isHe ? "English" : "עברית"}
-            >
-              <Globe className="h-4 w-4" />
-              <span>{isHe ? "English" : "עברית"}</span>
+            <SidebarMenuButton asChild isActive={nav("/profile")} tooltip={t("navProfile")}>
+              <NavLink to="/profile">
+                <UserCircle />
+                <span>{t("navProfile")}</span>
+              </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
-
-          {/* Dark mode toggle */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={toggleDarkMode}
-              tooltip={isDark ? (isHe ? "מצב בהיר" : "Light Mode") : (isHe ? "מצב כהה" : "Dark Mode")}
-            >
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              <span>{isDark ? (isHe ? "מצב בהיר" : "Light Mode") : (isHe ? "מצב כהה" : "Dark Mode")}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          <SidebarSeparator />
-
-          {/* User / Auth */}
-          {user ? (
-            <>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => navigate("/profile")}
-                  tooltip={isHe ? "פרופיל" : "Profile"}
-                >
-                  <UserCircle className="h-4 w-4" />
-                  <span>{user.displayName || user.email}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => signOut()}
-                  tooltip={isHe ? "התנתק" : "Sign Out"}
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>{isHe ? "התנתק" : "Sign Out"}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </>
-          ) : (
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => navigate("/profile")}
-                tooltip={isHe ? "התחבר" : "Sign In"}
-              >
-                <LogIn className="h-4 w-4" />
-                <span>{isHe ? "התחבר" : "Sign In"}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )}
         </SidebarMenu>
       </SidebarFooter>
-
       <SidebarRail />
     </Sidebar>
   );

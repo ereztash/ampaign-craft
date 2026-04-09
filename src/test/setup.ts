@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom";
+
 // Vitest test setup
 // Provides global mocks for browser APIs used in tests
 

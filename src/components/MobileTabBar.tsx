@@ -1,51 +1,46 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { LayoutDashboard, Database, Map, Bot, FolderOpen } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const TABS = [
-  { id: "home", icon: LayoutDashboard, label: { he: "בית", en: "Home" }, path: "/" },
-  { id: "data", icon: Database, label: { he: "מידע", en: "Data" }, path: "/data" },
-  { id: "strategy", icon: Map, label: { he: "אסטרטגיה", en: "Strategy" }, path: "/strategy" },
-  { id: "ai", icon: Bot, label: { he: "AI", en: "AI" }, path: "/ai" },
-  { id: "plans", icon: FolderOpen, label: { he: "תוכניות", en: "Plans" }, path: "/plans" },
-] as const;
-
 const MobileTabBar = () => {
-  const { language } = useLanguage();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { t, isRTL } = useLanguage();
 
-  const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path);
-  };
+  const items = [
+    { to: "/", end: true, icon: LayoutDashboard, label: t("navCommandCenter") },
+    { to: "/data", icon: Database, label: t("navDataSources") },
+    { to: "/strategy", icon: Map, label: t("navStrategyCanvas") },
+    { to: "/ai", icon: Bot, label: t("navAiCoach") },
+    { to: "/plans", icon: FileText, label: t("navSavedPlans") },
+  ] as const;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    <nav
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 flex h-16 items-stretch border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden",
+        "pb-[env(safe-area-inset-bottom)]",
+      )}
+      aria-label={t("navMobileLabel")}
     >
-      <div className="flex h-14 items-center justify-around">
-        {TABS.map((tab) => {
-          const Icon = tab.icon;
-          const active = isActive(tab.path);
-          return (
-            <button
-              key={tab.id}
-              onClick={() => navigate(tab.path)}
-              className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1.5 text-xs transition-colors",
-                active
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
+      <ul className={`flex flex-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+        {items.map(({ to, end, icon: Icon, label }) => (
+          <li key={to} className="flex-1 min-w-0">
+            <NavLink
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                cn(
+                  "flex h-full flex-col items-center justify-center gap-0.5 px-1 text-[10px] font-medium text-muted-foreground",
+                  isActive && "text-primary",
+                )
+              }
             >
-              <Icon className={cn("h-5 w-5", active && "text-primary")} />
-              <span className="leading-none">{tab.label[language]}</span>
-            </button>
-          );
-        })}
-      </div>
+              <Icon className="h-5 w-5 shrink-0" aria-hidden />
+              <span className="truncate w-full text-center leading-tight">{label}</span>
+            </NavLink>
+          </li>
+        ))}
+      </ul>
     </nav>
   );
 };

@@ -1,15 +1,12 @@
-// ═══════════════════════════════════════════════
-// Bottleneck Detection Engine
-// Analyzes all connected data to identify growth bottlenecks
-// across the 5-module pipeline with severity and recommended tactics
-// ═══════════════════════════════════════════════
+/**
+ * Bottleneck detection across the 5-module cycle.
+ * Pure logic — composes health score and business signals into prioritized issues.
+ */
 
 import { FunnelResult } from "@/types/funnel";
-import { UserKnowledgeGraph } from "./userKnowledgeGraph";
-import { HealthScore, calculateHealthScore } from "./healthScoreEngine";
 
-export type BottleneckSeverity = "critical" | "warning" | "info";
 export type BottleneckModule = "differentiation" | "marketing" | "sales" | "pricing" | "retention";
+export type BottleneckSeverity = "critical" | "warning" | "info";
 
 export interface Bottleneck {
   id: string;
@@ -17,314 +14,144 @@ export interface Bottleneck {
   severity: BottleneckSeverity;
   title: { he: string; en: string };
   description: { he: string; en: string };
-  metric?: { label: string; value: string; target: string };
-  tactics: Tactic[];
+  tactics: { he: string; en: string }[];
 }
 
-export interface Tactic {
-  id: string;
-  title: { he: string; en: string };
-  description: { he: string; en: string };
-  effort: "low" | "medium" | "high";
-  impact: "low" | "medium" | "high";
-  route?: string;
+export interface BottleneckInput {
+  funnelResult: FunnelResult | null;
+  hasDifferentiation: boolean;
+  planCount: number;
+  connectedSources: number;
+  healthScoreTotal: number | null;
 }
 
-export interface BottleneckAnalysis {
-  bottlenecks: Bottleneck[];
-  moduleHealth: Record<BottleneckModule, { score: number; status: "healthy" | "warning" | "critical" }>;
-  overallScore: number;
-  topPriority: Bottleneck | null;
-}
+export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
+  const { funnelResult, hasDifferentiation, planCount, connectedSources, healthScoreTotal } = input;
+  const out: Bottleneck[] = [];
 
-export function analyzeBottlenecks(
-  result: FunnelResult | null,
-  graph: UserKnowledgeGraph | null,
-  hasDiff: boolean,
-  planCount: number,
-): BottleneckAnalysis {
-  const bottlenecks: Bottleneck[] = [];
-
-  // Module health defaults
-  const moduleHealth: Record<BottleneckModule, { score: number; status: "healthy" | "warning" | "critical" }> = {
-    differentiation: { score: 0, status: "critical" },
-    marketing: { score: 0, status: "critical" },
-    sales: { score: 0, status: "critical" },
-    pricing: { score: 0, status: "critical" },
-    retention: { score: 0, status: "critical" },
-  };
-
-  // === DIFFERENTIATION MODULE ===
-  if (!hasDiff) {
-    bottlenecks.push({
+  if (!hasDifferentiation) {
+    out.push({
       id: "diff-missing",
       module: "differentiation",
-      severity: "critical",
-      title: { he: "בידול לא הוגדר", en: "No Differentiation Defined" },
+      severity: planCount > 0 ? "warning" : "info",
+      title: { he: "חסר בידול מפורש", en: "Differentiation not completed" },
       description: {
-        he: "בלי בידול ברור, כל שאר המודולים פועלים בגנרי — סקריפטי מכירה, תמחור ותוכן לא מותאמים",
-        en: "Without clear differentiation, all other modules operate generically — sales scripts, pricing, and content are not personalized",
+        he: "ללא בידול, סקריפטי מכירה והוקים פחות מדויקים לעסק שלך.",
+        en: "Without differentiation, sales scripts and hooks are less specific to your business.",
       },
       tactics: [
-        {
-          id: "start-diff",
-          title: { he: "התחל תהליך בידול", en: "Start Differentiation Process" },
-          description: { he: "10 דקות שישנו את כל התוצאות", en: "10 minutes that change all results" },
-          effort: "medium",
-          impact: "high",
-          route: "/differentiate",
-        },
+        { he: "השלם את אשף הבידול (10 דק׳)", en: "Complete the differentiation wizard (~10 min)" },
+        { he: "מפו מתחרים וערך נסתר", en: "Map competitors and hidden value" },
       ],
     });
-    moduleHealth.differentiation = { score: 10, status: "critical" };
-  } else {
-    // Check differentiation quality
-    try {
-      const diffRaw = localStorage.getItem("funnelforge-differentiation-result");
-      if (diffRaw) {
-        const diff = JSON.parse(diffRaw);
-        const diffScore = diff.differentiationScore || 0;
-        const claimScore = diff.claimVerificationScore || 0;
-
-        if (diffScore < 50) {
-          bottlenecks.push({
-            id: "diff-weak",
-            module: "differentiation",
-            severity: "warning",
-            title: { he: "בידול חלש", en: "Weak Differentiation" },
-            description: {
-              he: `ציון הבידול שלך ${diffScore}/100 — יש מקום לשיפור`,
-              en: `Your differentiation score is ${diffScore}/100 — room for improvement`,
-            },
-            metric: { label: "Score", value: `${diffScore}`, target: "70+" },
-            tactics: [
-              {
-                id: "improve-diff",
-                title: { he: "חזור לתהליך בידול", en: "Revisit Differentiation" },
-                description: { he: "עדכן טענות ובנה ראיות חזקות יותר", en: "Update claims and build stronger evidence" },
-                effort: "medium",
-                impact: "high",
-                route: "/differentiate",
-              },
-            ],
-          });
-          moduleHealth.differentiation = { score: diffScore, status: diffScore < 30 ? "critical" : "warning" };
-        } else {
-          moduleHealth.differentiation = { score: diffScore, status: "healthy" };
-        }
-
-        if (claimScore < 50) {
-          bottlenecks.push({
-            id: "diff-claims-weak",
-            module: "differentiation",
-            severity: "warning",
-            title: { he: "טענות בלי ראיות", en: "Claims Without Evidence" },
-            description: {
-              he: "חלק מהטענות שלך לא נתמכות בראיות — זה פוגע באמינות",
-              en: "Some of your claims lack supporting evidence — this hurts credibility",
-            },
-            metric: { label: "Verification", value: `${claimScore}%`, target: "70%+" },
-            tactics: [
-              {
-                id: "add-evidence",
-                title: { he: "הוסף ראיות", en: "Add Evidence" },
-                description: { he: "ציטוטי לקוחות, נתונים, case studies", en: "Customer quotes, data, case studies" },
-                effort: "low",
-                impact: "high",
-                route: "/differentiate",
-              },
-            ],
-          });
-        }
-      }
-    } catch {
-      moduleHealth.differentiation = { score: 50, status: "warning" };
-    }
   }
 
-  // === MARKETING MODULE ===
   if (planCount === 0) {
-    bottlenecks.push({
-      id: "mktg-no-plan",
+    out.push({
+      id: "no-plan",
       module: "marketing",
       severity: "critical",
-      title: { he: "אין תוכנית שיווק", en: "No Marketing Plan" },
+      title: { he: "אין תוכנית שיווק שנוצרה", en: "No marketing plan generated" },
       description: {
-        he: "בלי תוכנית, אתה פועל בלי כיוון — תקציב מתבזבז",
-        en: "Without a plan, you're operating without direction — budget is wasted",
+        he: "בלי תוכנית משפך אין בסיס למדדי ביצועים והקצאת תקציב.",
+        en: "Without a funnel plan there is no baseline for KPIs and budget allocation.",
       },
       tactics: [
-        {
-          id: "create-plan",
-          title: { he: "צור תוכנית שיווק", en: "Create Marketing Plan" },
-          description: { he: "2 דקות לתוכנית מלאה", en: "2 minutes to a full plan" },
-          effort: "low",
-          impact: "high",
-          route: "/wizard",
-        },
+        { he: "צור תוכנית מהירה או מודרכת", en: "Run express or guided wizard" },
+        { he: "חבר מקור נתונים לשיפור ההמלצות", en: "Connect a data source to sharpen recommendations" },
       ],
     });
-    moduleHealth.marketing = { score: 5, status: "critical" };
-  } else if (result) {
-    const health = calculateHealthScore(result);
-    moduleHealth.marketing = {
-      score: health.total,
-      status: health.total >= 70 ? "healthy" : health.total >= 40 ? "warning" : "critical",
-    };
+  }
 
-    if (health.total < 40) {
-      bottlenecks.push({
-        id: "mktg-health-low",
-        module: "marketing",
-        severity: "critical",
-        title: { he: "ציון בריאות שיווקית נמוך", en: "Low Marketing Health Score" },
-        description: {
-          he: `ציון ${health.total}/100 — יש פערים משמעותיים באסטרטגיה`,
-          en: `Score ${health.total}/100 — significant gaps in strategy`,
-        },
-        metric: { label: "Health", value: `${health.total}`, target: "70+" },
-        tactics: health.breakdown
-          .filter((b) => b.tips.length > 0)
-          .slice(0, 2)
-          .map((b, i) => ({
-            id: `health-fix-${i}`,
-            title: b.tips[0],
-            description: { he: `שיפור ב${b.label.he}`, en: `Improve ${b.label.en}` },
-            effort: "low" as const,
-            impact: "medium" as const,
-          })),
-      });
-    }
-
-    // Check channel diversity
-    const channels = result.formData.existingChannels || [];
-    if (channels.length < 3) {
-      bottlenecks.push({
-        id: "mktg-channels",
+  if (funnelResult) {
+    const { formData } = funnelResult;
+    if (formData.existingChannels.length < 2) {
+      out.push({
+        id: "mkt-channels",
         module: "marketing",
         severity: "warning",
-        title: { he: "גיוון ערוצים נמוך", en: "Low Channel Diversity" },
+        title: { he: "מעט ערוצי שיווק מוגדרים", en: "Few marketing channels defined" },
         description: {
-          he: `יש לך ${channels.length} ערוצים — פחות מ-3 מגביל את הגעה`,
-          en: `You have ${channels.length} channels — less than 3 limits reach`,
+          he: "מגוון נמוך מגביר תלות בערוץ בודד וסיכון לפערים במשפך.",
+          en: "Low channel diversity increases single-channel dependency and funnel gaps.",
         },
         tactics: [
-          {
-            id: "add-channels",
-            title: { he: "הוסף ערוצים", en: "Add Channels" },
-            description: { he: "עדכן את התוכנית עם ערוצים נוספים", en: "Update plan with additional channels" },
-            effort: "low",
-            impact: "medium",
-            route: "/wizard",
-          },
+          { he: "הוסף אימייל או וואטסאפ לפי קהל", en: "Add email or WhatsApp based on audience" },
+          { he: "בדוק הקצאת תקציב בין שלבי המשפך", en: "Review budget split across funnel stages" },
+        ],
+      });
+    }
+
+    if (healthScoreTotal !== null && healthScoreTotal < 50) {
+      out.push({
+        id: "mkt-health",
+        module: "marketing",
+        severity: healthScoreTotal < 35 ? "critical" : "warning",
+        title: { he: "ציון בריאות שיווקית נמוך", en: "Low marketing health score" },
+        description: {
+          he: "הגדרות המשפך חסרות או חלקיות — יש מקום לחיזוק מהיר.",
+          en: "Funnel inputs are incomplete — quick wins available.",
+        },
+        tactics: [
+          { he: "השלם תיאור מוצר ומטרה עיקרית", en: "Complete product description and main goal" },
+          { he: "עדכן תקציב ומודל מכירה", en: "Update budget range and sales model" },
         ],
       });
     }
   }
 
-  // === SALES MODULE ===
-  if (result) {
-    const hasSalesData = !!result.salesPipeline;
-    if (!hasSalesData) {
-      moduleHealth.sales = { score: 30, status: "warning" };
-      bottlenecks.push({
-        id: "sales-no-pipeline",
-        module: "sales",
-        severity: "warning",
-        title: { he: "אין Pipeline מכירות", en: "No Sales Pipeline" },
-        description: {
-          he: "בלי pipeline, קשה לנהל ולחזות מכירות",
-          en: "Without a pipeline, it's hard to manage and forecast sales",
-        },
-        tactics: [
-          {
-            id: "view-sales",
-            title: { he: "צפה בסקריפטי מכירה", en: "View Sales Scripts" },
-            description: { he: "סקריפטים מותאמים לDISC profile שלך", en: "Scripts personalized to your DISC profile" },
-            effort: "low",
-            impact: "high",
-            route: "/sales",
-          },
-        ],
-      });
-    } else {
-      moduleHealth.sales = { score: 65, status: "healthy" };
-    }
-  } else {
-    moduleHealth.sales = { score: 0, status: "critical" };
+  if (connectedSources === 0 && planCount > 0) {
+    out.push({
+      id: "data-velocity",
+      module: "marketing",
+      severity: "info",
+      title: { he: "אין מקורות נתונים מחוברים", en: "No connected data sources" },
+      description: {
+        he: "חיבור נתונים יאפשר תובנות עדכניות והתאמות קמפיין.",
+        en: "Connecting data enables fresher insights and campaign tuning.",
+      },
+      tactics: [
+        { he: "ייבא CSV או חבר מטא", en: "Import CSV or connect Meta" },
+        { he: "מלא פרופיל עסק כמקור הקשר", en: "Fill business profile as context source" },
+      ],
+    });
   }
 
-  // === PRICING MODULE ===
-  if (result) {
-    const price = result.formData.averagePrice || 0;
-    if (price === 0) {
-      bottlenecks.push({
-        id: "pricing-no-price",
-        module: "pricing",
-        severity: "warning",
-        title: { he: "מחיר לא הוגדר", en: "No Price Defined" },
-        description: {
-          he: "בלי מחיר ברור, אי אפשר לבנות מבנה tiers ו-offer stack",
-          en: "Without a clear price, can't build tier structure and offer stack",
-        },
-        tactics: [
-          {
-            id: "set-pricing",
-            title: { he: "הגדר תמחור", en: "Set Pricing" },
-            description: { he: "בנה מבנה 3 tiers עם decoy pricing", en: "Build 3-tier structure with decoy pricing" },
-            effort: "medium",
-            impact: "high",
-            route: "/pricing",
-          },
-        ],
-      });
-      moduleHealth.pricing = { score: 20, status: "warning" };
-    } else {
-      moduleHealth.pricing = { score: 60, status: "healthy" };
-    }
-  } else {
-    moduleHealth.pricing = { score: 0, status: "critical" };
+  // Sales / pricing / retention heuristics when plan exists
+  if (funnelResult && hasDifferentiation && funnelResult.formData.averagePrice <= 0) {
+    out.push({
+      id: "price-missing",
+      module: "pricing",
+      severity: "warning",
+      title: { he: "מחיר ממוצע לא הוגדר", en: "Average price not set" },
+      description: {
+        he: "תמחור והצעות תלויים במספרים ריאליים.",
+        en: "Pricing and offer stacks need realistic numbers.",
+      },
+      tactics: [
+        { he: "עדכן מחיר ממוצע בשאלון", en: "Update average price in questionnaire" },
+        { he: "בדוק מבנה מדרגות מחיר", en: "Review tier structure in strategy canvas" },
+      ],
+    });
   }
 
-  // === RETENTION MODULE ===
-  if (result?.formData.salesModel === "subscription") {
-    bottlenecks.push({
-      id: "retention-sub-critical",
+  const formData = funnelResult?.formData;
+  if (funnelResult && formData && !formData.mainGoal) {
+    out.push({
+      id: "goal-missing",
       module: "retention",
       severity: "info",
-      title: { he: "מודל מנויים — שימור קריטי", en: "Subscription Model — Retention Critical" },
+      title: { he: "מטרת צמיחה לא הוגדרה", en: "Growth goal not set" },
       description: {
-        he: "במודל מנויים, שימור הוא הגורם #1 לרווחיות — הגדר onboarding",
-        en: "In subscription models, retention is the #1 profitability driver — set up onboarding",
+        he: "שימור וצמיחה תלויים במטרה ברורה (מודעות/לידים/מכירות).",
+        en: "Retention strategy aligns to a clear goal (awareness/leads/sales).",
       },
       tactics: [
-        {
-          id: "setup-retention",
-          title: { he: "הגדר תוכנית שימור", en: "Set Up Retention Plan" },
-          description: { he: "Onboarding, churn prevention, referral", en: "Onboarding, churn prevention, referral" },
-          effort: "medium",
-          impact: "high",
-          route: "/retention",
-        },
+        { he: "בחר מטרה בשאלון", en: "Pick a main goal in the wizard" },
       ],
     });
-    moduleHealth.retention = { score: 30, status: "warning" };
-  } else if (result) {
-    moduleHealth.retention = { score: 40, status: "warning" };
   }
 
-  // Sort by severity
   const severityOrder: Record<BottleneckSeverity, number> = { critical: 0, warning: 1, info: 2 };
-  bottlenecks.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
-
-  // Calculate overall score
-  const scores = Object.values(moduleHealth).map((m) => m.score);
-  const overallScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-
-  return {
-    bottlenecks,
-    moduleHealth,
-    overallScore,
-    topPriority: bottlenecks[0] || null,
-  };
+  return out.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
 }

@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -6,7 +5,6 @@ import { FormData, FunnelResult } from "@/types/funnel";
 import { generateFunnel, personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import Header from "@/components/Header";
 import BackToHub from "@/components/BackToHub";
 import MultiStepForm from "@/components/MultiStepForm";
 import ExpressWizard from "@/components/ExpressWizard";
@@ -18,7 +16,7 @@ import { motion } from "framer-motion";
 
 type WizardState = "trackSelect" | "express" | "form" | "processing";
 
-const PageComponent = () => {
+const Wizard = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { profile, persistFormData } = useUserProfile();
@@ -47,8 +45,8 @@ const PageComponent = () => {
       plans.push(plan);
       localStorage.setItem("funnelforge-plans", JSON.stringify(plans));
     } catch { /* ignore */ }
-    navigate(`/growth/plans/${result.id}`);
-  }, [result, router]);
+    navigate(`/strategy/${result.id}`);
+  }, [result, navigate]);
 
   const handleRegenerate = useCallback(() => {
     if (!profile.lastFormData) return;
@@ -57,11 +55,9 @@ const PageComponent = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-
       {state === "trackSelect" && (
         <>
-          <div className="container mx-auto px-4 pt-20">
+          <div className="container mx-auto px-4 pt-4">
             <BackToHub />
           </div>
           <div className="container mx-auto px-4 pb-16 max-w-2xl">
@@ -159,7 +155,7 @@ const PageComponent = () => {
 
       {state === "express" && (
         <>
-          <div className="container mx-auto px-4 pt-20">
+          <div className="container mx-auto px-4 pt-4">
             <BackToHub />
             <Button variant="ghost" size="sm" onClick={() => setState("trackSelect")} className="text-muted-foreground mb-4">
               {isHe ? "← חזרה לבחירת מסלול" : "← Back to track selection"}
@@ -171,7 +167,7 @@ const PageComponent = () => {
 
       {state === "form" && (
         <>
-          <div className="container mx-auto px-4 pt-16">
+          <div className="container mx-auto px-4 pt-4">
             <BackToHub />
             <Button variant="ghost" size="sm" onClick={() => setState("trackSelect")} className="text-muted-foreground mb-2">
               {isHe ? "← חזרה לבחירת מסלול" : "← Back to track selection"}
@@ -186,6 +182,6 @@ const PageComponent = () => {
       )}
     </div>
   );
-}
+};
 
-export default PageComponent;
+export default Wizard;

@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
-import Header from "@/components/Header";
 import BackToHub from "@/components/BackToHub";
 import PricingIntelligenceTab from "@/components/PricingIntelligenceTab";
 import { Button } from "@/components/ui/button";
@@ -18,8 +17,7 @@ const PageComponent = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 pt-20 pb-16 max-w-5xl">
+      <main className="container mx-auto px-4 pt-4 pb-16 max-w-5xl">
         <BackToHub currentPage={language === "he" ? "תמחור" : "Pricing"} />
         {result ? (
           <PricingIntelligenceTab result={result} />
