@@ -6,6 +6,7 @@
 
 import { FormData } from "@/types/funnel";
 import { DifferentiationResult, MechanismStatement, TradeoffDeclaration, HiddenValueScore, CompetitorArchetype, BuyingCommitteeRoleId } from "@/types/differentiation";
+import { DISCProfile, inferDISCProfile } from "./discProfileEngine";
 
 // === TYPES ===
 
@@ -60,6 +61,7 @@ export interface UserKnowledgeGraph {
   voice: StylomeVoice | null;
   behavior: UserBehavior;
   derived: DerivedInsights;
+  discProfile: DISCProfile | null;
 }
 
 // === INDUSTRY KNOWLEDGE ===
@@ -175,7 +177,7 @@ export function buildUserKnowledgeGraph(
   // Build derived insights
   const derived = buildDerivedInsights(formData, differentiation, stylomeVoice, behavior);
 
-  return {
+  const graph: UserKnowledgeGraph = {
     business: {
       field,
       product: formData.productDescription || "",
@@ -192,7 +194,13 @@ export function buildUserKnowledgeGraph(
     voice: stylomeVoice || null,
     behavior,
     derived,
+    discProfile: null,
   };
+
+  // Infer DISC profile using the full graph context
+  graph.discProfile = inferDISCProfile(formData, graph);
+
+  return graph;
 }
 
 // === DERIVED INSIGHTS ===
