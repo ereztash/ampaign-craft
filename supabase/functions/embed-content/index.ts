@@ -28,6 +28,18 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Verify JWT
+  const authHeader = req.headers.get("Authorization");
+  const token = authHeader?.replace("Bearer ", "");
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const { data: { user } } = await supabase.auth.getUser(token);
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { items, userId, planId } = await req.json();
 
