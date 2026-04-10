@@ -101,6 +101,13 @@ src/
 │   ├── visualExportEngine.ts        # Platform-specific social post structuring (FB/IG/LI/X)
 │   ├── researchOrchestrator.ts      # Shim exposing the research/ orchestrator as a direct engine
 │   ├── research/                    # Cross-domain research engine (real orchestrator lives here)
+│   ├── optimization/                # 6-engine GRAOS optimization overlay (strictly additive)
+│   │   ├── regimeDetector.ts        # M1: 3-state classifier (stable/transitional/crisis) over Meta metrics
+│   │   ├── biomimeticAnomaly.ts     # M2: 3-layer anomaly score (threshold + predictive + novelty)
+│   │   ├── extremeForecaster.ts     # M3: Bayesian collapse forecaster (clear / watch / act bands)
+│   │   ├── reflectiveAction.ts      # M4: synthesizes ONE ActionCard from funnel + diagnostics
+│   │   ├── daplProfile.ts           # M5: 7-dim adaptive user preference vector + 12 principles
+│   │   └── ontologicalVerifier.ts   # M6: single write-gate for every shared_context write
 │   ├── blackboard/                  # Agent orchestration (MAS-CC Blackboard Architecture)
 │   │   ├── blackboardStore.ts       # Shared knowledge space with reactive updates
 │   │   ├── agentRunner.ts           # Sync: topological sort + dependency-aware execution
@@ -148,6 +155,7 @@ src/
 │   ├── minimalFormDefaults.ts       # Minimal-mode form defaults
 │   └── ...                          # glossary, socialProofData, colorSemantics, utils
 ├── components/      # 99 React components
+│   └── reflective/                  # ReflectiveCard.tsx — 3-row reflective surface, feature-flagged
 ├── pages/           # 17 pages (ModuleHub, Dashboard, Wizard, Plans, PlanView, Differentiate,
 │                      SalesEntry, PricingEntry, RetentionEntry, DataHub, CommandCenter,
 │                      StrategyCanvas, AiCoachPage, Profile, Landing, Index, NotFound)
@@ -262,6 +270,28 @@ PostgreSQL-based event bus replacing AWS SQS:
 - **Opus** — deep research, strategy documents (highest quality)
 - **Fallback chains**: Opus → Sonnet → Haiku with automatic downgrade on failure
 
+## GRAOS Optimization Layer (strictly additive)
+
+Six small engines under `src/engine/optimization/` that observe the existing funnel + Sentinel pipeline without mutating it. Every module is pure, synchronous, and zero I/O. Every blackboard write passes through the ontological verifier. No new dependencies, no ML libraries.
+
+| Module | File | Purpose |
+|---|---|---|
+| M1 | `regimeDetector.ts` | 3-state classifier (`stable` / `transitional` / `crisis`) over rolling Meta Insights metrics using coefficient-of-variation, trend shift, and critical-threshold rules on CPL (up) and CVR (down) |
+| M2 | `biomimeticAnomaly.ts` | 3-layer anomaly scoring: L1 adaptive threshold (mean ± 2.5σ), L2 predictive residual (3-day rolling mean), L3 NBSR novelty (distance from history centroid). Aggregate `0.4·L1 + 0.3·L2 + 0.3·L3` |
+| M3 | `extremeForecaster.ts` | Bayesian collapse forecaster. Prior `p=0.10` updated by velocity / fatigue / cost-escalation signals with a history-volatility amplifier. Emits `clear` / `watch` / `act` bands |
+| M4 | `reflectiveAction.ts` + `reflective/ReflectiveCard.tsx` | Synthesizes funnel + gaps + regime + anomaly + forecast + profile into exactly ONE `ActionCard`. Feature-flagged by `VITE_REFLECTIVE_ENABLED=true` or `?reflective=1` |
+| M5 | `daplProfile.ts` | 7-dimension Dynamic Adaptive Preference Learning vector over form-field events. Idempotent by field replacement. 12-principle ranking catalog |
+| M6 | `ontologicalVerifier.ts` | Single write-gate for every `shared_context` write. 8 fail-fast checks: namespace prefix → concept_key shape → stage enum → payload type → JSON-serializable → `created_at` → schema → coherence vs previous |
+
+### Strictness contract
+
+- Zero mutations to existing engines (`funnelEngine`, `gapEngine`, `guidanceEngine`, Sentinel rail, or UI components).
+- Exactly one existing file touched: `src/components/ResultsDashboard.tsx` — 7 lines added (2 imports + a feature-flagged conditional wrap).
+- The `ReflectiveCard` renders only when `VITE_REFLECTIVE_ENABLED=true` or the URL carries `?reflective=1`. Sentinel and Reflective coexist without coupling.
+- All Hebrew reason strings have no numbers, no percents, no em dashes, no exclamation marks, and no banned words.
+- 50 new tests total (M1=6, M2=7, M3=6, M4=8, M5=13, M6=10), all green.
+- Low-coherence short-circuit: when the reflective engine sees contradictory or missing diagnostic inputs (`coherence_score < 0.6`), it emits a fixed neutral `watch` card rather than committing to a decision.
+
 ## Honest Market-Gap Metric (hardened 2026-04-10)
 
 The original `score-market-gap.ts` counted a file as a consumer as soon as it had an `import ... from "...engine"` line. That matched re-exports, type-only imports, and unused imports, so the reported 26/50 (52%) shipped score was structurally inflated — an engine could claim SHIPPED without any call site in the running product.
@@ -365,9 +395,10 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | Lines of code | ~40,000 |
 | TypeScript files | ~235 |
 | Engines | 44 (`src/engine/*.ts`, excl. knowledge / subdirs) |
+| Optimization overlay engines (GRAOS) | 6 (M1–M6, `src/engine/optimization/`) |
 | Live engines (ENGINE_MANIFEST.isLive) | 24 |
 | Runtime reachability | 24 / 24 REACHABLE |
-| Tests | 582 passing (debugSwarm baseline excluded per plan) |
+| Tests | 632 passing (582 core + 50 GRAOS optimization; debugSwarm baseline excluded per plan) |
 | Components | 99 |
 | Pages | 17 |
 | Routes | 12 |
@@ -418,7 +449,7 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 ```bash
 npm install
 npm run dev          # Start dev server
-npm test             # Run 582+ tests (debugSwarm baseline excluded per plan)
+npm test             # Run 632+ tests (debugSwarm baseline excluded per plan)
 npx tsc --noEmit     # Type check
 npm run build        # Build for production
 ```
@@ -450,6 +481,7 @@ PRE_WIRING_BASELINE_PCT=46.0 \
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
 VITE_AI_COPY_ENABLED=true           # Enable AI copy generation
+VITE_REFLECTIVE_ENABLED=false       # GRAOS Reflective Action Card opt-in (or use ?reflective=1)
 
 # Edge Function secrets (Supabase Dashboard)
 ANTHROPIC_API_KEY=          # AI Coach + Differentiation + QA + Research + Agent Executor
