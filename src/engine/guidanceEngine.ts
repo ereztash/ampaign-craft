@@ -1,5 +1,19 @@
 import { KpiGap, GuidanceItem } from "@/types/meta";
 import { FunnelResult } from "@/types/funnel";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "guidanceEngine",
+  reads: ["CAMPAIGN-gaps-*", "CAMPAIGN-kpi-*"],
+  writes: ["CAMPAIGN-guidance-*"],
+  stage: "discover",
+  isLive: true,
+  parameters: ["Guidance engine"],
+} as const;
 
 const GUIDANCE_MAP: Record<
   string,
@@ -101,13 +115,14 @@ const GUIDANCE_MAP: Record<
 
 export const generateGuidance = (
   gaps: KpiGap[],
-  result: FunnelResult
+  result: FunnelResult,
+  blackboardCtx?: BlackboardWriteContext,
 ): GuidanceItem[] => {
   const critical = gaps.filter((g) => g.status === "critical");
   const warning = gaps.filter((g) => g.status === "warning");
   const toProcess = [...critical, ...warning].slice(0, 3); // max 3 items
 
-  return toProcess
+  const items = toProcess
     .map((gap) => {
       const key = gap.kpiName.en.toLowerCase();
       for (const [mapKey, fn] of Object.entries(GUIDANCE_MAP)) {
@@ -116,6 +131,22 @@ export const generateGuidance = (
       return null;
     })
     .filter(Boolean) as GuidanceItem[];
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("CAMPAIGN", "guidance", result.id),
+      stage: "discover",
+      payload: {
+        guidanceCount: items.length,
+        highPriority: items.filter((i) => i.priority === "high").length,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return items;
 };
 
 export const getOverallHealth = (

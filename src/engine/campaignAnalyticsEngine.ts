@@ -5,6 +5,20 @@
 // ═══════════════════════════════════════════════
 
 import type { FunnelResult, FormData, SavedPlan } from "@/types/funnel";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "campaignAnalyticsEngine",
+  reads: ["CAMPAIGN-plans-*"],
+  writes: ["CAMPAIGN-benchmarks-*"],
+  stage: "deploy",
+  isLive: true,
+  parameters: ["Campaign analytics"],
+} as const;
 
 // ═══════════════════════════════════════════════
 // TYPES
@@ -46,7 +60,10 @@ export interface AnalyticsResult {
  * Server-side aggregation (across all users) would use the
  * campaign_benchmarks table via an Edge Function.
  */
-export function generateBenchmarks(plans: SavedPlan[]): AnalyticsResult {
+export function generateBenchmarks(
+  plans: SavedPlan[],
+  blackboardCtx?: BlackboardWriteContext,
+): AnalyticsResult {
   if (plans.length === 0) {
     return {
       benchmarks: [],
@@ -194,12 +211,29 @@ export function generateBenchmarks(plans: SavedPlan[]): AnalyticsResult {
     });
   }
 
-  return {
+  const result: AnalyticsResult = {
     benchmarks,
     industryInsights,
     totalPlansAnalyzed: plans.length,
     generatedAt: new Date().toISOString(),
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("CAMPAIGN", "benchmarks", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "deploy",
+      payload: {
+        benchmarkCount: result.benchmarks.length,
+        industryCount: result.industryInsights.length,
+        totalPlansAnalyzed: result.totalPlansAnalyzed,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 /**

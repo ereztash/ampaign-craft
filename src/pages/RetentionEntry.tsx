@@ -3,6 +3,8 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
+import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";
 import BackToHub from "@/components/BackToHub";
 import RetentionGrowthTab from "@/components/RetentionGrowthTab";
 import { Button } from "@/components/ui/button";
@@ -15,12 +17,31 @@ const PageComponent = () => {
   const navigate = useNavigate();
   const result = useMemo(() => getLatestPlanResult(), []);
 
+  // Live retention strategy preview, driven by the engine.
+  const retentionStrategy = useMemo(() => {
+    if (!result?.formData) return null;
+    const graph = buildUserKnowledgeGraph(result.formData);
+    return generateRetentionStrategy(result.formData, graph);
+  }, [result]);
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-5xl">
         <BackToHub currentPage={language === "he" ? "שימור" : "Retention"} />
         {result ? (
-          <RetentionGrowthTab result={result} />
+          <>
+            {retentionStrategy && (
+              <div className="mb-4 rounded-xl border border-pink-200/60 bg-pink-50/50 p-4 text-start">
+                <p className="text-xs text-pink-900" dir="auto">
+                  {isHe ? "אסטרטגיית שימור" : "Retention strategy"}:{" "}
+                  <strong>{retentionStrategy.onboarding.type}</strong>
+                  {" "}· {retentionStrategy.onboarding.steps.length} {isHe ? "שלבי קליטה" : "onboarding steps"}
+                  {" "}· {retentionStrategy.triggerMap.length} {isHe ? "טריגרים" : "triggers"}
+                </p>
+              </div>
+            )}
+            <RetentionGrowthTab result={result} />
+          </>
         ) : (
           <div className="text-center py-16 space-y-4">
             <Illustration type="retention" size={96} className="text-pink-500 mx-auto" />

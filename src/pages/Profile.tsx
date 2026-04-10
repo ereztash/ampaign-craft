@@ -10,6 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Save, Loader2, User, Shield, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  createEmptyIntegrationState,
+  getConnectedPlatforms,
+  isConnected,
+  type IntegrationState,
+} from "@/engine/integrationEngine";
 
 const PageComponent = () => {
   const { user, loading: authLoading, tier, setTier, isLocalAuth } = useAuth();
@@ -21,6 +27,7 @@ const PageComponent = () => {
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [integrationState] = useState<IntegrationState>(() => createEmptyIntegrationState());
 
   // Redirect if not logged in
   useEffect(() => {
@@ -138,6 +145,16 @@ const PageComponent = () => {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={isHe ? "הכנס שם תצוגה" : "Enter display name"}
               />
+            </div>
+
+            {/* Integrations summary */}
+            <div className="space-y-2">
+              <Label>{isHe ? "אינטגרציות" : "Integrations"}</Label>
+              <p className="text-xs text-muted-foreground" dir="auto">
+                {getConnectedPlatforms(integrationState).length} {isHe ? "מחוברות" : "connected"}
+                {isConnected(integrationState, "slack") && " · Slack"}
+                {isConnected(integrationState, "whatsapp") && " · WhatsApp"}
+              </p>
             </div>
 
             {/* Tier */}

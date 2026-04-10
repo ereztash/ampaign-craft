@@ -7,13 +7,31 @@ import { FormData } from "@/types/funnel";
 import { RetentionResult, OnboardingSequence, ReferralBlueprint, ChurnPlaybook, GrowthLoopResult, LoyaltyStrategy, RetentionImpact, RetentionTrigger } from "@/types/retention";
 import { UserKnowledgeGraph, formatPrice } from "./userKnowledgeGraph";
 import { ONBOARDING_SEQUENCES, CHURN_SIGNALS, REFERRAL_TEMPLATES, RETENTION_TRIGGERS } from "./retentionKnowledge";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "retentionGrowthEngine",
+  reads: ["USER-form-*", "USER-knowledgeGraph-*"],
+  writes: ["USER-retention-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["Retention growth"],
+} as const;
 
 // ═══ MAIN GENERATOR ═══
 
-export function generateRetentionStrategy(formData: FormData, graph: UserKnowledgeGraph): RetentionResult {
+export function generateRetentionStrategy(
+  formData: FormData,
+  graph: UserKnowledgeGraph,
+  blackboardCtx?: BlackboardWriteContext,
+): RetentionResult {
   const businessType = detectBusinessType(formData);
 
-  return {
+  const result: RetentionResult = {
     onboarding: designOnboardingSequence(businessType, graph),
     triggerMap: buildRetentionTriggerMap(graph),
     referralBlueprint: createReferralBlueprint(graph),
@@ -22,6 +40,23 @@ export function generateRetentionStrategy(formData: FormData, graph: UserKnowled
     loyaltyStrategy: designLoyaltyProgram(formData, graph),
     projectedImpact: calculateRetentionImpact(formData, graph),
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "retention", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "design",
+      payload: {
+        businessType,
+        onboardingSteps: result.onboarding.steps.length,
+        triggerCount: result.triggerMap.length,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 // ═══ BUSINESS TYPE DETECTION ═══

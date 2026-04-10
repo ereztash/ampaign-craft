@@ -7,6 +7,20 @@
 
 import * as XLSX from "xlsx";
 import type { ExportResult } from "./exportEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "visualExportEngine",
+  reads: ["USER-copy-*"],
+  writes: ["USER-visualExport-*"],
+  stage: "deploy",
+  isLive: true,
+  parameters: ["Visual export"],
+} as const;
 
 export type SocialPlatform = "facebook" | "instagram" | "linkedin" | "twitter";
 
@@ -164,9 +178,26 @@ export function structureSocialPost(
 export function structureForAllPlatforms(
   rawCopy: string,
   lang: "he" | "en" = "he",
+  blackboardCtx?: BlackboardWriteContext,
 ): SocialPostData[] {
   const platforms: SocialPlatform[] = ["facebook", "instagram", "linkedin", "twitter"];
-  return platforms.map((p) => structureSocialPost(rawCopy, p, lang));
+  const posts = platforms.map((p) => structureSocialPost(rawCopy, p, lang));
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "visualExport", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "deploy",
+      payload: {
+        postCount: posts.length,
+        platforms: platforms,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return posts;
 }
 
 export function exportSocialPosts(posts: SocialPostData[]): ExportResult {

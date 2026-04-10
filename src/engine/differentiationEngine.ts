@@ -12,6 +12,20 @@ import {
 } from "@/types/differentiation";
 import { CONTRARY_METRICS, HYBRID_CATEGORIES, getContraryMetricsForMode } from "./differentiationKnowledge";
 import { detectMarketMode } from "@/types/differentiation";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "differentiationEngine",
+  reads: ["USER-form-*", "USER-differentiation-*"],
+  writes: ["USER-differentiation-*"],
+  stage: "diagnose",
+  isLive: true,
+  parameters: ["Differentiation engine"],
+} as const;
 
 // ═══ CLAIM VERIFICATION ═══
 
@@ -146,7 +160,11 @@ export interface AiResults {
   phase5?: AiPhase5Result;
 }
 
-export function generateDifferentiation(formData: DifferentiationFormData, aiResults: AiResults = {}): DifferentiationResult {
+export function generateDifferentiation(
+  formData: DifferentiationFormData,
+  aiResults: AiResults = {},
+  blackboardCtx?: BlackboardWriteContext,
+): DifferentiationResult {
   // Use AI results if available, fallback to local computation
   const verifiedClaims = aiResults.phase2?.verifiedClaims || formData.claimExamples;
   const gapAnalysis = aiResults.phase2?.gapAnalysis || buildGapAnalysis(formData.claimExamples);
@@ -177,7 +195,7 @@ export function generateDifferentiation(formData: DifferentiationFormData, aiRes
 
   const nextSteps: NextStep[] = aiResults.phase5?.nextSteps || generateDefaultNextSteps(claimScore, differentiationStrength);
 
-  return {
+  const result: DifferentiationResult = {
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     formData,
@@ -196,6 +214,23 @@ export function generateDifferentiation(formData: DifferentiationFormData, aiRes
     executiveSummary,
     nextSteps,
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "differentiation", result.id),
+      stage: "diagnose",
+      payload: {
+        id: result.id,
+        differentiationStrength: result.differentiationStrength,
+        claimVerificationScore: result.claimVerificationScore,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 function generateDefaultNextSteps(claimScore: number, strength: number): NextStep[] {

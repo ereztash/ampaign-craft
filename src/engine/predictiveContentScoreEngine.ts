@@ -10,6 +10,20 @@ import { scoreEnglishCopy } from "@/lib/englishCopyOptimizer";
 import type { DISCProfile } from "./discProfileEngine";
 import type { BrandVectorResult } from "./brandVectorEngine";
 import { analyzeAIDetection } from "./perplexityBurstiness";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "predictiveContentScoreEngine",
+  reads: ["USER-copy-*", "USER-disc-*", "USER-brandVector-*"],
+  writes: ["USER-contentScore-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["Predictive content scoring"],
+} as const;
 
 export type ContentLanguage = "he" | "en";
 
@@ -227,6 +241,7 @@ export function predictContentScore(
   discProfile?: DISCProfile,
   brandVector?: BrandVectorResult,
   targetChannels?: ChannelName[],
+  blackboardCtx?: BlackboardWriteContext,
 ): PredictiveContentScore {
   // Gather component signals
   const reader = discProfile
@@ -307,7 +322,7 @@ export function predictContentScore(
     );
   }
 
-  return {
+  const result: PredictiveContentScore = {
     overallScore: Math.max(0, Math.min(100, overallScore)),
     engagementPrediction: Math.max(0, Math.min(100, engagementPrediction)),
     conversionPrediction: Math.max(0, Math.min(100, conversionPrediction)),
@@ -321,6 +336,23 @@ export function predictContentScore(
       humanAuthenticity,
     },
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "contentScore", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "design",
+      payload: {
+        overallScore: result.overallScore,
+        engagementPrediction: result.engagementPrediction,
+        conversionPrediction: result.conversionPrediction,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 export function getPredictiveContentVerdict(score: number): { he: string; en: string } {

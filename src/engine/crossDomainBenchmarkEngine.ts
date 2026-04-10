@@ -5,6 +5,21 @@
 // Same pattern as differentiationKnowledge.ts.
 // ═══════════════════════════════════════════════
 
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "crossDomainBenchmarkEngine",
+  reads: ["USER-form-*"],
+  writes: ["USER-crossDomain-*"],
+  stage: "diagnose",
+  isLive: true,
+  parameters: ["Cross-domain benchmarking"],
+} as const;
+
 export type Industry =
   | "fashion" | "tech" | "food" | "services" | "education"
   | "health" | "realEstate" | "ecommerce" | "beauty" | "sports";
@@ -294,6 +309,7 @@ export function findTransferableStrategies(
 
 export function generateCrossDomainInsights(
   targetIndustry: Industry,
+  blackboardCtx?: BlackboardWriteContext,
 ): CrossDomainReport {
   const allInsights: CrossDomainInsight[] = [];
 
@@ -316,7 +332,29 @@ export function generateCrossDomainInsights(
         en: "No cross-industry strategies found for this industry",
       };
 
-  return { targetIndustry, insights: allInsights, topLift, summary };
+  const report: CrossDomainReport = {
+    targetIndustry,
+    insights: allInsights,
+    topLift,
+    summary,
+  };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "crossDomain", targetIndustry),
+      stage: "diagnose",
+      payload: {
+        targetIndustry,
+        insightCount: allInsights.length,
+        topConfidence: topLift?.confidence ?? 0,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return report;
 }
 
 export function getAllIndustries(): Industry[] {

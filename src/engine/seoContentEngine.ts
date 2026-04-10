@@ -5,6 +5,20 @@
 // ═══════════════════════════════════════════════
 
 import type { FormData } from "@/types/funnel";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "seoContentEngine",
+  reads: ["USER-form-*"],
+  writes: ["USER-seoContent-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["SEO content optimization"],
+} as const;
 
 // ═══════════════════════════════════════════════
 // TYPES
@@ -291,7 +305,10 @@ function generateHashtags(industry: string, platform: string): string[] {
 // FULL SEO CONTENT GENERATION
 // ═══════════════════════════════════════════════
 
-export function generateSEOContent(formData: FormData): SEOContentResult {
+export function generateSEOContent(
+  formData: FormData,
+  blackboardCtx?: BlackboardWriteContext,
+): SEOContentResult {
   const keywords = generateKeywords(formData);
   const contentBriefs = generateContentBriefs(formData, keywords);
   const socialCalendar = generateSocialCalendar(formData);
@@ -301,11 +318,28 @@ export function generateSEOContent(formData: FormData): SEOContentResult {
     en: `${formData.businessField || "Business"} — ${formData.productDescription?.slice(0, 100) || "Advanced solutions"} | ${formData.mainGoal === "sales" ? "Increase sales" : "Improve visibility"} in Israel`,
   };
 
-  return {
+  const result: SEOContentResult = {
     keywords,
     contentBriefs,
     socialCalendar,
     metaDescription,
     generatedAt: new Date().toISOString(),
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "seoContent", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "design",
+      payload: {
+        keywordCount: result.keywords.length,
+        briefCount: result.contentBriefs.length,
+        calendarEntries: result.socialCalendar.length,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }

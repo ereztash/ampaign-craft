@@ -4,6 +4,21 @@
 // for deep workflow embedding.
 // ═══════════════════════════════════════════════
 
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "integrationEngine",
+  reads: ["USER-integrations-*"],
+  writes: ["USER-integrations-*"],
+  stage: "deploy",
+  isLive: true,
+  parameters: ["Integration engine"],
+} as const;
+
 // ═══════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════
@@ -42,8 +57,10 @@ export type IntegrationEvent =
 // INTEGRATION STATE MANAGEMENT
 // ═══════════════════════════════════════════════
 
-export function createEmptyIntegrationState(): IntegrationState {
-  return {
+export function createEmptyIntegrationState(
+  blackboardCtx?: BlackboardWriteContext,
+): IntegrationState {
+  const state: IntegrationState = {
     integrations: Object.keys(PLATFORM_CONFIG).map((platform) => ({
       platform: platform as IntegrationPlatform,
       status: "disconnected" as IntegrationStatus,
@@ -51,6 +68,21 @@ export function createEmptyIntegrationState(): IntegrationState {
     })),
     lastCheckedAt: new Date().toISOString(),
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "integrations", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "deploy",
+      payload: {
+        platformCount: state.integrations.length,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return state;
 }
 
 export function getIntegration(

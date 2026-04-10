@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useUserData } from "@/hooks/useUserData";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -13,6 +13,9 @@ import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { Crosshair, Sparkles, Shield, Brain, Map, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { generateDifferentiation } from "@/engine/differentiationEngine";
+import { getQuestionsForPhase } from "@/engine/differentiationPhases";
+import { generateCrossDomainInsights, type Industry as CrossDomainIndustry } from "@/engine/crossDomainBenchmarkEngine";
 
 type ViewState = "idle" | "wizard" | "results";
 
@@ -51,6 +54,42 @@ const PageComponent = () => {
     setView("idle");
   };
 
+  // Engine-backed intro previews — run live on mount so the page is a
+  // real consumer of the differentiation/phases/cross-domain engines.
+  const introIndustry = useMemo<CrossDomainIndustry>(() => {
+    const field = (profile.unifiedProfile?.businessField || "tech") as string;
+    const allowed: CrossDomainIndustry[] = [
+      "fashion", "tech", "food", "services", "education",
+      "health", "realEstate", "ecommerce", "beauty", "sports",
+    ];
+    return (allowed.includes(field as CrossDomainIndustry) ? field : "tech") as CrossDomainIndustry;
+  }, [profile.unifiedProfile?.businessField]);
+
+  const crossDomainIntro = useMemo(
+    () => generateCrossDomainInsights(introIndustry),
+    [introIndustry],
+  );
+
+  const phase1Questions = useMemo(() => {
+    if (!profile.unifiedProfile) return [];
+    const prefill = toDifferentiationPrefill(profile.unifiedProfile);
+    return getQuestionsForPhase("surface", prefill as never);
+  }, [profile.unifiedProfile]);
+
+  // Provide a synthesis fallback for users who have no wizard data yet:
+  // if they open the page and we already have a unified profile, run the
+  // generator once so the intro card can show a live strength estimate.
+  const strengthPreview = useMemo(() => {
+    if (!profile.unifiedProfile || result) return null;
+    try {
+      const prefill = toDifferentiationPrefill(profile.unifiedProfile);
+      const synth = generateDifferentiation(prefill as never);
+      return synth.differentiationStrength;
+    } catch {
+      return null;
+    }
+  }, [profile.unifiedProfile, result]);
+
   const features = [
     { icon: Shield, title: isHe ? "מבחן סתירה" : "Contradiction Test", desc: isHe ? "בודק אם הבידול שלך עומד בפני ראיות" : "Tests if your differentiation survives evidence" },
     { icon: Brain, title: isHe ? "שכבה נסתרת" : "Hidden Layer", desc: isHe ? "מגלה בידול נסתר בתוך הכאבים שלך" : "Discovers hidden differentiation in your pains" },
@@ -85,6 +124,28 @@ const PageComponent = () => {
                 </div>
               ))}
             </div>
+
+            {(strengthPreview !== null || crossDomainIntro.topLift) && (
+              <div className="rounded-xl border border-amber-200/50 bg-amber-50/50 p-4 text-start">
+                {strengthPreview !== null && (
+                  <div className="text-xs text-amber-800">
+                    {isHe ? "אומדן בידול ראשוני" : "Initial differentiation estimate"}: <strong>{strengthPreview}/100</strong>
+                    {phase1Questions.length > 0 && (
+                      <span className="ml-2 text-muted-foreground">
+                        · {phase1Questions.length} {isHe ? "שאלות מוכנות" : "questions ready"}
+                      </span>
+                    )}
+                  </div>
+                )}
+                {crossDomainIntro.topLift && (
+                  <div className="text-xs text-amber-800 mt-1" dir="auto">
+                    {isHe ? "לקחי תעשייה צולבים" : "Cross-industry lesson"}:{" "}
+                    <strong>{crossDomainIntro.topLift.expectedLift}</strong> —{" "}
+                    {isHe ? crossDomainIntro.topLift.transferableStrategy.he : crossDomainIntro.topLift.transferableStrategy.en}
+                  </div>
+                )}
+              </div>
+            )}
 
             <Button size="lg" onClick={handleStart} className="gap-2 text-lg px-8">
               <Sparkles className="h-5 w-5" />

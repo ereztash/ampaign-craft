@@ -9,6 +9,15 @@ import { selectModel, trackUsage, type CopyTask, type ModelSelection } from "./l
 import type { FunnelResult, FormData } from "@/types/funnel";
 import { analyzeAIDetection } from "@/engine/perplexityBurstiness";
 
+export const ENGINE_MANIFEST = {
+  name: "aiCopyService",
+  reads: ["USER-copy-*", "USER-form-*"],
+  writes: ["USER-copy-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["LLM copy generation"],
+} as const;
+
 export interface CopyGenerationRequest {
   task: CopyTask;
   prompt: string;

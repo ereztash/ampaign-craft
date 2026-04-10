@@ -7,6 +7,20 @@ import {
   TrendItem,
   ValidationResult,
 } from "@/types/importedData";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "dataImportEngine",
+  reads: ["USER-import-*"],
+  writes: ["USER-dataset-*"],
+  stage: "discover",
+  isLive: true,
+  parameters: ["Data import pipeline"],
+} as const;
 
 // ═══════════════════════════════════════════════
 // XLSX Parsing
@@ -111,7 +125,10 @@ function detectDatasetType(columns: ColumnDef[]): DatasetSchema["detectedType"] 
   return "custom";
 }
 
-export function detectSchema(rows: Record<string, unknown>[]): DatasetSchema {
+export function detectSchema(
+  rows: Record<string, unknown>[],
+  blackboardCtx?: BlackboardWriteContext,
+): DatasetSchema {
   if (rows.length === 0) {
     return { columns: [], detectedType: "custom" };
   }
@@ -124,10 +141,27 @@ export function detectSchema(rows: Record<string, unknown>[]): DatasetSchema {
     return { name: key, type, role };
   });
 
-  return {
+  const schema: DatasetSchema = {
     columns,
     detectedType: detectDatasetType(columns),
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "dataset", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "discover",
+      payload: {
+        columnCount: schema.columns.length,
+        detectedType: schema.detectedType,
+        rowCount: rows.length,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return schema;
 }
 
 // ═══════════════════════════════════════════════

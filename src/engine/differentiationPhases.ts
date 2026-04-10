@@ -4,6 +4,20 @@
 // ═══════════════════════════════════════════════
 
 import { PhaseConfig, PhaseId, PhaseQuestion, DifferentiationFormData, detectMarketMode } from "@/types/differentiation";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "differentiationPhases",
+  reads: ["USER-form-*"],
+  writes: ["USER-differentiationPhases-*"],
+  stage: "diagnose",
+  isLive: true,
+  parameters: ["Differentiation engine"],
+} as const;
 
 // === PHASE 1: SURFACE LAYER ===
 
@@ -176,9 +190,24 @@ export function getPhaseById(id: PhaseId): PhaseConfig {
   return PHASES.find((p) => p.id === id) || PHASES[0];
 }
 
-export function getQuestionsForPhase(phaseId: PhaseId, formData: DifferentiationFormData): PhaseQuestion[] {
+export function getQuestionsForPhase(
+  phaseId: PhaseId,
+  formData: DifferentiationFormData,
+  blackboardCtx?: BlackboardWriteContext,
+): PhaseQuestion[] {
   const phase = getPhaseById(phaseId);
   const mode = detectMarketMode(formData.targetMarket);
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "differentiationPhases", phaseId),
+      stage: "diagnose",
+      payload: { phaseId, mode, questionCount: phase.questions.length },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
 
   // Phase 2: swap lostDealReason for B2C variants
   if (phaseId === "contradiction" && mode === "b2c") {
