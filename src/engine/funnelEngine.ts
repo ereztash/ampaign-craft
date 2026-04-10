@@ -1,6 +1,7 @@
 import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip, CopyLabData, CopyFormula, ReaderProfile, WritingTechnique, PersonalBrandData, NeuroStorytellingData, NeuroVector, NeuroPromptTemplate, EntropyGuide } from "@/types/funnel";
 import { UserKnowledgeGraph, getFieldNameHe, getFieldNameEn, formatPrice } from "./userKnowledgeGraph";
 import { calculateValueScore } from "./hormoziValueEngine";
+import { captureTrainingPair } from "./trainingDataEngine";
 
 function getBudgetRange(range: string): { min: number; max: number } {
   switch (range) {
@@ -1163,7 +1164,7 @@ export function generateFunnel(data: FormData): FunnelResult {
 
   const activeStages = stages.filter((s) => s.budgetPercent > 0);
 
-  return {
+  const funnelResult: FunnelResult = {
     id: crypto.randomUUID(),
     funnelName: getFunnelName(data),
     stages: activeStages.length > 0 ? activeStages : stages,
@@ -1178,6 +1179,20 @@ export function generateFunnel(data: FormData): FunnelResult {
     neuroStorytelling: getNeuroStorytellingData(data, stageDefinitions),
     hormoziValue: calculateValueScore(data),
   };
+
+  void captureTrainingPair(
+    "funnel",
+    { formData: data },
+    {
+      id: funnelResult.id,
+      funnelName: funnelResult.funnelName,
+      stageCount: funnelResult.stages.length,
+      totalBudget: funnelResult.totalBudget,
+      hormoziScore: funnelResult.hormoziValue?.score,
+    },
+  ).catch(() => {});
+
+  return funnelResult;
 }
 
 function getNeuroStorytellingData(data: FormData, stageDefinitions: { id: string; name: { he: string; en: string }; desc: { he: string; en: string } }[]): NeuroStorytellingData {
