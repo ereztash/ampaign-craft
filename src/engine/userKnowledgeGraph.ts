@@ -7,6 +7,20 @@
 import { FormData } from "@/types/funnel";
 import { DifferentiationResult, MechanismStatement, TradeoffDeclaration, HiddenValueScore, CompetitorArchetype, BuyingCommitteeRoleId } from "@/types/differentiation";
 import { DISCProfile, inferDISCProfile } from "./discProfileEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "userKnowledgeGraph",
+  reads: ["USER-form-*", "BUSINESS-differentiation-*"],
+  writes: ["USER-knowledgeGraph-*"],
+  stage: "diagnose",
+  isLive: true,
+  parameters: ["User knowledge graph"],
+} as const;
 
 // === TYPES ===
 
@@ -169,6 +183,7 @@ export function buildUserKnowledgeGraph(
   differentiationResult?: DifferentiationResult | null,
   stylomeVoice?: StylomeVoice | null,
   userBehavior?: Partial<UserBehavior>,
+  blackboardCtx?: BlackboardWriteContext,
 ): UserKnowledgeGraph {
   const field = formData.businessField || "other";
   const price = formData.averagePrice || 0;
@@ -219,6 +234,17 @@ export function buildUserKnowledgeGraph(
 
   // Infer DISC profile using the full graph context
   graph.discProfile = inferDISCProfile(formData, graph);
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "knowledgeGraph", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "diagnose",
+      payload: { graph },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
 
   return graph;
 }

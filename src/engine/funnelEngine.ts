@@ -2,6 +2,20 @@ import { FormData, FunnelResult, FunnelStage, ChannelRecommendation, HookTip, Co
 import { UserKnowledgeGraph, getFieldNameHe, getFieldNameEn, formatPrice } from "./userKnowledgeGraph";
 import { calculateValueScore } from "./hormoziValueEngine";
 import { captureTrainingPair } from "./trainingDataEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "funnelEngine",
+  reads: ["USER-form-*", "USER-knowledgeGraph-*"],
+  writes: ["CAMPAIGN-funnel-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["Funnel analysis"],
+} as const;
 
 function getBudgetRange(range: string): { min: number; max: number } {
   switch (range) {
@@ -1127,7 +1141,7 @@ function getPersonalBrandData(data: FormData): PersonalBrandData | undefined {
   return { positioningTips, signalPriority, authenticityGuidance };
 }
 
-export function generateFunnel(data: FormData): FunnelResult {
+export function generateFunnel(data: FormData, blackboardCtx?: BlackboardWriteContext): FunnelResult {
   const weights = getStageWeights(data);
   const budget = getBudgetRange(data.budgetRange);
 
@@ -1191,6 +1205,22 @@ export function generateFunnel(data: FormData): FunnelResult {
       hormoziScore: funnelResult.hormoziValue?.score,
     },
   ).catch(() => {});
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("CAMPAIGN", "funnel", funnelResult.id),
+      stage: "design",
+      payload: {
+        id: funnelResult.id,
+        funnelName: funnelResult.funnelName,
+        stageCount: funnelResult.stages.length,
+        totalBudget: funnelResult.totalBudget,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
 
   return funnelResult;
 }
