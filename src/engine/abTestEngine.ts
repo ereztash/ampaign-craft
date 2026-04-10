@@ -4,6 +4,21 @@
 // and statistical significance calculation.
 // ═══════════════════════════════════════════════
 
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "abTestEngine",
+  reads: ["CAMPAIGN-experiment-*"],
+  writes: ["CAMPAIGN-abTestResult-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["A/B testing with significance"],
+} as const;
+
 // ═══════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════
@@ -163,7 +178,8 @@ export function createMultiVariantExperiment(
 export function calculateExperimentResults(
   experiment: Experiment,
   assignments: { userId: string; variantId: string }[],
-  conversions: ConversionRecord[]
+  conversions: ConversionRecord[],
+  blackboardCtx?: BlackboardWriteContext,
 ): ExperimentResult {
   const variantResults: VariantResult[] = experiment.variants.map((variant) => {
     const participants = assignments.filter((a) => a.variantId === variant.id).length;
@@ -197,7 +213,7 @@ export function calculateExperimentResults(
       ? ((winner.conversionRate - control.conversionRate) / control.conversionRate) * 100
       : 0;
 
-  return {
+  const result: ExperimentResult = {
     experimentId: experiment.id,
     totalParticipants,
     variantResults,
@@ -207,6 +223,26 @@ export function calculateExperimentResults(
     winningVariantId: isSignificant ? winner.variantId : null,
     lift: round(lift, 2),
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("CAMPAIGN", "abTestResult", experiment.id),
+      stage: "design",
+      payload: {
+        experimentId: result.experimentId,
+        totalParticipants: result.totalParticipants,
+        isSignificant: result.isSignificant,
+        pValue: result.pValue,
+        winningVariantId: result.winningVariantId,
+        lift: result.lift,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 // ═══════════════════════════════════════════════

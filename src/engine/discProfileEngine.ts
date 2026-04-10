@@ -7,6 +7,20 @@
 import { FormData } from "@/types/funnel";
 import { UserKnowledgeGraph } from "./userKnowledgeGraph";
 import { captureTrainingPair } from "./trainingDataEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "discProfileEngine",
+  reads: ["USER-form-*", "USER-knowledgeGraph-*"],
+  writes: ["USER-disc-*"],
+  stage: "diagnose",
+  isLive: true,
+  parameters: ["DISC behavioral profiling"],
+} as const;
 
 export interface DISCDistribution {
   D: number; // 0-100 Dominant
@@ -241,6 +255,7 @@ const MESSAGING_STRATEGIES: Record<"D" | "I" | "S" | "C", {
 export function inferDISCProfile(
   formData: FormData,
   knowledgeGraph?: UserKnowledgeGraph | null,
+  blackboardCtx?: BlackboardWriteContext,
 ): DISCProfile {
   const distribution = inferDistribution(formData, knowledgeGraph);
 
@@ -267,6 +282,18 @@ export function inferDISCProfile(
   };
 
   void captureTrainingPair("disc_profile", { formData }, profile).catch(() => {});
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "disc", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "diagnose",
+      payload: { profile },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
   return profile;
 }
 

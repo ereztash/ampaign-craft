@@ -7,6 +7,24 @@
 import type { FormData, FunnelResult } from "@/types/funnel";
 import type { CampaignBenchmark } from "./campaignAnalyticsEngine";
 import { findBenchmark } from "./campaignAnalyticsEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "predictiveEngine",
+  reads: ["USER-form-*", "CAMPAIGN-funnel-*", "BUSINESS-benchmarks-*"],
+  writes: ["CAMPAIGN-prediction-*"],
+  stage: "design",
+  isLive: true,
+  parameters: [
+    "Budget prediction",
+    "Outcome prediction",
+    "Trend forecasting",
+  ],
+} as const;
 
 // ═══════════════════════════════════════════════
 // TYPES
@@ -51,7 +69,8 @@ export interface PredictionRecommendation {
 export function predictSuccess(
   formData: FormData,
   funnelResult: FunnelResult,
-  benchmarks: CampaignBenchmark[]
+  benchmarks: CampaignBenchmark[],
+  blackboardCtx?: BlackboardWriteContext,
 ): PredictionResult {
   const industry = formData.businessField || "unknown";
   const riskFactors: RiskFactor[] = [];
@@ -241,7 +260,7 @@ export function predictSuccess(
     ? Math.min(0.9, 0.3 + basedOnSamples * 0.05)
     : 0.3; // low confidence without benchmark data
 
-  return {
+  const result: PredictionResult = {
     successProbability: Math.round(probability),
     budgetEfficiency,
     riskFactors,
@@ -249,6 +268,24 @@ export function predictSuccess(
     confidence: Math.round(confidence * 100) / 100,
     basedOnSamples,
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("CAMPAIGN", "prediction", funnelResult.id),
+      stage: "design",
+      payload: {
+        successProbability: result.successProbability,
+        budgetEfficiency: result.budgetEfficiency,
+        riskFactorCount: result.riskFactors.length,
+        confidence: result.confidence,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 // ═══════════════════════════════════════════════

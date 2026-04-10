@@ -1,0 +1,698 @@
+{
+  "generatedAt": "2026-04-10T13:18:45.357Z",
+  "totalEngines": 43,
+  "counts": {
+    "LIVE": 5,
+    "ORPHAN": 33,
+    "DEAD": 5
+  },
+  "engines": [
+    {
+      "name": "abTestEngine",
+      "filePath": "src/engine/abTestEngine.ts",
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "A/B testing with significance"
+      ],
+      "consumerCount": 2,
+      "consumers": [
+        "src/engine/__tests__/abTestEngine.test.ts",
+        "src/engine/blackboard/registry.ts"
+      ],
+      "classification": "LIVE"
+    },
+    {
+      "name": "behavioralCohortEngine",
+      "filePath": "src/engine/behavioralCohortEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/AnalyticsTab.tsx",
+        "src/components/IntelligenceSynthesisDashboard.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "bottleneckEngine",
+      "filePath": "src/engine/bottleneckEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 5,
+      "consumers": [
+        "src/components/InsightFeed.tsx",
+        "src/components/StrategyMap.tsx",
+        "src/engine/__tests__/bottleneckEngine.test.ts",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/StrategyCanvas.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "brandVectorEngine",
+      "filePath": "src/engine/brandVectorEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 4,
+      "consumers": [
+        "src/components/AnalyticsTab.tsx",
+        "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/emotionalPerformanceEngine.ts",
+        "src/engine/predictiveContentScoreEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "businessFingerprintEngine",
+      "filePath": "src/engine/businessFingerprintEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 3,
+      "consumers": [
+        "src/components/BusinessDNACard.tsx",
+        "src/components/SmartOnboarding.tsx",
+        "src/lib/adaptiveTabRules.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "campaignAnalyticsEngine",
+      "filePath": "src/engine/campaignAnalyticsEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/engine/exportEngine.ts",
+        "src/engine/predictiveEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "churnPredictionEngine",
+      "filePath": "src/engine/churnPredictionEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 6,
+      "consumers": [
+        "src/components/ChurnPredictionCard.tsx",
+        "src/components/RetentionGrowthTab.tsx",
+        "src/engine/__tests__/churnPredictionEngine.test.ts",
+        "src/engine/blackboard/agents/retentionAgent.ts",
+        "src/engine/blackboard/blackboardStore.ts",
+        "src/engine/healthScoreEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "clgEngine",
+      "filePath": "src/engine/clgEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/ResultsDashboard.tsx",
+        "src/engine/__tests__/moatEngines.test.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "copyQAEngine",
+      "filePath": "src/engine/copyQAEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 5,
+      "consumers": [
+        "src/components/ContentTab.tsx",
+        "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/blackboard/blackboardStore.ts",
+        "src/engine/emotionalPerformanceEngine.ts",
+        "src/engine/predictiveContentScoreEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "costOfInactionEngine",
+      "filePath": "src/engine/costOfInactionEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 4,
+      "consumers": [
+        "src/components/ResultsDashboard.tsx",
+        "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/blackboard/agents/coiAgent.ts",
+        "src/engine/blackboard/blackboardStore.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "crossDomainBenchmarkEngine",
+      "filePath": "src/engine/crossDomainBenchmarkEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/AnalyticsTab.tsx",
+        "src/components/IntelligenceSynthesisDashboard.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "dataImportEngine",
+      "filePath": "src/engine/dataImportEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/DataImportModal.tsx",
+        "src/hooks/useImportedData.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "differentiationEngine",
+      "filePath": "src/engine/differentiationEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/DifferentiationWizard.tsx",
+        "src/engine/__tests__/differentiationEngine.test.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "differentiationKnowledge",
+      "filePath": "src/engine/differentiationKnowledge.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 3,
+      "consumers": [
+        "src/components/DifferentiationPhaseCard.tsx",
+        "src/engine/__tests__/differentiationEngine.test.ts",
+        "src/engine/differentiationEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "differentiationPhases",
+      "filePath": "src/engine/differentiationPhases.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/DifferentiationWizard.tsx",
+        "src/engine/__tests__/differentiationEngine.test.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "discProfileEngine",
+      "filePath": "src/engine/discProfileEngine.ts",
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "DISC behavioral profiling"
+      ],
+      "consumerCount": 13,
+      "consumers": [
+        "src/components/AnalyticsTab.tsx",
+        "src/components/DISCProfileCard.tsx",
+        "src/components/SalesTab.tsx",
+        "src/engine/__tests__/discProfileEngine.test.ts",
+        "src/engine/__tests__/neuroClosingEngine.test.ts",
+        "src/engine/behavioralCohortEngine.ts",
+        "src/engine/blackboard/agents/discAgent.ts",
+        "src/engine/blackboard/blackboardStore.ts",
+        "src/engine/blackboard/registry.ts",
+        "src/engine/emotionalPerformanceEngine.ts",
+        "src/engine/neuroClosingEngine.ts",
+        "src/engine/predictiveContentScoreEngine.ts",
+        "src/engine/userKnowledgeGraph.ts"
+      ],
+      "classification": "LIVE"
+    },
+    {
+      "name": "emotionalPerformanceEngine",
+      "filePath": "src/engine/emotionalPerformanceEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/AnalyticsTab.tsx",
+        "src/components/IntelligenceSynthesisDashboard.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "exportEngine",
+      "filePath": "src/engine/exportEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 3,
+      "consumers": [
+        "src/components/EmailTemplateGallery.tsx",
+        "src/engine/trainingExportEngine.ts",
+        "src/engine/visualExportEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "funnelEngine",
+      "filePath": "src/engine/funnelEngine.ts",
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "Funnel analysis"
+      ],
+      "consumerCount": 14,
+      "consumers": [
+        "src/components/ResultsDashboard.tsx",
+        "src/engine/__tests__/blackboard.test.ts",
+        "src/engine/__tests__/bottleneckEngine.test.ts",
+        "src/engine/__tests__/funnelEngine.test.ts",
+        "src/engine/__tests__/healthScoreEngine.test.ts",
+        "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/__tests__/personalizeResult.test.ts",
+        "src/engine/__tests__/pulseEngine.test.ts",
+        "src/engine/__tests__/salesPipelineEngine.test.ts",
+        "src/engine/blackboard/agents/funnelAgent.ts",
+        "src/engine/blackboard/registry.ts",
+        "src/pages/AiCoachPage.tsx",
+        "src/pages/Index.tsx",
+        "src/pages/Wizard.tsx"
+      ],
+      "classification": "LIVE"
+    },
+    {
+      "name": "gapEngine",
+      "filePath": "src/engine/gapEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 1,
+      "consumers": [
+        "src/components/MetaMonitor.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "guidanceEngine",
+      "filePath": "src/engine/guidanceEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 1,
+      "consumers": [
+        "src/components/MetaMonitor.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "healthScoreEngine",
+      "filePath": "src/engine/healthScoreEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 11,
+      "consumers": [
+        "src/components/BusinessPulseBar.tsx",
+        "src/components/MarketingWrapped.tsx",
+        "src/components/ResultsDashboard.tsx",
+        "src/components/StrategyMap.tsx",
+        "src/engine/__tests__/healthScoreEngine.test.ts",
+        "src/engine/blackboard/agents/healthAgent.ts",
+        "src/engine/blackboard/blackboardStore.ts",
+        "src/pages/AiCoachPage.tsx",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/Dashboard.tsx",
+        "src/pages/StrategyCanvas.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "hormoziValueEngine",
+      "filePath": "src/engine/hormoziValueEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 4,
+      "consumers": [
+        "src/components/ResultsDashboard.tsx",
+        "src/engine/__tests__/hormoziValueEngine.test.ts",
+        "src/engine/blackboard/agents/hormoziAgent.ts",
+        "src/engine/funnelEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "integrationEngine",
+      "filePath": "src/engine/integrationEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 0,
+      "consumers": [],
+      "classification": "DEAD"
+    },
+    {
+      "name": "neuroClosingEngine",
+      "filePath": "src/engine/neuroClosingEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 5,
+      "consumers": [
+        "src/components/NeuroClosingCard.tsx",
+        "src/components/SalesTab.tsx",
+        "src/engine/__tests__/neuroClosingEngine.test.ts",
+        "src/engine/blackboard/agents/closingAgent.ts",
+        "src/engine/blackboard/blackboardStore.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "nextStepEngine",
+      "filePath": "src/engine/nextStepEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 3,
+      "consumers": [
+        "src/components/InsightFeed.tsx",
+        "src/pages/Dashboard.tsx",
+        "src/pages/ModuleHub.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "perplexityBurstiness",
+      "filePath": "src/engine/perplexityBurstiness.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 7,
+      "consumers": [
+        "src/engine/__tests__/perplexityBurstiness.test.ts",
+        "src/engine/copyQAEngine.ts",
+        "src/engine/predictiveContentScoreEngine.ts",
+        "src/engine/stylomeEngine.ts",
+        "src/lib/englishCopyOptimizer.ts",
+        "src/lib/hebrewCopyOptimizer.ts",
+        "src/services/aiCopyService.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "predictiveContentScoreEngine",
+      "filePath": "src/engine/predictiveContentScoreEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 1,
+      "consumers": [
+        "src/components/IntelligenceSynthesisDashboard.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "predictiveEngine",
+      "filePath": "src/engine/predictiveEngine.ts",
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "Budget prediction",
+        "Outcome prediction",
+        "Trend forecasting"
+      ],
+      "consumerCount": 1,
+      "consumers": [
+        "src/engine/blackboard/registry.ts"
+      ],
+      "classification": "LIVE"
+    },
+    {
+      "name": "pricingIntelligenceEngine",
+      "filePath": "src/engine/pricingIntelligenceEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 1,
+      "consumers": [
+        "src/components/PricingIntelligenceTab.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "pricingKnowledge",
+      "filePath": "src/engine/pricingKnowledge.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 1,
+      "consumers": [
+        "src/engine/pricingIntelligenceEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "promptOptimizerEngine",
+      "filePath": "src/engine/promptOptimizerEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 0,
+      "consumers": [],
+      "classification": "DEAD"
+    },
+    {
+      "name": "pulseEngine",
+      "filePath": "src/engine/pulseEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 5,
+      "consumers": [
+        "src/components/InsightFeed.tsx",
+        "src/components/LandingPage.tsx",
+        "src/engine/__tests__/pulseEngine.test.ts",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/Dashboard.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "retentionFlywheelEngine",
+      "filePath": "src/engine/retentionFlywheelEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 4,
+      "consumers": [
+        "src/components/ResultsDashboard.tsx",
+        "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/blackboard/agents/retentionAgent.ts",
+        "src/engine/blackboard/blackboardStore.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "retentionGrowthEngine",
+      "filePath": "src/engine/retentionGrowthEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 1,
+      "consumers": [
+        "src/components/RetentionGrowthTab.tsx"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "retentionKnowledge",
+      "filePath": "src/engine/retentionKnowledge.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 1,
+      "consumers": [
+        "src/engine/retentionGrowthEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "salesPipelineEngine",
+      "filePath": "src/engine/salesPipelineEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 3,
+      "consumers": [
+        "src/components/SalesTab.tsx",
+        "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/__tests__/salesPipelineEngine.test.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "seoContentEngine",
+      "filePath": "src/engine/seoContentEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 0,
+      "consumers": [],
+      "classification": "DEAD"
+    },
+    {
+      "name": "stylomeEngine",
+      "filePath": "src/engine/stylomeEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 3,
+      "consumers": [
+        "src/components/StylomeExtractor.tsx",
+        "src/engine/__tests__/stylomeEngine.test.ts",
+        "src/engine/emotionalPerformanceEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "trainingDataEngine",
+      "filePath": "src/engine/trainingDataEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 8,
+      "consumers": [
+        "src/components/OutputFeedback.tsx",
+        "src/engine/brandVectorEngine.ts",
+        "src/engine/copyQAEngine.ts",
+        "src/engine/discProfileEngine.ts",
+        "src/engine/funnelEngine.ts",
+        "src/engine/hormoziValueEngine.ts",
+        "src/engine/promptOptimizerEngine.ts",
+        "src/engine/trainingExportEngine.ts"
+      ],
+      "classification": "ORPHAN"
+    },
+    {
+      "name": "trainingExportEngine",
+      "filePath": "src/engine/trainingExportEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 0,
+      "consumers": [],
+      "classification": "DEAD"
+    },
+    {
+      "name": "userKnowledgeGraph",
+      "filePath": "src/engine/userKnowledgeGraph.ts",
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "User knowledge graph"
+      ],
+      "consumerCount": 25,
+      "consumers": [
+        "src/components/AiCoachChat.tsx",
+        "src/components/InsightFeed.tsx",
+        "src/components/PricingIntelligenceTab.tsx",
+        "src/components/ResultsDashboard.tsx",
+        "src/components/RetentionGrowthTab.tsx",
+        "src/components/SalesTab.tsx",
+        "src/engine/__tests__/personalizeResult.test.ts",
+        "src/engine/__tests__/userKnowledgeGraph.test.ts",
+        "src/engine/blackboard/agents/knowledgeGraphAgent.ts",
+        "src/engine/blackboard/blackboardStore.ts",
+        "src/engine/blackboard/registry.ts",
+        "src/engine/discProfileEngine.ts",
+        "src/engine/funnelEngine.ts",
+        "src/engine/hormoziValueEngine.ts",
+        "src/engine/nextStepEngine.ts",
+        "src/engine/pricingIntelligenceEngine.ts",
+        "src/engine/retentionGrowthEngine.ts",
+        "src/engine/salesPipelineEngine.ts",
+        "src/lib/textAdapter.ts",
+        "src/pages/AiCoachPage.tsx",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/Dashboard.tsx",
+        "src/pages/Index.tsx",
+        "src/pages/ModuleHub.tsx",
+        "src/pages/Wizard.tsx"
+      ],
+      "classification": "LIVE"
+    },
+    {
+      "name": "visualExportEngine",
+      "filePath": "src/engine/visualExportEngine.ts",
+      "hasManifest": false,
+      "isLive": false,
+      "stage": "unknown",
+      "parameters": [],
+      "consumerCount": 0,
+      "consumers": [],
+      "classification": "DEAD"
+    }
+  ]
+}
