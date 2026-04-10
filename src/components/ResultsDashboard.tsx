@@ -46,6 +46,8 @@ import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, Chevr
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import BackToHub from "@/components/BackToHub";
+import ReflectiveCard from "@/components/reflective/ReflectiveCard";
+import { generateReflectiveAction } from "@/engine/optimization/reflectiveAction";
 
 interface ResultsDashboardProps {
   result: FunnelResult;
@@ -195,6 +197,11 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
       <div className="mx-auto max-w-5xl" id="results-content">
         {/* Back to Hub */}
         <BackToHub currentPage={isHe ? "תוצאות שיווק" : "Marketing Results"} />
+
+        {/* Reflective Action Card (feature-flagged, strictly additive) */}
+        {(import.meta.env.VITE_REFLECTIVE_ENABLED === "true" || (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("reflective") === "1")) && (
+          <div className="mb-6"><ReflectiveCard card={generateReflectiveAction({ funnel: personalizedResult, gaps: [] })} /></div>
+        )}
 
         {/* Header */}
         <motion.div {...motionProps} className="mb-8 text-center">
