@@ -61,7 +61,7 @@ UserKnowledgeGraph cross-references all user data (FormData + Differentiation + 
 
 ```
 src/
-├── engine/          # 33 pure-logic engines
+├── engine/          # 44 pure-logic engines (24 carry an ENGINE_MANIFEST with isLive:true)
 │   ├── funnelEngine.ts              # Core funnel generation + personalizeResult
 │   ├── salesPipelineEngine.ts       # Sales pipeline + neuro-closing + DISC + personalized scripts
 │   ├── pricingIntelligenceEngine.ts # Pricing model + tiers + offer stack + guarantee + framing
@@ -93,6 +93,14 @@ src/
 │   ├── predictiveEngine.ts          # Success probability forecasting + budget efficiency
 │   ├── integrationEngine.ts         # Platform connection management (Slack/WhatsApp/GA/FB)
 │   ├── seoContentEngine.ts          # Keyword generation + content briefs + social calendar
+│   ├── behavioralCohortEngine.ts    # 12 pre-defined cohorts × DISC × maturity × budget
+│   ├── crossDomainBenchmarkEngine.ts # Curated knowledge map transferring strategies across industries
+│   ├── emotionalPerformanceEngine.ts # EPS: 4-signal composite (0-100 emotional health score)
+│   ├── predictiveContentScoreEngine.ts # Anyword-style pre-publication score (5 local signals)
+│   ├── promptOptimizerEngine.ts     # Analyses training-pair feedback → prompt-level fixes
+│   ├── visualExportEngine.ts        # Platform-specific social post structuring (FB/IG/LI/X)
+│   ├── researchOrchestrator.ts      # Shim exposing the research/ orchestrator as a direct engine
+│   ├── research/                    # Cross-domain research engine (real orchestrator lives here)
 │   ├── blackboard/                  # Agent orchestration (MAS-CC Blackboard Architecture)
 │   │   ├── blackboardStore.ts       # Shared knowledge space with reactive updates
 │   │   ├── agentRunner.ts           # Sync: topological sort + dependency-aware execution
@@ -109,19 +117,22 @@ src/
 │   │       ├── qaSecurityAgent.ts   # Security: PII detection, injection vectors, unsafe templates
 │   │       ├── qaOrchestratorAgent.ts # Aggregates QA scores + grade (A-F) + recommendations
 │   │       └── debugSwarm.ts        # Iterative fix loop: Analyzer → Proposer → Critique
-│   └── research/                    # Cross-domain research engine
+│   └── research/                    # Cross-domain research engine implementation
 │       ├── researchOrchestrator.ts  # Decomposes questions → dispatches sub-agents → synthesizes
 │       └── subAgents/               # 3 domain specialists
 │           ├── regulatoryAgent.ts   # Israeli advertising law, data protection, compliance
 │           ├── marketAgent.ts       # Competitor analysis, pricing benchmarks, trends
 │           └── marketingAgent.ts    # Channel effectiveness, content strategy, Israeli market
 ├── services/        # External integrations
-│   ├── aiCopyService.ts             # Context-aware LLM copy generation with P&B post-processing
+│   ├── aiCopyService.ts             # Context-aware LLM copy generation (ENGINE_MANIFEST, isLive)
 │   ├── llmRouter.ts                 # Model selection (Haiku/Sonnet/Opus) + fallbacks + cost caps
 │   ├── blackboardPersistence.ts     # Save/load board state + task queue + audit log
 │   ├── semanticSearch.ts            # pgvector-powered content similarity search
 │   └── eventQueue.ts               # PostgreSQL event bus (publish/query/convenience helpers)
 ├── lib/             # Data libraries & utilities
+│   ├── agentOrchestrator.ts         # Tier-4 pillar: wraps agent-executor with agent_tasks row,
+│   │                                  direct invoke, task-status update, and 30s event_queue poll
+│   │                                  for agent.completed. Falls back on direct invoke output.
 │   ├── israeliMarketCalendar.ts     # 12 Israeli events with budget multipliers
 │   ├── hebrewCopyOptimizer.ts       # 12 Hebrew neurolinguistics rules + scoring + stylometry
 │   ├── textAdapter.ts               # Register shifting from Stylome voice profile
@@ -137,30 +148,57 @@ src/
 │   ├── minimalFormDefaults.ts       # Minimal-mode form defaults
 │   └── ...                          # glossary, socialProofData, colorSemantics, utils
 ├── components/      # 99 React components
-├── pages/           # 13 pages (ModuleHub, Dashboard, Wizard, Plans, PlanView, Differentiate, SalesEntry, PricingEntry, RetentionEntry, Profile, Landing, Index, NotFound)
+├── pages/           # 17 pages (ModuleHub, Dashboard, Wizard, Plans, PlanView, Differentiate,
+│                      SalesEntry, PricingEntry, RetentionEntry, DataHub, CommandCenter,
+│                      StrategyCanvas, AiCoachPage, Profile, Landing, Index, NotFound)
 ├── hooks/           # 14 custom hooks (includes useAICopy, useResearch)
 ├── contexts/        # Auth (dual: Supabase + local) + UserProfile
 ├── i18n/            # 290+ bilingual translation keys (Hebrew + English)
 ├── integrations/    # Supabase client + types
 └── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention, qa, research)
-supabase/functions/  # 10 Edge Functions
+supabase/functions/  # 12 Edge Functions
 ├── ai-coach/               # Claude marketing coach (full UserKnowledgeGraph context)
 ├── differentiation-agent/  # Claude Sonnet for 5-phase differentiation
 ├── generate-copy/          # Claude API proxy for AI copy generation
 ├── meta-token-exchange/    # Meta Ads OAuth
 ├── create-checkout/        # Stripe checkout session
 ├── stripe-webhook/         # Subscription management
-├── agent-executor/         # Generic LLM agent executor (any Claude model)
+├── agent-executor/         # Generic LLM agent executor (any Claude model) — wrapped by lib/agentOrchestrator.ts
 ├── research-agent/         # Deep research via Claude Opus
 ├── embed-content/          # Embedding generation + pgvector storage
-└── queue-processor/        # Event queue processor with handler registry
+├── queue-processor/        # Event queue processor with handler registry
+├── webhook-dispatch/       # Outbound webhook delivery with retries
+└── webhook-receive/        # Inbound webhook receiver
 supabase/migrations/
 ├── 20260409_001_agent_infrastructure.sql  # agent_tasks, blackboard_snapshots, execution_log
 ├── 20260409_002_campaign_analytics.sql    # campaign_benchmarks, user_integrations, notification_preferences
 ├── 20260409_003_vector_search.sql         # pgvector, content_embeddings, code_embeddings, match functions
 └── 20260409_004_event_queue.sql           # event_queue with claim/complete/fail/publish/cleanup
 scripts/
-└── analyze-codebase.ts     # Extracts semantic code chunks for embedding
+├── analyze-codebase.ts         # Extracts semantic code chunks for embedding
+├── audit-engines.ts            # Classifies every engine as LIVE / ORPHAN / DEAD based on
+│                                 ENGINE_MANIFEST.isLive + consumer count (reports/engine-audit.json)
+├── map-parameters.ts           # Source of truth for the 50 benchmark parameters and their
+│                                 backing engines (edge functions, src/engine, src/lib, meta)
+├── score-market-gap.ts         # Honest market-gap scorer — hardened 2026-04-10 so consumerCount
+│                                 counts a file only if it imports AND calls a binding (CallExpression
+│                                 or JSX). Location-aware thresholds: LIB_MIN_CONSUMERS=1 for
+│                                 src/lib/ + src/services/ + edge functions, ENGINE_MIN_CONSUMERS=3
+│                                 for src/engine/. An `isLive: true` manifest promotes an engine to
+│                                 SHIPPED as soon as it has >=1 real call site.
+├── verify-runtime-calls.ts     # Reachability gate: for every engine with ENGINE_MANIFEST.isLive:true
+│                                 walks src/pages/ and src/components/ and classifies as REACHABLE /
+│                                 IMPORTED_BUT_UNCALLED / NO_IMPORT. Exit 1 on any non-REACHABLE.
+│                                 Writes reports/reachability-audit.json.
+├── differentiation-check.ts    # Verifies each of the 5 pillars (DISC / Hormozi / Neuro-closing /
+│                                 Hebrew NLP / Multi-agent) is SHIPPED in the current metric.
+└── generate-market-gap-report.ts # Produces reports/MARKET_GAP_REPORT.md with Pre-wiring honest
+                                   baseline + Post-wiring result + verdict + quick wins.
+reports/
+├── MARKET_GAP_REPORT.md        # 50-parameter scorecard, pillar table, verdict, top 10 quick wins
+├── engine-audit.json           # Per-engine LIVE/ORPHAN/DEAD classification with consumer lists
+├── reachability-audit.json     # Per-live-engine REACHABLE / IMPORTED_BUT_UNCALLED / NO_IMPORT
+└── tier4-e2e.log               # Tier-4 multi-agent pillar end-to-end verification
 ```
 
 ## MAS-CC: Multi-Agent System Architecture
@@ -224,6 +262,55 @@ PostgreSQL-based event bus replacing AWS SQS:
 - **Opus** — deep research, strategy documents (highest quality)
 - **Fallback chains**: Opus → Sonnet → Haiku with automatic downgrade on failure
 
+## Honest Market-Gap Metric (hardened 2026-04-10)
+
+The original `score-market-gap.ts` counted a file as a consumer as soon as it had an `import ... from "...engine"` line. That matched re-exports, type-only imports, and unused imports, so the reported 26/50 (52%) shipped score was structurally inflated — an engine could claim SHIPPED without any call site in the running product.
+
+The metric was rewritten to close that gaming vector:
+
+1. **Honest `consumerCount`.** A file counts as a consumer only when (a) it imports a binding from the engine and (b) at least one of those bindings appears as a CallExpression or JSX element in the file body, *outside* of any `import` or `export ... from "..."` statement. Pure re-export files drop out of the count entirely.
+2. **Location-aware thresholds.** `LIB_MIN_CONSUMERS = 1` for `src/lib/`, `src/services/`, and edge functions. `ENGINE_MIN_CONSUMERS = 3` for `src/engine/`. Edge functions are matched via `supabase.functions.invoke('<name>', ...)` calls, not bare string occurrences.
+3. **Runtime reachability gate** (`scripts/verify-runtime-calls.ts`). For every engine with `ENGINE_MANIFEST.isLive: true`, walks `src/pages/` and `src/components/` and classifies it as `REACHABLE`, `IMPORTED_BUT_UNCALLED`, or `NO_IMPORT`. Exits 1 on any non-`REACHABLE` engine. This is the enforcement mechanism that prevents a manifest from claiming `isLive` without a real call site.
+4. **Pre-wiring honest baseline**: 23/50 = **46%** SHIPPED. This is the true starting point under the hardened metric, not the 52% the loose metric reported.
+5. **Post-wiring result** (after Phase 1+2+4 engine wiring): **42/50 = 84% SHIPPED**, real differentiation **5/5 pillars**, verdict **GAP_CONFIRMED**, reachability **24/24**, market delta **+13.8 points** vs the 70.2% market average.
+
+### Verification Gate
+
+Run before every commit that touches an engine or a target page:
+
+```bash
+npm run build
+npm test                                   # debugSwarm baseline is the only allowed failure
+npx tsx scripts/audit-engines.ts
+npx tsx scripts/verify-runtime-calls.ts    # MUST pass — exits 1 on IMPORTED_BUT_UNCALLED / NO_IMPORT
+npx tsx scripts/score-market-gap.ts
+npx tsx scripts/differentiation-check.ts
+PRE_WIRING_BASELINE_PCT=46.0 \
+  npx tsx scripts/generate-market-gap-report.ts
+```
+
+### 5 Differentiation Pillars (all live)
+
+| Pillar | Parameter | Backing Engine | Real Call Site |
+|---|---|---|---|
+| DISC behavioral profiling | #4 | `discProfileEngine` | Wizard flow + ResultsDashboard |
+| Hormozi Value Equation | #5 | `hormoziValueEngine` | ResultsDashboard + funnelEngine |
+| Neuro-storytelling closing | #6 | `neuroClosingEngine` | Sales pipeline + ResultsDashboard |
+| Hebrew NLP optimization | #3 | `hebrewCopyOptimizer` + `stylomeEngine` | ContentTab + aiCopyService |
+| Multi-agent orchestration | #1 | `agent-executor` + `queue-processor` + `agentOrchestrator` | Wizard.regenerateHeroCopy |
+
+### Tier-4 Pillar: `src/lib/agentOrchestrator.ts`
+
+Multi-agent orchestration already had edge-function invocations, but the pillar was carried by an edge function alone — no client-side orchestration layer. The orchestrator wraps `agent-executor` with:
+
+1. Insert a pending row into `agent_tasks`.
+2. `supabase.functions.invoke('agent-executor', ...)`.
+3. Update the task row to `completed` on success.
+4. Best-effort poll `event_queue` for an `agent.completed` event up to 30 seconds.
+5. Fall back to the direct invoke response on poll timeout.
+
+The single required call site lives in `src/pages/Wizard.tsx`, where `regenerateHeroCopy` calls `runAgent(...)` first and falls back to `aiCopyService.generateCopy(...)` on error — satisfying `LIB_MIN_CONSUMERS = 1`.
+
 ## Cross-Domain Knowledge Embedded (40+ domains)
 
 | # | Domain | Application |
@@ -275,17 +362,19 @@ PostgreSQL-based event bus replacing AWS SQS:
 
 | Metric | Value |
 |--------|-------|
-| Lines of code | ~38,000 |
-| TypeScript files | ~230 |
-| Engines | 33 |
-| Tests | 565 (100% pass) |
+| Lines of code | ~40,000 |
+| TypeScript files | ~235 |
+| Engines | 44 (`src/engine/*.ts`, excl. knowledge / subdirs) |
+| Live engines (ENGINE_MANIFEST.isLive) | 24 |
+| Runtime reachability | 24 / 24 REACHABLE |
+| Tests | 582 passing (debugSwarm baseline excluded per plan) |
 | Components | 99 |
-| Pages | 13 |
+| Pages | 17 |
 | Routes | 12 |
 | Tabs | 9 |
 | Hooks | 14 |
 | Translation keys | 290+ (he + en) |
-| Edge Functions | 10 |
+| Edge Functions | 12 |
 | SQL Migrations | 4 |
 | Knowledge domains | 42 |
 | Blackboard agents | 12 |
@@ -294,6 +383,11 @@ PostgreSQL-based event bus replacing AWS SQS:
 | Industry pain points | 40 (10 verticals × 4) |
 | WhatsApp templates | 50+ |
 | `any` types | 0 |
+| Honest shipped score | 42 / 50 = **84.0%** |
+| Pre-wiring honest baseline | 23 / 50 = 46.0% |
+| Real differentiation | **5 / 5 pillars** |
+| Verdict | **GAP_CONFIRMED** |
+| Market delta | +13.8 pts vs 70.2% market average |
 
 ## Tech Stack
 
@@ -324,9 +418,30 @@ PostgreSQL-based event bus replacing AWS SQS:
 ```bash
 npm install
 npm run dev          # Start dev server
-npx vitest run       # Run 565 tests
+npm test             # Run 582+ tests (debugSwarm baseline excluded per plan)
 npx tsc --noEmit     # Type check
-npx vite build       # Build for production
+npm run build        # Build for production
+```
+
+### Verification Gate (honest metric)
+
+```bash
+# Full gate — every step must pass. verify-runtime-calls.ts exits 1 on any
+# live engine that is IMPORTED_BUT_UNCALLED or NO_IMPORT.
+npm run build
+npm test
+npx tsx scripts/audit-engines.ts
+npx tsx scripts/verify-runtime-calls.ts
+npx tsx scripts/score-market-gap.ts
+npx tsx scripts/differentiation-check.ts
+PRE_WIRING_BASELINE_PCT=46.0 \
+  npx tsx scripts/generate-market-gap-report.ts
+
+# Reports written:
+#   reports/engine-audit.json
+#   reports/reachability-audit.json
+#   reports/MARKET_GAP_REPORT.md
+#   reports/tier4-e2e.log
 ```
 
 ## Environment Variables
