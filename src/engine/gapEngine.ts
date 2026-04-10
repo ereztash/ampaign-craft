@@ -1,5 +1,19 @@
 import { FunnelResult } from "@/types/funnel";
 import { MetaInsights, KpiGap } from "@/types/meta";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "gapEngine",
+  reads: ["CAMPAIGN-kpi-*", "CAMPAIGN-insights-*"],
+  writes: ["CAMPAIGN-gaps-*"],
+  stage: "diagnose",
+  isLive: true,
+  parameters: ["Gap analysis"],
+} as const;
 
 // Parse target strings like "₪3-8", "2-4%", "30-60"
 const parseTargetRange = (
@@ -53,7 +67,8 @@ const classifyStatus = (gapPercent: number): KpiGap["status"] => {
 
 export const computeGaps = (
   result: FunnelResult,
-  insights: MetaInsights
+  insights: MetaInsights,
+  blackboardCtx?: BlackboardWriteContext,
 ): KpiGap[] => {
   const gaps: KpiGap[] = [];
 
@@ -77,6 +92,20 @@ export const computeGaps = (
       gapPercent,
       status: classifyStatus(gapPercent),
     });
+  }
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("CAMPAIGN", "gaps", result.id),
+      stage: "diagnose",
+      payload: {
+        gapCount: gaps.length,
+        criticalCount: gaps.filter((g) => g.status === "critical").length,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
   }
 
   return gaps;

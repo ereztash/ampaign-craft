@@ -22,7 +22,7 @@ export interface ParameterEntry {
 
 export const PARAMETERS: ParameterEntry[] = [
   // ── CATEGORY A: CORE GENERATION ──
-  { index: 1,  category: "CATEGORY_A_CORE_GENERATION", name: "Multi-agent orchestration",       backingEngines: ["agent-executor", "queue-processor"] },
+  { index: 1,  category: "CATEGORY_A_CORE_GENERATION", name: "Multi-agent orchestration",       backingEngines: ["agent-executor", "queue-processor", "agentOrchestrator"] },
   { index: 2,  category: "CATEGORY_A_CORE_GENERATION", name: "LLM copy generation",             backingEngines: ["generate-copy", "aiCopyService"] },
   { index: 3,  category: "CATEGORY_A_CORE_GENERATION", name: "Hebrew NLP optimization",         backingEngines: ["hebrewCopyOptimizer", "stylomeEngine"] },
   { index: 4,  category: "CATEGORY_A_CORE_GENERATION", name: "DISC behavioral profiling",       backingEngines: ["discProfileEngine"] },

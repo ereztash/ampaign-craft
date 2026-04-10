@@ -182,11 +182,23 @@ function main(numbers: FinalNumbers): void {
   const realDiffPct = (diff.realDifferentiation * 100).toFixed(0);
   const claimGap = (96 - Number(realDiffPct)).toFixed(0);
 
+  const preWireEnv = process.env.PRE_WIRING_BASELINE_PCT;
+  const preWireLine = preWireEnv
+    ? `Pre-wiring honest baseline: **${preWireEnv}%** — captured under the hardened metric (honest consumerCount, LIB/ENGINE thresholds) before any Phase 1+ wiring.`
+    : `_Pre-wiring honest baseline not provided. Re-run with \`PRE_WIRING_BASELINE_PCT=<n>\` to record it here._`;
+
   const md = [
     "# Market Gap Report",
     "",
     `Generated: ${new Date().toISOString()}`,
     `Repository: campaign-craft`,
+    "",
+    "## Honest Metric Baseline",
+    "",
+    preWireLine,
+    `Post-wiring result: **${shippedPct}%** (${score.summary.shippedCount}/50).`,
+    "",
+    "The metric was hardened on 2026-04-10 to count a file as a consumer only when it both imports a binding and actually calls it (CallExpression or JSX). Pure re-exports are excluded. Two location-aware thresholds apply: 1 consumer for `src/lib/` + `src/services/` + edge functions, 3 consumers for `src/engine/`. An engine with `isLive: true` in its manifest requires at least one real call site in `src/pages/` or `src/components/` — enforced by `scripts/verify-runtime-calls.ts` as a gate.",
     "",
     "## Paper vs Shipped",
     "",

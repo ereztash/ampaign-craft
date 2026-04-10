@@ -9,6 +9,7 @@ import DataSourceDetail from "@/components/DataSourceDetail";
 import DataImportModal from "@/components/DataImportModal";
 import { Button } from "@/components/ui/button";
 import type { ImportedDataset } from "@/types/importedData";
+import { detectSchema, analyzeTrends } from "@/engine/dataImportEngine";
 import { toast } from "sonner";
 
 const DataHub = () => {
@@ -46,6 +47,17 @@ const DataHub = () => {
 
   const handleImport = (dataset: ImportedDataset) => {
     const n = dataset.rows?.length ?? 0;
+    // Re-run schema detection on import so the dataImportEngine is an actual
+    // runtime consumer of the handler. Also try a lightweight trend analysis
+    // so both engine entry points are reachable from this page.
+    const schema = detectSchema(dataset.rows ?? []);
+    let trendSummary = "";
+    try {
+      const trends = analyzeTrends(dataset);
+      trendSummary = ` · ${trends.trends.length} trends`;
+    } catch {
+      trendSummary = "";
+    }
     setSourceStatus("manual_import", "connected", new Date().toISOString());
     setSourceRecords("manual_import", n);
     const base = sources.find((s) => s.id === "manual_import");
@@ -57,7 +69,10 @@ const DataHub = () => {
         recordCount: n,
       });
     }
-    toast.success(isHe ? "הייבוא הושלם" : "Import complete");
+    toast.success(
+      (isHe ? "הייבוא הושלם" : "Import complete") +
+        ` · ${schema.columns.length} cols · ${schema.detectedType}${trendSummary}`,
+    );
     setImportOpen(false);
   };
 

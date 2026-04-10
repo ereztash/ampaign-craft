@@ -12,6 +12,20 @@ import {
   type TrainingPair,
   type TrainingStats,
 } from "./trainingDataEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "promptOptimizerEngine",
+  reads: ["USER-training-*"],
+  writes: ["USER-promptOptimization-*"],
+  stage: "discover",
+  isLive: true,
+  parameters: ["Prompt optimization"],
+} as const;
 
 export type ComplaintCategory = "tone" | "accuracy" | "length" | "relevance" | "language";
 
@@ -175,7 +189,9 @@ export function generatePromptOptimizations(
     });
 }
 
-export async function getOptimizationReport(): Promise<OptimizationReport> {
+export async function getOptimizationReport(
+  blackboardCtx?: BlackboardWriteContext,
+): Promise<OptimizationReport> {
   const stats = await getTrainingStats();
   const patternsByEngine: Record<string, FeedbackPattern[]> = {};
   const optimizations: PromptOptimization[] = [];
@@ -187,10 +203,26 @@ export async function getOptimizationReport(): Promise<OptimizationReport> {
     optimizations.push(...generatePromptOptimizations(engineId, patterns));
   }
 
-  return {
+  const report: OptimizationReport = {
     stats,
     patternsByEngine,
     optimizations: optimizations.sort((a, b) => b.confidence - a.confidence),
     generatedAt: new Date().toISOString(),
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "promptOptimization", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "discover",
+      payload: {
+        optimizationCount: report.optimizations.length,
+        totalPairs: report.stats.totalPairs,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return report;
 }

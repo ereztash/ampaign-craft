@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-04-10T13:18:45.357Z",
-  "totalEngines": 43,
+  "generatedAt": "2026-04-10T20:17:11.330Z",
+  "totalEngines": 44,
   "counts": {
-    "LIVE": 5,
-    "ORPHAN": 33,
-    "DEAD": 5
+    "LIVE": 23,
+    "ORPHAN": 20,
+    "DEAD": 1
   },
   "engines": [
     {
@@ -16,26 +16,30 @@
       "parameters": [
         "A/B testing with significance"
       ],
-      "consumerCount": 2,
+      "consumerCount": 3,
       "consumers": [
         "src/engine/__tests__/abTestEngine.test.ts",
-        "src/engine/blackboard/registry.ts"
+        "src/engine/blackboard/registry.ts",
+        "src/pages/CommandCenter.tsx"
       ],
       "classification": "LIVE"
     },
     {
       "name": "behavioralCohortEngine",
       "filePath": "src/engine/behavioralCohortEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Behavioral cohort analysis"
+      ],
+      "consumerCount": 3,
       "consumers": [
         "src/components/AnalyticsTab.tsx",
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+        "src/components/IntelligenceSynthesisDashboard.tsx",
+        "src/pages/Dashboard.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "bottleneckEngine",
@@ -88,16 +92,20 @@
     {
       "name": "campaignAnalyticsEngine",
       "filePath": "src/engine/campaignAnalyticsEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "deploy",
+      "parameters": [
+        "Campaign analytics"
+      ],
+      "consumerCount": 4,
       "consumers": [
         "src/engine/exportEngine.ts",
-        "src/engine/predictiveEngine.ts"
+        "src/engine/predictiveEngine.ts",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/Dashboard.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "churnPredictionEngine",
@@ -120,16 +128,19 @@
     {
       "name": "clgEngine",
       "filePath": "src/engine/clgEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "CLG modeling"
+      ],
+      "consumerCount": 3,
       "consumers": [
         "src/components/ResultsDashboard.tsx",
-        "src/engine/__tests__/moatEngines.test.ts"
+        "src/engine/__tests__/moatEngines.test.ts",
+        "src/pages/PricingEntry.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "copyQAEngine",
@@ -167,44 +178,53 @@
     {
       "name": "crossDomainBenchmarkEngine",
       "filePath": "src/engine/crossDomainBenchmarkEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Cross-domain benchmarking"
+      ],
+      "consumerCount": 3,
       "consumers": [
         "src/components/AnalyticsTab.tsx",
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+        "src/components/IntelligenceSynthesisDashboard.tsx",
+        "src/pages/Differentiate.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "dataImportEngine",
       "filePath": "src/engine/dataImportEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "discover",
+      "parameters": [
+        "Data import pipeline"
+      ],
+      "consumerCount": 3,
       "consumers": [
         "src/components/DataImportModal.tsx",
-        "src/hooks/useImportedData.ts"
+        "src/hooks/useImportedData.ts",
+        "src/pages/DataHub.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "differentiationEngine",
       "filePath": "src/engine/differentiationEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Differentiation engine"
+      ],
+      "consumerCount": 3,
       "consumers": [
         "src/components/DifferentiationWizard.tsx",
-        "src/engine/__tests__/differentiationEngine.test.ts"
+        "src/engine/__tests__/differentiationEngine.test.ts",
+        "src/pages/Differentiate.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "differentiationKnowledge",
@@ -224,16 +244,19 @@
     {
       "name": "differentiationPhases",
       "filePath": "src/engine/differentiationPhases.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Differentiation engine"
+      ],
+      "consumerCount": 3,
       "consumers": [
         "src/components/DifferentiationWizard.tsx",
-        "src/engine/__tests__/differentiationEngine.test.ts"
+        "src/engine/__tests__/differentiationEngine.test.ts",
+        "src/pages/Differentiate.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "discProfileEngine",
@@ -244,7 +267,7 @@
       "parameters": [
         "DISC behavioral profiling"
       ],
-      "consumerCount": 13,
+      "consumerCount": 14,
       "consumers": [
         "src/components/AnalyticsTab.tsx",
         "src/components/DISCProfileCard.tsx",
@@ -258,23 +281,27 @@
         "src/engine/emotionalPerformanceEngine.ts",
         "src/engine/neuroClosingEngine.ts",
         "src/engine/predictiveContentScoreEngine.ts",
-        "src/engine/userKnowledgeGraph.ts"
+        "src/engine/userKnowledgeGraph.ts",
+        "src/pages/Dashboard.tsx"
       ],
       "classification": "LIVE"
     },
     {
       "name": "emotionalPerformanceEngine",
       "filePath": "src/engine/emotionalPerformanceEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 2,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "Emotional performance"
+      ],
+      "consumerCount": 3,
       "consumers": [
         "src/components/AnalyticsTab.tsx",
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+        "src/components/IntelligenceSynthesisDashboard.tsx",
+        "src/pages/Wizard.tsx"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "exportEngine",
@@ -322,28 +349,35 @@
     {
       "name": "gapEngine",
       "filePath": "src/engine/gapEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 1,
-      "consumers": [
-        "src/components/MetaMonitor.tsx"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Gap analysis"
       ],
-      "classification": "ORPHAN"
+      "consumerCount": 3,
+      "consumers": [
+        "src/components/MetaMonitor.tsx",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/StrategyCanvas.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "guidanceEngine",
       "filePath": "src/engine/guidanceEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 1,
-      "consumers": [
-        "src/components/MetaMonitor.tsx"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "discover",
+      "parameters": [
+        "Guidance engine"
       ],
-      "classification": "ORPHAN"
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/MetaMonitor.tsx",
+        "src/pages/CommandCenter.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "healthScoreEngine",
@@ -387,13 +421,17 @@
     {
       "name": "integrationEngine",
       "filePath": "src/engine/integrationEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 0,
-      "consumers": [],
-      "classification": "DEAD"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "deploy",
+      "parameters": [
+        "Integration engine"
+      ],
+      "consumerCount": 1,
+      "consumers": [
+        "src/pages/Profile.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "neuroClosingEngine",
@@ -449,15 +487,18 @@
     {
       "name": "predictiveContentScoreEngine",
       "filePath": "src/engine/predictiveContentScoreEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 1,
-      "consumers": [
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "Predictive content scoring"
       ],
-      "classification": "ORPHAN"
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/IntelligenceSynthesisDashboard.tsx",
+        "src/pages/Wizard.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "predictiveEngine",
@@ -470,24 +511,28 @@
         "Outcome prediction",
         "Trend forecasting"
       ],
-      "consumerCount": 1,
+      "consumerCount": 2,
       "consumers": [
-        "src/engine/blackboard/registry.ts"
+        "src/engine/blackboard/registry.ts",
+        "src/pages/CommandCenter.tsx"
       ],
       "classification": "LIVE"
     },
     {
       "name": "pricingIntelligenceEngine",
       "filePath": "src/engine/pricingIntelligenceEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 1,
-      "consumers": [
-        "src/components/PricingIntelligenceTab.tsx"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "Pricing intelligence"
       ],
-      "classification": "ORPHAN"
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/PricingIntelligenceTab.tsx",
+        "src/pages/PricingEntry.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "pricingKnowledge",
@@ -505,13 +550,17 @@
     {
       "name": "promptOptimizerEngine",
       "filePath": "src/engine/promptOptimizerEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 0,
-      "consumers": [],
-      "classification": "DEAD"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "discover",
+      "parameters": [
+        "Prompt optimization"
+      ],
+      "consumerCount": 1,
+      "consumers": [
+        "src/pages/Wizard.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "pulseEngine",
@@ -529,6 +578,22 @@
         "src/pages/Dashboard.tsx"
       ],
       "classification": "ORPHAN"
+    },
+    {
+      "name": "researchOrchestrator",
+      "filePath": "src/engine/researchOrchestrator.ts",
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Research orchestration"
+      ],
+      "consumerCount": 2,
+      "consumers": [
+        "src/hooks/useResearch.ts",
+        "src/pages/StrategyCanvas.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "retentionFlywheelEngine",
@@ -549,15 +614,18 @@
     {
       "name": "retentionGrowthEngine",
       "filePath": "src/engine/retentionGrowthEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 1,
-      "consumers": [
-        "src/components/RetentionGrowthTab.tsx"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "Retention growth"
       ],
-      "classification": "ORPHAN"
+      "consumerCount": 2,
+      "consumers": [
+        "src/components/RetentionGrowthTab.tsx",
+        "src/pages/RetentionEntry.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "retentionKnowledge",
@@ -590,13 +658,17 @@
     {
       "name": "seoContentEngine",
       "filePath": "src/engine/seoContentEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 0,
-      "consumers": [],
-      "classification": "DEAD"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "design",
+      "parameters": [
+        "SEO content optimization"
+      ],
+      "consumerCount": 1,
+      "consumers": [
+        "src/pages/Wizard.tsx"
+      ],
+      "classification": "LIVE"
     },
     {
       "name": "stylomeEngine",
@@ -653,7 +725,7 @@
       "parameters": [
         "User knowledge graph"
       ],
-      "consumerCount": 25,
+      "consumerCount": 27,
       "consumers": [
         "src/components/AiCoachChat.tsx",
         "src/components/InsightFeed.tsx",
@@ -679,6 +751,8 @@
         "src/pages/Dashboard.tsx",
         "src/pages/Index.tsx",
         "src/pages/ModuleHub.tsx",
+        "src/pages/PricingEntry.tsx",
+        "src/pages/RetentionEntry.tsx",
         "src/pages/Wizard.tsx"
       ],
       "classification": "LIVE"
@@ -686,13 +760,17 @@
     {
       "name": "visualExportEngine",
       "filePath": "src/engine/visualExportEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 0,
-      "consumers": [],
-      "classification": "DEAD"
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "deploy",
+      "parameters": [
+        "Visual export"
+      ],
+      "consumerCount": 1,
+      "consumers": [
+        "src/pages/Dashboard.tsx"
+      ],
+      "classification": "LIVE"
     }
   ]
 }

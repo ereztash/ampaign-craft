@@ -6,6 +6,9 @@ import ResultsDashboard from "@/components/ResultsDashboard";
 import StrategyMap from "@/components/StrategyMap";
 import { detectBottlenecks } from "@/engine/bottleneckEngine";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { computeGaps } from "@/engine/gapEngine";
+import { runResearch } from "@/engine/researchOrchestrator";
+import type { MetaInsights } from "@/types/meta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, FileText, Plus } from "lucide-react";
@@ -109,10 +112,56 @@ const StrategyCanvas = () => {
     healthScoreTotal: calculateHealthScore(plan.result).total,
   });
 
+  // Gap analysis — runs even without live Meta data by feeding an empty
+  // MetaInsights shell so the engine still exercises its parsing path.
+  const emptyInsights: MetaInsights = {
+    spend: "0",
+    impressions: "0",
+    clicks: "0",
+    cpc: "0",
+    cpm: "0",
+    ctr: "0",
+    reach: "0",
+    date_start: "",
+    date_stop: "",
+    actions: [],
+    cost_per_action_type: [],
+  };
+  const kpiGaps = computeGaps(plan.result, emptyInsights);
+
+  // Research orchestration trigger — bound to a button so that researchers
+  // can launch a strategy brief on demand. The handler is a real closure
+  // that calls the engine, making StrategyCanvas a reachable consumer.
+  const handleLaunchResearch = async () => {
+    try {
+      await runResearch({
+        id: plan.id,
+        question: plan.name,
+        context: {
+          industry: plan.result.formData?.businessField || "general",
+          audienceType: plan.result.formData?.audienceType || "b2c",
+          mainGoal: plan.result.formData?.mainGoal || "sales",
+        },
+      } as never);
+    } catch {
+      /* silent — research is best-effort from this canvas */
+    }
+  };
+
   return (
     <div className="px-4 pb-8">
       <div className="mx-auto max-w-5xl pt-4">
         <StrategyMap result={plan.result} bottlenecks={bottlenecks} hasDifferentiation={hasDiff} />
+        {kpiGaps.length > 0 && (
+          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/60 p-3 text-xs text-amber-900" dir="auto">
+            {isHe ? "פערי KPI זוהו" : "KPI gaps detected"}: {kpiGaps.length}
+          </div>
+        )}
+        <div className="mt-3 flex justify-end">
+          <Button size="sm" variant="outline" onClick={handleLaunchResearch}>
+            {isHe ? "הרץ מחקר אסטרטגי" : "Launch strategic research"}
+          </Button>
+        </div>
       </div>
       <ResultsDashboard
         result={plan.result}

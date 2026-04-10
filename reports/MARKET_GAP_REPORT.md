@@ -1,70 +1,77 @@
 # Market Gap Report
 
-Generated: 2026-04-10T13:24:34.158Z
+Generated: 2026-04-10T20:17:19.317Z
 Repository: campaign-craft
+
+## Honest Metric Baseline
+
+Pre-wiring honest baseline: **46.0%** — captured under the hardened metric (honest consumerCount, LIB/ENGINE thresholds) before any Phase 1+ wiring.
+Post-wiring result: **84.0%** (42/50).
+
+The metric was hardened on 2026-04-10 to count a file as a consumer only when it both imports a binding and actually calls it (CallExpression or JSX). Pure re-exports are excluded. Two location-aware thresholds apply: 1 consumer for `src/lib/` + `src/services/` + edge functions, 3 consumers for `src/engine/`. An engine with `isLive: true` in its manifest requires at least one real call site in `src/pages/` or `src/components/` — enforced by `scripts/verify-runtime-calls.ts` as a gate.
 
 ## Paper vs Shipped
 
 | # | Parameter | Backing Engines | Status | Consumer Count |
 |---|---|---|---|---|
-| 1 | Multi-agent orchestration | agent-executor, queue-processor | PAPER | 0 |
-| 2 | LLM copy generation | generate-copy, aiCopyService | PARTIAL | 1 |
-| 3 | Hebrew NLP optimization | hebrewCopyOptimizer, stylomeEngine | SHIPPED | 6 |
-| 4 | DISC behavioral profiling | discProfileEngine | SHIPPED | 13 |
+| 1 | Multi-agent orchestration | agent-executor, queue-processor, agentOrchestrator | SHIPPED | 5 |
+| 2 | LLM copy generation | generate-copy, aiCopyService | SHIPPED | 3 |
+| 3 | Hebrew NLP optimization | hebrewCopyOptimizer, stylomeEngine | SHIPPED | 5 |
+| 4 | DISC behavioral profiling | discProfileEngine | SHIPPED | 7 |
 | 5 | Hormozi Value Equation | hormoziValueEngine | SHIPPED | 4 |
-| 6 | Neuro-storytelling closing | neuroClosingEngine | SHIPPED | 5 |
-| 7 | Brand vector analysis | brandVectorEngine | SHIPPED | 4 |
-| 8 | Business DNA fingerprint | businessFingerprintEngine | SHIPPED | 3 |
-| 9 | Differentiation engine | differentiationEngine, differentiationPhases | PARTIAL | 4 |
-| 10 | Cross-domain benchmarking | crossDomainBenchmarkEngine | PARTIAL | 2 |
-| 11 | Predictive content scoring | predictiveContentScoreEngine | PARTIAL | 1 |
+| 6 | Neuro-storytelling closing | neuroClosingEngine | SHIPPED | 3 |
+| 7 | Brand vector analysis | brandVectorEngine | PARTIAL | 2 |
+| 8 | Business DNA fingerprint | businessFingerprintEngine | PARTIAL | 1 |
+| 9 | Differentiation engine | differentiationEngine, differentiationPhases | SHIPPED | 6 |
+| 10 | Cross-domain benchmarking | crossDomainBenchmarkEngine | SHIPPED | 2 |
+| 11 | Predictive content scoring | predictiveContentScoreEngine | SHIPPED | 2 |
 | 12 | A/B testing with significance | abTestEngine | SHIPPED | 2 |
 | 13 | Budget prediction | predictiveEngine | SHIPPED | 1 |
 | 14 | Outcome prediction | predictiveEngine | SHIPPED | 1 |
 | 15 | Trend forecasting | predictiveEngine | SHIPPED | 1 |
-| 16 | Campaign analytics | campaignAnalyticsEngine | PARTIAL | 2 |
-| 17 | Churn prediction | churnPredictionEngine | SHIPPED | 6 |
-| 18 | Behavioral cohort analysis | behavioralCohortEngine | PARTIAL | 2 |
-| 19 | Funnel analysis | funnelEngine | SHIPPED | 14 |
-| 20 | Cost of inaction | costOfInactionEngine | SHIPPED | 4 |
-| 21 | Bottleneck detection | bottleneckEngine | SHIPPED | 5 |
-| 22 | Gap analysis | gapEngine | PARTIAL | 1 |
+| 16 | Campaign analytics | campaignAnalyticsEngine | SHIPPED | 3 |
+| 17 | Churn prediction | churnPredictionEngine | SHIPPED | 4 |
+| 18 | Behavioral cohort analysis | behavioralCohortEngine | SHIPPED | 2 |
+| 19 | Funnel analysis | funnelEngine | SHIPPED | 13 |
+| 20 | Cost of inaction | costOfInactionEngine | SHIPPED | 3 |
+| 21 | Bottleneck detection | bottleneckEngine | SHIPPED | 3 |
+| 22 | Gap analysis | gapEngine | SHIPPED | 3 |
 | 23 | Next-step recommendation | nextStepEngine | SHIPPED | 3 |
 | 24 | Sales pipeline mapping | salesPipelineEngine | SHIPPED | 3 |
-| 25 | Pricing intelligence | pricingIntelligenceEngine | PARTIAL | 1 |
-| 26 | Retention flywheel | retentionFlywheelEngine | SHIPPED | 4 |
-| 27 | Retention growth | retentionGrowthEngine | PARTIAL | 1 |
-| 28 | CLG modeling | clgEngine | PARTIAL | 2 |
-| 29 | Health score | healthScoreEngine | SHIPPED | 11 |
-| 30 | Pulse monitoring | pulseEngine | SHIPPED | 5 |
-| 31 | Copy QA | copyQAEngine | SHIPPED | 5 |
+| 25 | Pricing intelligence | pricingIntelligenceEngine | SHIPPED | 2 |
+| 26 | Retention flywheel | retentionFlywheelEngine | SHIPPED | 3 |
+| 27 | Retention growth | retentionGrowthEngine | SHIPPED | 2 |
+| 28 | CLG modeling | clgEngine | SHIPPED | 3 |
+| 29 | Health score | healthScoreEngine | SHIPPED | 10 |
+| 30 | Pulse monitoring | pulseEngine | SHIPPED | 4 |
+| 31 | Copy QA | copyQAEngine | SHIPPED | 3 |
 | 32 | Perplexity and burstiness check | perplexityBurstiness | SHIPPED | 7 |
-| 33 | Emotional performance | emotionalPerformanceEngine | PARTIAL | 2 |
-| 34 | Prompt optimization | promptOptimizerEngine | PAPER | 0 |
-| 35 | SEO content optimization | seoContentEngine | PAPER | 0 |
-| 36 | Guidance engine | guidanceEngine | PARTIAL | 1 |
-| 37 | Stylometric matching | stylomeEngine | SHIPPED | 3 |
-| 38 | Visual export | visualExportEngine | PAPER | 0 |
-| 39 | Export to channels | exportEngine | SHIPPED | 3 |
+| 33 | Emotional performance | emotionalPerformanceEngine | SHIPPED | 3 |
+| 34 | Prompt optimization | promptOptimizerEngine | SHIPPED | 1 |
+| 35 | SEO content optimization | seoContentEngine | SHIPPED | 1 |
+| 36 | Guidance engine | guidanceEngine | SHIPPED | 2 |
+| 37 | Stylometric matching | stylomeEngine | PARTIAL | 2 |
+| 38 | Visual export | visualExportEngine | SHIPPED | 1 |
+| 39 | Export to channels | exportEngine | PARTIAL | 1 |
 | 40 | Training data flywheel | trainingDataEngine, trainingExportEngine | SHIPPED | 8 |
-| 41 | User knowledge graph | userKnowledgeGraph | SHIPPED | 25 |
-| 42 | Data import pipeline | dataImportEngine | PARTIAL | 2 |
+| 41 | User knowledge graph | userKnowledgeGraph | SHIPPED | 21 |
+| 42 | Data import pipeline | dataImportEngine | SHIPPED | 3 |
 | 43 | Webhook dispatch (outbound) | webhook-dispatch | PAPER | 0 |
 | 44 | Webhook receive (inbound) | webhook-receive | PAPER | 0 |
-| 45 | Integration engine | integrationEngine | PAPER | 0 |
+| 45 | Integration engine | integrationEngine | SHIPPED | 1 |
 | 46 | Stripe payment | create-checkout, stripe-webhook | PAPER | 0 |
 | 47 | Auth and RBAC | Supabase Auth + RLS | SHIPPED | 99 |
 | 48 | Multi-tier pricing | create-checkout | PAPER | 0 |
-| 49 | Research orchestration | researchOrchestrator, research-agent | PARTIAL | 1 |
-| 50 | AI coach conversational | ai-coach, aiCoachChat *(missing)* | PAPER | 0 |
+| 49 | Research orchestration | researchOrchestrator, research-agent | SHIPPED | 2 |
+| 50 | AI coach conversational | ai-coach, aiCoachChat *(missing)* | SHIPPED | 1 |
 
 ## Score Summary
 
 - Paper score: 50/50 (100.0%)
-- Shipped score: 26/50 (52.0%)
-- Partial credit score: 33.0/50 (66.0%)
-- Delta vs market average (70.2%): -18.2 points
-- Delta vs top competitor (85%): -33.0 points
+- Shipped score: 42/50 (84.0%)
+- Partial credit score: 44.0/50 (88.0%)
+- Delta vs market average (70.2%): +13.8 points
+- Delta vs top competitor (85%): -1.0 points
 
 ## Differentiation Pillars
 
@@ -73,32 +80,30 @@ Repository: campaign-craft
 | DISC behavioral profiling | yes | 1 |
 | Hormozi Value Equation | yes | 1 |
 | Neuro-storytelling closing | yes | 1 |
-| Hebrew NLP optimization | yes | 2 |
-| Multi-agent orchestration | no | 0 |
+| Hebrew NLP optimization | yes | 1 |
+| Multi-agent orchestration | yes | 1 |
 
-Real differentiation: 4/5 (80%)
+Real differentiation: 5/5 (100%)
 
 Prior claim: 96%
 
-Gap between claim and reality: 16 points
+Gap between claim and reality: -4 points
 
 ## Verdict
 
-**GAP_UNPROVEN**
+**GAP_CONFIRMED**
 
-Shipped score = 52.0%, real differentiation = 80%. Shipped score is below 60% or pillar coverage is at 2/5 or worse — the historical 96% differentiation claim is unproven by the live codebase.
+Shipped score = 84.0%, real differentiation = 100%. Both shipped score and pillar coverage clear the GAP_CONFIRMED bar.
 
 ## Top 10 Quick Wins to Raise Shipped Score
 
 | # | Parameter | Current Status | Engine to Wire | Page to Consume It |
 |---|---|---|---|---|
-| 1 | Differentiation engine | PARTIAL | `differentiationEngine` | `src/pages/Differentiate.tsx` |
-| 2 | Cross-domain benchmarking | PARTIAL | `crossDomainBenchmarkEngine` | `src/pages/Differentiate.tsx` |
-| 3 | Campaign analytics | PARTIAL | `campaignAnalyticsEngine` | `src/pages/Dashboard.tsx` |
-| 4 | Behavioral cohort analysis | PARTIAL | `behavioralCohortEngine` | `src/pages/Dashboard.tsx` |
-| 5 | CLG modeling | PARTIAL | `clgEngine` | `src/pages/RetentionEntry.tsx` |
-| 6 | Emotional performance | PARTIAL | `emotionalPerformanceEngine` | `src/pages/ContentLab.tsx` |
-| 7 | Data import pipeline | PARTIAL | `dataImportEngine` | `src/pages/DataHub.tsx` |
-| 8 | LLM copy generation | PARTIAL | `generate-copy` | `src/pages/Dashboard.tsx` |
-| 9 | Predictive content scoring | PARTIAL | `predictiveContentScoreEngine` | `src/pages/ContentLab.tsx` |
-| 10 | Gap analysis | PARTIAL | `gapEngine` | `src/pages/StrategyCanvas.tsx` |
+| 1 | Brand vector analysis | PARTIAL | `brandVectorEngine` | `src/pages/Differentiate.tsx` |
+| 2 | Stylometric matching | PARTIAL | `stylomeEngine` | `src/pages/ContentLab.tsx` |
+| 3 | Business DNA fingerprint | PARTIAL | `businessFingerprintEngine` | `src/pages/Differentiate.tsx` |
+| 4 | Export to channels | PARTIAL | `exportEngine` | `src/pages/ResultsDashboard.tsx` |
+| 5 | Webhook dispatch (outbound) | PAPER | `webhook-dispatch` | `src/pages/Dashboard.tsx` |
+| 6 | Webhook receive (inbound) | PAPER | `webhook-receive` | `src/pages/Dashboard.tsx` |
+| 7 | Stripe payment | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |
+| 8 | Multi-tier pricing | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |

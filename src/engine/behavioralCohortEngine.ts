@@ -7,6 +7,20 @@
 
 import type { FormData } from "@/types/funnel";
 import type { DISCProfile } from "./discProfileEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "behavioralCohortEngine",
+  reads: ["USER-form-*", "USER-disc-*"],
+  writes: ["USER-cohort-*"],
+  stage: "diagnose",
+  isLive: true,
+  parameters: ["Behavioral cohort analysis"],
+} as const;
 
 export type CohortId =
   | "decisive_beginners"
@@ -304,6 +318,7 @@ export function assignToCohort(
   discProfile: DISCProfile,
   healthScore?: number,
   churnRisk?: number,
+  blackboardCtx?: BlackboardWriteContext,
 ): CohortAssignment {
   const budgetTier = inferBudgetTier(formData);
   const maturity = inferMaturity(formData);
@@ -357,7 +372,24 @@ export function assignToCohort(
     en: `DISC ${primary} + ${maturity} stage + ${budgetTier} budget → ${primaryCohort.name.en} cohort`,
   };
 
-  return { primaryCohort, secondaryCohort, matchConfidence: confidence, rationale };
+  const assignment: CohortAssignment = { primaryCohort, secondaryCohort, matchConfidence: confidence, rationale };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "cohort", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "diagnose",
+      payload: {
+        cohortId,
+        matchConfidence: confidence,
+        secondaryCohort: secondaryId,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return assignment;
 }
 
 function findSecondary(primary: CohortId, disc: DISCProfile): CohortId | null {

@@ -7,6 +7,10 @@ import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
+import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
+import { assignToCohort } from "@/engine/behavioralCohortEngine";
+import { inferDISCProfile } from "@/engine/discProfileEngine";
+import { structureForAllPlatforms } from "@/engine/visualExportEngine";
 import { SavedPlan } from "@/types/funnel";
 import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
@@ -46,6 +50,30 @@ const Dashboard = () => {
     return getRecommendedNextStep(fallbackGraph, hasDiff, savedPlans.length, new Set<string>());
   }, [graph, hasDiff, savedPlans.length]);
 
+  // Campaign analytics benchmarks — computed from the user's own saved plans.
+  const analytics = useMemo(() => generateBenchmarks(savedPlans), [savedPlans]);
+  const topIndustryInsight = analytics.industryInsights[0] ?? null;
+
+  // Behavioral cohort assignment — driven by the latest form data + DISC.
+  const cohortAssignment = useMemo(() => {
+    if (!profile.lastFormData) return null;
+    const disc = inferDISCProfile(profile.lastFormData, graph);
+    return assignToCohort(
+      profile.lastFormData,
+      disc,
+      healthScore?.total,
+      undefined,
+    );
+  }, [profile.lastFormData, graph, healthScore?.total]);
+
+  // Visual export preview — turns the top weekly pulse copy into platform posts
+  // so the engine is actually invoked from this page.
+  const socialPreview = useMemo(() => {
+    if (!pulse?.greeting) return null;
+    const source = pulse.greeting[language] ?? pulse.greeting.en;
+    return structureForAllPlatforms(source, language === "he" ? "he" : "en");
+  }, [pulse?.greeting, language]);
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-4xl">
@@ -75,6 +103,26 @@ const Dashboard = () => {
               <p className="text-sm font-medium text-foreground" dir="auto">{pulse.greeting[language]}</p>
               {pulse.lossFramedMessages[0] && (
                 <p className="text-xs text-muted-foreground mt-1" dir="auto">{pulse.lossFramedMessages[0][language]}</p>
+              )}
+              {cohortAssignment && (
+                <p className="text-xs text-muted-foreground mt-2" dir="auto">
+                  {isHe ? "קוהורט התנהגותי" : "Behavioral cohort"}:{" "}
+                  <strong>{cohortAssignment.primaryCohort.name[language]}</strong>
+                  {" "}· {cohortAssignment.matchConfidence}% {isHe ? "התאמה" : "match"}
+                </p>
+              )}
+              {topIndustryInsight && (
+                <p className="text-xs text-muted-foreground mt-1" dir="auto">
+                  {isHe ? "בנצ'מרק תעשייה" : "Industry benchmark"}:{" "}
+                  <strong>{topIndustryInsight.industry}</strong>
+                  {" "}· {isHe ? "מדגם" : "n"}={topIndustryInsight.sampleSize}
+                  {" "}· {analytics.benchmarks.length} {isHe ? "מדדים" : "metrics"}
+                </p>
+              )}
+              {socialPreview && socialPreview.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1" dir="auto">
+                  {isHe ? "גרסאות לרשתות" : "Social variants"}: {socialPreview.length} {isHe ? "פלטפורמות" : "platforms"}
+                </p>
               )}
             </CardContent>
           </Card>

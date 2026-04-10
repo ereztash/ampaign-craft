@@ -79,3 +79,71 @@ always wins UNPROVEN even if all 5 pillars are shipped — the brief's
 needs only 1 more consumer to flip to SHIPPED), and within each tier
 sorts by total consumer count descending so the closest wins surface
 first.
+
+## Metric Corrections, 2026-04-10
+
+The original `score-market-gap.ts` counted a file as a consumer as
+soon as it had an `import ... from "...engine"` line. That matched
+**re-exports**, **type-only imports**, and **unused imports**, so the
+reported 26/50 (52%) shipped score was structurally inflated — an
+engine could claim SHIPPED without any call site in the running
+product.
+
+The metric was hardened on 2026-04-10:
+
+1. **Honest `consumerCount`** (`scripts/score-market-gap.ts`). A file
+   counts as a consumer only when (a) it imports a binding from the
+   engine and (b) at least one of those bindings appears as a
+   CallExpression or JSX element in the file body, *outside* of any
+   `import` or `export ... from "..."` statement. Pure re-export
+   files drop out of the count entirely.
+
+2. **Location-aware thresholds**:
+   - `LIB_MIN_CONSUMERS = 1` — `src/lib/`, `src/services/`, edge
+     functions. Wrappers are legitimately SHIPPED the moment a single
+     view file calls them.
+   - `ENGINE_MIN_CONSUMERS = 3` — `src/engine/`. Full engines must
+     have real reach across the product.
+   An engine whose manifest claims `isLive: true` is promoted to
+   SHIPPED as soon as it has ≥1 real call site, but only under the
+   gate of `verify-runtime-calls.ts`.
+
+3. **Runtime reachability gate** (`scripts/verify-runtime-calls.ts`).
+   For every engine with `isLive: true` in its `ENGINE_MANIFEST`,
+   walks `src/pages/` and `src/components/` and classifies it as
+   `REACHABLE`, `IMPORTED_BUT_UNCALLED`, or `NO_IMPORT`. Exits 1 on
+   any non-`REACHABLE` engine. This is the gaming vector closer:
+   you cannot ship a live engine without a real call site in a
+   view file.
+
+4. **Pre-wiring honest baseline** under the hardened metric:
+   23/50 = **46%** SHIPPED. This is the true starting point for the
+   subsequent Phase 1+2 wiring, not the 52% that the loose metric
+   had reported.
+
+5. **Post-wiring result** (after Phase 1+2+4): 42/50 = **84%**
+   SHIPPED, real differentiation 5/5, verdict `GAP_CONFIRMED`,
+   reachability 24/24. The delta between the 52% inflated baseline
+   and the 46% honest baseline confirms the claim that the original
+   metric was gamable by import-only references.
+
+## 9. Tier-4 pillar wiring
+
+Multi-agent orchestration (`agent-executor` + `queue-processor`)
+already had 3+ edge-function invocations in the codebase and was
+technically SHIPPED, but the *pillar* was carried by an edge function
+alone — no client-side orchestration layer existed. Phase 4 added
+`src/lib/agentOrchestrator.ts` which:
+
+1. Inserts a pending row into `agent_tasks`.
+2. Calls `supabase.functions.invoke('agent-executor', ...)`.
+3. Updates the task row on success.
+4. Best-effort polls `event_queue` for an `agent.completed` event up
+   to 30 s.
+5. Falls back to the direct invoke response on poll timeout.
+
+The sole required call site is in `src/pages/Wizard.tsx`, where the
+`regenerateHeroCopy` callback calls `runAgent(...)` first and falls
+back to `aiCopyService.generateCopy(...)` on any error. This gives
+the Multi-agent pillar a genuine client-side reach into a view file,
+regardless of how many edge-function string references exist.

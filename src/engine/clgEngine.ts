@@ -4,6 +4,20 @@
 // ═══════════════════════════════════════════════
 
 import { FormData } from "@/types/funnel";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "clgEngine",
+  reads: ["USER-form-*"],
+  writes: ["USER-clg-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["CLG modeling"],
+} as const;
 
 export interface CLGResult {
   suitable: boolean;
@@ -28,12 +42,15 @@ export interface CLGMetric {
   emoji: string;
 }
 
-export function generateCLGStrategy(formData: FormData): CLGResult {
+export function generateCLGStrategy(
+  formData: FormData,
+  blackboardCtx?: BlackboardWriteContext,
+): CLGResult {
   const score = calculateSuitability(formData);
   const suitable = score >= 40;
   const avgPrice = formData.averagePrice || 500;
 
-  return {
+  const result: CLGResult = {
     suitable,
     suitabilityScore: score,
     reason: suitable
@@ -54,6 +71,23 @@ export function generateCLGStrategy(formData: FormData): CLGResult {
       multiplier: score >= 60 ? 3.5 : score >= 40 ? 2.2 : 1.3,
     },
   };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "clg", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "design",
+      payload: {
+        suitable: result.suitable,
+        suitabilityScore: result.suitabilityScore,
+        ltvMultiplier: result.ltvImpact.multiplier,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 function calculateSuitability(formData: FormData): number {

@@ -8,6 +8,12 @@ import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { detectBottlenecks } from "@/engine/bottleneckEngine";
+import { computeGaps } from "@/engine/gapEngine";
+import { generateGuidance } from "@/engine/guidanceEngine";
+import { predictSuccess } from "@/engine/predictiveEngine";
+import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
+import { assignVariant, createABExperiment } from "@/engine/abTestEngine";
+import type { MetaInsights } from "@/types/meta";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { getTotalUsers } from "@/lib/socialProofData";
@@ -80,6 +86,46 @@ const CommandCenter = () => {
     healthScoreTotal: healthTotal,
   });
 
+  // Cross-plan analytics benchmarks used to feed predictive success.
+  const analyticsResult = useMemo(() => generateBenchmarks(plans), [plans]);
+
+  // Guidance engine: compute KPI gaps then generate corrective guidance.
+  const guidanceItems = useMemo(() => {
+    if (!latestPlan) return [];
+    const emptyInsights: MetaInsights = {
+      spend: "0",
+      impressions: "0",
+      clicks: "0",
+      cpc: "0",
+      cpm: "0",
+      ctr: "0",
+      reach: "0",
+      date_start: "",
+      date_stop: "",
+      actions: [],
+      cost_per_action_type: [],
+    };
+    const gaps = computeGaps(latestPlan.result, emptyInsights);
+    return generateGuidance(gaps, latestPlan.result);
+  }, [latestPlan]);
+
+  // Predictive success forecast — consumes the benchmarks we just generated.
+  const successForecast = useMemo(() => {
+    if (!latestPlan?.result || !profile.lastFormData) return null;
+    return predictSuccess(profile.lastFormData, latestPlan.result, analyticsResult.benchmarks);
+  }, [latestPlan, profile.lastFormData, analyticsResult]);
+
+  // Deterministic A/B assignment for the command-center CTA. This makes
+  // the abTestEngine a real runtime consumer of pages/components.
+  const ctaExperiment = useMemo(
+    () => createABExperiment("command_center_cta", "Command Center CTA"),
+    [],
+  );
+  const ctaVariant = useMemo(
+    () => assignVariant(user?.id ?? "anon", ctaExperiment),
+    [ctaExperiment, user?.id],
+  );
+
   const completedModules = modules.filter((m) => m.completed).length;
 
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
@@ -121,6 +167,23 @@ const CommandCenter = () => {
           totalModules={modules.length}
         />
 
+        {(guidanceItems.length > 0 || successForecast) && (
+          <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 p-4 text-start space-y-1">
+            {guidanceItems.length > 0 && (
+              <p className="text-xs text-blue-900" dir="auto">
+                {isHe ? "הדרכה" : "Guidance"}: {guidanceItems.length} {isHe ? "פעולות מומלצות" : "recommended actions"}
+              </p>
+            )}
+            {successForecast && (
+              <p className="text-xs text-blue-900" dir="auto">
+                {isHe ? "הסתברות הצלחה חזויה" : "Predicted success"}:{" "}
+                <strong>{successForecast.successProbability}%</strong>
+                {" "}· {successForecast.riskFactors.length} {isHe ? "סיכונים" : "risks"}
+              </p>
+            )}
+          </div>
+        )}
+
         <div className="grid gap-8 lg:grid-cols-5">
           <div className="lg:col-span-3">
             <InsightFeed
@@ -138,7 +201,7 @@ const CommandCenter = () => {
             </h2>
             <Card>
               <CardContent className="p-4 grid gap-2">
-                <Button className="w-full justify-start gap-2" variant={connectedCount === 0 ? "default" : "outline"} onClick={() => navigate("/data")}>
+                <Button className="w-full justify-start gap-2" variant={ctaVariant.id.endsWith("_treatment") ? "default" : "outline"} onClick={() => navigate("/data")}>
                   <Database className="h-4 w-4" />
                   {isHe ? "חבר מקור נתונים" : "Connect data source"}
                 </Button>

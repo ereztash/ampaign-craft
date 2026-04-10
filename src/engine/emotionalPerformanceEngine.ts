@@ -8,6 +8,20 @@ import type { CopyQAResult } from "./copyQAEngine";
 import type { BrandVectorResult } from "./brandVectorEngine";
 import type { DISCProfile } from "./discProfileEngine";
 import type { StylomeProfile } from "./stylomeEngine";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "emotionalPerformanceEngine",
+  reads: ["USER-copy-*", "USER-brandVector-*", "USER-disc-*"],
+  writes: ["USER-eps-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["Emotional performance"],
+} as const;
 
 export type EmotionType = "cortisol" | "oxytocin" | "dopamine";
 
@@ -164,6 +178,7 @@ export function calculateEPS(
   discProfile?: DISCProfile,
   stylome?: StylomeProfile,
   previousScore?: number,
+  blackboardCtx?: BlackboardWriteContext,
 ): EPSResult {
   // Pull balance from brand vector if provided, otherwise neutral 33/33/34
   const balance: EmotionalBalance = brandVector
@@ -212,6 +227,21 @@ export function calculateEPS(
       previousScore,
       delta: result.score - previousScore,
     };
+  }
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "eps", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "design",
+      payload: {
+        score: result.score,
+        dominantEmotion: result.dominantEmotion,
+        discAlignment: result.discAlignment,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
   }
 
   return result;

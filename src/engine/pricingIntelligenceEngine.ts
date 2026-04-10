@@ -16,10 +16,28 @@ import {
   GUARANTEE_TYPES, ANNUAL_DISCOUNT, OFFER_BONUS_TEMPLATES, calculateJND,
   PRICE_FRAMING_TEMPLATES,
 } from "./pricingKnowledge";
+import {
+  writeContext,
+  conceptKey,
+  type BlackboardWriteContext,
+} from "./blackboard/contract";
+
+export const ENGINE_MANIFEST = {
+  name: "pricingIntelligenceEngine",
+  reads: ["USER-form-*", "USER-knowledgeGraph-*"],
+  writes: ["USER-pricing-*"],
+  stage: "design",
+  isLive: true,
+  parameters: ["Pricing intelligence"],
+} as const;
 
 // ═══ MAIN GENERATOR ═══
 
-export function generatePricingIntelligence(formData: FormData, graph: UserKnowledgeGraph): PricingIntelligenceResult {
+export function generatePricingIntelligence(
+  formData: FormData,
+  graph: UserKnowledgeGraph,
+  blackboardCtx?: BlackboardWriteContext,
+): PricingIntelligenceResult {
   const input = extractInput(formData, graph);
   const model = recommendPricingModel(input);
   const tiers = generateTierStructure(input, model);
@@ -30,7 +48,32 @@ export function generatePricingIntelligence(formData: FormData, graph: UserKnowl
   const subEconomics = input.salesModel === "subscription" ? calculateSubscriptionEconomics(input) : null;
   const nextSteps = generateNextSteps(input, model, tiers);
 
-  return { pricingModel: model, tierStructure: tiers, offerStack, guarantee, priceFramingScripts: scripts, competitivePosition: position, subscriptionEconomics: subEconomics, nextSteps };
+  const result: PricingIntelligenceResult = {
+    pricingModel: model,
+    tierStructure: tiers,
+    offerStack,
+    guarantee,
+    priceFramingScripts: scripts,
+    competitivePosition: position,
+    subscriptionEconomics: subEconomics,
+    nextSteps,
+  };
+
+  if (blackboardCtx) {
+    void writeContext({
+      userId: blackboardCtx.userId,
+      planId: blackboardCtx.planId,
+      key: conceptKey("USER", "pricing", blackboardCtx.planId ?? blackboardCtx.userId),
+      stage: "design",
+      payload: {
+        pricingModelType: model.model,
+        tierCount: tiers.tiers.length,
+      },
+      writtenBy: ENGINE_MANIFEST.name,
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 function extractInput(formData: FormData, graph: UserKnowledgeGraph) {
