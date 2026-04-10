@@ -6,6 +6,7 @@
 
 import { FormData } from "@/types/funnel";
 import { UserKnowledgeGraph } from "./userKnowledgeGraph";
+import { captureTrainingPair } from "./trainingDataEngine";
 
 export interface DISCDistribution {
   D: number; // 0-100 Dominant
@@ -252,7 +253,7 @@ export function inferDISCProfile(
 
   const strategy = MESSAGING_STRATEGIES[primary];
 
-  return {
+  const profile: DISCProfile = {
     primary,
     secondary,
     distribution,
@@ -264,6 +265,9 @@ export function inferDISCProfile(
     funnelEmphasis: strategy.funnelEmphasis,
     communicationTone: strategy.communicationTone,
   };
+
+  void captureTrainingPair("disc_profile", { formData }, profile).catch(() => {});
+  return profile;
 }
 
 /**

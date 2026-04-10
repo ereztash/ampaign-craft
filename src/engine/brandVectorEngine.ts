@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════
 
 import { FormData, FunnelResult } from "@/types/funnel";
+import { captureTrainingPair } from "./trainingDataEngine";
 
 export type BrandVector = "cortisol" | "oxytocin" | "dopamine";
 
@@ -37,7 +38,7 @@ export function analyzeBrandVector(result: FunnelResult): BrandVectorResult {
   // Detect mismatch
   const mismatch = alignment < 60 ? detectMismatch(primary, funnelDist) : null;
 
-  return {
+  const output: BrandVectorResult = {
     primaryVector: primary,
     vectorDistribution: dist,
     brandLabel: VECTOR_LABELS[primary],
@@ -45,6 +46,11 @@ export function analyzeBrandVector(result: FunnelResult): BrandVectorResult {
     mismatch,
     rebalanceTips: getRebalanceTips(primary, funnelDist, alignment),
   };
+
+  // Fire-and-forget training capture
+  void captureTrainingPair("brand_vector", { formData }, output).catch(() => {});
+
+  return output;
 }
 
 function detectDistribution(formData: FormData): { cortisol: number; oxytocin: number; dopamine: number } {

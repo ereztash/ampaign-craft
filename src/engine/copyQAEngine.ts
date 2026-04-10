@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════
 
 import { analyzeAIDetection, type AIDetectionScore } from "./perplexityBurstiness";
+import { captureTrainingPair } from "./trainingDataEngine";
 
 export interface CopyQAResult {
   score: number; // 0-100
@@ -172,5 +173,7 @@ export function analyzeCopy(text: string, targetPersona: "system1" | "system2" |
     suggestions.push(tip);
   }
 
-  return { score, risks, strengths, suggestions, aiDetection };
+  const result: CopyQAResult = { score, risks, strengths, suggestions, aiDetection };
+  void captureTrainingPair("copy_qa", { text, targetPersona }, result).catch(() => {});
+  return result;
 }

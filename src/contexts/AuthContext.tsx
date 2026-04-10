@@ -148,6 +148,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               if (prof?.display_name === "pro" || prof?.display_name === "business") {
                 setTierState(prof.display_name);
               }
+              // Flush any buffered training pairs captured while unauthenticated
+              try {
+                const { flushTrainingBuffer } = await import("@/engine/trainingDataEngine");
+                void flushTrainingBuffer(sess.user.id).catch(() => {});
+              } catch { /* ignore */ }
             } else {
               setUser(null);
               setTierState("free");

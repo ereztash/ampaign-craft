@@ -6,6 +6,7 @@
 
 import { FormData } from "@/types/funnel";
 import { UserKnowledgeGraph, getFieldNameHe, getFieldNameEn } from "./userKnowledgeGraph";
+import { captureTrainingPair } from "./trainingDataEngine";
 
 export interface HormoziDimension {
   score: number; // 0-100
@@ -330,7 +331,7 @@ export function calculateValueScore(
   dimensions.sort((a, b) => a.score - b.score);
   const priority = dimensions[0];
 
-  return {
+  const result: HormoziValueResult = {
     dreamOutcome,
     perceivedLikelihood,
     timeDelay,
@@ -343,4 +344,7 @@ export function calculateValueScore(
       en: `Value = (${dreamOutcome.score} × ${perceivedLikelihood.score}) / (${100 - timeDelay.score} × ${100 - effortSacrifice.score}) = ${overallScore}/100`,
     },
   };
+
+  void captureTrainingPair("hormozi_value", { formData }, result).catch(() => {});
+  return result;
 }
