@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { Trash2, Eye, ArrowLeft, GitCompare, Calendar, DollarSign, Target, X } from "lucide-react";
+import { Trash2, Eye, ArrowLeft, GitCompare, Calendar, DollarSign, Target, X, Rocket, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 interface SavedPlansPageProps {
@@ -58,8 +58,13 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onBack}
+              aria-label={language === "he" ? "חזור" : "Back"}
+            >
+              <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-foreground">{t("savedPlans")}</h1>
@@ -82,14 +87,34 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
         {/* Plans Grid */}
         {plans.length === 0 ? (
           <motion.div
-            initial={reducedMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-20 text-center"
+            initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8"
           >
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-              <Target className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <p className="text-xl font-semibold text-muted-foreground">{t("noSavedPlans")}</p>
+            <Card className="border-dashed border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+              <CardContent className="flex flex-col items-center justify-center py-16 text-center px-6">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                  <Target className="h-8 w-8 text-primary" aria-hidden="true" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground mb-2" dir="auto">
+                  {t("noSavedPlans")}
+                </h2>
+                <p className="text-sm text-muted-foreground max-w-md mb-6" dir="auto">
+                  {language === "he"
+                    ? "עדיין לא שמרת שום תוכנית. צור את הראשונה שלך בדקות ספורות ותראה אותה מופיעה כאן."
+                    : "You haven't saved any plans yet. Create your first one in minutes and you'll see it appear here."}
+                </p>
+                <Button
+                  size="lg"
+                  onClick={onBack}
+                  className="gap-2 funnel-gradient border-0 text-accent-foreground"
+                >
+                  <Rocket className="h-5 w-5" aria-hidden="true" />
+                  {language === "he" ? "צור תוכנית ראשונה" : "Create first plan"}
+                  <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
+                </Button>
+              </CardContent>
+            </Card>
           </motion.div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

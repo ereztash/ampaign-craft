@@ -21,7 +21,7 @@ import { PeerBenchmark } from "@/components/PeerBenchmark";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Crosshair, Rocket, FileText, Flame, Clock, Plus, BarChart3, TrendingUp, DollarSign, Heart } from "lucide-react";
+import { Crosshair, Rocket, FileText, Flame, Clock, Plus, BarChart3, TrendingUp, DollarSign, Heart, ArrowRight, Sparkles } from "lucide-react";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -99,6 +99,63 @@ const Dashboard = () => {
     return structureForAllPlatforms(source, language === "he" ? "he" : "en");
   }, [pulse?.greeting, language]);
 
+  // Truly-empty state: first-time visitor with no plan, no differentiation,
+  // and no form data yet. Show a focused welcome card rather than 12 empty
+  // placeholders.
+  const isFirstTimeUser = savedPlans.length === 0 && !hasDiff && !profile.lastFormData;
+
+  if (isFirstTimeUser) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-4 pt-4 pb-16 max-w-4xl">
+          <BackToHub currentPage={isHe ? "תוכנית שיווק" : "Marketing Plan"} />
+          <Card className="mt-8 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+            <CardContent className="p-8 text-center space-y-6">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <Sparkles className="h-8 w-8 text-primary" aria-hidden="true" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold text-foreground" dir="auto">
+                  {isHe ? "ברוך הבא ל-FunnelForge" : "Welcome to FunnelForge"}
+                </h1>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto" dir="auto">
+                  {isHe
+                    ? "בוא נתחיל ביצירת תוכנית השיווק הראשונה שלך. לוקח כ-2 דקות."
+                    : "Let's start by building your first marketing plan. Takes about 2 minutes."}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                <Button
+                  size="lg"
+                  className="gap-2 funnel-gradient border-0 text-accent-foreground"
+                  onClick={() => navigate("/wizard")}
+                >
+                  <Rocket className="h-5 w-5" aria-hidden="true" />
+                  {isHe ? "התחל תוכנית שיווק" : "Start marketing plan"}
+                  <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => navigate("/differentiate")}
+                >
+                  <Crosshair className="h-5 w-5 text-amber-500" aria-hidden="true" />
+                  {isHe ? "גלה בידול עמוק" : "Discover differentiation"}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground pt-4">
+                {isHe
+                  ? "אין צורך בכרטיס אשראי · התוצאות נשמרות מקומית"
+                  : "No credit card needed · Results saved locally"}
+              </p>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-4xl">
@@ -171,7 +228,7 @@ const Dashboard = () => {
               </div>
               <p className="text-sm text-muted-foreground" dir="auto">{nextStep.description[language]}</p>
             </div>
-            <span className="text-muted-foreground text-lg">→</span>
+            <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0 rtl:rotate-180" aria-hidden="true" />
           </CardContent>
         </Card>
 
@@ -214,8 +271,9 @@ const Dashboard = () => {
                   {new Date(lastPlan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
                 </p>
               </div>
-              <Button size="sm" onClick={() => navigate(`/strategy/${lastPlan.id}`)}>
-                {isHe ? "המשך →" : "Continue →"}
+              <Button size="sm" onClick={() => navigate(`/strategy/${lastPlan.id}`)} className="gap-2">
+                {isHe ? "המשך" : "Continue"}
+                <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
               </Button>
             </CardContent>
           </Card>
@@ -227,20 +285,31 @@ const Dashboard = () => {
             <CardTitle className="text-sm">{isHe ? "מודולים" : "Modules"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-1" role="list" aria-label={isHe ? "התקדמות מודולים" : "Module progress"}>
               {[
                 { icon: Crosshair, label: isHe ? "בידול" : "Diff", done: hasDiff, color: "text-amber-500" },
                 { icon: BarChart3, label: isHe ? "שיווק" : "Mktg", done: savedPlans.length > 0, color: "text-primary" },
                 { icon: TrendingUp, label: isHe ? "מכירות" : "Sales", done: savedPlans.length > 0, color: "text-accent" },
                 { icon: DollarSign, label: isHe ? "תמחור" : "Price", done: savedPlans.length > 0, color: "text-emerald-500" },
                 { icon: Heart, label: isHe ? "שימור" : "Retain", done: false, color: "text-pink-500" },
-              ].map((mod, i) => (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mod.done ? "bg-accent/20" : "bg-muted"}`}>
-                    <mod.icon className={`h-5 w-5 ${mod.done ? mod.color : "text-muted-foreground"}`} />
+              ].map((mod, i, arr) => (
+                <div key={i} className="flex items-center gap-1" role="listitem">
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                        mod.done ? "bg-accent/20" : "bg-muted"
+                      }`}
+                    >
+                      <mod.icon className={`h-5 w-5 ${mod.done ? mod.color : "text-muted-foreground"}`} />
+                    </div>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{mod.label}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">{mod.label}</span>
-                  {i < 4 && <span className="text-muted-foreground text-xs absolute" style={{ marginLeft: "3rem" }}>→</span>}
+                  {i < arr.length - 1 && (
+                    <ArrowRight
+                      className="h-3 w-3 text-muted-foreground/50 shrink-0 mb-4 rtl:rotate-180"
+                      aria-hidden="true"
+                    />
+                  )}
                 </div>
               ))}
             </div>
