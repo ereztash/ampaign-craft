@@ -7,11 +7,11 @@ const PlanningTab = lazy(() => import("@/components/PlanningTab"));
 const ContentTab = lazy(() => import("@/components/ContentTab"));
 const AnalyticsTab = lazy(() => import("@/components/AnalyticsTab"));
 const AiCoachChat = lazy(() => import("@/components/AiCoachChat"));
-const WhatsAppTemplatesPanel = lazy(() => import("@/components/WhatsAppTemplatesPanel"));
 const StylomeExtractor = lazy(() => import("@/components/StylomeExtractor"));
 const SalesTab = lazy(() => import("@/components/SalesTab"));
 const PricingIntelligenceTab = lazy(() => import("@/components/PricingIntelligenceTab"));
 const RetentionGrowthTab = lazy(() => import("@/components/RetentionGrowthTab"));
+const StrategyTab = lazy(() => import("@/components/StrategyTab"));
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -19,9 +19,9 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult } from "@/types/funnel";
 import { getTabConfig } from "@/lib/adaptiveTabRules";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
-import { getIsraeliToolsSummary, getToolsForChannel } from "@/lib/toolRecommendations";
+import { getIsraeliToolsSummary } from "@/lib/toolRecommendations";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
-import { calculateHealthScore, getHealthScoreColor } from "@/engine/healthScoreEngine";
+import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { getSocialProof } from "@/lib/socialProofData";
 import { calculateRoi } from "@/lib/roiCalculator";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
@@ -31,7 +31,6 @@ import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import { personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
 import { calculateValueScore } from "@/engine/hormoziValueEngine";
-import { HormoziValueCard } from "@/components/HormoziValueCard";
 import { DifferentiationResult } from "@/types/differentiation";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -42,10 +41,9 @@ import PaywallModal from "@/components/PaywallModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
-import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, ChevronDown, Bot, ArrowRight } from "lucide-react";
+import { Edit, Download, Save, Share2, Plus, AlertTriangle, Bot, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import BackToHub from "@/components/BackToHub";
@@ -80,7 +78,6 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   const peerModules = useModuleStatus();
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
-  const [tipsOpen, setTipsOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
 
   // Adaptive tabs (6 consolidated tabs)
@@ -332,289 +329,23 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
             }
           >
 
-          {/* Tab 1: Strategy + Tips (collapsible) */}
+          {/* Tab 1: Strategy — extracted to StrategyTab.tsx for size and progressive disclosure */}
           <TabsContent value="strategy" className="mt-6">
-            {/* Marketing Health Score */}
-            <Card className="mb-6 border-primary/20">
-              <CardContent className="flex items-center gap-6 p-6">
-                <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
-                  <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      className="text-muted/30"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke={getHealthScoreColor(healthScore.total)}
-                      strokeWidth="3"
-                      strokeDasharray={`${healthScore.total}, 100`}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <span className="absolute text-xl font-bold text-foreground">{healthScore.total}</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground">
-                    {isHe ? "ציון בריאות שיווקית" : "Marketing Health Score"}
-                  </h3>
-                  <div className="mt-2 grid gap-1.5">
-                    {healthScore.breakdown.map((b) => (
-                      <div key={b.category} className="flex items-center gap-2">
-                        <div className="h-1.5 flex-1 rounded-full bg-muted/30">
-                          <div
-                            className="h-1.5 rounded-full transition-all"
-                            style={{ width: `${(b.score / b.maxScore) * 100}%`, background: getHealthScoreColor((b.score / b.maxScore) * 100) }}
-                          />
-                        </div>
-                        <span className="text-xs text-muted-foreground w-24 text-end">{b.label[language]}</span>
-                        <span className="text-xs font-medium w-8">{b.score}/{b.maxScore}</span>
-                      </div>
-                    ))}
-                    {healthScore.retentionReadiness && (
-                      <div className="flex items-center gap-2 pt-1 border-t border-muted/20">
-                        <div className="h-1.5 flex-1 rounded-full bg-muted/30">
-                          <div
-                            className="h-1.5 rounded-full transition-all"
-                            style={{ width: `${healthScore.retentionReadiness.score}%`, background: getHealthScoreColor(healthScore.retentionReadiness.score) }}
-                          />
-                        </div>
-                        <span className="text-xs text-muted-foreground w-24 text-end">{isHe ? "מוכנות שימור" : "Retention"}</span>
-                        <span className="text-xs font-medium w-8">{healthScore.retentionReadiness.score}%</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Hormozi Value Equation */}
-            <div className="mb-6">
-              <HormoziValueCard data={hormoziValue} />
-            </div>
-
-            {/* Social Proof */}
-            <div className="mb-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <span className="inline-flex h-2 w-2 rounded-full bg-accent animate-pulse" />
-              {isHe
-                ? `${socialProof.usersCount.toLocaleString()} עסקים בתחום שלך כבר השתמשו ב-FunnelForge`
-                : `${socialProof.usersCount.toLocaleString()} businesses in your field already use FunnelForge`}
-              <span className="font-semibold text-accent">{socialProof.topMetricValue}</span>
-              <span>{socialProof.topMetric[language]}</span>
-            </div>
-
-            {/* ROI Estimate */}
-            {roiEstimate.monthlyImpact > 0 && (
-              <div className="mb-6 rounded-xl border border-accent/20 bg-accent/5 p-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  {isHe ? "אם המשפך הזה ישפר המרות ב-" : "If this funnel improves conversions by "}
-                  <span className="font-bold text-foreground">{roiEstimate.improvementPercent}%</span>
-                  {isHe ? " בלבד:" : " alone:"}
-                </p>
-                <p className="mt-1 text-lg font-bold text-accent">{roiEstimate.potentialSaving[language]}</p>
-              </div>
-            )}
-
-            <div className="grid gap-4 md:grid-cols-2">
-              {result.stages.map((stage, i) => {
-                const stageId = STAGE_IDS[i] || "engagement";
-                const colors = funnelStageColors[stageId];
-                return (
-                  <Card key={stage.id} className={`border-s-4 ${colors?.border || ""}`}>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground" style={{ background: chartColorPalette[i] }}>
-                          {i + 1}
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">{stage.name[language]}</CardTitle>
-                          {NEURO_LABELS[stageId] && (
-                            <div className="flex items-center gap-1.5 mt-0.5">
-                              <span className="text-xs">{NEURO_LABELS[stageId].emoji}</span>
-                              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{NEURO_LABELS[stageId].vector[language]}</span>
-                              <span className="text-xs text-muted-foreground">—</span>
-                              <span className="text-xs text-muted-foreground italic">{NEURO_LABELS[stageId].desc[language]}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="mb-3 text-sm text-muted-foreground">{stage.description[language]}</p>
-                      <div className="space-y-2">
-                        <div className="text-sm font-semibold text-foreground">{t("recommendedChannels")}:</div>
-                        {stage.channels.map((ch, j) => {
-                          const tools = getToolsForChannel(ch.channel);
-                          return (
-                            <div key={j} className="rounded-lg bg-muted/50 p-3">
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-foreground">
-                                  {ch.channel === "whatsapp" && <MessageCircle className="inline h-3.5 w-3.5 me-1 text-green-500" />}
-                                  {ch.name[language]}
-                                </span>
-                                <span className="text-sm text-primary font-semibold">{ch.budgetPercent}%</span>
-                              </div>
-                              {ch.tips.map((tip, k) => (
-                                <p key={k} className="mt-1 text-xs text-muted-foreground">💡 {tip[language]}</p>
-                              ))}
-                              {tools.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-1.5">
-                                  {tools.map((tool, ti) => (
-                                    <span key={ti} className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                                      🇮🇱 {tool.tool}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-
-            {/* ═══ Section B: Toolkit (collapsible) ═══ */}
-            <Collapsible className="mt-6">
-              <Card className="border-primary/20">
-                <CollapsibleTrigger asChild>
-                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                    <CardTitle className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">🛠️ {isHe ? "ערכת כלים ישראלית" : "Israeli Toolkit"}</span>
-                      <ChevronDown className="h-4 w-4 transition-transform" />
-                    </CardTitle>
-                  </CardHeader>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-
-            {/* Israeli Tools */}
-            <Card className="border-0 shadow-none">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">🇮🇱 {t("israeliToolsTitle")}</CardTitle>
-                <p className="text-sm text-muted-foreground">{t("israeliToolsSubtitle")}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {israeliTools.map((tool, i) => (
-                    <div key={i} className="rounded-xl border p-3">
-                      <div className="font-semibold text-foreground">{tool.tool}</div>
-                      <div className="mt-1 text-xs text-muted-foreground">{tool.role[language]}</div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* WhatsApp Templates — always show (WhatsApp = 98% of Israeli market) */}
-            <WhatsAppTemplatesPanel />
-
-            {/* Israeli Market Calendar */}
-            {marketEvents.length > 0 && (
-              <Card className="mt-4 border-amber-500/20">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    📅 {isHe ? "לוח שיווק ישראלי — אירועים קרובים" : "Israeli Marketing Calendar — Upcoming Events"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {marketEvents.slice(0, 3).map((event) => (
-                    <div key={event.id} className="flex items-start gap-3 rounded-lg border p-2.5">
-                      <span className="text-lg">{event.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium">{event.name[language]}</div>
-                        <p className="text-xs text-muted-foreground">{event.recommendation[language]}</p>
-                        {event.budgetMultiplier !== 1.0 && (
-                          <Badge variant={event.budgetMultiplier > 1 ? "default" : "outline"} className="mt-1 text-xs">
-                            {isHe ? "תקציב" : "Budget"} ×{event.budgetMultiplier}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Retention Flywheel */}
-            <Card className="mt-4">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  🔄 {flywheel.typeLabel[language]}
-                  <Badge variant="outline" className="text-xs">
-                    {isHe ? `צמצום נטישה ~${flywheel.churnReduction}%` : `~${flywheel.churnReduction}% churn reduction`}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {flywheel.steps.map((step, i) => (
-                    <div key={i} className="rounded-xl border p-2.5 text-center">
-                      <div className="text-lg mb-1">{step.emoji}</div>
-                      <div className="text-xs font-medium">{step.name[language]}</div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{step.description[language]}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* CLG Strategy (if suitable) */}
-            {clgStrategy.suitable && (
-              <Card className="mt-4 border-purple-500/20">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    👥 {isHe ? "אסטרטגיית קהילה (CLG)" : "Community-Led Growth (CLG)"}
-                    <Badge className="text-xs">
-                      LTV ×{clgStrategy.ltvImpact.multiplier}
-                    </Badge>
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground">{clgStrategy.reason[language]}</p>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground mb-2">{isHe ? "פלטפורמה מומלצת:" : "Recommended platform:"} <strong>{clgStrategy.platform[language]}</strong></p>
-                  <div className="space-y-1.5">
-                    {clgStrategy.roadmap.map((week) => (
-                      <div key={week.week} className="flex items-start gap-2 text-xs">
-                        <Badge variant="outline" className="text-xs shrink-0">{isHe ? `שבוע ${week.week}` : `Week ${week.week}`}</Badge>
-                        <span className="text-muted-foreground">{week.title[language]}: {week.milestone[language]}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-                </CollapsibleContent>
-              </Card>
-            </Collapsible>
-
-            {/* ═══ Section C: Tips (collapsible) ═══ */}
-            <Collapsible open={tipsOpen} onOpenChange={setTipsOpen} className="mt-6">
-              <Card>
-                <CollapsibleTrigger asChild>
-                  <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                    <CardTitle className="flex items-center justify-between">
-                      {t("personalizedTips")}
-                      <ChevronDown className={cn("h-4 w-4 transition-transform", tipsOpen && "rotate-180")} />
-                    </CardTitle>
-                  </CardHeader>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {result.overallTips.map((tip, i) => (
-                        <div key={i} className="rounded-xl bg-muted/50 p-4 text-foreground">{tip[language]}</div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </CollapsibleContent>
-              </Card>
-            </Collapsible>
+            <StrategyTab
+              result={result}
+              language={language}
+              isHe={isHe}
+              t={t}
+              healthScore={healthScore}
+              hormoziValue={hormoziValue}
+              socialProof={socialProof}
+              roiEstimate={roiEstimate}
+              israeliTools={israeliTools}
+              marketEvents={marketEvents}
+              flywheel={flywheel}
+              clgStrategy={clgStrategy}
+              recommendedChannelsLabel={t("recommendedChannels")}
+            />
           </TabsContent>
 
           {/* Tab 2: Planning (Budget + KPIs) */}
