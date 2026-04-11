@@ -218,7 +218,7 @@ export async function getOptimizationReport(
       stage: "discover",
       payload: {
         optimizationCount: report.optimizations.length,
-        totalPairs: report.stats.totalPairs,
+        totalPairs: report.stats.total,
       },
       writtenBy: ENGINE_MANIFEST.name,
     }).catch(() => {});

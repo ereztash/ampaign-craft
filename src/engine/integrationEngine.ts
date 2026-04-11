@@ -243,7 +243,7 @@ export function formatPlanNotification(
     case "webhook":
       return {
         text: `New marketing plan: ${planName}${scoreText}`,
-        metadata: formatWebhookPayload("plan_generated", { planName, score }),
+        metadata: formatWebhookPayload("plan_generated", { planName, score }) as unknown as Record<string, unknown>,
       };
     default:
       return {

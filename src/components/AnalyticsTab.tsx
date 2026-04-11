@@ -136,7 +136,7 @@ const AnalyticsTab = ({ meta, auth, result, isSimplified }: AnalyticsTabProps) =
           {/* Section 4: Behavioral Intelligence Synthesis */}
           <div>
             <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              {t("analyticsIntelligenceSection") || "Behavioral Intelligence"}
+              {"Behavioral Intelligence"}
             </h3>
             <IntelligenceSynthesisDashboard
               eps={eps}
@@ -150,7 +150,7 @@ const AnalyticsTab = ({ meta, auth, result, isSimplified }: AnalyticsTabProps) =
           {/* Section 5: Competitive Intelligence */}
           <div>
             <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              {t("analyticsCompetitiveSection") || "Competitive Intelligence"}
+              {"Competitive Intelligence"}
             </h3>
             <CompetitiveIntelligenceDashboard industry={resolvedIndustry} />
           </div>

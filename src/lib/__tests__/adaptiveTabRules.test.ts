@@ -46,6 +46,7 @@ const defaultProfile: UserProfile = {
   experienceLevel: "",
   prefersReducedMotion: false,
   achievements: [],
+  unifiedProfile: null,
 };
 
 describe("getTabConfig", () => {
