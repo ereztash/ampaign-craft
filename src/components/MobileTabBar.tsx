@@ -17,7 +17,7 @@ const MobileTabBar = () => {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex h-16 items-stretch border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden",
+        "fixed bottom-0 inset-x-0 z-50 flex h-16 items-stretch border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden",
         "pb-[env(safe-area-inset-bottom)]",
       )}
       aria-label={t("navMobileLabel")}

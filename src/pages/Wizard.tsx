@@ -129,7 +129,7 @@ const Wizard = () => {
   }, [result, navigate, formDataCache, loadPromptOptimizations, regenerateHeroCopy]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       {state === "onboarding" && (
         <>
           <div className="container mx-auto px-4 pt-4">
@@ -145,7 +145,7 @@ const Wizard = () => {
       {state === "processing" && (
         <ProcessingScreen onComplete={handleProcessingComplete} formData={formDataCache || undefined} />
       )}
-    </div>
+    </main>
   );
 };
 

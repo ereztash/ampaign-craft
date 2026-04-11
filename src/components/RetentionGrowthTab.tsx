@@ -72,7 +72,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
                   <span className="text-sm font-medium">{step.name[language]}</span>
                   <div className="flex items-center gap-1">
                     <Badge variant="outline" className="text-xs">{step.channel}</Badge>
-                    <Button size="sm" variant="ghost" onClick={() => copyText(step.template[language], i)} className="h-6 w-6 p-0">
+                    <Button size="sm" variant="ghost" onClick={() => copyText(step.template[language], i)} className="h-6 w-6 p-0 min-h-[44px] min-w-[44px]">
                       {copiedIdx === i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     </Button>
                   </div>
@@ -136,7 +136,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
           <div className="bg-muted/30 rounded-lg p-3">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground">{isHe ? "תבנית WhatsApp:" : "WhatsApp Template:"}</span>
-              <Button size="sm" variant="ghost" onClick={() => copyText(retention.referralBlueprint.template[language], 50)} className="h-6">
+              <Button size="sm" variant="ghost" onClick={() => copyText(retention.referralBlueprint.template[language], 50)} className="h-6 min-h-[44px] min-w-[44px]">
                 {copiedIdx === 50 ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
               </Button>
             </div>

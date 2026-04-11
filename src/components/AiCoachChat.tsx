@@ -180,7 +180,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
                     onClick={() => sendMessage(prompt)}
                     className="rounded-lg border bg-muted/30 p-2.5 text-xs text-foreground hover:bg-muted/60 transition-colors text-start"
                   >
-                    <Sparkles className="h-3 w-3 text-primary inline mr-1" />
+                    <Sparkles className="h-3 w-3 text-primary inline me-1" />
                     {prompt}
                   </button>
                 ))}

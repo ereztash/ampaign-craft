@@ -90,7 +90,10 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
               className={`cursor-pointer transition-all ${
                 selectedDatasetId === ds.id ? "border-primary ring-1 ring-primary/30" : "hover:border-primary/30"
               }`}
+              role="button"
+              tabIndex={0}
               onClick={() => setSelectedDatasetId(ds.id === selectedDatasetId ? null : ds.id)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedDatasetId(ds.id === selectedDatasetId ? null : ds.id); } }}
             >
               <CardContent className="flex items-center gap-3 p-4">
                 <FileSpreadsheet className="h-8 w-8 text-primary/50 shrink-0" />

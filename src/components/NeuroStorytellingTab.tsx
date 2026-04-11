@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface NeuroStorytellingTabProps {
   data: NeuroStorytellingData;
@@ -14,6 +15,7 @@ interface NeuroStorytellingTabProps {
 
 const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
   const { t, language } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const [selectedStage, setSelectedStage] = useState(0);
   const { vectors, promptTemplates, entropyGuide, axiom } = data;
 
@@ -32,7 +34,7 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
   return (
     <div className="space-y-6">
       {/* The Axiom */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
           <CardContent className="p-6">
             <div className="flex items-start gap-3">
@@ -57,9 +59,9 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
           {vectors.map((vector, i) => (
             <motion.div
               key={vector.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={reducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
+              transition={reducedMotion ? { duration: 0 } : { delay: i * 0.1 }}
             >
               <Card className={`h-full border ${vectorColorMap[vector.id]}`}>
                 <CardHeader className="pb-3">
@@ -134,9 +136,9 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedStage}
-              initial={{ opacity: 0, x: 10 }}
+              initial={reducedMotion ? false : { opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
+              exit={reducedMotion ? undefined : { opacity: 0, x: -10 }}
               className="rounded-xl border bg-muted/30 p-5"
             >
               <div className="mb-3 flex flex-wrap items-center gap-2">

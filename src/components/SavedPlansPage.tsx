@@ -9,6 +9,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Trash2, Eye, ArrowLeft, GitCompare, Calendar, DollarSign, Target, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,6 +20,7 @@ interface SavedPlansPageProps {
 
 const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
   const { t, language } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const { plans, deletePlan: deletePlanFromStore } = useSavedPlans();
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
@@ -80,7 +82,7 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
         {/* Plans Grid */}
         {plans.length === 0 ? (
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             className="flex flex-col items-center justify-center py-20 text-center"
           >
@@ -95,10 +97,10 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
               {plans.map((plan, i) => (
                 <motion.div
                   key={plan.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={reducedMotion ? false : { opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: i * 0.05 }}
+                  exit={reducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
+                  transition={reducedMotion ? { duration: 0 } : { delay: i * 0.05 }}
                 >
                   <Card
                     className={`relative transition-all ${
@@ -202,12 +204,12 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
         {/* Compare Modal */}
         {showCompare && comparePlans.length === 2 && (
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={reducedMotion ? false : { scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-2xl border bg-card p-6 shadow-xl"
             >

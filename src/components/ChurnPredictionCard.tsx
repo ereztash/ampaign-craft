@@ -168,7 +168,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
                               {int.template[language]}
                             </p>
                           </div>
-                          <Button size="sm" variant="ghost" onClick={() => copyText(int.template[language], stage * 10 + i)} className="h-6 w-6 p-0 shrink-0">
+                          <Button size="sm" variant="ghost" onClick={() => copyText(int.template[language], stage * 10 + i)} className="h-6 w-6 p-0 min-h-[44px] min-w-[44px] shrink-0">
                             {copiedIdx === stage * 10 + i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                           </Button>
                         </div>

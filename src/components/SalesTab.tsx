@@ -196,7 +196,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
                 <Button
                   size="sm" variant="ghost"
                   onClick={() => copyScript(script.response[language], i)}
-                  className="h-7 text-xs gap-1"
+                  className="h-7 min-h-[44px] text-xs gap-1"
                 >
                   {copiedIdx === i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                   {copiedIdx === i ? (isHe ? "הועתק" : "Copied") : (isHe ? "העתק" : "Copy")}
@@ -298,7 +298,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
               <div className="bg-accent/5 rounded-lg p-2.5 mb-1.5">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-accent font-medium">{isHe ? "סקריפט:" : "Script:"}</span>
-                  <Button size="sm" variant="ghost" onClick={() => copyScript(fw.script[language], 100 + i)} className="h-6 text-xs gap-1">
+                  <Button size="sm" variant="ghost" onClick={() => copyScript(fw.script[language], 100 + i)} className="h-6 min-h-[44px] text-xs gap-1">
                     {copiedIdx === 100 + i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                   </Button>
                 </div>

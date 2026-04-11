@@ -159,7 +159,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
                             <span>{a.emoji}</span>
                             <div>
                               <span className="text-foreground">{a.action[language]}</span>
-                              <span className="text-muted-foreground ml-1">({a.impact[language]})</span>
+                              <span className="text-muted-foreground ms-1">({a.impact[language]})</span>
                             </div>
                           </div>
                         ))}

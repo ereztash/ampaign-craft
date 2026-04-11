@@ -44,7 +44,7 @@ const PageComponent = () => {
   }, [graph, hasDiff, planCount, (mastery as any).features]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* Hero — adapts to auth state */}
@@ -136,7 +136,7 @@ const PageComponent = () => {
           )}
         </div>
       </section>
-    </div>
+    </main>
   );
 }
 

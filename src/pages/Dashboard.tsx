@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Crosshair, Rocket, FileText, Flame, Clock, Plus, BarChart3, TrendingUp, DollarSign, Heart } from "lucide-react";
-import { motion } from "framer-motion";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -160,7 +159,7 @@ const Dashboard = () => {
         )}
 
         {/* Dynamic Next Step CTA (adaptive) */}
-        <Card className="mb-6 cursor-pointer hover:shadow-lg transition-all border-2 border-amber-500/30 hover:border-amber-500 bg-gradient-to-r from-amber-500/5 to-transparent" onClick={() => navigate(nextStep.route)}>
+        <Card className="mb-6 cursor-pointer hover:shadow-lg transition-all border-2 border-amber-500/30 hover:border-amber-500 bg-gradient-to-r from-amber-500/5 to-transparent" role="button" tabIndex={0} onClick={() => navigate(nextStep.route)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(nextStep.route); } }}>
           <CardContent className="p-5 flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/20">
               <Crosshair className={`h-6 w-6 ${nextStep.color}`} />
@@ -178,7 +177,7 @@ const Dashboard = () => {
 
         {/* Secondary quick actions */}
         <div className="grid gap-3 sm:grid-cols-2 mb-6">
-          <Card className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate("/wizard")}>
+          <Card className="cursor-pointer hover:shadow transition-shadow" role="button" tabIndex={0} onClick={() => navigate("/wizard")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/wizard"); } }}>
             <CardContent className="p-3 flex items-center gap-3">
               <Rocket className="h-5 w-5 text-primary shrink-0" />
               <div>
@@ -187,7 +186,7 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate("/differentiate")}>
+          <Card className="cursor-pointer hover:shadow transition-shadow" role="button" tabIndex={0} onClick={() => navigate("/differentiate")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/differentiate"); } }}>
             <CardContent className="p-3 flex items-center gap-3">
               <Crosshair className="h-5 w-5 text-amber-500 shrink-0" />
               <div>
@@ -265,7 +264,7 @@ const Dashboard = () => {
         )}
         <div className="grid gap-3 sm:grid-cols-2">
           {savedPlans.slice(0, 4).map((plan) => (
-            <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" onClick={() => navigate(`/strategy/${plan.id}`)}>
+            <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" role="button" tabIndex={0} onClick={() => navigate(`/strategy/${plan.id}`)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(`/strategy/${plan.id}`); } }}>
               <CardContent className="p-3">
                 <p className="text-sm font-medium truncate">{plan.name}</p>
                 <p className="text-xs text-muted-foreground">{new Date(plan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}</p>

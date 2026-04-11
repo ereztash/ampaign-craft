@@ -158,7 +158,7 @@ const CommandCenter = () => {
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
 
   return (
-    <div className="min-h-full bg-background">
+    <main className="min-h-full bg-background">
       <div className="container mx-auto max-w-5xl px-4 py-6 space-y-8">
         <motion.section {...mp} className="text-center space-y-2">
           {user && profile.lastFormData ? (
@@ -199,14 +199,14 @@ const CommandCenter = () => {
         )}
 
         {(guidanceItems.length > 0 || successForecast) && (
-          <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 p-4 text-start space-y-1">
+          <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 dark:border-blue-700/40 dark:bg-blue-900/20 p-4 text-start space-y-1">
             {guidanceItems.length > 0 && (
-              <p className="text-xs text-blue-900" dir="auto">
+              <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
                 {isHe ? "הדרכה" : "Guidance"}: {guidanceItems.length} {isHe ? "פעולות מומלצות" : "recommended actions"}
               </p>
             )}
             {successForecast && (
-              <p className="text-xs text-blue-900" dir="auto">
+              <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
                 {isHe ? "הסתברות הצלחה חזויה" : "Predicted success"}:{" "}
                 <strong>{successForecast.successProbability}%</strong>
                 {" "}· {successForecast.riskFactors.length} {isHe ? "סיכונים" : "risks"}
@@ -264,7 +264,7 @@ const CommandCenter = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

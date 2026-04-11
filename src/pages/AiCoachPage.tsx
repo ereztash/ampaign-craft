@@ -35,7 +35,7 @@ const AiCoachPage = () => {
 
   if (!result) {
     return (
-      <div className="container mx-auto max-w-md px-4 py-12 text-center">
+      <main className="container mx-auto max-w-md px-4 py-12 text-center">
         <Card>
           <CardContent className="p-8 space-y-4">
             <Bot className="h-12 w-12 text-primary mx-auto" />
@@ -48,16 +48,16 @@ const AiCoachPage = () => {
             <Button onClick={() => navigate("/wizard")}>{isHe ? "לאשף" : "Open wizard"}</Button>
           </CardContent>
         </Card>
-      </div>
+      </main>
     );
   }
 
   const healthScore = calculateHealthScore(result).total;
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-6">
+    <main className="container mx-auto max-w-2xl px-4 py-6">
       <AiCoachChat result={result} healthScore={healthScore} />
-    </div>
+    </main>
   );
 };
 

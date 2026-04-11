@@ -38,7 +38,7 @@ const StrategyCanvas = () => {
   if (!planId) {
     if (plans.length === 0) {
       return (
-        <div className="container mx-auto max-w-lg px-4 py-10 text-center">
+        <main className="container mx-auto max-w-lg px-4 py-10 text-center">
           <Card>
             <CardContent className="p-8 space-y-4">
               <FileText className="h-12 w-12 text-muted-foreground mx-auto" />
@@ -54,12 +54,12 @@ const StrategyCanvas = () => {
               </Button>
             </CardContent>
           </Card>
-        </div>
+        </main>
       );
     }
 
     return (
-      <div className="container mx-auto max-w-2xl px-4 py-8">
+      <main className="container mx-auto max-w-2xl px-4 py-8">
         <h1 className="text-xl font-bold mb-4" dir="auto">
           {isHe ? "בחר תוכנית" : "Choose a plan"}
         </h1>
@@ -80,7 +80,7 @@ const StrategyCanvas = () => {
               </Link>
             ))}
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -93,7 +93,7 @@ const StrategyCanvas = () => {
 
   if (!plan) {
     return (
-      <div className="container mx-auto px-4 py-16 flex flex-col items-center">
+      <main className="container mx-auto px-4 py-16 flex flex-col items-center">
         <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-lg font-medium mb-2" dir="auto">
           {isHe ? "התוכנית לא נמצאה" : "Plan not found"}
@@ -101,7 +101,7 @@ const StrategyCanvas = () => {
         <Button variant="outline" onClick={() => navigate("/plans")}>
           {isHe ? "חזור לתוכניות" : "Back to plans"}
         </Button>
-      </div>
+      </main>
     );
   }
 
@@ -184,14 +184,14 @@ const StrategyCanvas = () => {
   }, [plan, profile, modules, streak]);
 
   return (
-    <div className="px-4 pb-8">
+    <main className="px-4 pb-8">
       <div className="mx-auto max-w-5xl pt-4">
         {!nudgeDismissed && motivationState.nudge && (
           <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />
         )}
         <StrategyMap result={plan.result} bottlenecks={bottlenecks} hasDifferentiation={hasDiff} />
         {kpiGaps.length > 0 && (
-          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/60 p-3 text-xs text-amber-900" dir="auto">
+          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/60 dark:border-amber-700/40 dark:bg-amber-900/20 p-3 text-xs text-amber-900 dark:text-amber-200" dir="auto">
             {isHe ? "פערי KPI זוהו" : "KPI gaps detected"}: {kpiGaps.length}
           </div>
         )}
@@ -208,7 +208,7 @@ const StrategyCanvas = () => {
         onEdit={() => navigate("/wizard")}
         onNewPlan={() => navigate("/wizard")}
       />
-    </div>
+    </main>
   );
 };
 

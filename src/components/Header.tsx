@@ -28,12 +28,12 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="container mx-auto flex h-14 items-center justify-between px-4">
           {/* Logo */}
-          <div role="button" tabIndex={0} aria-label="FunnelForge Home" className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate("/"); }}>
+          <button aria-label={isHe ? "דף הבית" : "FunnelForge Home"} className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0" onClick={() => navigate("/")}>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient">
               <span className="text-base font-bold text-accent-foreground">F</span>
             </div>
             <span className="text-lg font-bold text-foreground">{t("appName")}</span>
-          </div>
+          </button>
 
           {/* Clean 3-item nav: Language + UserMenu (Reference: Vercel) */}
           <div className="flex items-center gap-2">

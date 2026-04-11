@@ -64,8 +64,8 @@ const OnboardingOverlay = () => {
       <DialogContent className="max-w-md text-center p-8">
         <button
           onClick={handleDismiss}
-          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
-          aria-label="Close"
+          className="absolute top-3 end-3 text-muted-foreground hover:text-foreground"
+          aria-label={isHe ? "סגור" : "Close"}
         >
           <X className="h-4 w-4" />
         </button>

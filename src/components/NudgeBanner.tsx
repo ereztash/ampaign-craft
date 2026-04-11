@@ -3,6 +3,7 @@ import type { BehavioralNudge } from "@/engine/behavioralActionEngine";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { AlertTriangle, TrendingUp, Users, Clock, Trophy, Zap, Heart } from "lucide-react";
 
 const NUDGE_CONFIG: Record<string, { icon: typeof AlertTriangle; accent: string }> = {
@@ -22,6 +23,7 @@ interface NudgeBannerProps {
 
 export function NudgeBanner({ nudge, onDismiss }: NudgeBannerProps) {
   const { language } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const navigate = useNavigate();
 
   if (!nudge) return null;
@@ -32,10 +34,10 @@ export function NudgeBanner({ nudge, onDismiss }: NudgeBannerProps) {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -8 }}
+        initial={reducedMotion ? false : { opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.3 }}
+        exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}
+        transition={reducedMotion ? { duration: 0 } : { duration: 0.3 }}
         className={`rounded-xl border p-3 mb-4 ${config.accent}`}
       >
         <div className="flex items-center gap-3">
@@ -56,8 +58,8 @@ export function NudgeBanner({ nudge, onDismiss }: NudgeBannerProps) {
           {onDismiss && (
             <button
               onClick={onDismiss}
-              className="text-muted-foreground hover:text-foreground text-xs px-1"
-              aria-label="Dismiss"
+              className="text-muted-foreground hover:text-foreground text-xs px-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label={language === "he" ? "סגור" : "Dismiss"}
             >
               ✕
             </button>

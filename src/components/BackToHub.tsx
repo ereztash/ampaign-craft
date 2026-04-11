@@ -31,13 +31,13 @@ const BackToHub = ({ currentPage }: BackToHubProps) => {
   const position = currentIndex >= 0 ? `(${currentIndex + 1}/${modules.length})` : "";
 
   return (
-    <nav aria-label="Breadcrumb" className="mb-4 flex items-center justify-between text-sm">
+    <nav aria-label={language === "he" ? "ניווט" : "Breadcrumb"} className="mb-4 flex items-center justify-between text-sm">
       <div className="flex items-center gap-1">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate("/")}
-          className="gap-1.5 text-muted-foreground hover:text-foreground h-7 px-2"
+          className="gap-1.5 text-muted-foreground hover:text-foreground h-7 px-2 min-h-[44px]"
         >
           <Home className="h-3.5 w-3.5" />
           {t("navCommandCenter")}
@@ -60,7 +60,7 @@ const BackToHub = ({ currentPage }: BackToHubProps) => {
               variant="ghost"
               size="sm"
               onClick={() => navigate(prevModule.route)}
-              className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs gap-1"
+              className="text-muted-foreground hover:text-foreground h-7 px-2 min-h-[44px] text-xs gap-1"
             >
               {isHe ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
               {prevModule.label[language]}
@@ -71,7 +71,7 @@ const BackToHub = ({ currentPage }: BackToHubProps) => {
               variant="ghost"
               size="sm"
               onClick={() => navigate(nextModule.route)}
-              className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs gap-1"
+              className="text-muted-foreground hover:text-foreground h-7 px-2 min-h-[44px] text-xs gap-1"
             >
               {nextModule.label[language]}
               {isHe ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}

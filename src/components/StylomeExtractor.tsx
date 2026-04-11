@@ -382,7 +382,7 @@ const StylomeExtractor = () => {
                   size="sm"
                   variant="outline"
                   onClick={copyPrompt}
-                  className="absolute top-2 left-2 gap-1.5 text-xs"
+                  className="absolute top-2 start-2 gap-1.5 text-xs"
                 >
                   {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                   {copied ? (isHe ? "הועתק!" : "Copied!") : (isHe ? "העתק" : "Copy")}

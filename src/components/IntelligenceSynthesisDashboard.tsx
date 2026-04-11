@@ -174,7 +174,7 @@ export function IntelligenceSynthesisDashboard({
                     <div key={ch.channel} className="flex items-center gap-2">
                       <span className="text-xs w-20 capitalize">{ch.channel}</span>
                       <Progress value={ch.fit} className="h-1.5 flex-1" />
-                      <span className="text-xs w-8 text-right">{ch.fit}</span>
+                      <span className="text-xs w-8 text-end">{ch.fit}</span>
                     </div>
                   ))}
                 </div>
@@ -202,7 +202,7 @@ export function IntelligenceSynthesisDashboard({
                 <p className="text-sm text-muted-foreground">{crossDomain.summary[language]}</p>
                 <div className="space-y-2">
                   {crossDomain.insights.slice(0, 6).map((insight, i) => (
-                    <Card key={i} className="border-l-4 border-l-amber-500/40">
+                    <Card key={i} className="border-s-4 border-s-amber-500/40">
                       <CardContent className="pt-3 pb-3 space-y-1">
                         <div className="flex items-center justify-between">
                           <Badge variant="outline" className="text-xs">
@@ -271,7 +271,7 @@ export function IntelligenceSynthesisDashboard({
                     <div className="space-y-1.5">
                       <div className="text-sm font-medium">{t("אסטרטגיות מובילות", "Top strategies")}</div>
                       {cohort.primaryCohort.topPerformingStrategies.map((s, i) => (
-                        <div key={i} className="text-xs border-l-2 border-primary/30 pl-2">
+                        <div key={i} className="text-xs border-s-2 border-primary/30 ps-2">
                           <div className="font-medium">{s.title[language]}</div>
                           <div className="text-muted-foreground">{s.description[language]}</div>
                           <Badge variant="secondary" className="text-[10px] mt-1">{s.expectedLift}</Badge>

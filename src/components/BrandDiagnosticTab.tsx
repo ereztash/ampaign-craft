@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { DiagnosticQuestion, BrandDiagnosticResult, ExecutionTemplate, PersonalBrandData } from "@/types/funnel";
 import { getDiagnosticTierColor } from "@/lib/colorSemantics";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { ChevronLeft, ChevronRight, Target, TrendingUp, Shield, Sparkles } from "lucide-react";
 
 const diagnosticQuestions: DiagnosticQuestion[] = [
@@ -184,6 +185,7 @@ interface BrandDiagnosticTabProps {
 
 const BrandDiagnosticTab = ({ personalBrand }: BrandDiagnosticTabProps) => {
   const { t, language, isRTL } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [currentSection, setCurrentSection] = useState(0);
   const [result, setResult] = useState<BrandDiagnosticResult | null>(null);
@@ -299,7 +301,7 @@ const BrandDiagnosticTab = ({ personalBrand }: BrandDiagnosticTabProps) => {
                   <Badge variant="outline">{tmpl.timeline[language]}</Badge>
                 </div>
                 <p className="mb-3 text-sm text-muted-foreground">{tmpl.description[language]}</p>
-                <ol className={`space-y-2 ${isRTL ? "pr-4" : "pl-4"}`}>
+                <ol className={`space-y-2 ${isRTL ? "pe-4" : "ps-4"}`}>
                   {tmpl.steps.map((step, j) => (
                     <li key={j} className="flex items-start gap-2 text-sm text-foreground">
                       <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{j + 1}</span>
@@ -372,10 +374,10 @@ const BrandDiagnosticTab = ({ personalBrand }: BrandDiagnosticTabProps) => {
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSection}
-              initial={{ opacity: 0, x: 20 }}
+              initial={reducedMotion ? false : { opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
+              exit={reducedMotion ? undefined : { opacity: 0, x: -20 }}
+              transition={reducedMotion ? { duration: 0 } : { duration: 0.2 }}
               className="space-y-6"
             >
               {sectionQuestions.map((q) => (

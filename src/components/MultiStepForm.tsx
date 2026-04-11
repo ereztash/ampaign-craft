@@ -228,6 +228,8 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
                 <label className="text-sm font-medium text-foreground">{t("ageRange")}: {formData.ageRange[0]} – {formData.ageRange[1]}</label>
                 <div className="flex items-center gap-4">
                   <Input
+                    id="age-min"
+                    aria-label={isRTL ? "גיל מינימלי" : "Minimum age"}
                     type="number" min={13} max={80}
                     value={formData.ageRange[0]}
                     onChange={(e) => update({ ageRange: [Number(e.target.value), formData.ageRange[1]] })}
@@ -235,6 +237,8 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
                   />
                   <span className="text-muted-foreground">–</span>
                   <Input
+                    id="age-max"
+                    aria-label={isRTL ? "גיל מקסימלי" : "Maximum age"}
                     type="number" min={13} max={80}
                     value={formData.ageRange[1]}
                     onChange={(e) => update({ ageRange: [formData.ageRange[0], Number(e.target.value)] })}
@@ -244,8 +248,9 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
               </div>
             )}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">{t("interests")}</label>
+              <label htmlFor="interests" className="text-sm font-medium text-foreground">{t("interests")}</label>
               <Input
+                id="interests"
                 placeholder={t("interestsPlaceholder")}
                 value={formData.interests}
                 onChange={(e) => update({ interests: e.target.value })}
@@ -269,8 +274,9 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
             </div>
             {showPrice && (
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">{t("averagePrice")}</label>
+                <label htmlFor="avg-price" className="text-sm font-medium text-foreground">{t("averagePrice")}</label>
                 <Input
+                  id="avg-price"
                   type="number" min={0}
                   value={formData.averagePrice || ""}
                   onChange={(e) => update({ averagePrice: Number(e.target.value) })}

@@ -51,7 +51,41 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
     ? "hsl(var(--primary)), hsl(var(--chart-4))"        // oxytocin→insight (blue→purple)
     : "hsl(var(--accent)), hsl(var(--primary))";         // dopamine→trust (green→blue)
 
-  // Celebration state
+  // Celebration state — static version for reduced motion
+  if (celebrating && reducedMotion) {
+    const fieldName = formData?.businessField
+      ? (isHe ? getFieldNameForCelebration(formData.businessField, true) : getFieldNameForCelebration(formData.businessField, false))
+      : "";
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4">
+        <div className="flex flex-col items-center text-center">
+          <div className="text-6xl mb-4" role="img" aria-label={isHe ? "חגיגה" : "Celebration"}>🎉</div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
+            {isHe ? "התוכנית שלך מוכנה!" : "Your plan is ready!"}
+          </h2>
+          <p className="text-lg text-muted-foreground" dir="auto">
+            {fieldName
+              ? (isHe ? `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות` : `Personalized ${fieldName} marketing plan — let's see the results`)
+              : (isHe ? "בוא נראה מה בנינו" : "Let's see what we built")}
+          </p>
+          <div className="mt-4 flex gap-2">
+            {["🚀", "📊", "💡", "🎯", "✨"].map((e, i) => (
+              <span key={i} role="img" aria-hidden="true" className="text-2xl">{e}</span>
+            ))}
+          </div>
+          {showContinue && (
+            <div className="mt-6">
+              <Button size="lg" onClick={onComplete} className="funnel-gradient text-accent-foreground font-semibold px-8">
+                {isHe ? "בוא נראה את התוצאות →" : "See your results →"}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Celebration state — animated version
   if (celebrating) {
     const fieldName = formData?.businessField
       ? (isHe ? getFieldNameForCelebration(formData.businessField, true) : getFieldNameForCelebration(formData.businessField, false))
@@ -64,7 +98,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           transition={{ type: "spring", stiffness: 200, damping: 15 }}
           className="flex flex-col items-center text-center"
         >
-          <div className="text-6xl mb-4" role="img" aria-label="celebration">🎉</div>
+          <div className="text-6xl mb-4" role="img" aria-label={isHe ? "חגיגה" : "Celebration"}>🎉</div>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
             {isHe ? "התוכנית שלך מוכנה!" : "Your plan is ready!"}
           </h2>

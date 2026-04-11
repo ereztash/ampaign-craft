@@ -132,8 +132,8 @@ const PageComponent = () => {
           <CardContent className="space-y-5">
             {/* Email (read-only) */}
             <div className="space-y-2">
-              <Label>{isHe ? "אימייל" : "Email"}</Label>
-              <Input value={user?.email ?? ""} disabled className="bg-muted" dir="ltr" />
+              <Label htmlFor="profile-email">{isHe ? "אימייל" : "Email"}</Label>
+              <Input id="profile-email" value={user?.email ?? ""} disabled className="bg-muted" dir="ltr" />
             </div>
 
             {/* Display name */}

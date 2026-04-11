@@ -78,7 +78,7 @@ const MetaConnect = ({
   }
 
   return (
-    <Card className="border-green-200 bg-green-50/30">
+    <Card className="border-green-200 bg-green-50/30 dark:bg-green-900/20">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">

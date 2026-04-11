@@ -37,7 +37,7 @@ const PageComponent = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
 
       {/* Hero — Neuro-Storytelling Arc: Cortisol → Oxytocin → Dopamine */}
@@ -219,7 +219,7 @@ const PageComponent = () => {
           {isHe ? "בנה את התוכנית שלי — בחינם" : "Build My Plan — Free"}
         </Button>
       </section>
-    </div>
+    </main>
   );
 }
 
