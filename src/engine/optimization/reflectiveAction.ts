@@ -37,6 +37,10 @@ import type { AnomalyOutput } from "./biomimeticAnomaly";
 import type { ForecastOutput } from "./extremeForecaster";
 import type { UserProfileVector } from "./daplProfile";
 import type { BlackboardWrite } from "./ontologicalVerifier";
+// E2 — runtime import is intentional. The cycle is safe because
+// expressDual is only called inside function bodies, never at
+// module-load time.
+import { expressDual } from "./dualExpression";
 
 // ───────────────────────────────────────────────
 // Types
@@ -81,6 +85,10 @@ export interface ActionCard {
   falsifier_metric: FalsifierMetric;
   falsifier_threshold: number;
   falsifier_direction: FalsifierDirection;
+  // E2 — Internal metric expression (persisted to blackboard but
+  // never displayed in UI). Optional so the field stays invisible
+  // to existing frontend consumers and to low-coherence/inert paths.
+  metric_expression?: string;
 }
 
 // E1 — Inert falsifier block applied when recommendation is not
@@ -118,6 +126,12 @@ const WHY: Record<keyof typeof HEADLINES, string> = {
 const WHY_FALSIFIER_MISSING =
   "ההמלצה שנגזרת משלב זה אינה ניתנת להפרכה בזמן סופי. נדרשת מדידה לפני שנציע אותה.";
 const NEXT_STEP_FALSIFIER_MISSING = "המתן לאיתות נוסף לפני הצעת מהלך מבני";
+
+// E2 — Reason strings for the dual-expression-missing watch path.
+const WHY_DUAL_EXPRESSION_MISSING =
+  "ההמלצה אינה עמידה לתרגום בין פעולה למטריקה. נדרשת קוהרנטיות בין השניים לפני החזרה למשתמש.";
+const NEXT_STEP_DUAL_EXPRESSION_MISSING =
+  "המתן לקוהרנטיות בין הצד הארכיטקטוני לצד המטרי";
 
 const NEXT_STEP: Record<keyof typeof HEADLINES, string> = {
   bottleneck: "אבחן את שלב החיכוך ותקן אותו בארכיטקטורה",
@@ -294,8 +308,12 @@ function recoveryDirection(metric: FalsifierMetric): FalsifierDirection {
  *
  * Returns null when the recommendation is structurally unfalsifiable
  * (e.g., pristine stable, or no driver could be parsed).
+ *
+ * Exported because dualExpression (E2) needs the same falsifier to
+ * build the metric expression — keeping the priority chain in one
+ * place avoids drift between the two modules.
  */
-function deriveFalsifier(
+export function deriveFalsifier(
   ctx: ReflectiveContext,
   _next_step: string,
 ): FalsifierSpec | null {
@@ -446,22 +464,28 @@ export function buildReflectiveActionPayload(
   ts: number,
 ): BlackboardWrite {
   const sanitizedUserId = (user_id ?? "").replace(USER_ID_SAFE_RE, "");
+  const payload: Record<string, unknown> = {
+    created_at: ts,
+    signal: card.signal,
+    headline: card.headline,
+    why: card.why,
+    next_step: card.next_step,
+    eta_minutes: card.eta_minutes,
+    coherence_score: card.coherence_score,
+    falsification_window_days: card.falsification_window_days,
+    falsifier_metric: card.falsifier_metric,
+    falsifier_threshold: card.falsifier_threshold,
+    falsifier_direction: card.falsifier_direction,
+  };
+  // E2 — only persist the metric expression when it exists, so the
+  // existing E1 snapshot (without dual) stays unchanged.
+  if (card.metric_expression !== undefined) {
+    payload.metric_expression = card.metric_expression;
+  }
   return {
     concept_key: `TASK-reflective-action-${sanitizedUserId}-${ts}`,
     stage: "process",
-    payload: {
-      created_at: ts,
-      signal: card.signal,
-      headline: card.headline,
-      why: card.why,
-      next_step: card.next_step,
-      eta_minutes: card.eta_minutes,
-      coherence_score: card.coherence_score,
-      falsification_window_days: card.falsification_window_days,
-      falsifier_metric: card.falsifier_metric,
-      falsifier_threshold: card.falsifier_threshold,
-      falsifier_direction: card.falsifier_direction,
-    },
+    payload,
   };
 }
 
@@ -474,12 +498,18 @@ export function buildReflectiveActionPayload(
  * Always returns exactly one card — never a list, never null.
  *
  * Gate order:
- *   1. coherence_score < 0.6 → M4 watch (fixed text, inert falsifier)
- *   2. signal/headline derivation (existing M4 logic)
+ *   1. coherence_score < 0.6        → M4 watch (fixed text, inert falsifier)
+ *   2. signal/headline derivation   (existing M4 logic)
  *   3. E1 falsifier derivation
- *   4. signal === 'stable' → eta=0 if pristine, 120 otherwise; inert falsifier
- *   5. signal !== 'stable' && falsifier === null → E1 watch (inert)
- *   6. otherwise → full ActionCard with active falsifier fields
+ *   4. signal === 'stable'          → eta=0 if pristine, 120 otherwise; inert
+ *   5. falsifier === null           → E1 watch (inert)
+ *   6. expressDual (E2) === null    → E2 watch (inert)
+ *   7. otherwise                    → full ActionCard with active dual + falsifier
+ *
+ * The architectural sentence from a successful dual replaces the M4
+ * NEXT_STEP fragment as the card's next_step. The metric sentence is
+ * stored on the card as `metric_expression` for blackboard persistence
+ * and is never displayed in the UI.
  */
 export function generateReflectiveAction(
   ctx: ReflectiveContext,
@@ -539,17 +569,32 @@ export function generateReflectiveAction(
     };
   }
 
-  // 6. Active falsifier — full card.
+  // 6. E2 dual expression gate.
+  const dual = expressDual(ctx, next_step);
+  if (dual === null) {
+    return {
+      signal: "watch",
+      headline: HEADLINES.decisionDelay,
+      why: WHY_DUAL_EXPRESSION_MISSING,
+      next_step: NEXT_STEP_DUAL_EXPRESSION_MISSING,
+      eta_minutes: ETA.watch,
+      coherence_score: coherence,
+      ...INERT_FALSIFIER,
+    };
+  }
+
+  // 7. Active falsifier + valid dual — full card.
   return {
     signal,
     headline: HEADLINES[key],
     why: WHY[key],
-    next_step,
+    next_step: dual.architectural,
     eta_minutes: ETA[signal],
     coherence_score: coherence,
     falsification_window_days: falsifier.window_days,
     falsifier_metric: falsifier.metric,
     falsifier_threshold: falsifier.threshold,
     falsifier_direction: falsifier.direction,
+    metric_expression: dual.metric,
   };
 }
