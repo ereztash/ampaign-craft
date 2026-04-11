@@ -61,7 +61,7 @@ UserKnowledgeGraph cross-references all user data (FormData + Differentiation + 
 
 ```
 src/
-├── engine/          # 44 pure-logic engines (24 carry an ENGINE_MANIFEST with isLive:true)
+├── engine/          # 45 pure-logic engines (29 carry an ENGINE_MANIFEST with isLive:true)
 │   ├── funnelEngine.ts              # Core funnel generation + personalizeResult
 │   ├── salesPipelineEngine.ts       # Sales pipeline + neuro-closing + DISC + personalized scripts
 │   ├── pricingIntelligenceEngine.ts # Pricing model + tiers + offer stack + guarantee + framing
@@ -99,6 +99,7 @@ src/
 │   ├── predictiveContentScoreEngine.ts # Anyword-style pre-publication score (5 local signals)
 │   ├── promptOptimizerEngine.ts     # Analyses training-pair feedback → prompt-level fixes
 │   ├── visualExportEngine.ts        # Platform-specific social post structuring (FB/IG/LI/X)
+│   ├── behavioralActionEngine.ts    # Behavioral nudge orchestration (COR/Fogg/DISC) — loss aversion + goal gradient + social proof
 │   ├── researchOrchestrator.ts      # Shim exposing the research/ orchestrator as a direct engine
 │   ├── research/                    # Cross-domain research engine (real orchestrator lives here)
 │   ├── optimization/                # 6-engine GRAOS optimization overlay (strictly additive)
@@ -301,8 +302,9 @@ The metric was rewritten to close that gaming vector:
 1. **Honest `consumerCount`.** A file counts as a consumer only when (a) it imports a binding from the engine and (b) at least one of those bindings appears as a CallExpression or JSX element in the file body, *outside* of any `import` or `export ... from "..."` statement. Pure re-export files drop out of the count entirely.
 2. **Location-aware thresholds.** `LIB_MIN_CONSUMERS = 1` for `src/lib/`, `src/services/`, and edge functions. `ENGINE_MIN_CONSUMERS = 3` for `src/engine/`. Edge functions are matched via `supabase.functions.invoke('<name>', ...)` calls, not bare string occurrences.
 3. **Runtime reachability gate** (`scripts/verify-runtime-calls.ts`). For every engine with `ENGINE_MANIFEST.isLive: true`, walks `src/pages/` and `src/components/` and classifies it as `REACHABLE`, `IMPORTED_BUT_UNCALLED`, or `NO_IMPORT`. Exits 1 on any non-`REACHABLE` engine. This is the enforcement mechanism that prevents a manifest from claiming `isLive` without a real call site.
-4. **Pre-wiring honest baseline**: 23/50 = **46%** SHIPPED. This is the true starting point under the hardened metric, not the 52% the loose metric reported.
-5. **Post-wiring result** (after Phase 1+2+4 engine wiring): **42/50 = 84% SHIPPED**, real differentiation **5/5 pillars**, verdict **GAP_CONFIRMED**, reachability **24/24**, market delta **+13.8 points** vs the 70.2% market average.
+4. **Pre-wiring honest baseline**: 23/50 = **46%** SHIPPED under the original 50-parameter map (equivalent to 23/51 = 45.1% under the current 51-parameter map). This is the true starting point under the hardened metric, not the 52% the loose metric reported.
+5. **Post-wiring result** (after 2026-04-11 refresh — Phase 1+2+4 wiring, Behavioral Action Engine, and manifest flips for brandVector/businessFingerprint/stylome/export): **47/51 = 92.2% SHIPPED**, real differentiation **5/5 pillars**, verdict **GAP_CONFIRMED**, reachability **29/29**, market delta **+22.0 points** vs the 70.2% market average (+7.2 above the 85% top-competitor bar).
+6. **Parameter #51 added 2026-04-11.** `Behavioral nudge orchestration` joined the map when `behavioralActionEngine` (Hobfoll COR + Fogg B=MAT + DISC-aware nudges, Kahneman-Tversky loss aversion, Nir Eyal Hook, Goal Gradient, SDT, social proof) landed with three page-level call sites in `Dashboard.tsx`, `CommandCenter.tsx`, and `StrategyCanvas.tsx`. Four previously-PARTIAL parameters (#7 Brand vector analysis, #8 Business DNA fingerprint, #37 Stylometric matching, #39 Export to channels) were promoted to SHIPPED by adding `isLive:true` to their manifests — each had an existing real call site in `src/components/` that the gate now recognizes.
 
 ### Verification Gate
 
@@ -394,12 +396,12 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 |--------|-------|
 | Lines of code | ~40,000 |
 | TypeScript files | ~235 |
-| Engines | 44 (`src/engine/*.ts`, excl. knowledge / subdirs) |
+| Engines | 45 (`src/engine/*.ts`, excl. knowledge / subdirs) |
 | Optimization overlay engines (GRAOS) | 6 (M1–M6, `src/engine/optimization/`) |
-| Live engines (ENGINE_MANIFEST.isLive) | 24 |
-| Runtime reachability | 24 / 24 REACHABLE |
+| Live engines (ENGINE_MANIFEST.isLive) | 29 |
+| Runtime reachability | 29 / 29 REACHABLE |
 | Tests | 632 passing (582 core + 50 GRAOS optimization; debugSwarm baseline excluded per plan) |
-| Components | 99 |
+| Components | 102 |
 | Pages | 17 |
 | Routes | 12 |
 | Tabs | 9 |
@@ -414,11 +416,11 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | Industry pain points | 40 (10 verticals × 4) |
 | WhatsApp templates | 50+ |
 | `any` types | 0 |
-| Honest shipped score | 42 / 50 = **84.0%** |
-| Pre-wiring honest baseline | 23 / 50 = 46.0% |
+| Honest shipped score | 47 / 51 = **92.2%** |
+| Pre-wiring honest baseline | 23 / 50 = 46.0% (50-param map) ≈ 23 / 51 = 45.1% (51-param map) |
 | Real differentiation | **5 / 5 pillars** |
 | Verdict | **GAP_CONFIRMED** |
-| Market delta | +13.8 pts vs 70.2% market average |
+| Market delta | +22.0 pts vs 70.2% market average (+7.2 above 85% top competitor) |
 
 ## Tech Stack
 

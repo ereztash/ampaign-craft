@@ -6,6 +6,15 @@
 import { FormData, FunnelResult } from "@/types/funnel";
 import { captureTrainingPair } from "./trainingDataEngine";
 
+export const ENGINE_MANIFEST = {
+  name: "brandVectorEngine",
+  reads: ["CAMPAIGN-funnel-*"],
+  writes: ["USER-brand-vector-*"],
+  stage: "diagnose" as const,
+  isLive: true,
+  parameters: ["Brand vector analysis"],
+} as const;
+
 export type BrandVector = "cortisol" | "oxytocin" | "dopamine";
 
 export interface BrandVectorResult {

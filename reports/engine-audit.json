@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-04-10T20:17:11.330Z",
-  "totalEngines": 44,
+  "generatedAt": "2026-04-11T21:36:24.432Z",
+  "totalEngines": 45,
   "counts": {
-    "LIVE": 23,
-    "ORPHAN": 20,
+    "LIVE": 28,
+    "ORPHAN": 16,
     "DEAD": 1
   },
   "engines": [
@@ -21,6 +21,25 @@
         "src/engine/__tests__/abTestEngine.test.ts",
         "src/engine/blackboard/registry.ts",
         "src/pages/CommandCenter.tsx"
+      ],
+      "classification": "LIVE"
+    },
+    {
+      "name": "behavioralActionEngine",
+      "filePath": "src/engine/behavioralActionEngine.ts",
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "deploy",
+      "parameters": [
+        "Behavioral nudge orchestration"
+      ],
+      "consumerCount": 5,
+      "consumers": [
+        "src/components/NudgeBanner.tsx",
+        "src/engine/blackboard/registry.ts",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/Dashboard.tsx",
+        "src/pages/StrategyCanvas.tsx"
       ],
       "classification": "LIVE"
     },
@@ -61,33 +80,39 @@
     {
       "name": "brandVectorEngine",
       "filePath": "src/engine/brandVectorEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 4,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Brand vector analysis"
+      ],
+      "consumerCount": 5,
       "consumers": [
         "src/components/AnalyticsTab.tsx",
         "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/blackboard/registry.ts",
         "src/engine/emotionalPerformanceEngine.ts",
         "src/engine/predictiveContentScoreEngine.ts"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "businessFingerprintEngine",
       "filePath": "src/engine/businessFingerprintEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 3,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "discover",
+      "parameters": [
+        "Business DNA fingerprint"
+      ],
+      "consumerCount": 4,
       "consumers": [
         "src/components/BusinessDNACard.tsx",
         "src/components/SmartOnboarding.tsx",
+        "src/engine/blackboard/registry.ts",
         "src/lib/adaptiveTabRules.ts"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "campaignAnalyticsEngine",
@@ -166,12 +191,16 @@
       "isLive": false,
       "stage": "unknown",
       "parameters": [],
-      "consumerCount": 4,
+      "consumerCount": 8,
       "consumers": [
         "src/components/ResultsDashboard.tsx",
         "src/engine/__tests__/moatEngines.test.ts",
+        "src/engine/behavioralActionEngine.ts",
         "src/engine/blackboard/agents/coiAgent.ts",
-        "src/engine/blackboard/blackboardStore.ts"
+        "src/engine/blackboard/blackboardStore.ts",
+        "src/pages/CommandCenter.tsx",
+        "src/pages/Dashboard.tsx",
+        "src/pages/StrategyCanvas.tsx"
       ],
       "classification": "ORPHAN"
     },
@@ -267,13 +296,14 @@
       "parameters": [
         "DISC behavioral profiling"
       ],
-      "consumerCount": 14,
+      "consumerCount": 17,
       "consumers": [
         "src/components/AnalyticsTab.tsx",
         "src/components/DISCProfileCard.tsx",
         "src/components/SalesTab.tsx",
         "src/engine/__tests__/discProfileEngine.test.ts",
         "src/engine/__tests__/neuroClosingEngine.test.ts",
+        "src/engine/behavioralActionEngine.ts",
         "src/engine/behavioralCohortEngine.ts",
         "src/engine/blackboard/agents/discAgent.ts",
         "src/engine/blackboard/blackboardStore.ts",
@@ -282,7 +312,9 @@
         "src/engine/neuroClosingEngine.ts",
         "src/engine/predictiveContentScoreEngine.ts",
         "src/engine/userKnowledgeGraph.ts",
-        "src/pages/Dashboard.tsx"
+        "src/pages/CommandCenter.tsx",
+        "src/pages/Dashboard.tsx",
+        "src/pages/StrategyCanvas.tsx"
       ],
       "classification": "LIVE"
     },
@@ -306,17 +338,20 @@
     {
       "name": "exportEngine",
       "filePath": "src/engine/exportEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 3,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "deploy",
+      "parameters": [
+        "Export to channels"
+      ],
+      "consumerCount": 4,
       "consumers": [
         "src/components/EmailTemplateGallery.tsx",
+        "src/engine/blackboard/registry.ts",
         "src/engine/trainingExportEngine.ts",
         "src/engine/visualExportEngine.ts"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "funnelEngine",
@@ -386,13 +421,14 @@
       "isLive": false,
       "stage": "unknown",
       "parameters": [],
-      "consumerCount": 11,
+      "consumerCount": 12,
       "consumers": [
         "src/components/BusinessPulseBar.tsx",
         "src/components/MarketingWrapped.tsx",
         "src/components/ResultsDashboard.tsx",
         "src/components/StrategyMap.tsx",
         "src/engine/__tests__/healthScoreEngine.test.ts",
+        "src/engine/behavioralActionEngine.ts",
         "src/engine/blackboard/agents/healthAgent.ts",
         "src/engine/blackboard/blackboardStore.ts",
         "src/pages/AiCoachPage.tsx",
@@ -673,17 +709,21 @@
     {
       "name": "stylomeEngine",
       "filePath": "src/engine/stylomeEngine.ts",
-      "hasManifest": false,
-      "isLive": false,
-      "stage": "unknown",
-      "parameters": [],
-      "consumerCount": 3,
+      "hasManifest": true,
+      "isLive": true,
+      "stage": "diagnose",
+      "parameters": [
+        "Stylometric matching",
+        "Hebrew NLP optimization"
+      ],
+      "consumerCount": 4,
       "consumers": [
         "src/components/StylomeExtractor.tsx",
         "src/engine/__tests__/stylomeEngine.test.ts",
+        "src/engine/blackboard/registry.ts",
         "src/engine/emotionalPerformanceEngine.ts"
       ],
-      "classification": "ORPHAN"
+      "classification": "LIVE"
     },
     {
       "name": "trainingDataEngine",
@@ -692,9 +732,10 @@
       "isLive": false,
       "stage": "unknown",
       "parameters": [],
-      "consumerCount": 8,
+      "consumerCount": 9,
       "consumers": [
         "src/components/OutputFeedback.tsx",
+        "src/engine/behavioralActionEngine.ts",
         "src/engine/brandVectorEngine.ts",
         "src/engine/copyQAEngine.ts",
         "src/engine/discProfileEngine.ts",
@@ -725,7 +766,7 @@
       "parameters": [
         "User knowledge graph"
       ],
-      "consumerCount": 27,
+      "consumerCount": 28,
       "consumers": [
         "src/components/AiCoachChat.tsx",
         "src/components/InsightFeed.tsx",
@@ -753,6 +794,7 @@
         "src/pages/ModuleHub.tsx",
         "src/pages/PricingEntry.tsx",
         "src/pages/RetentionEntry.tsx",
+        "src/pages/StrategyCanvas.tsx",
         "src/pages/Wizard.tsx"
       ],
       "classification": "LIVE"

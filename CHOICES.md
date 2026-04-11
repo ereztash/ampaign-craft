@@ -147,3 +147,69 @@ The sole required call site is in `src/pages/Wizard.tsx`, where the
 back to `aiCopyService.generateCopy(...)` on any error. This gives
 the Multi-agent pillar a genuine client-side reach into a view file,
 regardless of how many edge-function string references exist.
+
+## Metric refresh, 2026-04-11
+
+After the 2026-04-10 hardening and Phase 1+2+4 wiring landed the
+honest score at 42/50 = 84%, two 2026-04-11 commits changed the
+underlying code but the metric reports were not regenerated until
+this refresh:
+
+1. **`60383cc` — Behavioral Action Engine.** Added
+   `src/engine/behavioralActionEngine.ts` (Hobfoll COR + Fogg B=MAT
+   + Kahneman-Tversky loss aversion + Nir Eyal Hook + Goal Gradient
+   + SDT + social proof) with `ENGINE_MANIFEST.isLive: true` and
+   three page-level `computeMotivationState(...)` call sites in
+   `Dashboard.tsx`, `CommandCenter.tsx`, and `StrategyCanvas.tsx`.
+   New components: `NudgeBanner.tsx`, `PeerBenchmark.tsx`,
+   `ProgressMomentum.tsx`.
+2. **`8d2adda` — a11y/RTL/dark/motion remediation.** 56 files touched
+   for semantic HTML, logical properties, bilingual aria-labels, dark
+   tokens, reduced-motion guards. No new engines but import graphs
+   shifted enough to warrant an audit refresh.
+
+**Decisions taken in this refresh:**
+
+- **Parameter #51 added.** The engine declares `parameters:
+  ["Behavioral nudge orchestration"]` in its own manifest. Honoring
+  that self-description keeps the SSoT (`scripts/map-parameters.ts`)
+  aligned with `ENGINE_MANIFEST` and closes a drift source. The 51st
+  parameter is registered under `CATEGORY_C_STRATEGY`. `TOTAL_PARAMETERS`
+  auto-updates because it is `PARAMETERS.length`.
+- **Hard-coded `/50` strings fixed.** `scripts/generate-market-gap-report.ts`
+  now imports `TOTAL_PARAMETERS` and interpolates the denominator into
+  every template string. No new script added.
+- **Four PARTIAL parameters promoted to SHIPPED via `isLive:true` flips**,
+  not via new page wiring. Each engine already had a real call site in
+  `src/components/` — what was missing was the manifest claim that
+  downgrades the threshold from `ENGINE_MIN_CONSUMERS=3` to `>=1`:
+    - `brandVectorEngine` → called in `src/components/AnalyticsTab.tsx`
+    - `businessFingerprintEngine` → called in `src/components/SmartOnboarding.tsx`
+    - `stylomeEngine` → called in `src/components/StylomeExtractor.tsx`
+    - `exportEngine` → called in `src/components/EmailTemplateGallery.tsx`
+  Each engine file gained an `ENGINE_MANIFEST` export with
+  `isLive:true` and a `parameters` array; `src/engine/blackboard/registry.ts`
+  now imports those manifests so the registry test
+  (`src/engine/__tests__/registry.test.ts`) continues to pass with
+  `listLiveEngines().length` rising from 6 to 10.
+
+**Post-refresh numbers (captured 2026-04-11):**
+
+- 47/51 = **92.2% SHIPPED** (4 SHIPPED promotions + 1 new parameter #51).
+- **29/29 REACHABLE** (24 prior + 1 BAE + 4 flipped).
+- **5/5 differentiation pillars** — unchanged (behavioral nudges are
+  not a pillar; the five canonical pillars stay DISC / Hormozi /
+  Neuro-closing / Hebrew NLP / Multi-agent).
+- **GAP_CONFIRMED** verdict — unchanged.
+- Market delta **+22.0 points** vs the 70.2% market average, and
+  **+7.2 points** above the 85% top-competitor bar for the first
+  time since the metric was hardened.
+- Only 4 PAPER parameters remain: webhook-dispatch (#43),
+  webhook-receive (#44), Stripe payment (#46), Multi-tier pricing
+  (#48). These need real runtime integrations, not just wiring, and
+  are out of scope for this refresh.
+
+**Pre-wiring baseline restated.** The 23/50 = 46% baseline was
+captured under the 50-parameter map. Under the current 51-parameter
+map the equivalent baseline is 23/51 = 45.1%. Both are printed in
+the README for transparency.

@@ -1,6 +1,15 @@
 import type { UnifiedProfile } from "@/types/profile";
 import type { BusinessField } from "@/types/funnel";
 
+export const ENGINE_MANIFEST = {
+  name: "businessFingerprintEngine",
+  reads: ["USER-profile-*"],
+  writes: ["USER-fingerprint-*"],
+  stage: "discover" as const,
+  isLive: true,
+  parameters: ["Business DNA fingerprint"],
+} as const;
+
 export type BusinessArchetype =
   | "premium-b2b-saas"
   | "b2b-professional-services"

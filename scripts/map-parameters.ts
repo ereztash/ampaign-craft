@@ -80,6 +80,11 @@ export const PARAMETERS: ParameterEntry[] = [
   { index: 48, category: "CATEGORY_E_INFRASTRUCTURE",  name: "Multi-tier pricing",              backingEngines: ["create-checkout"] },
   { index: 49, category: "CATEGORY_E_INFRASTRUCTURE",  name: "Research orchestration",          backingEngines: ["researchOrchestrator", "research-agent"] },
   { index: 50, category: "CATEGORY_E_INFRASTRUCTURE",  name: "AI coach conversational",         backingEngines: ["ai-coach", "aiCoachChat"] },
+
+  // ── CATEGORY C addition (2026-04-11): Behavioral nudge orchestration ──
+  // behavioralActionEngine declares this parameter in its own ENGINE_MANIFEST.
+  // Added as #51 to keep the 50-parameter SSoT aligned with engine self-description.
+  { index: 51, category: "CATEGORY_C_STRATEGY",        name: "Behavioral nudge orchestration",  backingEngines: ["behavioralActionEngine"] },
 ];
 
 export const TOTAL_PARAMETERS = PARAMETERS.length;
