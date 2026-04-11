@@ -35,7 +35,9 @@ import { HormoziValueCard } from "@/components/HormoziValueCard";
 import { DifferentiationResult } from "@/types/differentiation";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
+import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
+import { PeerBenchmark } from "@/components/PeerBenchmark";
 import PaywallModal from "@/components/PaywallModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,6 +76,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   const reducedMotion = useReducedMotion();
   const isHe = language === "he";
   const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect } = useMetaAuth();
+  const peerModules = useModuleStatus();
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
@@ -275,8 +278,19 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
               </div>
             </div>
             <p className="text-xs text-muted-foreground" dir="auto">{costOfInaction.competitorGapMessage[language]}</p>
+            <p className="text-xs font-semibold text-destructive mt-1" dir="auto">{costOfInaction.urgencyMessage[language]}</p>
           </CardContent>
         </Card>
+
+        {/* Peer Benchmark */}
+        <div className="mb-6">
+          <PeerBenchmark
+            businessField={result.formData.businessField || "other"}
+            healthScore={healthScore.total}
+            modulesCompleted={peerModules.filter((m) => m.completed).length}
+            modulesTotal={peerModules.length}
+          />
+        </div>
 
         {/* Differentiation Upgrade CTA (for Path A users) */}
         {!diffResult && (

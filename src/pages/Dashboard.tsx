@@ -1,18 +1,23 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAchievements } from "@/hooks/useAchievements";
+import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
 import { assignToCohort } from "@/engine/behavioralCohortEngine";
 import { inferDISCProfile } from "@/engine/discProfileEngine";
 import { structureForAllPlatforms } from "@/engine/visualExportEngine";
+import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
 import { SavedPlan } from "@/types/funnel";
 import BackToHub from "@/components/BackToHub";
+import { NudgeBanner } from "@/components/NudgeBanner";
+import { PeerBenchmark } from "@/components/PeerBenchmark";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -66,8 +71,29 @@ const Dashboard = () => {
     );
   }, [profile.lastFormData, graph, healthScore?.total]);
 
-  // Visual export preview — turns the top weekly pulse copy into platform posts
-  // so the engine is actually invoked from this page.
+  const modules = useModuleStatus();
+  const completedModules = modules.filter((m) => m.completed).length;
+  const [nudgeDismissed, setNudgeDismissed] = useState(false);
+
+  const motivationState = useMemo(() => {
+    const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
+    const coi = lastPlan ? calculateCostOfInaction(lastPlan.result) : undefined;
+    const baeInput: BAEInput = {
+      healthScore: healthScore ?? undefined,
+      costOfInaction: coi,
+      discProfile: disc?.distribution,
+      investment: profile.investment,
+      modulesTotal: modules.length,
+      modulesCompleted: completedModules,
+      streakWeeks: streak.currentStreak,
+      achievementsUnlocked: 0,
+      achievementsTotal: 10,
+      businessField: profile.lastFormData?.businessField || "other",
+      sessionMinutes: profile.investment.totalSessionsMinutes % 60 || 1,
+    };
+    return computeMotivationState(baeInput);
+  }, [lastPlan, profile, modules, completedModules, streak, graph, healthScore]);
+
   const socialPreview = useMemo(() => {
     if (!pulse?.greeting) return null;
     const source = pulse.greeting[language] ?? pulse.greeting.en;
@@ -96,13 +122,18 @@ const Dashboard = () => {
           )}
         </div>
 
+        {/* Behavioral Nudge */}
+        {!nudgeDismissed && motivationState.nudge && (
+          <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />
+        )}
+
         {/* Weekly Pulse */}
         {pulse && (
           <Card className="mb-6 border-primary/20 bg-primary/5">
             <CardContent className="p-4">
               <p className="text-sm font-medium text-foreground" dir="auto">{pulse.greeting[language]}</p>
               {pulse.lossFramedMessages[0] && (
-                <p className="text-xs text-muted-foreground mt-1" dir="auto">{pulse.lossFramedMessages[0][language]}</p>
+                <p className="text-xs text-muted-foreground mt-1" dir="auto">{pulse.lossFramedMessages[0].message[language]}</p>
               )}
               {cohortAssignment && (
                 <p className="text-xs text-muted-foreground mt-2" dir="auto">
@@ -216,6 +247,14 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Peer Benchmark */}
+        <PeerBenchmark
+          businessField={profile.lastFormData?.businessField || "other"}
+          healthScore={healthScore?.total}
+          modulesCompleted={completedModules}
+          modulesTotal={modules.length}
+        />
 
         {/* Saved Plans */}
         {savedPlans.length > 0 && (
