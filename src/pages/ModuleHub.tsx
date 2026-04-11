@@ -31,7 +31,7 @@ const PageComponent = () => {
 
   // Build personalized greeting for authenticated users
   const graph = useMemo(() => {
-    if (profile.lastFormData) return buildUserKnowledgeGraph(profile.lastFormData);
+    if (profile.lastFormData) return buildDefaultKnowledgeGraph();
     return null;
   }, [profile.lastFormData]);
 

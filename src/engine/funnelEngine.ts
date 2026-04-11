@@ -1202,7 +1202,7 @@ export function generateFunnel(data: FormData, blackboardCtx?: BlackboardWriteCo
       funnelName: funnelResult.funnelName,
       stageCount: funnelResult.stages.length,
       totalBudget: funnelResult.totalBudget,
-      hormoziScore: funnelResult.hormoziValue?.score,
+      hormoziScore: funnelResult.hormoziValue?.overallScore,
     },
   ).catch(() => {});
 
