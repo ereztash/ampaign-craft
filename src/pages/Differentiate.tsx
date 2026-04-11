@@ -13,6 +13,7 @@ import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { Crosshair, Sparkles, Shield, Brain, Map, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { generateDifferentiation } from "@/engine/differentiationEngine";
 import { getQuestionsForPhase } from "@/engine/differentiationPhases";
 import { generateCrossDomainInsights, type Industry as CrossDomainIndustry } from "@/engine/crossDomainBenchmarkEngine";
@@ -21,6 +22,7 @@ type ViewState = "idle" | "wizard" | "results";
 
 const PageComponent = () => {
   const { t, language } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const isHe = language === "he";
   const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
   const { profile } = useUserProfile();
@@ -103,7 +105,7 @@ const PageComponent = () => {
         <BackToHub currentPage={language === "he" ? "בידול" : "Differentiation"} />
         {view === "idle" && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-3xl mx-auto text-center space-y-8"
           >
@@ -126,12 +128,12 @@ const PageComponent = () => {
             </div>
 
             {(strengthPreview !== null || crossDomainIntro.topLift) && (
-              <div className="rounded-xl border border-amber-200/50 bg-amber-50/50 p-4 text-start">
+              <div className="rounded-xl border border-amber-200/50 bg-amber-50/50 dark:bg-amber-900/20 p-4 text-start">
                 {strengthPreview !== null && (
                   <div className="text-xs text-amber-800">
                     {isHe ? "אומדן בידול ראשוני" : "Initial differentiation estimate"}: <strong>{strengthPreview}/100</strong>
                     {phase1Questions.length > 0 && (
-                      <span className="ml-2 text-muted-foreground">
+                      <span className="ms-2 text-muted-foreground">
                         · {phase1Questions.length} {isHe ? "שאלות מוכנות" : "questions ready"}
                       </span>
                     )}

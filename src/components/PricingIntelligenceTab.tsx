@@ -164,7 +164,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
                 <div className="bg-muted/30 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <Badge variant="outline" className="text-xs">{script.principle}</Badge>
-                    <Button size="sm" variant="ghost" onClick={() => copyText(script.script[language], i)} className="h-6">
+                    <Button size="sm" variant="ghost" onClick={() => copyText(script.script[language], i)} className="h-6 min-h-[44px]">
                       {copiedIdx === i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     </Button>
                   </div>

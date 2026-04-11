@@ -161,6 +161,7 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
               accept=".xlsx,.csv,.xls"
               onChange={handleFileInput}
               className="hidden"
+              aria-label={isHe ? "העלאת קובץ נתונים" : "Upload data file"}
             />
           </div>
         )}

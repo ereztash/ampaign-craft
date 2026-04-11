@@ -5,6 +5,7 @@ import { FormData, BusinessField, MainGoal } from "@/types/funnel";
 import { getSmartDefaults } from "@/lib/smartDefaults";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import {
   ShoppingBag, Monitor, UtensilsCrossed, Briefcase,
   GraduationCap, Heart, Building, Plane, User, MoreHorizontal,
@@ -37,6 +38,7 @@ const GOALS = [
 
 const ExpressWizard = ({ onComplete }: ExpressWizardProps) => {
   const { t, isRTL } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
   const [field, setField] = useState<BusinessField | "">("");
   const [goal, setGoal] = useState<MainGoal | "">("");
@@ -61,9 +63,9 @@ const ExpressWizard = ({ onComplete }: ExpressWizardProps) => {
   return (
     <div className="container mx-auto px-4 pt-8 pb-16 max-w-2xl" dir={isRTL ? "rtl" : "ltr"}>
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={reducedMotion ? false : { opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={reducedMotion ? { duration: 0 } : { duration: 0.3 }}
       >
         {/* Step 1: Business Field */}
         <div className="mb-8">

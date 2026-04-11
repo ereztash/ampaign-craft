@@ -317,7 +317,7 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-6 w-6 p-0 min-h-[44px] min-w-[44px]"
                               disabled={idx === 0}
                               onClick={() => handleReorderValue(idx, -1)}
                             >
@@ -326,7 +326,7 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 w-6 p-0"
+                              className="h-6 w-6 p-0 min-h-[44px] min-w-[44px]"
                               disabled={idx === profile.valuePriorities.length - 1}
                               onClick={() => handleReorderValue(idx, 1)}
                             >

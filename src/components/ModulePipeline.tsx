@@ -47,7 +47,7 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
         <Card
           role="button"
           tabIndex={0}
-          aria-label={`${mod.label[language]} — ${mod.completed ? "completed" : "start"}`}
+          aria-label={`${mod.label[language]} — ${mod.completed ? (isHe ? "הושלם" : "completed") : (isHe ? "התחל" : "start")}`}
           className={`cursor-pointer transition-all hover:shadow-lg hover:translate-y-[-2px] border-2 focus:outline-none focus:ring-2 focus:ring-primary ${
             mod.completed ? "border-accent/40 bg-accent/5" : "border-border hover:border-primary/50"
           }`}

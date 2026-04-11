@@ -284,19 +284,19 @@ export function TutorialFlow({ module, open, onOpenChange }: TutorialFlowProps) 
 
         <div className="flex items-center justify-between pt-2">
           <Button variant="ghost" size="sm" onClick={prev} disabled={stepIdx === 0}>
-            <ChevronLeft className="h-4 w-4 mr-1" />
+            <ChevronLeft className="h-4 w-4 me-1" />
             {t("הקודם", "Back")}
           </Button>
           <Button size="sm" onClick={next}>
             {isLast ? (
               <>
-                <CheckCircle className="h-4 w-4 mr-1" />
+                <CheckCircle className="h-4 w-4 me-1" />
                 {t("סיום", "Finish")}
               </>
             ) : (
               <>
                 {t("הבא", "Next")}
-                <ChevronRight className="h-4 w-4 ml-1" />
+                <ChevronRight className="h-4 w-4 ms-1" />
               </>
             )}
           </Button>

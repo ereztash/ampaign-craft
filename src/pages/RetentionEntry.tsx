@@ -31,8 +31,8 @@ const PageComponent = () => {
         {result ? (
           <>
             {retentionStrategy && (
-              <div className="mb-4 rounded-xl border border-pink-200/60 bg-pink-50/50 p-4 text-start">
-                <p className="text-xs text-pink-900" dir="auto">
+              <div className="mb-4 rounded-xl border border-pink-200/60 bg-pink-50/50 dark:bg-pink-900/20 p-4 text-start">
+                <p className="text-xs text-pink-900 dark:text-pink-200" dir="auto">
                   {isHe ? "אסטרטגיית שימור" : "Retention strategy"}:{" "}
                   <strong>{retentionStrategy.onboarding.type}</strong>
                   {" "}· {retentionStrategy.onboarding.steps.length} {isHe ? "שלבי קליטה" : "onboarding steps"}

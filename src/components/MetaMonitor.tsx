@@ -74,7 +74,7 @@ const GuidanceCard = ({ item, isHe }: { item: GuidanceItem; isHe: boolean }) => 
 
   return (
     <Card className={`${borderColor} ${bgColor}`}>
-      <CardHeader className="pb-2 cursor-pointer" onClick={() => setExpanded(!expanded)}>
+      <CardHeader className="pb-2 cursor-pointer" role="button" tabIndex={0} onClick={() => setExpanded(!expanded)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpanded(!expanded); } }}>
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">

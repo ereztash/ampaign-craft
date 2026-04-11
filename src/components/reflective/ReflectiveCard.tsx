@@ -15,122 +15,64 @@
 // ═══════════════════════════════════════════════
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/i18n/LanguageContext";
 import type { ActionCard, ActionSignal } from "@/engine/optimization/reflectiveAction";
 
 interface ReflectiveCardProps {
   card: ActionCard;
 }
 
-// COR-SYS palette — literal hex values so the card reads the same in
-// any host theme (no tailwind tokens).
-const PALETTE: Record<ActionSignal, string> = {
-  stable: "#2F7D5B",
-  watch: "#B87333",
-  act: "#7A1F1F",
+const SIGNAL_CLASSES: Record<ActionSignal, { bg: string; border: string; text: string }> = {
+  stable: { bg: "bg-emerald-50 dark:bg-emerald-900/20", border: "border-emerald-600/30 dark:border-emerald-400/30", text: "text-emerald-700 dark:text-emerald-300" },
+  watch: { bg: "bg-amber-50 dark:bg-amber-900/20", border: "border-amber-600/30 dark:border-amber-400/30", text: "text-amber-700 dark:text-amber-300" },
+  act: { bg: "bg-red-50 dark:bg-red-900/20", border: "border-red-700/30 dark:border-red-400/30", text: "text-red-700 dark:text-red-300" },
 };
 
-const TEXT = "#111317";
-const BACKGROUND = "#FAFAF8";
-const BORDER = "#E5E3DE";
-
-const SIGNAL_LABEL: Record<ActionSignal, string> = {
-  stable: "יציב",
-  watch: "עקוב",
-  act: "פעל",
+const SIGNAL_LABEL: Record<ActionSignal, { he: string; en: string }> = {
+  stable: { he: "יציב", en: "Stable" },
+  watch: { he: "עקוב", en: "Watch" },
+  act: { he: "פעל", en: "Act" },
 };
 
 const ReflectiveCard = ({ card }: ReflectiveCardProps) => {
+  const { language } = useLanguage();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     const timer = window.setTimeout(() => setMounted(true), 10);
     return () => window.clearTimeout(timer);
   }, []);
 
-  const color = PALETTE[card.signal];
+  const signal = SIGNAL_CLASSES[card.signal];
   const isEmptyState = card.coherence_score < 0.6;
 
   return (
     <div
-      dir="rtl"
+      dir="auto"
       role="status"
-      aria-label={`${SIGNAL_LABEL[card.signal]}: ${card.headline}`}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        maxWidth: "520px",
-        marginInlineStart: "auto",
-        marginInlineEnd: "auto",
-        padding: "12px 16px",
-        background: BACKGROUND,
-        border: `1px solid ${BORDER}`,
-        borderRadius: "6px",
-        fontFamily: "inherit",
-        color: TEXT,
-        opacity: mounted ? 1 : 0,
-        transition: "opacity 200ms ease-in",
-      }}
+      aria-label={`${SIGNAL_LABEL[card.signal][language]}: ${card.headline}`}
+      className={`flex flex-col max-w-[520px] mx-auto px-4 py-3 bg-card text-card-foreground border rounded-md transition-opacity duration-200 ease-in ${signal.border} ${mounted ? "opacity-100" : "opacity-0"}`}
     >
       {/* Signal Row — 32px */}
-      <div
-        style={{
-          height: "32px",
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          fontSize: "14px",
-          fontWeight: 500,
-          lineHeight: 1.2,
-        }}
-      >
+      <div className="h-8 flex items-center gap-2.5 text-sm font-medium leading-tight">
         <span
           aria-hidden="true"
-          style={{
-            display: "inline-block",
-            width: "10px",
-            height: "10px",
-            borderRadius: "5px",
-            background: color,
-          }}
+          className={`inline-block w-2.5 h-2.5 rounded-full ${signal.bg}`}
         />
-        <span style={{ color }}>{SIGNAL_LABEL[card.signal]}</span>
+        <span className={signal.text}>{SIGNAL_LABEL[card.signal][language]}</span>
         {!isEmptyState && (
-          <span style={{ color: TEXT, fontWeight: 600 }}>{card.headline}</span>
+          <span className="text-card-foreground font-semibold">{card.headline}</span>
         )}
       </div>
 
       {!isEmptyState && (
         <>
           {/* Cause Row — flexible, clamped to 3 lines */}
-          <div
-            style={{
-              marginTop: "8px",
-              fontSize: "14px",
-              fontWeight: 400,
-              lineHeight: 1.45,
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
+          <div className="mt-2 text-sm font-normal leading-relaxed line-clamp-3">
             {card.why}
           </div>
 
           {/* Action Row — 64px */}
-          <div
-            style={{
-              height: "64px",
-              marginTop: "8px",
-              display: "flex",
-              alignItems: "center",
-              fontSize: "13px",
-              fontWeight: 500,
-              lineHeight: 1.3,
-              color: TEXT,
-              borderTop: `1px solid ${BORDER}`,
-              paddingTop: "8px",
-            }}
-          >
+          <div className="h-16 mt-2 flex items-center text-[13px] font-medium leading-snug text-card-foreground border-t pt-2">
             {card.next_step}
           </div>
         </>

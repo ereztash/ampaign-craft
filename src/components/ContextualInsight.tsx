@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Bot, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface ContextualInsightProps {
   title: { he: string; en: string };
@@ -22,6 +23,7 @@ const VARIANT_STYLES = {
 
 const ContextualInsight = ({ title, content, variant = "info", className }: ContextualInsightProps) => {
   const { language } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
 
   return (
@@ -43,9 +45,9 @@ const ContextualInsight = ({ title, content, variant = "info", className }: Cont
         <AnimatePresence>
           {open && (
             <motion.div
-              initial={{ opacity: 0, y: -5 }}
+              initial={reducedMotion ? false : { opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
+              exit={reducedMotion ? undefined : { opacity: 0, y: -5 }}
               className={cn("mt-2 p-3 rounded-lg border text-xs", VARIANT_STYLES[variant])}
             >
               <p dir="auto" className="text-foreground">{content[language]}</p>

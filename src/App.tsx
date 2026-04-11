@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
@@ -39,15 +40,15 @@ function LegacyPlanRedirect() {
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reducedMotion = useReducedMotion();
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+        initial={reducedMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+        exit={reducedMotion ? undefined : { opacity: 0 }}
         transition={{ duration: 0.15 }}
       >
         <Routes location={location}>

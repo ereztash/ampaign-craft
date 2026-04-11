@@ -20,6 +20,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type PulseState = "healthy" | "pressure" | "halt";
 
@@ -42,17 +43,10 @@ const COPY: Record<PulseState, { he: string; en: string }> = {
   },
 };
 
-// COR-SYS clinical palette. These are literal hex values — not
-// bootstrap, not tailwind tokens — so the dot reads the same in
-// any host theme.
-const PALETTE = {
-  healthy: "#2F7D5B",
-  pressure: "#C77A3A",
-  halt: "#8B2E2E",
-  background: "#FAFAF8",
-  text: "#2A2A2A",
-  textSoft: "#6A6A6A",
-  border: "#E5E3DE",
+const SIGNAL_CLASSES = {
+  healthy: { dot: "bg-emerald-600 dark:bg-emerald-400", text: "text-emerald-700 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
+  pressure: { dot: "bg-amber-600 dark:bg-amber-400", text: "text-amber-700 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-900/20" },
+  halt: { dot: "bg-red-700 dark:bg-red-400", text: "text-red-700 dark:text-red-300", bg: "bg-red-50 dark:bg-red-900/20" },
 } as const;
 
 const POLL_INTERVAL_MS = 15_000;
@@ -61,6 +55,7 @@ const DEFAULT_EPSILON = 0.05;
 const DEFAULT_KAPPA = 0.3;
 
 const SentinelPulse = () => {
+  const { language } = useLanguage();
   const [rows, setRows] = useState<SentinelRow[] | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const dotWrapRef = useRef<HTMLButtonElement>(null);
@@ -146,8 +141,8 @@ const SentinelPulse = () => {
   // Spec: if there is no data, the component is not shown at all.
   if (state === null) return null;
 
-  const color = PALETTE[state];
-  const label = COPY[state].he;
+  const signalCls = SIGNAL_CLASSES[state];
+  const label = COPY[state][language];
 
   return (
     <>
@@ -156,35 +151,12 @@ const SentinelPulse = () => {
         type="button"
         onClick={() => setDrawerOpen((open) => !open)}
         aria-label={label}
-        dir="rtl"
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "10px",
-          height: "48px",
-          padding: "0 12px",
-          background: PALETTE.background,
-          border: "none",
-          cursor: "pointer",
-          fontFamily: "inherit",
-          fontSize: "14px",
-          fontWeight: 400,
-          lineHeight: 1.2,
-          color: PALETTE.text,
-          transition: "opacity 800ms ease-in-out",
-        }}
+        dir="auto"
+        className="inline-flex items-center gap-2.5 h-12 px-3 bg-card border-none cursor-pointer text-sm font-normal leading-tight text-card-foreground transition-opacity duration-[800ms] ease-in-out"
       >
         <span
           aria-hidden="true"
-          style={{
-            display: "inline-block",
-            width: "8px",
-            height: "8px",
-            borderRadius: "4px",
-            background: color,
-            transition: "background 800ms ease-in-out",
-            animation: state === "halt" ? "sentinel-pulse 2s ease-in-out infinite" : "none",
-          }}
+          className={`inline-block w-2 h-2 rounded-full transition-colors duration-[800ms] ease-in-out ${signalCls.dot} ${state === "halt" ? "animate-[sentinel-pulse_2s_ease-in-out_infinite]" : ""}`}
         />
         <span>{label}</span>
         <style>{`
@@ -200,42 +172,19 @@ const SentinelPulse = () => {
           ref={drawerRef}
           role="dialog"
           aria-label={label}
-          dir="rtl"
-          style={{
-            position: "fixed",
-            top: "56px",
-            insetInlineEnd: "12px",
-            minWidth: "280px",
-            maxWidth: "360px",
-            padding: "12px 16px",
-            background: PALETTE.background,
-            border: `1px solid ${PALETTE.border}`,
-            borderRadius: "4px",
-            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.08)",
-            zIndex: 50,
-            fontFamily: "inherit",
-            fontSize: "13px",
-            fontWeight: 400,
-            lineHeight: 1.4,
-            color: PALETTE.text,
-          }}
+          dir="auto"
+          className="fixed top-14 end-3 min-w-[280px] max-w-[360px] px-4 py-3 bg-card text-card-foreground border rounded shadow-lg z-50 text-[13px] font-normal leading-snug"
         >
           {rows && rows.length > 0 ? (
             rows.slice(0, 5).map((row) => (
               <div
                 key={row.id}
-                style={{
-                  padding: "6px 0",
-                  borderBottom: `1px solid ${PALETTE.border}`,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: "12px",
-                }}
+                className="py-1.5 border-b flex justify-between gap-3"
               >
-                <span style={{ color: PALETTE.text, wordBreak: "break-word" }}>
+                <span className="text-card-foreground break-words">
                   {row.concept_key}
                 </span>
-                <span style={{ color: PALETTE.textSoft, whiteSpace: "nowrap" }}>
+                <span className="text-muted-foreground whitespace-nowrap">
                   {formatRelativeTime(row.created_at)}
                 </span>
               </div>

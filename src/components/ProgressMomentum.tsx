@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Flame, ChevronRight } from "lucide-react";
 
 interface ModuleInfo {
@@ -21,6 +22,7 @@ interface ProgressMomentumProps {
 
 export function ProgressMomentum({ modules, streakWeeks, investmentMinutes, plansCreated }: ProgressMomentumProps) {
   const { language } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const isHe = language === "he";
   const navigate = useNavigate();
 
@@ -61,9 +63,9 @@ export function ProgressMomentum({ modules, streakWeeks, investmentMinutes, plan
           <div className="h-2.5 rounded-full bg-muted overflow-hidden">
             <motion.div
               className="h-full rounded-full bg-gradient-to-r from-primary/70 to-primary"
-              initial={{ width: "10%" }}
+              initial={reducedMotion ? false : { width: "10%" }}
               animate={{ width: `${visualPct}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={reducedMotion ? { duration: 0 } : { duration: 0.8, ease: "easeOut" }}
             />
           </div>
         </div>

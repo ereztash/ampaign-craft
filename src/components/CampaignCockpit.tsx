@@ -114,6 +114,7 @@ const CampaignCockpit = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={isHe ? "ערך בפועל" : "Actual value"}
+                  aria-label={isHe ? "ערך בפועל" : "Actual value"}
                   className="w-full sm:w-[140px]"
                 />
                 <Select value={inputChannel} onValueChange={setInputChannel}>

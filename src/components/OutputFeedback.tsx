@@ -107,7 +107,7 @@ export function OutputFeedback({ pairId, compact = false, onFeedbackSubmitted }:
       <Button
         size="sm"
         variant="ghost"
-        className="h-7 px-2"
+        className="h-7 px-2 min-h-[44px] min-w-[44px]"
         onClick={() => submit("positive")}
         disabled={saving}
         aria-label={t("משוב חיובי", "Positive feedback")}
@@ -117,7 +117,7 @@ export function OutputFeedback({ pairId, compact = false, onFeedbackSubmitted }:
       <Button
         size="sm"
         variant="ghost"
-        className="h-7 px-2"
+        className="h-7 px-2 min-h-[44px] min-w-[44px]"
         onClick={() => setShowNegativeForm(true)}
         disabled={saving}
         aria-label={t("משוב שלילי", "Negative feedback")}

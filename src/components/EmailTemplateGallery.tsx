@@ -290,15 +290,15 @@ export function EmailTemplateGallery() {
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={copyAllSteps}>
-                    <Copy className="h-4 w-4 mr-1" />
+                    <Copy className="h-4 w-4 me-1" />
                     {t("העתק הכל", "Copy all")}
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => exportTemplate("mailchimp")}>
-                    <Download className="h-4 w-4 mr-1" />
+                    <Download className="h-4 w-4 me-1" />
                     Mailchimp
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => exportTemplate("hubspot")}>
-                    <Download className="h-4 w-4 mr-1" />
+                    <Download className="h-4 w-4 me-1" />
                     HubSpot
                   </Button>
                 </div>
@@ -306,7 +306,7 @@ export function EmailTemplateGallery() {
 
               <div className="space-y-3">
                 {tpl.steps.map((step, idx) => (
-                  <Card key={idx} className="border-l-4 border-l-primary/40">
+                  <Card key={idx} className="border-s-4 border-s-primary/40">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <Badge variant="outline" className="gap-1">

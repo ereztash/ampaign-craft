@@ -410,7 +410,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
                 const stageId = STAGE_IDS[i] || "engagement";
                 const colors = funnelStageColors[stageId];
                 return (
-                  <Card key={stage.id} className={`border-l-4 ${colors?.border || ""}`}>
+                  <Card key={stage.id} className={`border-s-4 ${colors?.border || ""}`}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground" style={{ background: chartColorPalette[i] }}>
@@ -439,7 +439,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
                             <div key={j} className="rounded-lg bg-muted/50 p-3">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-foreground">
-                                  {ch.channel === "whatsapp" && <MessageCircle className="inline h-3.5 w-3.5 mr-1 text-green-500" />}
+                                  {ch.channel === "whatsapp" && <MessageCircle className="inline h-3.5 w-3.5 me-1 text-green-500" />}
                                   {ch.name[language]}
                                 </span>
                                 <span className="text-sm text-primary font-semibold">{ch.budgetPercent}%</span>
@@ -685,7 +685,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
       </div>
 
       {/* Sticky Action Bar — always visible */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 glass-card border-t" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <div className="fixed bottom-0 inset-x-0 z-40 glass-card border-t" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="mx-auto flex max-w-5xl items-center justify-center gap-2 px-4 py-2.5">
           <Button variant="outline" size="sm" onClick={onEdit} className="gap-1.5">
             <Edit className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("editPlan")}</span>
@@ -708,7 +708,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
       <div className="h-16" />
 
       {/* AI Coach Floating Button + Panel */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
+      <div className="fixed bottom-4 end-4 sm:bottom-6 sm:end-6 z-40">
         {coachOpen ? (
           <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[70vh] sm:max-h-[550px] animate-in slide-in-from-bottom-4">
             <div className="flex justify-end mb-1">
