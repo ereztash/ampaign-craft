@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FunnelForge — System Data Flow Dashboard</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e4e4ef;
+    --text-muted: #8888a0;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --pink: #ec4899;
+    --cyan: #06b6d4;
+    --orange: #f97316;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: ltr;
+  }
+  .dashboard { max-width: 1600px; margin: 0 auto; padding: 24px; }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 { font-size: 24px; font-weight: 700; }
+  .header h1 span { color: var(--accent); }
+  .stats-bar {
+    display: flex;
+    gap: 8px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-align: center;
+  }
+  .stat-value { font-size: 20px; font-weight: 700; color: var(--accent2); }
+  .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .grid-flow { grid-template-columns: 250px 1fr 250px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .card-header .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin: 24px 0 12px;
+  }
+
+  .flow-container {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 32px 0;
+    position: relative;
+  }
+  .flow-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 12px;
+    position: relative;
+  }
+  .flow-col:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 10%;
+    height: 80%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border), transparent);
+  }
+  .flow-col-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 20px;
+    padding: 0 4px;
+    flex-shrink: 0;
+    width: 40px;
+  }
+
+  .node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: default;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .node:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99,102,241,0.15);
+  }
+  .node-name { font-weight: 600; font-size: 13px; }
+  .node-meta { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+  .node-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .node.input { border-left: 3px solid var(--green); }
+  .node.context { border-left: 3px solid var(--blue); }
+  .node.engine { border-left: 3px solid var(--purple); }
+  .node.engine-live { border-left: 3px solid var(--accent); }
+  .node.ui { border-left: 3px solid var(--pink); }
+  .node.store { border-left: 3px solid var(--amber); }
+  .node.edge-fn { border-left: 3px solid var(--cyan); }
+  .node.external { border-left: 3px solid var(--orange); }
+
+  .tag { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin: 1px 2px; }
+  .tag-green { background: rgba(34,197,94,.15); color: var(--green); }
+  .tag-blue { background: rgba(59,130,246,.15); color: var(--blue); }
+  .tag-purple { background: rgba(168,85,247,.15); color: var(--purple); }
+  .tag-amber { background: rgba(245,158,11,.15); color: var(--amber); }
+  .tag-pink { background: rgba(236,72,153,.15); color: var(--pink); }
+  .tag-cyan { background: rgba(6,182,212,.15); color: var(--cyan); }
+  .tag-red { background: rgba(239,68,68,.15); color: var(--red); }
+
+  .engine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+  }
+  .mini-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    transition: border-color 0.2s;
+  }
+  .mini-node:hover { border-color: var(--accent); }
+  .mini-node .name { font-weight: 600; }
+  .mini-node .stage { color: var(--text-muted); font-size: 10px; }
+  .mini-node.live { border-left: 2px solid var(--green); }
+  .mini-node.stub { border-left: 2px solid var(--border); opacity: 0.6; }
+
+  .ls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 4px;
+  }
+  .ls-item {
+    font-size: 11px;
+    padding: 4px 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+  }
+  .ls-item span { color: var(--amber); }
+
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  table.matrix th, table.matrix td {
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  table.matrix th {
+    background: var(--surface2);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+  }
+  table.matrix td:first-child { font-weight: 600; }
+  .check { color: var(--green); }
+  .dash { color: var(--border); }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 1200px) {
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .flow-container { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); width: auto; padding: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1><span>FunnelForge</span> System Data Flow</h1>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Architecture dashboard &mdash; engines, contexts, persistence, and data pipelines</div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-value">46</div><div class="stat-label">Engines</div></div>
+      <div class="stat"><div class="stat-value">6</div><div class="stat-label">Live Manifests</div></div>
+      <div class="stat"><div class="stat-value">4</div><div class="stat-label">Contexts</div></div>
+      <div class="stat"><div class="stat-value">18</div><div class="stat-label">localStorage Keys</div></div>
+      <div class="stat"><div class="stat-value">12</div><div class="stat-label">Supabase Tables</div></div>
+      <div class="stat"><div class="stat-value">10</div><div class="stat-label">Edge Functions</div></div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Data Entry</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div> Context / State</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div> Engine (Compute)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div> UI Surface</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div> Storage</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div> Edge Function</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> External API</div>
+  </div>
+
+  <!-- ══════════════ MAIN DATA FLOW ══════════════ -->
+  <div class="section-title">Main Data Flow Pipeline</div>
+
+  <div class="flow-container">
+    <!-- Column 1: Data Entry -->
+    <div class="flow-col">
+      <div class="flow-col-title">1. Data Entry</div>
+      <div class="node input">
+        <div class="node-name">SmartOnboarding</div>
+        <div class="node-meta">4-step wizard &rarr; UnifiedProfile</div>
+        <span class="tag tag-green">primary</span>
+      </div>
+      <div class="node input">
+        <div class="node-name">MultiStepForm</div>
+        <div class="node-meta">Classic questionnaire &rarr; FormData</div>
+      </div>
+      <div class="node input">
+        <div class="node-name">DifferentiationWizard</div>
+        <div class="node-meta">Multi-phase &rarr; DifferentiationFormData</div>
+      </div>
+      <div class="node input">
+        <div class="node-name">DataImportModal</div>
+        <div class="node-meta">XLSX/CSV &rarr; ImportedDataset</div>
+      </div>
+      <div class="node external">
+        <div class="node-name">Meta Ads API</div>
+        <div class="node-meta">Campaigns, insights, spend</div>
+      </div>
+      <div class="node external">
+        <div class="node-name">Stripe</div>
+        <div class="node-meta">Subscriptions, payments</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">&rarr;</div>
+
+    <!-- Column 2: State Layer -->
+    <div class="flow-col">
+      <div class="flow-col-title">2. Context / State</div>
+      <div class="node context">
+        <div class="node-name">UserProfileContext</div>
+        <div class="node-meta">UnifiedProfile, FormData, investment, achievements, segment</div>
+        <span class="tag tag-blue">provider</span>
+      </div>
+      <div class="node context">
+        <div class="node-name">AuthContext</div>
+        <div class="node-meta">User, tier, auth methods, training flush</div>
+        <span class="tag tag-blue">provider</span>
+      </div>
+      <div class="node context">
+        <div class="node-name">DataSourceContext</div>
+        <div class="node-meta">Connected sources, quality score, records</div>
+        <span class="tag tag-blue">provider</span>
+      </div>
+      <div class="node context">
+        <div class="node-name">LanguageContext</div>
+        <div class="node-meta">he/en, RTL, translation fn</div>
+        <span class="tag tag-blue">provider</span>
+      </div>
+      <div class="node store">
+        <div class="node-name">localStorage</div>
+        <div class="node-meta">18 funnelforge-* keys</div>
+        <span class="tag tag-amber">client</span>
+      </div>
+    </div>
+
+    <div class="flow-arrow">&rarr;</div>
+
+    <!-- Column 3: Engine Layer -->
+    <div class="flow-col" style="flex:1.5">
+      <div class="flow-col-title">3. Engine Layer (46 engines)</div>
+      <div class="node engine-live">
+        <div class="node-name">userKnowledgeGraph</div>
+        <div class="node-meta">FormData &rarr; identity, psychographics, JTBD</div>
+        <span class="tag tag-purple">diagnose</span>
+      </div>
+      <div class="node engine-live">
+        <div class="node-name">funnelEngine</div>
+        <div class="node-meta">FormData + Graph &rarr; FunnelResult</div>
+        <span class="tag tag-purple">design</span>
+      </div>
+      <div class="node engine-live">
+        <div class="node-name">discProfileEngine</div>
+        <div class="node-meta">FormData + Graph &rarr; DISC distribution</div>
+        <span class="tag tag-purple">diagnose</span>
+      </div>
+      <div class="node engine-live">
+        <div class="node-name">behavioralActionEngine</div>
+        <div class="node-meta">Health + COI + DISC + Investment &rarr; MotivationState</div>
+        <span class="tag tag-purple">deploy</span>
+      </div>
+      <div class="node engine-live">
+        <div class="node-name">predictiveEngine</div>
+        <div class="node-meta">FormData + Funnel + Benchmarks &rarr; Success forecast</div>
+        <span class="tag tag-purple">design</span>
+      </div>
+      <div class="node engine-live">
+        <div class="node-name">abTestEngine</div>
+        <div class="node-meta">Experiments &rarr; variant assignment, significance</div>
+        <span class="tag tag-purple">design</span>
+      </div>
+      <div class="node engine" style="opacity:0.7">
+        <div class="node-name">+ 40 additional engines</div>
+        <div class="node-meta">health, COI, pulse, bottleneck, gaps, guidance, pricing, retention, sales, CLG, neuro-closing, hormozi, export, training...</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">&rarr;</div>
+
+    <!-- Column 4: UI Surfaces -->
+    <div class="flow-col">
+      <div class="flow-col-title">4. UI Surfaces</div>
+      <div class="node ui">
+        <div class="node-name">CommandCenter</div>
+        <div class="node-meta">12 engines, NudgeBanner, ProgressMomentum</div>
+      </div>
+      <div class="node ui">
+        <div class="node-name">Dashboard</div>
+        <div class="node-meta">11 engines, PeerBenchmark, nudges</div>
+      </div>
+      <div class="node ui">
+        <div class="node-name">StrategyCanvas</div>
+        <div class="node-meta">ResultsDashboard + map + research</div>
+      </div>
+      <div class="node ui">
+        <div class="node-name">ResultsDashboard</div>
+        <div class="node-meta">10 tabs, all moat engines, reflective card</div>
+      </div>
+      <div class="node ui">
+        <div class="node-name">Differentiate</div>
+        <div class="node-meta">Wizard + cross-domain insights</div>
+      </div>
+      <div class="node ui">
+        <div class="node-name">DataHub</div>
+        <div class="node-meta">Source connections + import</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">&rarr;</div>
+
+    <!-- Column 5: Persistence -->
+    <div class="flow-col">
+      <div class="flow-col-title">5. Persistence</div>
+      <div class="node store">
+        <div class="node-name">shared_context</div>
+        <div class="node-meta">Blackboard writes from 24 engines</div>
+        <span class="tag tag-amber">supabase</span>
+      </div>
+      <div class="node store">
+        <div class="node-name">training_pairs</div>
+        <div class="node-meta">I/O capture + trigger mirror</div>
+        <span class="tag tag-amber">supabase</span>
+      </div>
+      <div class="node store">
+        <div class="node-name">saved_plans</div>
+        <div class="node-meta">User strategy plans</div>
+        <span class="tag tag-amber">supabase</span>
+      </div>
+      <div class="node store">
+        <div class="node-name">differentiation_results</div>
+        <div class="node-meta">Competitive analysis outputs</div>
+        <span class="tag tag-amber">supabase</span>
+      </div>
+      <div class="node store">
+        <div class="node-name">content_embeddings</div>
+        <div class="node-meta">pgvector RAG search</div>
+        <span class="tag tag-amber">supabase</span>
+      </div>
+      <div class="node edge-fn">
+        <div class="node-name">10 Edge Functions</div>
+        <div class="node-meta">AI, auth, payments, webhooks</div>
+        <span class="tag tag-cyan">serverless</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ BLACKBOARD DATA FLOW ══════════════ -->
+  <div class="section-title">Blackboard System &mdash; shared_context Pipeline</div>
+
+  <div class="flow-container" style="background:var(--surface);border-radius:12px;padding:20px;border:1px solid var(--border);">
+    <div class="flow-col">
+      <div class="flow-col-title">Engine Writes</div>
+      <div class="node engine" style="font-size:11px">
+        <div class="node-name">24 engines call writeContext()</div>
+        <div class="node-meta">conceptKey(scope, type, id)</div>
+        <div style="margin-top:6px">
+          <span class="tag tag-purple">funnelEngine</span>
+          <span class="tag tag-purple">discProfile</span>
+          <span class="tag tag-purple">userKG</span>
+          <span class="tag tag-purple">BAE</span>
+          <span class="tag tag-purple">predictive</span>
+          <span class="tag tag-purple">pricing</span>
+          <span class="tag tag-purple">retention</span>
+          <span class="tag tag-purple">CLG</span>
+          <span class="tag tag-purple">cohort</span>
+          <span class="tag tag-purple">+15 more</span>
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-col">
+      <div class="flow-col-title">Supabase shared_context</div>
+      <div class="node store">
+        <div class="node-name">shared_context table</div>
+        <div class="node-meta">user_id | plan_id | concept_key | stage | payload | written_by</div>
+        <div style="margin-top:4px"><span class="tag tag-amber">RLS per user</span></div>
+      </div>
+      <div class="node store" style="margin-top:8px">
+        <div class="node-name">SQL Trigger</div>
+        <div class="node-meta">ON INSERT &rarr; mirror to training_pairs</div>
+        <span class="tag tag-red">automatic</span>
+      </div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-col">
+      <div class="flow-col-title">Training Flywheel</div>
+      <div class="node store">
+        <div class="node-name">training_pairs</div>
+        <div class="node-meta">engine_name | input | output | user_id</div>
+      </div>
+      <div class="node engine" style="margin-top:8px">
+        <div class="node-name">captureTrainingPair()</div>
+        <div class="node-meta">Direct writes from 6 engines</div>
+        <div style="margin-top:4px">
+          <span class="tag tag-purple">disc</span>
+          <span class="tag tag-purple">funnel</span>
+          <span class="tag tag-purple">brand</span>
+          <span class="tag tag-purple">hormozi</span>
+          <span class="tag tag-purple">copyQA</span>
+          <span class="tag tag-purple">BAE</span>
+        </div>
+      </div>
+      <div class="node store" style="margin-top:8px">
+        <div class="node-name">Offline Buffer</div>
+        <div class="node-meta">funnelforge-training-buffer &rarr; flush on auth</div>
+        <span class="tag tag-amber">localStorage</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ PAGE → ENGINE MATRIX ══════════════ -->
+  <div class="section-title">Page &rarr; Engine Consumption Matrix</div>
+
+  <div class="card" style="overflow-x:auto">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Engine</th>
+          <th>Command Center</th>
+          <th>Dashboard</th>
+          <th>Strategy Canvas</th>
+          <th>Results Dashboard</th>
+          <th>Differentiate</th>
+          <th>Wizard</th>
+          <th>DataHub</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>userKnowledgeGraph</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>healthScoreEngine</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>costOfInactionEngine</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>discProfileEngine</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>behavioralActionEngine</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>funnelEngine</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>pulseEngine</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>bottleneckEngine</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>gapEngine</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>guidanceEngine</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>predictiveEngine</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>campaignAnalyticsEngine</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>abTestEngine</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>behavioralCohortEngine</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>visualExportEngine</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>nextStepEngine</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>hormoziValueEngine</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>clgEngine</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>retentionFlywheelEngine</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>reflectiveAction (M4)</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>differentiationEngine</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>researchOrchestrator</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td></tr>
+        <tr><td>dataImportEngine</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="dash">&mdash;</td><td class="check">&#10003;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════ ALL 46 ENGINES ══════════════ -->
+  <div class="section-title">All 46 Engines (Registry)</div>
+
+  <div class="engine-grid">
+    <div class="mini-node live"><div class="name">abTestEngine</div><div class="stage">design &bull; live</div></div>
+    <div class="mini-node live"><div class="name">behavioralActionEngine</div><div class="stage">deploy &bull; live</div></div>
+    <div class="mini-node stub"><div class="name">behavioralCohortEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">bottleneckEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">brandVectorEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">businessFingerprintEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">campaignAnalyticsEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">churnPredictionEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">clgEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">copyQAEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">costOfInactionEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">crossDomainBenchmarkEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">dataImportEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">differentiationEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">differentiationKnowledge</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">differentiationPhases</div><div class="stage">stub</div></div>
+    <div class="mini-node live"><div class="name">discProfileEngine</div><div class="stage">diagnose &bull; live</div></div>
+    <div class="mini-node stub"><div class="name">emotionalPerformanceEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">exportEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node live"><div class="name">funnelEngine</div><div class="stage">design &bull; live</div></div>
+    <div class="mini-node stub"><div class="name">gapEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">guidanceEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">healthScoreEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">hormoziValueEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">integrationEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">neuroClosingEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">nextStepEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">perplexityBurstiness</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">predictiveContentScoreEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node live"><div class="name">predictiveEngine</div><div class="stage">design &bull; live</div></div>
+    <div class="mini-node stub"><div class="name">pricingIntelligenceEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">pricingKnowledge</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">promptOptimizerEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">pulseEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">researchOrchestrator</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">retentionFlywheelEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">retentionGrowthEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">retentionKnowledge</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">salesPipelineEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">seoContentEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">stylomeEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">trainingDataEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node stub"><div class="name">trainingExportEngine</div><div class="stage">stub</div></div>
+    <div class="mini-node live"><div class="name">userKnowledgeGraph</div><div class="stage">diagnose &bull; live</div></div>
+    <div class="mini-node stub"><div class="name">visualExportEngine</div><div class="stage">stub</div></div>
+  </div>
+
+  <!-- ══════════════ localStorage KEYS ══════════════ -->
+  <div class="section-title">localStorage Keys (funnelforge-*)</div>
+
+  <div class="ls-grid">
+    <div class="ls-item"><span>plans</span> &mdash; SavedPlan[]</div>
+    <div class="ls-item"><span>last-form</span> &mdash; FormData</div>
+    <div class="ls-item"><span>user-profile</span> &mdash; visits, last date</div>
+    <div class="ls-item"><span>profile</span> &mdash; UnifiedProfile</div>
+    <div class="ls-item"><span>achievements</span> &mdash; unlocked IDs</div>
+    <div class="ls-item"><span>investment</span> &mdash; InvestmentMetrics</div>
+    <div class="ls-item"><span>differentiation-result</span> &mdash; DiffResult</div>
+    <div class="ls-item"><span>stylome-voice</span> &mdash; StylomeVoice</div>
+    <div class="ls-item"><span>data-sources</span> &mdash; DataSourceState</div>
+    <div class="ls-item"><span>imported-data</span> &mdash; datasets</div>
+    <div class="ls-item"><span>training-buffer</span> &mdash; offline queue</div>
+    <div class="ls-item"><span>coach-messages</span> &mdash; chat history</div>
+    <div class="ls-item"><span>lang</span> &mdash; he | en</div>
+    <div class="ls-item"><span>dark-mode</span> &mdash; boolean</div>
+    <div class="ls-item"><span>llm-usage</span> &mdash; LLM router stats</div>
+    <div class="ls-item"><span>tracking</span> &mdash; UTM / campaign</div>
+    <div class="ls-item"><span>form-step</span> &mdash; wizard step index</div>
+    <div class="ls-item"><span>onboarding-done</span> &mdash; boolean</div>
+  </div>
+
+  <!-- ══════════════ SUPABASE + EDGE ══════════════ -->
+  <div class="section-title">Supabase Infrastructure</div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--amber)"></div> Database Tables (12)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        <span class="tag tag-amber">profiles</span>
+        <span class="tag tag-amber">saved_plans</span>
+        <span class="tag tag-amber">user_form_data</span>
+        <span class="tag tag-amber">differentiation_results</span>
+        <span class="tag tag-amber">user_roles</span>
+        <span class="tag tag-amber">shared_context</span>
+        <span class="tag tag-amber">shared_intents</span>
+        <span class="tag tag-amber">training_pairs</span>
+        <span class="tag tag-amber">experiments</span>
+        <span class="tag tag-amber">content_embeddings</span>
+        <span class="tag tag-amber">agent_tasks</span>
+        <span class="tag tag-amber">event_queue</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--cyan)"></div> Edge Functions (10)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        <span class="tag tag-cyan">agent-executor</span>
+        <span class="tag tag-cyan">ai-coach</span>
+        <span class="tag tag-cyan">create-checkout</span>
+        <span class="tag tag-cyan">differentiation-agent</span>
+        <span class="tag tag-cyan">embed-content</span>
+        <span class="tag tag-cyan">generate-copy</span>
+        <span class="tag tag-cyan">meta-token-exchange</span>
+        <span class="tag tag-cyan">queue-processor</span>
+        <span class="tag tag-cyan">research-agent</span>
+        <span class="tag tag-cyan">stripe-webhook</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;margin-top:40px;padding:16px;color:var(--text-muted);font-size:11px;border-top:1px solid var(--border);">
+    FunnelForge System Architecture &mdash; Auto-generated from codebase analysis &mdash; 46 engines &bull; 12 tables &bull; 10 edge functions &bull; 4 contexts
+  </div>
+
+</div>
+</body>
+</html>
