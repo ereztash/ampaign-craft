@@ -42,6 +42,8 @@ import { freshnessGate } from "./freshnessBudget";
 import type { StageDistribution, CascadeStage } from "./stageSpectrum";
 import { nextStageInCascade } from "./stageSpectrum";
 import type { AnomalyClassification } from "./biomimeticAnomalyType";
+import type { FailedCardSignature } from "./adaptiveVerifier";
+import { verifyHistoricalSync } from "./adaptiveVerifier";
 // E2 — runtime import is intentional. The cycle is safe because
 // expressDual is only called inside function bodies, never at
 // module-load time.
@@ -90,6 +92,13 @@ export interface ReflectiveContext {
   // a new regime is forming and the system must measure before it
   // tries to close the deviation.
   anomaly_classification?: AnomalyClassification;
+  // E6 — optional pre-fetched failure signatures for the adaptive
+  // verifier. The orchestrator is expected to fetch these via
+  // blackboardClient.readFailures (or adaptiveVerifier.verifyHistorical)
+  // and attach them here. When undefined the adaptive gate is skipped
+  // entirely so the frontend call site (ResultsDashboard) stays
+  // synchronous and unchanged.
+  adaptive_failures?: FailedCardSignature[];
 }
 
 export interface ActionCard {
@@ -186,6 +195,12 @@ const WHY_EMERGENT_REGIME =
   "מזהה משטר חדש שמתחיל להיווצר. מודד לפני פעולה.";
 const NEXT_STEP_EMERGENT_REGIME =
   "המתן לאיסוף מדידה של המשטר המתהווה לפני פעולת תיקון";
+
+// E6 — Reason strings for the adaptive-verifier historical match watch.
+const WHY_HISTORICAL_MATCH =
+  "מערכת זיהתה דמיון גבוה להמלצות שנכשלו בעבר. מודדת מחדש לפני שתחזיר את הפעולה.";
+const NEXT_STEP_HISTORICAL_MATCH =
+  "המתן למדידה מחודשת לפני הצגת פעולה דומה לכשלון קודם";
 
 const NEXT_STEP: Record<keyof typeof HEADLINES, string> = {
   bottleneck: "אבחן את שלב החיכוך ותקן אותו בארכיטקטורה",
@@ -567,7 +582,14 @@ export function buildReflectiveActionPayload(
  *                                     Emergent anomalies indicate a
  *                                     new regime forming; the engine
  *                                     must measure it before acting.
- *  10. otherwise                    → full ActionCard with active dual + falsifier
+ *  10. adaptive verifier (E6)      → when adaptive_failures is pre-
+ *                                     fetched and the similarity to
+ *                                     past failures exceeds the block
+ *                                     band, return the E6 historical
+ *                                     match watch. Otherwise the
+ *                                     adjusted_confidence becomes the
+ *                                     card's final coherence_score.
+ *  11. otherwise                    → full ActionCard with active dual + falsifier
  *
  * Each watch path emits a watch text unique to its rejection reason
  * so a downstream observer can tell exactly which gate fired.
@@ -718,14 +740,57 @@ export function generateReflectiveAction(
     };
   }
 
-  // 10. Active falsifier + valid dual (+ optional cascade override) — full card.
+  // 10. E6 adaptive verifier. When the caller pre-fetched a failure
+  //     list into ctx.adaptive_failures, score the candidate card
+  //     against it. High similarity to past failures either reduces
+  //     confidence (penalty band) or blocks the card entirely (block
+  //     band). When no pre-fetched failures are attached the gate is
+  //     a no-op so existing call sites stay unchanged.
+  let finalCoherence = coherence;
+  if (ctx.adaptive_failures !== undefined) {
+    // Build a preliminary candidate card (enough fields for the
+    // similarity check) so the verifier can read falsifier_metric
+    // and coherence_score.
+    const candidate: ActionCard = {
+      signal,
+      headline: HEADLINES[key],
+      why: WHY[key],
+      next_step: finalNextStep,
+      eta_minutes: ETA[signal],
+      coherence_score: coherence,
+      falsification_window_days: falsifier.window_days,
+      falsifier_metric: falsifier.metric,
+      falsifier_threshold: falsifier.threshold,
+      falsifier_direction: falsifier.direction,
+      metric_expression: dual.metric,
+    };
+    const adaptive = verifyHistoricalSync(candidate, ctx, ctx.adaptive_failures);
+    if (adaptive.ok === false) {
+      return {
+        signal: "watch",
+        headline: HEADLINES.decisionDelay,
+        why: WHY_HISTORICAL_MATCH,
+        next_step: NEXT_STEP_HISTORICAL_MATCH,
+        eta_minutes: ETA.watch,
+        coherence_score: adaptive.adjusted_confidence,
+        ...INERT_FALSIFIER,
+      };
+    }
+    if (adaptive.adjusted_confidence > 0) {
+      // Penalty band — pass the card through but surface the reduced
+      // confidence on the returned coherence_score.
+      finalCoherence = adaptive.adjusted_confidence;
+    }
+  }
+
+  // 11. Active falsifier + valid dual (+ optional cascade / adaptive) — full card.
   return {
     signal,
     headline: HEADLINES[key],
     why: WHY[key],
     next_step: finalNextStep,
     eta_minutes: ETA[signal],
-    coherence_score: coherence,
+    coherence_score: finalCoherence,
     falsification_window_days: falsifier.window_days,
     falsifier_metric: falsifier.metric,
     falsifier_threshold: falsifier.threshold,
