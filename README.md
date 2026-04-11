@@ -101,13 +101,19 @@ src/
 │   ├── visualExportEngine.ts        # Platform-specific social post structuring (FB/IG/LI/X)
 │   ├── researchOrchestrator.ts      # Shim exposing the research/ orchestrator as a direct engine
 │   ├── research/                    # Cross-domain research engine (real orchestrator lives here)
-│   ├── optimization/                # 6-engine GRAOS optimization overlay (strictly additive)
+│   ├── optimization/                # GRAOS optimization overlay (M1-M6) + MOAT layer (E1-E6), strictly additive
 │   │   ├── regimeDetector.ts        # M1: 3-state classifier (stable/transitional/crisis) over Meta metrics
 │   │   ├── biomimeticAnomaly.ts     # M2: 3-layer anomaly score (threshold + predictive + novelty)
 │   │   ├── extremeForecaster.ts     # M3: Bayesian collapse forecaster (clear / watch / act bands)
-│   │   ├── reflectiveAction.ts      # M4: synthesizes ONE ActionCard from funnel + diagnostics
+│   │   ├── reflectiveAction.ts      # M4: synthesizes ONE ActionCard from funnel + diagnostics + E1-E6 gate chain
 │   │   ├── daplProfile.ts           # M5: 7-dim adaptive user preference vector + 12 principles
-│   │   └── ontologicalVerifier.ts   # M6: single write-gate for every shared_context write
+│   │   ├── ontologicalVerifier.ts   # M6: single write-gate for every shared_context write
+│   │   ├── freshnessBudget.ts       # E3: ≥3-of-6 ReflectiveContext components must be fresh (countFresh + freshnessGate)
+│   │   ├── dualExpression.ts        # E2: architectural ↔ metric dual substrate gate with action-verb + number validators
+│   │   ├── stageSpectrum.ts         # E4/M7: cascade blockage detector over recent blackboard writes (discover→process→deploy)
+│   │   ├── biomimeticAnomalyType.ts # E5: post-processor on M2 classifying noise / pathological / emergent (new regime)
+│   │   ├── adaptiveVerifier.ts      # E6: similarity-based learning gate over reflective_failures (Jaccard + metric + regime)
+│   │   └── blackboardClient.ts      # Read surface: readRecent + readFailures + recordFailure (single Supabase boundary)
 │   ├── blackboard/                  # Agent orchestration (MAS-CC Blackboard Architecture)
 │   │   ├── blackboardStore.ts       # Shared knowledge space with reactive updates
 │   │   ├── agentRunner.ts           # Sync: topological sort + dependency-aware execution
@@ -181,7 +187,8 @@ supabase/migrations/
 ├── 20260409_001_agent_infrastructure.sql  # agent_tasks, blackboard_snapshots, execution_log
 ├── 20260409_002_campaign_analytics.sql    # campaign_benchmarks, user_integrations, notification_preferences
 ├── 20260409_003_vector_search.sql         # pgvector, content_embeddings, code_embeddings, match functions
-└── 20260409_004_event_queue.sql           # event_queue with claim/complete/fail/publish/cleanup
+├── 20260409_004_event_queue.sql           # event_queue with claim/complete/fail/publish/cleanup
+└── 20260411_reflective_failures.sql       # E6 adaptive verifier store: reflective_failures + indexes + RLS
 scripts/
 ├── analyze-codebase.ts         # Extracts semantic code chunks for embedding
 ├── audit-engines.ts            # Classifies every engine as LIVE / ORPHAN / DEAD based on
@@ -270,7 +277,7 @@ PostgreSQL-based event bus replacing AWS SQS:
 - **Opus** — deep research, strategy documents (highest quality)
 - **Fallback chains**: Opus → Sonnet → Haiku with automatic downgrade on failure
 
-## GRAOS Optimization Layer (strictly additive)
+## GRAOS Optimization Layer — M-Layer (strictly additive)
 
 Six small engines under `src/engine/optimization/` that observe the existing funnel + Sentinel pipeline without mutating it. Every module is pure, synchronous, and zero I/O. Every blackboard write passes through the ontological verifier. No new dependencies, no ML libraries.
 
@@ -291,6 +298,46 @@ Six small engines under `src/engine/optimization/` that observe the existing fun
 - All Hebrew reason strings have no numbers, no percents, no em dashes, no exclamation marks, and no banned words.
 - 50 new tests total (M1=6, M2=7, M3=6, M4=8, M5=13, M6=10), all green.
 - Low-coherence short-circuit: when the reflective engine sees contradictory or missing diagnostic inputs (`coherence_score < 0.6`), it emits a fixed neutral `watch` card rather than committing to a decision.
+
+## GRAOS MOAT Layer — E1-E6 (strictly additive)
+
+Six further expansions on top of the M-layer that turn every recommendation into a falsifiable, coherent, and historically-aware artifact. The layer adds ten gates to a single entry point (`generateReflectiveAction`) — none of which change its synchronous signature, none of which touch the frontend. Every gate is opt-in via an optional field on `ReflectiveContext`; when the field is absent the gate is a full no-op, so every pre-MOAT call site keeps working unchanged.
+
+| Expansion | File | Purpose |
+|---|---|---|
+| E1 | `reflectiveAction.ts` (interface + gate) | ActionCard Falsification Contract. Every card carries `falsifier_metric` + `falsifier_threshold` + `falsifier_direction` + `falsification_window_days`. Watch/act cards without a derivable falsifier fall back to a dedicated E1 watch. |
+| E2 | `dualExpression.ts` | Dual Expression Gate. A card only ships when the same mechanism is expressible both as an architectural sentence (action verb from a fixed set, ≤ 12 Hebrew words) and as a metric sentence (≤ 16 words carrying a number and a literal `FalsifierMetric` label). Rejects single-source signals (gap only, no diagnostic). |
+| E3 | `freshnessBudget.ts` | Freshness Budget. Counts how many of the six `ReflectiveContext` components are fresh under `VITE_REFLECTIVE_FRESH_WINDOW_MIN` (default 10 min, also accepts the spec form `NEXT_PUBLIC_REFLECTIVE_FRESH_WINDOW_MIN`). Requires ≥ 3 fresh to let any card through. |
+| E4 | `stageSpectrum.ts` (M7) + `blackboardClient.readRecent` | Cascade Spectrum. Reads recent `shared_context` writes via `blackboardClient`, builds a three-stage histogram, and flags the cascade as blocked when one stage holds > 70% of the sample. Transforms the card's `next_step` into a movement sentence (`discover → process` or `process → deploy`) or emits the E4 watch when the block is at `deploy`. |
+| E5 | `biomimeticAnomalyType.ts` | Anomaly Type Classifier. Pure post-processor on M2: classifies each anomaly as `noise`, `pathological` (three layers high + escalating last-5d vs prior-14d volatility), or `emergent` (threshold + novelty high, predictive low — a new regime forming). Emergent preempts any act signal with a dedicated measurement watch; pathological flows through unchanged. Exposes `feeds_regime_hint` for orchestrators that want to re-fetch regime on emergent signals. |
+| E6 | `adaptiveVerifier.ts` + `blackboardClient.readFailures` + `reflective_failures` migration | Adaptive Verifier. Scores each candidate card against historical failures using `0.5·Jaccard(engines_used) + 0.3·match(falsifier_metric) + 0.2·match(regime_at_time)`. Three bands: pass, pass-with-penalty (adjusted_confidence drops 0.3), block. Requires ≥ 20 failures before activating so the data network effect has time to accumulate. Exposes both `verifyHistoricalSync` (used by the engine) and async `verifyHistorical` (for orchestrators). |
+
+### Final gate chain inside `generateReflectiveAction`
+
+```
+ 1. freshness (E3)         → E3 watch when < 3 fresh components
+ 2. coherence_score < 0.6  → M4 watch
+ 3. selection              → headline + next_step (existing M4 logic)
+ 4. deriveFalsifier (E1)
+ 5. stable bypass          → pristine stable eta=0; non-pristine stable eta=120
+ 6. falsifier === null     → E1 watch
+ 7. expressDual (E2)       → null → E2 watch
+ 8. cascade override (E4)  → movement next_step or E4 watch at deploy
+ 9. emergent override (E5) → E5 measurement watch
+10. adaptive verifier (E6) → block or confidence penalty
+11. final card             → full ActionCard with active dual + falsifier
+```
+
+Every watch path emits a unique Hebrew `why` string so a downstream observer can identify which gate fired. Every final card carries the E1 four falsifier fields (active or inert) so the `ActionCard` type stays uniform across all paths.
+
+### MOAT contract
+
+- Zero mutations to anything outside `src/engine/optimization/`. No frontend changes — `ResultsDashboard.tsx:203` keeps calling `generateReflectiveAction` synchronously inline in JSX, exactly as before.
+- The single `reflectiveAction.ts` file is extended with the gate chain and the `INERT_FALSIFIER` sentinel; the existing M4 behavior (coherence short-circuit, stable path, signal selection, headline mapping) is preserved byte-for-byte for any call that does not opt in to the MOAT fields.
+- Every MOAT gate is opt-in via an optional field on `ReflectiveContext`: `freshness` / `stage_spectrum` / `anomaly_classification` / `adaptive_failures`. Absent fields short-circuit the gate entirely. This is the backward-compat contract.
+- `blackboardClient.ts` exposes read-only access (`readRecent`, `readFailures`, `recordFailure`) — it is the only file in the layer that touches Supabase. `adaptiveVerifier.ts` is transport-agnostic per the spec rule.
+- 42 new tests total (E1=7, E2=7, E3=5, E4=7, E5=8, E6=8), all green. Total optimization-layer tests: 92 (M-layer 50 + MOAT 42).
+- One new migration: `20260411_reflective_failures.sql` — card_id, user_id, engines_used (jsonb), falsifier metadata, regime_at_time, coherence_score_at_time, observed_value, failed_at. GIN index on engines_used, btree on metric and (user, failed_at). RLS enabled with per-user SELECT policy.
 
 ## Honest Market-Gap Metric (hardened 2026-04-10)
 
@@ -395,10 +442,11 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | Lines of code | ~40,000 |
 | TypeScript files | ~235 |
 | Engines | 44 (`src/engine/*.ts`, excl. knowledge / subdirs) |
-| Optimization overlay engines (GRAOS) | 6 (M1–M6, `src/engine/optimization/`) |
+| Optimization overlay engines (GRAOS M-layer) | 6 (M1–M6, `src/engine/optimization/`) |
+| MOAT layer expansions (E1–E6) | 6 (falsification, dual expression, freshness, stage spectrum, anomaly classifier, adaptive verifier) |
 | Live engines (ENGINE_MANIFEST.isLive) | 24 |
 | Runtime reachability | 24 / 24 REACHABLE |
-| Tests | 632 passing (582 core + 50 GRAOS optimization; debugSwarm baseline excluded per plan) |
+| Tests | 674 passing (582 core + 92 GRAOS optimization: 50 M-layer + 42 MOAT; debugSwarm baseline excluded per plan) |
 | Components | 99 |
 | Pages | 17 |
 | Routes | 12 |
@@ -406,7 +454,7 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | Hooks | 14 |
 | Translation keys | 290+ (he + en) |
 | Edge Functions | 12 |
-| SQL Migrations | 4 |
+| SQL Migrations | 5 |
 | Knowledge domains | 42 |
 | Blackboard agents | 12 |
 | QA checks | 15+ (static + content + security) |
@@ -449,7 +497,7 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 ```bash
 npm install
 npm run dev          # Start dev server
-npm test             # Run 632+ tests (debugSwarm baseline excluded per plan)
+npm test             # Run 674+ tests (debugSwarm baseline excluded per plan)
 npx tsc --noEmit     # Type check
 npm run build        # Build for production
 ```
@@ -482,6 +530,7 @@ VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
 VITE_AI_COPY_ENABLED=true           # Enable AI copy generation
 VITE_REFLECTIVE_ENABLED=false       # GRAOS Reflective Action Card opt-in (or use ?reflective=1)
+VITE_REFLECTIVE_FRESH_WINDOW_MIN=10 # E3 freshness budget window in minutes (also accepts NEXT_PUBLIC_REFLECTIVE_FRESH_WINDOW_MIN)
 
 # Edge Function secrets (Supabase Dashboard)
 ANTHROPIC_API_KEY=          # AI Coach + Differentiation + QA + Research + Agent Executor
