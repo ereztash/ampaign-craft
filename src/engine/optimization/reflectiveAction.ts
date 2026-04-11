@@ -39,6 +39,8 @@ import type { UserProfileVector } from "./daplProfile";
 import type { BlackboardWrite } from "./ontologicalVerifier";
 import type { FreshnessMap } from "./freshnessBudget";
 import { freshnessGate } from "./freshnessBudget";
+import type { StageDistribution, CascadeStage } from "./stageSpectrum";
+import { nextStageInCascade } from "./stageSpectrum";
 // E2 — runtime import is intentional. The cycle is safe because
 // expressDual is only called inside function bodies, never at
 // module-load time.
@@ -76,6 +78,11 @@ export interface ReflectiveContext {
   // E3 — optional freshness map (component name → updated_at ms).
   // When undefined the freshness gate is bypassed (backward compat).
   freshness?: FreshnessMap;
+  // E4 — optional cascade distribution from the blackboard. When a
+  // caller fetches this via fetchRecentStageDistribution and attaches
+  // it here, generateReflectiveAction will override next_step with
+  // a movement sentence when cascade_blocked === true.
+  stage_spectrum?: StageDistribution;
 }
 
 export interface ActionCard {
@@ -142,6 +149,30 @@ const NEXT_STEP_DUAL_EXPRESSION_MISSING =
 const WHY_STALE_CONTEXT =
   "חלק מהקונטקסט ישן. אוסף מדידה טרייה לפני שנחזיר הצעה שאפשר לעמוד מאחוריה.";
 const NEXT_STEP_STALE_CONTEXT = "המתן לאיסוף מדידה טרייה לפני החזרת הצעה";
+
+// E4 — Reason strings for the cascade-blocked watch path. The
+// {stage} token is filled in at render time so the observer can see
+// exactly where the cascade stopped.
+function whyCascadeBlocked(stage: CascadeStage): string {
+  return `הזרימה נעצרה ב-${stage}. צריך לזהות את צוואר הבקבוק לפני הצעת פעולה.`;
+}
+const NEXT_STEP_CASCADE_BLOCKED = "המתן לאיתור צוואר הבקבוק לפני המשך התנועה";
+
+/**
+ * Build the movement next_step sentence for a cascade that is
+ * blocked at the given stage. Returns null when no downstream stage
+ * exists (i.e. the block is at deploy), which forces the engine to
+ * emit the E4 watch instead.
+ *
+ * Uses an action verb from the dualExpression allowed set and a
+ * COR-SYS term ("צוואר בקבוק") so the sentence passes any downstream
+ * content validators.
+ */
+function buildCascadeNextStep(blocked: CascadeStage): string | null {
+  const next = nextStageInCascade(blocked);
+  if (next === null) return null;
+  return `העבר את צוואר הבקבוק מ-${blocked} אל ${next}`;
+}
 
 const NEXT_STEP: Record<keyof typeof HEADLINES, string> = {
   bottleneck: "אבחן את שלב החיכוך ותקן אותו בארכיטקטורה",
@@ -515,7 +546,11 @@ export function buildReflectiveActionPayload(
  *   5. signal === 'stable'          → eta=0 if pristine, 120 otherwise; inert
  *   6. falsifier === null           → E1 watch (inert)
  *   7. expressDual (E2) === null    → E2 watch (inert)
- *   8. otherwise                    → full ActionCard with active dual + falsifier
+ *   8. stage_spectrum cascade_blocked (E4) → override next_step with
+ *                                     a movement sentence; when no
+ *                                     downstream stage exists, emit
+ *                                     the E4 watch instead.
+ *   9. otherwise                    → full ActionCard with active dual + falsifier
  *
  * Each watch path emits a watch text unique to its rejection reason
  * so a downstream observer can tell exactly which gate fired.
@@ -619,12 +654,40 @@ export function generateReflectiveAction(
     };
   }
 
-  // 8. Active falsifier + valid dual — full card.
+  // 8. E4 cascade override. When the caller attached a stage spectrum
+  //    and the cascade is blocked, the dual's architectural sentence
+  //    is replaced with a movement sentence that pushes from the
+  //    blocked stage to the next one. When the block is at deploy
+  //    (terminal stage) no movement is possible and the engine emits
+  //    the E4 watch instead.
+  let finalNextStep = dual.architectural;
+  const spectrum = ctx.stage_spectrum;
+  if (
+    spectrum &&
+    spectrum.cascade_blocked === true &&
+    spectrum.blocked_stage !== null
+  ) {
+    const cascadeStep = buildCascadeNextStep(spectrum.blocked_stage);
+    if (cascadeStep === null) {
+      return {
+        signal: "watch",
+        headline: HEADLINES.decisionDelay,
+        why: whyCascadeBlocked(spectrum.blocked_stage),
+        next_step: NEXT_STEP_CASCADE_BLOCKED,
+        eta_minutes: ETA.watch,
+        coherence_score: coherence,
+        ...INERT_FALSIFIER,
+      };
+    }
+    finalNextStep = cascadeStep;
+  }
+
+  // 9. Active falsifier + valid dual (+ optional cascade override) — full card.
   return {
     signal,
     headline: HEADLINES[key],
     why: WHY[key],
-    next_step: dual.architectural,
+    next_step: finalNextStep,
     eta_minutes: ETA[signal],
     coherence_score: coherence,
     falsification_window_days: falsifier.window_days,
