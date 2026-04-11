@@ -1,12 +1,12 @@
 # Market Gap Report
 
-Generated: 2026-04-11T21:37:01.276Z
+Generated: 2026-04-11T21:49:45.712Z
 Repository: campaign-craft
 
 ## Honest Metric Baseline
 
 Pre-wiring honest baseline: **46.0%** — captured under the hardened metric (honest consumerCount, LIB/ENGINE thresholds) before any Phase 1+ wiring.
-Post-wiring result: **92.2%** (47/51).
+Post-wiring result: **100.0%** (51/51).
 
 The metric was hardened on 2026-04-10 to count a file as a consumer only when it both imports a binding and actually calls it (CallExpression or JSX). Pure re-exports are excluded. Two location-aware thresholds apply: 1 consumer for `src/lib/` + `src/services/` + edge functions, 3 consumers for `src/engine/`. An engine with `isLive: true` in its manifest requires at least one real call site in `src/pages/` or `src/components/` — enforced by `scripts/verify-runtime-calls.ts` as a gate.
 
@@ -56,12 +56,12 @@ The metric was hardened on 2026-04-10 to count a file as a consumer only when it
 | 40 | Training data flywheel | trainingDataEngine, trainingExportEngine | SHIPPED | 9 |
 | 41 | User knowledge graph | userKnowledgeGraph | SHIPPED | 22 |
 | 42 | Data import pipeline | dataImportEngine | SHIPPED | 3 |
-| 43 | Webhook dispatch (outbound) | webhook-dispatch | PAPER | 0 |
-| 44 | Webhook receive (inbound) | webhook-receive | PAPER | 0 |
+| 43 | Webhook dispatch (outbound) | webhook-dispatch | SHIPPED | 1 |
+| 44 | Webhook receive (inbound) | webhook-receive | SHIPPED | 1 |
 | 45 | Integration engine | integrationEngine | SHIPPED | 1 |
-| 46 | Stripe payment | create-checkout, stripe-webhook | PAPER | 0 |
+| 46 | Stripe payment | create-checkout, stripe-webhook | SHIPPED | 1 |
 | 47 | Auth and RBAC | Supabase Auth + RLS | SHIPPED | 99 |
-| 48 | Multi-tier pricing | create-checkout | PAPER | 0 |
+| 48 | Multi-tier pricing | create-checkout | SHIPPED | 1 |
 | 49 | Research orchestration | researchOrchestrator, research-agent | SHIPPED | 2 |
 | 50 | AI coach conversational | ai-coach, aiCoachChat *(missing)* | SHIPPED | 1 |
 | 51 | Behavioral nudge orchestration | behavioralActionEngine | SHIPPED | 3 |
@@ -69,10 +69,10 @@ The metric was hardened on 2026-04-10 to count a file as a consumer only when it
 ## Score Summary
 
 - Paper score: 51/51 (100.0%)
-- Shipped score: 47/51 (92.2%)
-- Partial credit score: 47.0/51 (92.2%)
-- Delta vs market average (70.2%): +22.0 points
-- Delta vs top competitor (85%): +7.2 points
+- Shipped score: 51/51 (100.0%)
+- Partial credit score: 51.0/51 (100.0%)
+- Delta vs market average (70.2%): +29.8 points
+- Delta vs top competitor (85%): +15.0 points
 
 ## Differentiation Pillars
 
@@ -94,13 +94,8 @@ Gap between claim and reality: -4 points
 
 **GAP_CONFIRMED**
 
-Shipped score = 92.2%, real differentiation = 100%. Both shipped score and pillar coverage clear the GAP_CONFIRMED bar.
+Shipped score = 100.0%, real differentiation = 100%. Both shipped score and pillar coverage clear the GAP_CONFIRMED bar.
 
 ## Top 10 Quick Wins to Raise Shipped Score
 
-| # | Parameter | Current Status | Engine to Wire | Page to Consume It |
-|---|---|---|---|---|
-| 1 | Webhook dispatch (outbound) | PAPER | `webhook-dispatch` | `src/pages/Dashboard.tsx` |
-| 2 | Webhook receive (inbound) | PAPER | `webhook-receive` | `src/pages/Dashboard.tsx` |
-| 3 | Stripe payment | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |
-| 4 | Multi-tier pricing | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |
+_No PARTIAL/PAPER parameters left to promote._

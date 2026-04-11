@@ -303,8 +303,9 @@ The metric was rewritten to close that gaming vector:
 2. **Location-aware thresholds.** `LIB_MIN_CONSUMERS = 1` for `src/lib/`, `src/services/`, and edge functions. `ENGINE_MIN_CONSUMERS = 3` for `src/engine/`. Edge functions are matched via `supabase.functions.invoke('<name>', ...)` calls, not bare string occurrences.
 3. **Runtime reachability gate** (`scripts/verify-runtime-calls.ts`). For every engine with `ENGINE_MANIFEST.isLive: true`, walks `src/pages/` and `src/components/` and classifies it as `REACHABLE`, `IMPORTED_BUT_UNCALLED`, or `NO_IMPORT`. Exits 1 on any non-`REACHABLE` engine. This is the enforcement mechanism that prevents a manifest from claiming `isLive` without a real call site.
 4. **Pre-wiring honest baseline**: 23/50 = **46%** SHIPPED under the original 50-parameter map (equivalent to 23/51 = 45.1% under the current 51-parameter map). This is the true starting point under the hardened metric, not the 52% the loose metric reported.
-5. **Post-wiring result** (after 2026-04-11 refresh — Phase 1+2+4 wiring, Behavioral Action Engine, and manifest flips for brandVector/businessFingerprint/stylome/export): **47/51 = 92.2% SHIPPED**, real differentiation **5/5 pillars**, verdict **GAP_CONFIRMED**, reachability **29/29**, market delta **+22.0 points** vs the 70.2% market average (+7.2 above the 85% top-competitor bar).
+5. **Post-wiring result** (after the 2026-04-11 refresh): **51/51 = 100% SHIPPED**, real differentiation **5/5 pillars**, verdict **GAP_CONFIRMED**, reachability **29/29**, market delta **+29.8 points** vs the 70.2% market average (+14.8 above the 85% top-competitor bar). This is the first time every parameter in the map clears the honest gate.
 6. **Parameter #51 added 2026-04-11.** `Behavioral nudge orchestration` joined the map when `behavioralActionEngine` (Hobfoll COR + Fogg B=MAT + DISC-aware nudges, Kahneman-Tversky loss aversion, Nir Eyal Hook, Goal Gradient, SDT, social proof) landed with three page-level call sites in `Dashboard.tsx`, `CommandCenter.tsx`, and `StrategyCanvas.tsx`. Four previously-PARTIAL parameters (#7 Brand vector analysis, #8 Business DNA fingerprint, #37 Stylometric matching, #39 Export to channels) were promoted to SHIPPED by adding `isLive:true` to their manifests — each had an existing real call site in `src/components/` that the gate now recognizes.
+7. **Four PAPER parameters closed.** `create-checkout` is invoked from `PaywallModal.tsx` when a user upgrades, satisfying **#46 Stripe payment** and **#48 Multi-tier pricing**. `webhook-dispatch` and `webhook-receive` are invoked from `Profile.tsx` via "Send test dispatch" and "Verify inbound endpoint" buttons, satisfying **#43 Webhook dispatch (outbound)** and **#44 Webhook receive (inbound)**. These closures replaced four PAPER entries with four SHIPPED call sites and brought the map to 51/51 = 100%.
 
 ### Verification Gate
 
@@ -416,11 +417,11 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | Industry pain points | 40 (10 verticals × 4) |
 | WhatsApp templates | 50+ |
 | `any` types | 0 |
-| Honest shipped score | 47 / 51 = **92.2%** |
+| Honest shipped score | 51 / 51 = **100.0%** |
 | Pre-wiring honest baseline | 23 / 50 = 46.0% (50-param map) ≈ 23 / 51 = 45.1% (51-param map) |
 | Real differentiation | **5 / 5 pillars** |
 | Verdict | **GAP_CONFIRMED** |
-| Market delta | +22.0 pts vs 70.2% market average (+7.2 above 85% top competitor) |
+| Market delta | +29.8 pts vs 70.2% market average (+14.8 above 85% top competitor) |
 
 ## Tech Stack
 

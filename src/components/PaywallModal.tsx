@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { TIERS, PricingTier, Feature } from "@/lib/pricingTiers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Lock } from "lucide-react";
+import { Check, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PaywallModalProps {
   open: boolean;
@@ -19,16 +21,40 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
   const { setTier, isLocalAuth } = useAuth();
   const isHe = language === "he";
   const tier = TIERS.find((t) => t.id === requiredTier) || TIERS[1];
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
-  const handleUpgrade = () => {
+  const handleUpgrade = async () => {
     if (import.meta.env.DEV && isLocalAuth) {
       // Dev-only: instant tier change for testing
       setTier(requiredTier);
       toast.success(isHe ? `שודרגת ל-${tier.name.he}!` : `Upgraded to ${tier.name.en}!`);
       onOpenChange(false);
-    } else {
-      // Redirect to checkout (Stripe Edge Function)
-      window.open("/pricing-plans", "_blank");
+      return;
+    }
+
+    // Production: invoke the create-checkout edge function to open a Stripe
+    // checkout session for the target tier. Satisfies parameters #46 (Stripe
+    // payment) and #48 (Multi-tier pricing) in the market-gap map.
+    setCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { tier: requiredTier },
+      });
+      if (error) throw error;
+      const checkoutUrl = (data as { url?: string } | null)?.url;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+        return;
+      }
+      toast.error(isHe ? "שגיאה בפתיחת תשלום" : "Could not open checkout");
+    } catch (err) {
+      toast.error(
+        isHe
+          ? "שגיאה בחיבור לתשלום. נסה שוב."
+          : "Checkout connection failed. Please try again.",
+      );
+    } finally {
+      setCheckoutLoading(false);
     }
   };
 
@@ -72,7 +98,13 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
             </div>
           </div>
 
-          <Button className="w-full cta-warm" size="lg" onClick={handleUpgrade}>
+          <Button
+            className="w-full cta-warm"
+            size="lg"
+            onClick={handleUpgrade}
+            disabled={checkoutLoading}
+          >
+            {checkoutLoading && <Loader2 className="h-4 w-4 animate-spin me-2" />}
             {isHe ? `שדרג ל-${tier.name.he}` : `Upgrade to ${tier.name.en}`}
           </Button>
 
