@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,6 +6,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useDataSources } from "@/contexts/DataSourceContext";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { detectBottlenecks } from "@/engine/bottleneckEngine";
 import { computeGaps } from "@/engine/gapEngine";
@@ -13,12 +14,16 @@ import { generateGuidance } from "@/engine/guidanceEngine";
 import { predictSuccess } from "@/engine/predictiveEngine";
 import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
 import { assignVariant, createABExperiment } from "@/engine/abTestEngine";
+import { inferDISCProfile } from "@/engine/discProfileEngine";
+import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
 import type { MetaInsights } from "@/types/meta";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { getTotalUsers } from "@/lib/socialProofData";
 import BusinessPulseBar from "@/components/BusinessPulseBar";
 import InsightFeed from "@/components/InsightFeed";
+import { NudgeBanner } from "@/components/NudgeBanner";
+import { ProgressMomentum } from "@/components/ProgressMomentum";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SavedPlan } from "@/types/funnel";
@@ -128,6 +133,28 @@ const CommandCenter = () => {
 
   const completedModules = modules.filter((m) => m.completed).length;
 
+  const [nudgeDismissed, setNudgeDismissed] = useState(false);
+
+  const motivationState = useMemo(() => {
+    const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
+    const healthObj = latestPlan ? calculateHealthScore(latestPlan.result) : undefined;
+    const coi = latestPlan ? calculateCostOfInaction(latestPlan.result) : undefined;
+    const baeInput: BAEInput = {
+      healthScore: healthObj,
+      costOfInaction: coi,
+      discProfile: disc?.distribution,
+      investment: profile.investment,
+      modulesTotal: modules.length,
+      modulesCompleted: completedModules,
+      streakWeeks: streak.currentStreak,
+      achievementsUnlocked: 0,
+      achievementsTotal: 10,
+      businessField: profile.lastFormData?.businessField || "other",
+      sessionMinutes: profile.investment.totalSessionsMinutes % 60 || 1,
+    };
+    return computeMotivationState(baeInput);
+  }, [latestPlan, profile, modules, completedModules, streak, graph]);
+
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
 
   return (
@@ -166,6 +193,10 @@ const CommandCenter = () => {
           completedModules={completedModules}
           totalModules={modules.length}
         />
+
+        {!nudgeDismissed && motivationState.nudge && (
+          <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />
+        )}
 
         {(guidanceItems.length > 0 || successForecast) && (
           <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 p-4 text-start space-y-1">
@@ -219,6 +250,12 @@ const CommandCenter = () => {
                 </Button>
               </CardContent>
             </Card>
+            <ProgressMomentum
+              modules={modules}
+              streakWeeks={streak.currentStreak}
+              investmentMinutes={profile.investment.totalSessionsMinutes}
+              plansCreated={profile.investment.plansCreated}
+            />
             {connectedCount === 0 && plans.length === 0 && (
               <p className="text-xs text-muted-foreground px-1 text-center" dir="auto">
                 {isHe ? "חבר את המקור הראשון כדי לפתוח תובנות מותאמות." : "Connect your first source to unlock tailored insights."}

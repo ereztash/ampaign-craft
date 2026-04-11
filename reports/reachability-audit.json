@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-10T20:17:12.707Z",
+  "generatedAt": "2026-04-11T13:11:39.207Z",
   "totalLiveEngines": 24,
   "counts": {
     "REACHABLE": 24,
@@ -11,304 +11,304 @@
       "engine": "abTestEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/CommandCenter.tsx"
+        "src\\pages\\CommandCenter.tsx"
       ],
       "importers": [
-        "src/pages/CommandCenter.tsx"
+        "src\\pages\\CommandCenter.tsx"
       ]
     },
     {
       "engine": "aiCopyService",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Wizard.tsx"
+        "src\\pages\\Wizard.tsx"
       ],
       "importers": [
-        "src/pages/Wizard.tsx"
+        "src\\pages\\Wizard.tsx"
       ]
     },
     {
       "engine": "behavioralCohortEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Dashboard.tsx",
-        "src/components/AnalyticsTab.tsx"
+        "src\\pages\\Dashboard.tsx",
+        "src\\components\\AnalyticsTab.tsx"
       ],
       "importers": [
-        "src/pages/Dashboard.tsx",
-        "src/components/AnalyticsTab.tsx"
+        "src\\pages\\Dashboard.tsx",
+        "src\\components\\AnalyticsTab.tsx"
       ]
     },
     {
       "engine": "campaignAnalyticsEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/CommandCenter.tsx",
-        "src/pages/Dashboard.tsx"
+        "src\\pages\\CommandCenter.tsx",
+        "src\\pages\\Dashboard.tsx"
       ],
       "importers": [
-        "src/pages/CommandCenter.tsx",
-        "src/pages/Dashboard.tsx"
+        "src\\pages\\CommandCenter.tsx",
+        "src\\pages\\Dashboard.tsx"
       ]
     },
     {
       "engine": "clgEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/PricingEntry.tsx",
-        "src/components/ResultsDashboard.tsx"
+        "src\\pages\\PricingEntry.tsx",
+        "src\\components\\ResultsDashboard.tsx"
       ],
       "importers": [
-        "src/pages/PricingEntry.tsx",
-        "src/components/ResultsDashboard.tsx"
+        "src\\pages\\PricingEntry.tsx",
+        "src\\components\\ResultsDashboard.tsx"
       ]
     },
     {
       "engine": "crossDomainBenchmarkEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Differentiate.tsx",
-        "src/components/AnalyticsTab.tsx"
+        "src\\pages\\Differentiate.tsx",
+        "src\\components\\AnalyticsTab.tsx"
       ],
       "importers": [
-        "src/pages/Differentiate.tsx",
-        "src/components/AnalyticsTab.tsx"
+        "src\\pages\\Differentiate.tsx",
+        "src\\components\\AnalyticsTab.tsx"
       ]
     },
     {
       "engine": "dataImportEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/DataHub.tsx",
-        "src/components/DataImportModal.tsx"
+        "src\\pages\\DataHub.tsx",
+        "src\\components\\DataImportModal.tsx"
       ],
       "importers": [
-        "src/pages/DataHub.tsx",
-        "src/components/DataImportModal.tsx"
+        "src\\pages\\DataHub.tsx",
+        "src\\components\\DataImportModal.tsx"
       ]
     },
     {
       "engine": "differentiationEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Differentiate.tsx",
-        "src/components/DifferentiationWizard.tsx"
+        "src\\pages\\Differentiate.tsx",
+        "src\\components\\DifferentiationWizard.tsx"
       ],
       "importers": [
-        "src/pages/Differentiate.tsx",
-        "src/components/DifferentiationWizard.tsx"
+        "src\\pages\\Differentiate.tsx",
+        "src\\components\\DifferentiationWizard.tsx"
       ]
     },
     {
       "engine": "differentiationPhases",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Differentiate.tsx",
-        "src/components/DifferentiationWizard.tsx"
+        "src\\pages\\Differentiate.tsx",
+        "src\\components\\DifferentiationWizard.tsx"
       ],
       "importers": [
-        "src/pages/Differentiate.tsx",
-        "src/components/DifferentiationWizard.tsx"
+        "src\\pages\\Differentiate.tsx",
+        "src\\components\\DifferentiationWizard.tsx"
       ]
     },
     {
       "engine": "discProfileEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Dashboard.tsx",
-        "src/components/AnalyticsTab.tsx",
-        "src/components/SalesTab.tsx"
+        "src\\pages\\Dashboard.tsx",
+        "src\\components\\AnalyticsTab.tsx",
+        "src\\components\\SalesTab.tsx"
       ],
       "importers": [
-        "src/pages/Dashboard.tsx",
-        "src/components/AnalyticsTab.tsx",
-        "src/components/SalesTab.tsx"
+        "src\\pages\\Dashboard.tsx",
+        "src\\components\\AnalyticsTab.tsx",
+        "src\\components\\SalesTab.tsx"
       ]
     },
     {
       "engine": "emotionalPerformanceEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Wizard.tsx",
-        "src/components/AnalyticsTab.tsx",
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\AnalyticsTab.tsx",
+        "src\\components\\IntelligenceSynthesisDashboard.tsx"
       ],
       "importers": [
-        "src/pages/Wizard.tsx",
-        "src/components/AnalyticsTab.tsx",
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\AnalyticsTab.tsx",
+        "src\\components\\IntelligenceSynthesisDashboard.tsx"
       ]
     },
     {
       "engine": "funnelEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/AiCoachPage.tsx",
-        "src/pages/Index.tsx",
-        "src/pages/Wizard.tsx",
-        "src/components/ResultsDashboard.tsx"
+        "src\\pages\\AiCoachPage.tsx",
+        "src\\pages\\Index.tsx",
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\ResultsDashboard.tsx"
       ],
       "importers": [
-        "src/pages/AiCoachPage.tsx",
-        "src/pages/Index.tsx",
-        "src/pages/Wizard.tsx",
-        "src/components/ResultsDashboard.tsx"
+        "src\\pages\\AiCoachPage.tsx",
+        "src\\pages\\Index.tsx",
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\ResultsDashboard.tsx"
       ]
     },
     {
       "engine": "gapEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/CommandCenter.tsx",
-        "src/pages/StrategyCanvas.tsx",
-        "src/components/MetaMonitor.tsx"
+        "src\\pages\\CommandCenter.tsx",
+        "src\\pages\\StrategyCanvas.tsx",
+        "src\\components\\MetaMonitor.tsx"
       ],
       "importers": [
-        "src/pages/CommandCenter.tsx",
-        "src/pages/StrategyCanvas.tsx",
-        "src/components/MetaMonitor.tsx"
+        "src\\pages\\CommandCenter.tsx",
+        "src\\pages\\StrategyCanvas.tsx",
+        "src\\components\\MetaMonitor.tsx"
       ]
     },
     {
       "engine": "guidanceEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/CommandCenter.tsx",
-        "src/components/MetaMonitor.tsx"
+        "src\\pages\\CommandCenter.tsx",
+        "src\\components\\MetaMonitor.tsx"
       ],
       "importers": [
-        "src/pages/CommandCenter.tsx",
-        "src/components/MetaMonitor.tsx"
+        "src\\pages\\CommandCenter.tsx",
+        "src\\components\\MetaMonitor.tsx"
       ]
     },
     {
       "engine": "integrationEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Profile.tsx"
+        "src\\pages\\Profile.tsx"
       ],
       "importers": [
-        "src/pages/Profile.tsx"
+        "src\\pages\\Profile.tsx"
       ]
     },
     {
       "engine": "predictiveContentScoreEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Wizard.tsx",
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\IntelligenceSynthesisDashboard.tsx"
       ],
       "importers": [
-        "src/pages/Wizard.tsx",
-        "src/components/IntelligenceSynthesisDashboard.tsx"
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\IntelligenceSynthesisDashboard.tsx"
       ]
     },
     {
       "engine": "predictiveEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/CommandCenter.tsx"
+        "src\\pages\\CommandCenter.tsx"
       ],
       "importers": [
-        "src/pages/CommandCenter.tsx"
+        "src\\pages\\CommandCenter.tsx"
       ]
     },
     {
       "engine": "pricingIntelligenceEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/PricingEntry.tsx",
-        "src/components/PricingIntelligenceTab.tsx"
+        "src\\pages\\PricingEntry.tsx",
+        "src\\components\\PricingIntelligenceTab.tsx"
       ],
       "importers": [
-        "src/pages/PricingEntry.tsx",
-        "src/components/PricingIntelligenceTab.tsx"
+        "src\\pages\\PricingEntry.tsx",
+        "src\\components\\PricingIntelligenceTab.tsx"
       ]
     },
     {
       "engine": "promptOptimizerEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Wizard.tsx"
+        "src\\pages\\Wizard.tsx"
       ],
       "importers": [
-        "src/pages/Wizard.tsx"
+        "src\\pages\\Wizard.tsx"
       ]
     },
     {
       "engine": "researchOrchestrator",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/StrategyCanvas.tsx"
+        "src\\pages\\StrategyCanvas.tsx"
       ],
       "importers": [
-        "src/pages/StrategyCanvas.tsx"
+        "src\\pages\\StrategyCanvas.tsx"
       ]
     },
     {
       "engine": "retentionGrowthEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/RetentionEntry.tsx",
-        "src/components/RetentionGrowthTab.tsx"
+        "src\\pages\\RetentionEntry.tsx",
+        "src\\components\\RetentionGrowthTab.tsx"
       ],
       "importers": [
-        "src/pages/RetentionEntry.tsx",
-        "src/components/RetentionGrowthTab.tsx"
+        "src\\pages\\RetentionEntry.tsx",
+        "src\\components\\RetentionGrowthTab.tsx"
       ]
     },
     {
       "engine": "seoContentEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Wizard.tsx"
+        "src\\pages\\Wizard.tsx"
       ],
       "importers": [
-        "src/pages/Wizard.tsx"
+        "src\\pages\\Wizard.tsx"
       ]
     },
     {
       "engine": "userKnowledgeGraph",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/AiCoachPage.tsx",
-        "src/pages/CommandCenter.tsx",
-        "src/pages/Dashboard.tsx",
-        "src/pages/Index.tsx",
-        "src/pages/ModuleHub.tsx",
-        "src/pages/PricingEntry.tsx",
-        "src/pages/RetentionEntry.tsx",
-        "src/pages/Wizard.tsx",
-        "src/components/AiCoachChat.tsx",
-        "src/components/PricingIntelligenceTab.tsx",
-        "src/components/ResultsDashboard.tsx",
-        "src/components/RetentionGrowthTab.tsx",
-        "src/components/SalesTab.tsx"
+        "src\\pages\\AiCoachPage.tsx",
+        "src\\pages\\CommandCenter.tsx",
+        "src\\pages\\Dashboard.tsx",
+        "src\\pages\\Index.tsx",
+        "src\\pages\\ModuleHub.tsx",
+        "src\\pages\\PricingEntry.tsx",
+        "src\\pages\\RetentionEntry.tsx",
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\AiCoachChat.tsx",
+        "src\\components\\PricingIntelligenceTab.tsx",
+        "src\\components\\ResultsDashboard.tsx",
+        "src\\components\\RetentionGrowthTab.tsx",
+        "src\\components\\SalesTab.tsx"
       ],
       "importers": [
-        "src/pages/AiCoachPage.tsx",
-        "src/pages/CommandCenter.tsx",
-        "src/pages/Dashboard.tsx",
-        "src/pages/Index.tsx",
-        "src/pages/ModuleHub.tsx",
-        "src/pages/PricingEntry.tsx",
-        "src/pages/RetentionEntry.tsx",
-        "src/pages/Wizard.tsx",
-        "src/components/AiCoachChat.tsx",
-        "src/components/PricingIntelligenceTab.tsx",
-        "src/components/ResultsDashboard.tsx",
-        "src/components/RetentionGrowthTab.tsx",
-        "src/components/SalesTab.tsx"
+        "src\\pages\\AiCoachPage.tsx",
+        "src\\pages\\CommandCenter.tsx",
+        "src\\pages\\Dashboard.tsx",
+        "src\\pages\\Index.tsx",
+        "src\\pages\\ModuleHub.tsx",
+        "src\\pages\\PricingEntry.tsx",
+        "src\\pages\\RetentionEntry.tsx",
+        "src\\pages\\Wizard.tsx",
+        "src\\components\\AiCoachChat.tsx",
+        "src\\components\\PricingIntelligenceTab.tsx",
+        "src\\components\\ResultsDashboard.tsx",
+        "src\\components\\RetentionGrowthTab.tsx",
+        "src\\components\\SalesTab.tsx"
       ]
     },
     {
       "engine": "visualExportEngine",
       "classification": "REACHABLE",
       "callSites": [
-        "src/pages/Dashboard.tsx"
+        "src\\pages\\Dashboard.tsx"
       ],
       "importers": [
-        "src/pages/Dashboard.tsx"
+        "src\\pages\\Dashboard.tsx"
       ]
     }
   ]

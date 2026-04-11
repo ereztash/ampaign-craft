@@ -9,6 +9,7 @@ import { ENGINE_MANIFEST as funnelManifest } from "../funnelEngine";
 import { ENGINE_MANIFEST as userKnowledgeGraphManifest } from "../userKnowledgeGraph";
 import { ENGINE_MANIFEST as predictiveManifest } from "../predictiveEngine";
 import { ENGINE_MANIFEST as abTestManifest } from "../abTestEngine";
+import { ENGINE_MANIFEST as behavioralActionManifest } from "../behavioralActionEngine";
 
 // ───────────────────────────────────────────────
 // Manifest shape — narrow enough to compare both
@@ -44,6 +45,7 @@ function stub(name: string): EngineManifest {
 
 export const ALL_ENGINE_FILES: readonly string[] = [
   "abTestEngine",
+  "behavioralActionEngine",
   "behavioralCohortEngine",
   "bottleneckEngine",
   "brandVectorEngine",
@@ -100,6 +102,7 @@ export const REGISTRY: Readonly<Record<string, EngineManifest>> = (() => {
     userKnowledgeGraphManifest as unknown as EngineManifest,
     predictiveManifest as unknown as EngineManifest,
     abTestManifest as unknown as EngineManifest,
+    behavioralActionManifest as unknown as EngineManifest,
   ];
 
   const map: Record<string, EngineManifest> = {};

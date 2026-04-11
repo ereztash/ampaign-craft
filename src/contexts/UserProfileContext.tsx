@@ -6,6 +6,14 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export type UserSegment = "new-beginner" | "new-intermediate" | "new-advanced" | "returning";
 
+export interface InvestmentMetrics {
+  plansCreated: number;
+  modulesCompleted: number;
+  totalVisits: number;
+  firstSeenDate: string | null;
+  totalSessionsMinutes: number;
+}
+
 export interface UserProfile {
   isReturningUser: boolean;
   visitCount: number;
@@ -24,6 +32,8 @@ export interface UserProfile {
 
   userSegment: UserSegment;
   achievements: string[];
+
+  investment: InvestmentMetrics;
 }
 
 interface UserProfileContextType {
@@ -47,6 +57,7 @@ const KEYS = {
   plans: "funnelforge-plans",
   achievements: "funnelforge-achievements",
   unifiedProfile: "funnelforge-profile",
+  investment: "funnelforge-investment",
 } as const;
 
 // ═══════════════════════════════════════════════
@@ -112,6 +123,9 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const [experienceLevel, setExperienceLevelState] = useState<ExperienceLevel | "">("");
   const [achievements, setAchievements] = useState<string[]>([]);
   const [unifiedProfile, setUnifiedProfileState] = useState<UnifiedProfile | null>(null);
+  const [investment, setInvestment] = useState<InvestmentMetrics>({
+    plansCreated: 0, modulesCompleted: 0, totalVisits: 0, firstSeenDate: null, totalSessionsMinutes: 0,
+  });
 
   useEffect(() => {
     const profileData = safeParseJson<{ visitCount: number; lastVisitDate: string | null }>(
@@ -152,6 +166,32 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       setUnifiedProfileState(migrated);
       typeof window !== "undefined" && localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(migrated));
     }
+
+    const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
+    const modulesCompleted = (hasDiff ? 1 : 0) + (plans.length > 0 ? 1 : 0);
+    const prevInvestment = safeParseJson<InvestmentMetrics>(KEYS.investment, {
+      plansCreated: 0, modulesCompleted: 0, totalVisits: 0, firstSeenDate: null, totalSessionsMinutes: 0,
+    });
+    const updatedInvestment: InvestmentMetrics = {
+      plansCreated: plans.length,
+      modulesCompleted,
+      totalVisits: newVisitCount,
+      firstSeenDate: prevInvestment.firstSeenDate || new Date().toISOString(),
+      totalSessionsMinutes: prevInvestment.totalSessionsMinutes,
+    };
+    setInvestment(updatedInvestment);
+    typeof window !== "undefined" && localStorage.setItem(KEYS.investment, JSON.stringify(updatedInvestment));
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setInvestment((prev) => {
+        const updated = { ...prev, totalSessionsMinutes: prev.totalSessionsMinutes + 1 };
+        typeof window !== "undefined" && localStorage.setItem(KEYS.investment, JSON.stringify(updated));
+        return updated;
+      });
+    }, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   const updateFormData = useCallback((data: FormData | null) => {
@@ -212,6 +252,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     prefersReducedMotion,
     userSegment: deriveSegment(isReturningUser, experienceLevel),
     achievements,
+    investment,
   };
 
   return (

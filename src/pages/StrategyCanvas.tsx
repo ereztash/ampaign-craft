@@ -1,14 +1,22 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useAchievements } from "@/hooks/useAchievements";
+import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { SavedPlan } from "@/types/funnel";
 import ResultsDashboard from "@/components/ResultsDashboard";
 import StrategyMap from "@/components/StrategyMap";
 import { detectBottlenecks } from "@/engine/bottleneckEngine";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { computeGaps } from "@/engine/gapEngine";
 import { runResearch } from "@/engine/researchOrchestrator";
+import { inferDISCProfile } from "@/engine/discProfileEngine";
+import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
 import type { MetaInsights } from "@/types/meta";
+import { NudgeBanner } from "@/components/NudgeBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, FileText, Plus } from "lucide-react";
@@ -75,6 +83,11 @@ const StrategyCanvas = () => {
       </div>
     );
   }
+
+  const { profile } = useUserProfile();
+  const { streak } = useAchievements(language);
+  const modules = useModuleStatus();
+  const [nudgeDismissed, setNudgeDismissed] = useState(false);
 
   const plan = plans.find((p) => p.id === planId) || null;
 
@@ -148,9 +161,34 @@ const StrategyCanvas = () => {
     }
   };
 
+  const motivationState = useMemo(() => {
+    const graph = profile.lastFormData ? buildUserKnowledgeGraph(profile.lastFormData) : undefined;
+    const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
+    const healthObj = calculateHealthScore(plan.result);
+    const coi = calculateCostOfInaction(plan.result);
+    const completedModules = modules.filter((m) => m.completed).length;
+    const baeInput: BAEInput = {
+      healthScore: healthObj,
+      costOfInaction: coi,
+      discProfile: disc?.distribution,
+      investment: profile.investment,
+      modulesTotal: modules.length,
+      modulesCompleted: completedModules,
+      streakWeeks: streak.currentStreak,
+      achievementsUnlocked: 0,
+      achievementsTotal: 10,
+      businessField: plan.result.formData?.businessField || "other",
+      sessionMinutes: profile.investment.totalSessionsMinutes % 60 || 1,
+    };
+    return computeMotivationState(baeInput);
+  }, [plan, profile, modules, streak]);
+
   return (
     <div className="px-4 pb-8">
       <div className="mx-auto max-w-5xl pt-4">
+        {!nudgeDismissed && motivationState.nudge && (
+          <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />
+        )}
         <StrategyMap result={plan.result} bottlenecks={bottlenecks} hasDifferentiation={hasDiff} />
         {kpiGaps.length > 0 && (
           <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/60 p-3 text-xs text-amber-900" dir="auto">
