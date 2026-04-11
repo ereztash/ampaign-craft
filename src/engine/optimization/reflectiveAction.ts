@@ -41,6 +41,7 @@ import type { FreshnessMap } from "./freshnessBudget";
 import { freshnessGate } from "./freshnessBudget";
 import type { StageDistribution, CascadeStage } from "./stageSpectrum";
 import { nextStageInCascade } from "./stageSpectrum";
+import type { AnomalyClassification } from "./biomimeticAnomalyType";
 // E2 — runtime import is intentional. The cycle is safe because
 // expressDual is only called inside function bodies, never at
 // module-load time.
@@ -83,6 +84,12 @@ export interface ReflectiveContext {
   // it here, generateReflectiveAction will override next_step with
   // a movement sentence when cascade_blocked === true.
   stage_spectrum?: StageDistribution;
+  // E5 — optional anomaly classification (noise / pathological /
+  // emergent). When the type is 'emergent' the engine suppresses
+  // any act signal and returns the E5 measurement watch instead —
+  // a new regime is forming and the system must measure before it
+  // tries to close the deviation.
+  anomaly_classification?: AnomalyClassification;
 }
 
 export interface ActionCard {
@@ -173,6 +180,12 @@ function buildCascadeNextStep(blocked: CascadeStage): string | null {
   if (next === null) return null;
   return `העבר את צוואר הבקבוק מ-${blocked} אל ${next}`;
 }
+
+// E5 — Reason strings for the emergent-regime measurement watch.
+const WHY_EMERGENT_REGIME =
+  "מזהה משטר חדש שמתחיל להיווצר. מודד לפני פעולה.";
+const NEXT_STEP_EMERGENT_REGIME =
+  "המתן לאיסוף מדידה של המשטר המתהווה לפני פעולת תיקון";
 
 const NEXT_STEP: Record<keyof typeof HEADLINES, string> = {
   bottleneck: "אבחן את שלב החיכוך ותקן אותו בארכיטקטורה",
@@ -550,7 +563,11 @@ export function buildReflectiveActionPayload(
  *                                     a movement sentence; when no
  *                                     downstream stage exists, emit
  *                                     the E4 watch instead.
- *   9. otherwise                    → full ActionCard with active dual + falsifier
+ *   9. anomaly_classification = emergent (E5) → measurement watch.
+ *                                     Emergent anomalies indicate a
+ *                                     new regime forming; the engine
+ *                                     must measure it before acting.
+ *  10. otherwise                    → full ActionCard with active dual + falsifier
  *
  * Each watch path emits a watch text unique to its rejection reason
  * so a downstream observer can tell exactly which gate fired.
@@ -682,7 +699,26 @@ export function generateReflectiveAction(
     finalNextStep = cascadeStep;
   }
 
-  // 9. Active falsifier + valid dual (+ optional cascade override) — full card.
+  // 9. E5 emergent-regime override. Emergent anomalies must not
+  //    turn into an act recommendation — the system must measure the
+  //    forming regime before trying to close the deviation. This
+  //    gate fires AFTER the cascade override so that a pathological
+  //    classification (which reads act as act) still flows through
+  //    the cascade logic, but an emergent classification preempts
+  //    any action including the movement next_step.
+  if (ctx.anomaly_classification?.type === "emergent") {
+    return {
+      signal: "watch",
+      headline: HEADLINES.decisionDelay,
+      why: WHY_EMERGENT_REGIME,
+      next_step: NEXT_STEP_EMERGENT_REGIME,
+      eta_minutes: ETA.watch,
+      coherence_score: coherence,
+      ...INERT_FALSIFIER,
+    };
+  }
+
+  // 10. Active falsifier + valid dual (+ optional cascade override) — full card.
   return {
     signal,
     headline: HEADLINES[key],
