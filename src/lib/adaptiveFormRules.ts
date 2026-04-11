@@ -149,3 +149,46 @@ export function canProceed(stepId: string, formData: Partial<FormData>): boolean
       return false;
   }
 }
+
+/**
+ * Returns a bilingual human-readable reason for why the step is blocked,
+ * or null if it's ready to proceed. Used by the form UI to surface inline
+ * validation errors so users understand why the Next button is disabled.
+ */
+export function getStepValidationError(
+  stepId: string,
+  formData: Partial<FormData>,
+): { he: string; en: string } | null {
+  if (canProceed(stepId, formData)) return null;
+
+  switch (stepId) {
+    case "businessField":
+      return { he: "בחר תחום עסקי כדי להמשיך", en: "Select a business field to continue" };
+    case "experienceLevel":
+      return { he: "בחר רמת ניסיון כדי להמשיך", en: "Select an experience level to continue" };
+    case "audience":
+      return { he: "בחר סוג קהל יעד כדי להמשיך", en: "Select an audience type to continue" };
+    case "product": {
+      const missing: string[] = [];
+      const missingHe: string[] = [];
+      if (!(formData.productDescription || "").length) {
+        missing.push("product description");
+        missingHe.push("תיאור מוצר");
+      }
+      if (!formData.salesModel) {
+        missing.push("sales model");
+        missingHe.push("מודל מכירה");
+      }
+      return {
+        he: `מלא: ${missingHe.join(" ו")}`,
+        en: `Fill in: ${missing.join(" and ")}`,
+      };
+    }
+    case "budget":
+      return { he: "בחר טווח תקציב כדי להמשיך", en: "Select a budget range to continue" };
+    case "goal":
+      return { he: "בחר מטרה ראשית כדי להמשיך", en: "Select a main goal to continue" };
+    default:
+      return { he: "שדות חובה חסרים", en: "Required fields are missing" };
+  }
+}

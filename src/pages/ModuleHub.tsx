@@ -13,7 +13,7 @@ import ModulePipeline from "@/components/ModulePipeline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ArrowDown, Flame } from "lucide-react";
+import { Sparkles, ArrowDown, Flame, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -110,7 +110,7 @@ const PageComponent = () => {
                 </div>
                 <p className="text-sm text-muted-foreground" dir="auto">{nextStep.description[language]}</p>
               </div>
-              <span className="text-muted-foreground">→</span>
+              <ArrowRight className="h-5 w-5 text-muted-foreground shrink-0 rtl:rotate-180" aria-hidden="true" />
             </CardContent>
           </Card>
         </section>

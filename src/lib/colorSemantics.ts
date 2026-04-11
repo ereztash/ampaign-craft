@@ -66,35 +66,35 @@ export const funnelStageColors: Record<string, {
   gradient: string; // CSS gradient for funnel visualization
 }> = {
   awareness: {
-    border: "border-l-destructive",
+    border: "border-s-destructive",
     bg: "bg-destructive/5",
     text: "text-destructive",
     label: "cortisol",
     gradient: "linear-gradient(135deg, hsl(var(--destructive)), hsl(var(--chart-3)))",
   },
   engagement: {
-    border: "border-l-primary",
+    border: "border-s-primary",
     bg: "bg-primary/5",
     text: "text-primary",
     label: "oxytocin",
     gradient: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--chart-4)))",
   },
   leads: {
-    border: "border-l-[hsl(var(--chart-3))]",
+    border: "border-s-[hsl(var(--chart-3))]",
     bg: "bg-[hsl(var(--chart-3))]/5",
     text: "text-[hsl(var(--chart-3))]",
     label: "opportunity",
     gradient: "linear-gradient(135deg, hsl(var(--chart-3)), hsl(var(--accent)))",
   },
   conversion: {
-    border: "border-l-accent",
+    border: "border-s-accent",
     bg: "bg-accent/5",
     text: "text-accent-foreground",
     label: "dopamine",
     gradient: "linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)))",
   },
   retention: {
-    border: "border-l-primary",
+    border: "border-s-primary",
     bg: "bg-primary/5",
     text: "text-primary",
     label: "oxytocin",
@@ -173,14 +173,14 @@ export function getDiagnosticTierColor(tier: "strong" | "gaps" | "pivot" | "rest
 export function getReaderProfileColor(level: number) {
   if (level <= 2) {
     // System 1 — emotional → cortisol/warm
-    return { border: "border-l-destructive", bg: "bg-destructive/5" };
+    return { border: "border-s-destructive", bg: "bg-destructive/5" };
   }
   if (level >= 4) {
     // System 2 — analytical → oxytocin/cool
-    return { border: "border-l-primary", bg: "bg-primary/5" };
+    return { border: "border-s-primary", bg: "bg-primary/5" };
   }
   // Balanced → dopamine/reward
-  return { border: "border-l-accent", bg: "bg-accent/5" };
+  return { border: "border-s-accent", bg: "bg-accent/5" };
 }
 
 // ═══════════════════════════════════════════════

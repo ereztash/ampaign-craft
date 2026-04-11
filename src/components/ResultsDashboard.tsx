@@ -43,8 +43,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
-import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, ChevronDown, Bot } from "lucide-react";
+import { Edit, Download, Save, Share2, Plus, AlertTriangle, MessageCircle, ChevronDown, Bot, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import BackToHub from "@/components/BackToHub";
@@ -307,7 +308,8 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
               </div>
               <a href="/differentiate" className="shrink-0">
                 <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white">
-                  {isHe ? "השלם בידול →" : "Complete Differentiation →"}
+                  {isHe ? "השלם בידול" : "Complete Differentiation"}
+                  <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
                 </Button>
               </a>
             </CardContent>
@@ -317,7 +319,18 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         {/* === CONSOLIDATED TABS === */}
         <Tabs defaultValue={defaultTab} className="mb-8" onValueChange={handleTabChange}>
           <AdaptiveTabNav tabs={tabs} />
-          <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
+          <Suspense
+            fallback={
+              <div className="mt-6 space-y-4" aria-busy="true" aria-live="polite">
+                <Skeleton className="h-28 w-full rounded-xl" />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Skeleton className="h-48 rounded-xl" />
+                  <Skeleton className="h-48 rounded-xl" />
+                </div>
+                <Skeleton className="h-16 w-full rounded-xl" />
+              </div>
+            }
+          >
 
           {/* Tab 1: Strategy + Tips (collapsible) */}
           <TabsContent value="strategy" className="mt-6">

@@ -4,7 +4,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FormData, initialFormData, Channel } from "@/types/funnel";
-import { getVisibleSteps, canProceed, shouldShowAgeRange, shouldShowAveragePrice, getDifferentiationPreFill } from "@/lib/adaptiveFormRules";
+import { getVisibleSteps, canProceed, getStepValidationError, shouldShowAgeRange, shouldShowAveragePrice, getDifferentiationPreFill } from "@/lib/adaptiveFormRules";
 import { getProgressColor } from "@/lib/colorSemantics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronLeft, ChevronRight, Sparkles,
+  ChevronLeft, ChevronRight, Sparkles, AlertCircle,
   ShoppingBag, Monitor, UtensilsCrossed, Briefcase,
   GraduationCap, Heart, Building, Plane, MoreHorizontal,
   Users, Building2, UsersRound, Megaphone, UserPlus, ShoppingCart, Award, User,
@@ -90,6 +90,27 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
 
   const isLastStep = stepIndex === totalSteps - 1;
   const canGoNext = currentStep ? canProceed(currentStep.id, formData) : false;
+  const [attemptedNext, setAttemptedNext] = useState(false);
+  const validationError = currentStep ? getStepValidationError(currentStep.id, formData) : null;
+  const showValidationError = attemptedNext && !canGoNext && validationError !== null;
+
+  const handleNextAttempt = () => {
+    if (!canGoNext) {
+      setAttemptedNext(true);
+      return;
+    }
+    setAttemptedNext(false);
+    next();
+  };
+
+  const handleSubmitAttempt = () => {
+    if (!canGoNext) {
+      setAttemptedNext(true);
+      return;
+    }
+    setAttemptedNext(false);
+    onComplete(formData);
+  };
 
   const stepTimeEstimates: Record<string, number> = {
     businessField: 15, experienceLevel: 10, audience: 20,
@@ -100,9 +121,8 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
     .reduce((sum, s) => sum + (stepTimeEstimates[s.id] || 15), 0);
   const remainingMinutes = Math.max(1, Math.round(remainingSeconds / 60));
 
-  const handleSubmit = () => {
-    if (canGoNext) onComplete(formData);
-  };
+  // Legacy handler kept for compatibility; prefer handleSubmitAttempt.
+  const handleSubmit = handleSubmitAttempt;
 
   const handlePrefill = () => {
     if (profile.lastFormData) {
@@ -472,14 +492,31 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
           </motion.div>
         </AnimatePresence>
 
+        {/* Inline validation error surface */}
+        <div
+          aria-live="polite"
+          role={showValidationError ? "alert" : undefined}
+          className="mt-8 min-h-[1.5rem]"
+        >
+          {showValidationError && validationError && (
+            <div
+              id="form-validation-error"
+              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span dir="auto">{validationError[language]}</span>
+            </div>
+          )}
+        </div>
+
         {/* Navigation */}
-        <div className="mt-10 flex items-center justify-between">
+        <div className="mt-4 flex items-center justify-between">
           <Button
             variant="outline"
             onClick={stepIndex === 0 ? onBack : prev}
             className="gap-2"
           >
-            {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            <ChevronLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
             {t("back")}
           </Button>
 
@@ -490,12 +527,24 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
               </Button>
             )}
             {!isLastStep ? (
-              <Button onClick={next} disabled={!canGoNext} className="gap-2">
+              // Button stays enabled so users can click and see the reason —
+              // disabling silently is a worse UX than explaining the block.
+              <Button
+                onClick={handleNextAttempt}
+                className="gap-2"
+                aria-invalid={showValidationError || undefined}
+                aria-describedby={showValidationError ? "form-validation-error" : undefined}
+              >
                 {t("next")}
-                {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                <ChevronRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={!canGoNext} className="gap-2 funnel-gradient border-0 text-accent-foreground">
+              <Button
+                onClick={handleSubmitAttempt}
+                className="gap-2 funnel-gradient border-0 text-accent-foreground"
+                aria-invalid={showValidationError || undefined}
+                aria-describedby={showValidationError ? "form-validation-error" : undefined}
+              >
                 <Sparkles className="h-4 w-4" />
                 {t("generateFunnel")}
               </Button>
