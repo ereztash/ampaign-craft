@@ -37,6 +37,8 @@ import type { AnomalyOutput } from "./biomimeticAnomaly";
 import type { ForecastOutput } from "./extremeForecaster";
 import type { UserProfileVector } from "./daplProfile";
 import type { BlackboardWrite } from "./ontologicalVerifier";
+import type { FreshnessMap } from "./freshnessBudget";
+import { freshnessGate } from "./freshnessBudget";
 // E2 — runtime import is intentional. The cycle is safe because
 // expressDual is only called inside function bodies, never at
 // module-load time.
@@ -71,6 +73,9 @@ export interface ReflectiveContext {
   anomaly?: AnomalyOutput;
   forecast?: ForecastOutput;
   profile?: UserProfileVector;
+  // E3 — optional freshness map (component name → updated_at ms).
+  // When undefined the freshness gate is bypassed (backward compat).
+  freshness?: FreshnessMap;
 }
 
 export interface ActionCard {
@@ -132,6 +137,11 @@ const WHY_DUAL_EXPRESSION_MISSING =
   "ההמלצה אינה עמידה לתרגום בין פעולה למטריקה. נדרשת קוהרנטיות בין השניים לפני החזרה למשתמש.";
 const NEXT_STEP_DUAL_EXPRESSION_MISSING =
   "המתן לקוהרנטיות בין הצד הארכיטקטוני לצד המטרי";
+
+// E3 — Reason strings for the stale-context watch path.
+const WHY_STALE_CONTEXT =
+  "חלק מהקונטקסט ישן. אוסף מדידה טרייה לפני שנחזיר הצעה שאפשר לעמוד מאחוריה.";
+const NEXT_STEP_STALE_CONTEXT = "המתן לאיסוף מדידה טרייה לפני החזרת הצעה";
 
 const NEXT_STEP: Record<keyof typeof HEADLINES, string> = {
   bottleneck: "אבחן את שלב החיכוך ותקן אותו בארכיטקטורה",
@@ -497,14 +507,18 @@ export function buildReflectiveActionPayload(
  * Produce a single ActionCard from the reflective context.
  * Always returns exactly one card — never a list, never null.
  *
- * Gate order:
- *   1. coherence_score < 0.6        → M4 watch (fixed text, inert falsifier)
- *   2. signal/headline derivation   (existing M4 logic)
- *   3. E1 falsifier derivation
- *   4. signal === 'stable'          → eta=0 if pristine, 120 otherwise; inert
- *   5. falsifier === null           → E1 watch (inert)
- *   6. expressDual (E2) === null    → E2 watch (inert)
- *   7. otherwise                    → full ActionCard with active dual + falsifier
+ * Gate order (each gate fully short-circuits the rest):
+ *   1. freshness (E3)               → E3 watch (inert) when too few fresh
+ *   2. coherence_score < 0.6        → M4 watch (fixed text, inert falsifier)
+ *   3. signal/headline derivation   (existing M4 logic)
+ *   4. E1 falsifier derivation
+ *   5. signal === 'stable'          → eta=0 if pristine, 120 otherwise; inert
+ *   6. falsifier === null           → E1 watch (inert)
+ *   7. expressDual (E2) === null    → E2 watch (inert)
+ *   8. otherwise                    → full ActionCard with active dual + falsifier
+ *
+ * Each watch path emits a watch text unique to its rejection reason
+ * so a downstream observer can tell exactly which gate fired.
  *
  * The architectural sentence from a successful dual replaces the M4
  * NEXT_STEP fragment as the card's next_step. The metric sentence is
@@ -514,6 +528,28 @@ export function buildReflectiveActionPayload(
 export function generateReflectiveAction(
   ctx: ReflectiveContext,
 ): ActionCard {
+  // 1. Freshness gate (E3) — runs first, independent of coherence.
+  //    When ctx.freshness is undefined the gate is bypassed entirely.
+  if (!freshnessGate(ctx)) {
+    // The coherence_score reported here is the value the engine would
+    // have computed if it had reached the M4 logic. Recomputing keeps
+    // the value meaningful for any downstream observer who logs it.
+    const staleVotes = [
+      voteRegime(ctx.regime),
+      voteAnomaly(ctx.anomaly),
+      voteForecast(ctx.forecast),
+    ];
+    return {
+      signal: "watch",
+      headline: HEADLINES.decisionDelay,
+      why: WHY_STALE_CONTEXT,
+      next_step: NEXT_STEP_STALE_CONTEXT,
+      eta_minutes: ETA.watch,
+      coherence_score: clamp01(computeCoherence(staleVotes)),
+      ...INERT_FALSIFIER,
+    };
+  }
+
   const votes = [
     voteRegime(ctx.regime),
     voteAnomaly(ctx.anomaly),
@@ -521,7 +557,7 @@ export function generateReflectiveAction(
   ];
   const coherence = clamp01(computeCoherence(votes));
 
-  // 1. Low coherence short-circuit: fixed M4 watch message.
+  // 2. Low coherence short-circuit: fixed M4 watch message.
   if (coherence < 0.6) {
     return {
       signal: "watch",
@@ -534,15 +570,15 @@ export function generateReflectiveAction(
     };
   }
 
-  // 2. Existing M4 selection.
+  // 3. Existing M4 selection.
   const signal = fuseSignal(ctx);
   const key = pickHeadlineKey(ctx, signal);
   const next_step = NEXT_STEP[key];
 
-  // 3. E1 falsifier derivation.
+  // 4. E1 falsifier derivation.
   const falsifier = deriveFalsifier(ctx, next_step);
 
-  // 4. Stable path: never falsifiable in a bounded way. eta=0 when
+  // 5. Stable path: never falsifiable in a bounded way. eta=0 when
   //    everything is pristine, otherwise the existing 120 stays.
   if (signal === "stable") {
     return {
@@ -556,7 +592,7 @@ export function generateReflectiveAction(
     };
   }
 
-  // 5. Watch/act with no derivable falsifier → E1 watch fallback.
+  // 6. Watch/act with no derivable falsifier → E1 watch fallback.
   if (falsifier === null) {
     return {
       signal: "watch",
@@ -569,7 +605,7 @@ export function generateReflectiveAction(
     };
   }
 
-  // 6. E2 dual expression gate.
+  // 7. E2 dual expression gate.
   const dual = expressDual(ctx, next_step);
   if (dual === null) {
     return {
@@ -583,7 +619,7 @@ export function generateReflectiveAction(
     };
   }
 
-  // 7. Active falsifier + valid dual — full card.
+  // 8. Active falsifier + valid dual — full card.
   return {
     signal,
     headline: HEADLINES[key],
