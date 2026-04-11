@@ -28,6 +28,7 @@ const SalesEntry = lazy(() => import("./pages/SalesEntry"));
 const PricingEntry = lazy(() => import("./pages/PricingEntry"));
 const RetentionEntry = lazy(() => import("./pages/RetentionEntry"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const SharedQuote = lazy(() => import("./pages/SharedQuote"));
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const AnimatedRoutes = () => {
       >
         <Routes location={location}>
           <Route path="/legacy" element={<Index />} />
+          <Route path="/quote/:token" element={<SharedQuote />} />
           <Route element={<AppShell />}>
             <Route index element={<CommandCenter />} />
             <Route path="data/:sourceId?" element={<DataHub />} />

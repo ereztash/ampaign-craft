@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/engine/salesPipelineEngine";
@@ -14,10 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   TrendingUp, DollarSign, Clock, Target, ChevronDown, Copy, Check,
-  Zap, MessageSquare, ArrowRight, Lightbulb, Brain, Users,
+  Zap, MessageSquare, ArrowRight, Lightbulb, Brain, Users, FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import type { Quote } from "@/types/quote";
+import QuoteBuilder from "@/components/QuoteBuilder";
 
 interface SalesTabProps {
   result: FunnelResult;
@@ -41,6 +44,24 @@ const SalesTab = ({ result }: SalesTabProps) => {
   const personalityProfile = BUYER_PERSONALITIES.find((p) => p.id === buyerPersonality)!;
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
+  const [quoteView, setQuoteView] = useState(false);
+
+  const handleQuoteComplete = useCallback(async (quote: Quote) => {
+    try {
+      await (supabase as any).from("quotes").insert({
+        data: quote,
+        status: quote.status,
+        recipient_name: quote.recipient.name,
+        recipient_company: quote.recipient.company,
+        total: quote.total,
+        currency: quote.currency,
+        valid_until: quote.validUntil,
+      });
+    } catch { /* localStorage fallback */ }
+    try { localStorage.setItem("funnelforge-last-quote", JSON.stringify(quote)); } catch { /* ignore */ }
+    toast.success(isHe ? "הצעת המחיר נשמרה!" : "Quote saved!");
+    setQuoteView(false);
+  }, [isHe]);
 
   const copyScript = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -52,6 +73,18 @@ const SalesTab = ({ result }: SalesTabProps) => {
   const formatCurrency = (n: number) => `₪${n.toLocaleString()}`;
 
   const hasDiff = !!diffResult;
+
+  if (quoteView) {
+    return (
+      <QuoteBuilder
+        formData={result.formData}
+        graph={graph}
+        funnelResult={result}
+        onComplete={handleQuoteComplete}
+        onBack={() => setQuoteView(false)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -130,6 +163,29 @@ const SalesTab = ({ result }: SalesTabProps) => {
                 </div>
               );
             })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ═══ Create Quote CTA ═══ */}
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <h3 className="text-sm font-semibold flex items-center gap-2" dir="auto">
+                <FileText className="h-4 w-4 text-primary" />
+                {isHe ? "הצעת מחיר מובנית" : "Structured Price Quote"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1" dir="auto">
+                {isHe
+                  ? "צור הצעת מחיר מקצועית מותאמת ללקוח עם תמחור, ערבויות ובונוסים"
+                  : "Generate a professional client-adapted quote with pricing, guarantees and bonuses"}
+              </p>
+            </div>
+            <Button onClick={() => setQuoteView(true)} className="gap-2">
+              <FileText className="h-4 w-4" />
+              {isHe ? "צור הצעה" : "Create Quote"}
+            </Button>
           </div>
         </CardContent>
       </Card>
