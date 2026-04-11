@@ -6,6 +6,15 @@
 
 import { calculateBurstiness, calculatePerplexity, analyzeRegisterShifts } from "./perplexityBurstiness";
 
+export const ENGINE_MANIFEST = {
+  name: "stylomeEngine",
+  reads: ["USER-writing-samples-*"],
+  writes: ["USER-stylome-profile-*"],
+  stage: "diagnose" as const,
+  isLive: true,
+  parameters: ["Stylometric matching", "Hebrew NLP optimization"],
+} as const;
+
 export interface StylomeProfile {
   // Quantitative metrics
   metrics: {

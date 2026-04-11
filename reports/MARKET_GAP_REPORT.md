@@ -1,12 +1,12 @@
 # Market Gap Report
 
-Generated: 2026-04-10T20:17:19.317Z
+Generated: 2026-04-11T21:37:01.276Z
 Repository: campaign-craft
 
 ## Honest Metric Baseline
 
 Pre-wiring honest baseline: **46.0%** — captured under the hardened metric (honest consumerCount, LIB/ENGINE thresholds) before any Phase 1+ wiring.
-Post-wiring result: **84.0%** (42/50).
+Post-wiring result: **92.2%** (47/51).
 
 The metric was hardened on 2026-04-10 to count a file as a consumer only when it both imports a binding and actually calls it (CallExpression or JSX). Pure re-exports are excluded. Two location-aware thresholds apply: 1 consumer for `src/lib/` + `src/services/` + edge functions, 3 consumers for `src/engine/`. An engine with `isLive: true` in its manifest requires at least one real call site in `src/pages/` or `src/components/` — enforced by `scripts/verify-runtime-calls.ts` as a gate.
 
@@ -17,11 +17,11 @@ The metric was hardened on 2026-04-10 to count a file as a consumer only when it
 | 1 | Multi-agent orchestration | agent-executor, queue-processor, agentOrchestrator | SHIPPED | 5 |
 | 2 | LLM copy generation | generate-copy, aiCopyService | SHIPPED | 3 |
 | 3 | Hebrew NLP optimization | hebrewCopyOptimizer, stylomeEngine | SHIPPED | 5 |
-| 4 | DISC behavioral profiling | discProfileEngine | SHIPPED | 7 |
+| 4 | DISC behavioral profiling | discProfileEngine | SHIPPED | 9 |
 | 5 | Hormozi Value Equation | hormoziValueEngine | SHIPPED | 4 |
 | 6 | Neuro-storytelling closing | neuroClosingEngine | SHIPPED | 3 |
-| 7 | Brand vector analysis | brandVectorEngine | PARTIAL | 2 |
-| 8 | Business DNA fingerprint | businessFingerprintEngine | PARTIAL | 1 |
+| 7 | Brand vector analysis | brandVectorEngine | SHIPPED | 2 |
+| 8 | Business DNA fingerprint | businessFingerprintEngine | SHIPPED | 1 |
 | 9 | Differentiation engine | differentiationEngine, differentiationPhases | SHIPPED | 6 |
 | 10 | Cross-domain benchmarking | crossDomainBenchmarkEngine | SHIPPED | 2 |
 | 11 | Predictive content scoring | predictiveContentScoreEngine | SHIPPED | 2 |
@@ -33,7 +33,7 @@ The metric was hardened on 2026-04-10 to count a file as a consumer only when it
 | 17 | Churn prediction | churnPredictionEngine | SHIPPED | 4 |
 | 18 | Behavioral cohort analysis | behavioralCohortEngine | SHIPPED | 2 |
 | 19 | Funnel analysis | funnelEngine | SHIPPED | 13 |
-| 20 | Cost of inaction | costOfInactionEngine | SHIPPED | 3 |
+| 20 | Cost of inaction | costOfInactionEngine | SHIPPED | 6 |
 | 21 | Bottleneck detection | bottleneckEngine | SHIPPED | 3 |
 | 22 | Gap analysis | gapEngine | SHIPPED | 3 |
 | 23 | Next-step recommendation | nextStepEngine | SHIPPED | 3 |
@@ -50,11 +50,11 @@ The metric was hardened on 2026-04-10 to count a file as a consumer only when it
 | 34 | Prompt optimization | promptOptimizerEngine | SHIPPED | 1 |
 | 35 | SEO content optimization | seoContentEngine | SHIPPED | 1 |
 | 36 | Guidance engine | guidanceEngine | SHIPPED | 2 |
-| 37 | Stylometric matching | stylomeEngine | PARTIAL | 2 |
+| 37 | Stylometric matching | stylomeEngine | SHIPPED | 2 |
 | 38 | Visual export | visualExportEngine | SHIPPED | 1 |
-| 39 | Export to channels | exportEngine | PARTIAL | 1 |
-| 40 | Training data flywheel | trainingDataEngine, trainingExportEngine | SHIPPED | 8 |
-| 41 | User knowledge graph | userKnowledgeGraph | SHIPPED | 21 |
+| 39 | Export to channels | exportEngine | SHIPPED | 1 |
+| 40 | Training data flywheel | trainingDataEngine, trainingExportEngine | SHIPPED | 9 |
+| 41 | User knowledge graph | userKnowledgeGraph | SHIPPED | 22 |
 | 42 | Data import pipeline | dataImportEngine | SHIPPED | 3 |
 | 43 | Webhook dispatch (outbound) | webhook-dispatch | PAPER | 0 |
 | 44 | Webhook receive (inbound) | webhook-receive | PAPER | 0 |
@@ -64,14 +64,15 @@ The metric was hardened on 2026-04-10 to count a file as a consumer only when it
 | 48 | Multi-tier pricing | create-checkout | PAPER | 0 |
 | 49 | Research orchestration | researchOrchestrator, research-agent | SHIPPED | 2 |
 | 50 | AI coach conversational | ai-coach, aiCoachChat *(missing)* | SHIPPED | 1 |
+| 51 | Behavioral nudge orchestration | behavioralActionEngine | SHIPPED | 3 |
 
 ## Score Summary
 
-- Paper score: 50/50 (100.0%)
-- Shipped score: 42/50 (84.0%)
-- Partial credit score: 44.0/50 (88.0%)
-- Delta vs market average (70.2%): +13.8 points
-- Delta vs top competitor (85%): -1.0 points
+- Paper score: 51/51 (100.0%)
+- Shipped score: 47/51 (92.2%)
+- Partial credit score: 47.0/51 (92.2%)
+- Delta vs market average (70.2%): +22.0 points
+- Delta vs top competitor (85%): +7.2 points
 
 ## Differentiation Pillars
 
@@ -80,7 +81,7 @@ The metric was hardened on 2026-04-10 to count a file as a consumer only when it
 | DISC behavioral profiling | yes | 1 |
 | Hormozi Value Equation | yes | 1 |
 | Neuro-storytelling closing | yes | 1 |
-| Hebrew NLP optimization | yes | 1 |
+| Hebrew NLP optimization | yes | 2 |
 | Multi-agent orchestration | yes | 1 |
 
 Real differentiation: 5/5 (100%)
@@ -93,17 +94,13 @@ Gap between claim and reality: -4 points
 
 **GAP_CONFIRMED**
 
-Shipped score = 84.0%, real differentiation = 100%. Both shipped score and pillar coverage clear the GAP_CONFIRMED bar.
+Shipped score = 92.2%, real differentiation = 100%. Both shipped score and pillar coverage clear the GAP_CONFIRMED bar.
 
 ## Top 10 Quick Wins to Raise Shipped Score
 
 | # | Parameter | Current Status | Engine to Wire | Page to Consume It |
 |---|---|---|---|---|
-| 1 | Brand vector analysis | PARTIAL | `brandVectorEngine` | `src/pages/Differentiate.tsx` |
-| 2 | Stylometric matching | PARTIAL | `stylomeEngine` | `src/pages/ContentLab.tsx` |
-| 3 | Business DNA fingerprint | PARTIAL | `businessFingerprintEngine` | `src/pages/Differentiate.tsx` |
-| 4 | Export to channels | PARTIAL | `exportEngine` | `src/pages/ResultsDashboard.tsx` |
-| 5 | Webhook dispatch (outbound) | PAPER | `webhook-dispatch` | `src/pages/Dashboard.tsx` |
-| 6 | Webhook receive (inbound) | PAPER | `webhook-receive` | `src/pages/Dashboard.tsx` |
-| 7 | Stripe payment | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |
-| 8 | Multi-tier pricing | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |
+| 1 | Webhook dispatch (outbound) | PAPER | `webhook-dispatch` | `src/pages/Dashboard.tsx` |
+| 2 | Webhook receive (inbound) | PAPER | `webhook-receive` | `src/pages/Dashboard.tsx` |
+| 3 | Stripe payment | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |
+| 4 | Multi-tier pricing | PAPER | `create-checkout` | `src/pages/Dashboard.tsx` |

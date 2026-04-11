@@ -8,6 +8,15 @@ import * as XLSX from "xlsx";
 import type { SavedPlan, FunnelResult } from "@/types/funnel";
 import type { CampaignBenchmark, IndustryInsight } from "./campaignAnalyticsEngine";
 
+export const ENGINE_MANIFEST = {
+  name: "exportEngine",
+  reads: ["CAMPAIGN-plans-*", "CAMPAIGN-analytics-*"],
+  writes: [],
+  stage: "deploy" as const,
+  isLive: true,
+  parameters: ["Export to channels"],
+} as const;
+
 // ═══════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════

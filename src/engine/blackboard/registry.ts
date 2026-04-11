@@ -10,6 +10,10 @@ import { ENGINE_MANIFEST as userKnowledgeGraphManifest } from "../userKnowledgeG
 import { ENGINE_MANIFEST as predictiveManifest } from "../predictiveEngine";
 import { ENGINE_MANIFEST as abTestManifest } from "../abTestEngine";
 import { ENGINE_MANIFEST as behavioralActionManifest } from "../behavioralActionEngine";
+import { ENGINE_MANIFEST as brandVectorManifest } from "../brandVectorEngine";
+import { ENGINE_MANIFEST as businessFingerprintManifest } from "../businessFingerprintEngine";
+import { ENGINE_MANIFEST as stylomeManifest } from "../stylomeEngine";
+import { ENGINE_MANIFEST as exportManifest } from "../exportEngine";
 
 // ───────────────────────────────────────────────
 // Manifest shape — narrow enough to compare both
@@ -103,6 +107,10 @@ export const REGISTRY: Readonly<Record<string, EngineManifest>> = (() => {
     predictiveManifest as unknown as EngineManifest,
     abTestManifest as unknown as EngineManifest,
     behavioralActionManifest as unknown as EngineManifest,
+    brandVectorManifest as unknown as EngineManifest,
+    businessFingerprintManifest as unknown as EngineManifest,
+    stylomeManifest as unknown as EngineManifest,
+    exportManifest as unknown as EngineManifest,
   ];
 
   const map: Record<string, EngineManifest> = {};

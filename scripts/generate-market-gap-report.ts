@@ -13,6 +13,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 import { scoreMarketGap, MARKET_AVG_PCT, TOP_COMPETITOR_PCT, type ParameterScore } from "./score-market-gap";
 import { differentiationCheck } from "./differentiation-check";
+import { TOTAL_PARAMETERS } from "./map-parameters";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -196,7 +197,7 @@ function main(numbers: FinalNumbers): void {
     "## Honest Metric Baseline",
     "",
     preWireLine,
-    `Post-wiring result: **${shippedPct}%** (${score.summary.shippedCount}/50).`,
+    `Post-wiring result: **${shippedPct}%** (${score.summary.shippedCount}/${TOTAL_PARAMETERS}).`,
     "",
     "The metric was hardened on 2026-04-10 to count a file as a consumer only when it both imports a binding and actually calls it (CallExpression or JSX). Pure re-exports are excluded. Two location-aware thresholds apply: 1 consumer for `src/lib/` + `src/services/` + edge functions, 3 consumers for `src/engine/`. An engine with `isLive: true` in its manifest requires at least one real call site in `src/pages/` or `src/components/` — enforced by `scripts/verify-runtime-calls.ts` as a gate.",
     "",
@@ -206,9 +207,9 @@ function main(numbers: FinalNumbers): void {
     "",
     "## Score Summary",
     "",
-    `- Paper score: ${score.parameters.filter((p) => p.resolutions.some((r) => r.exists)).length}/50 (${paperPct}%)`,
-    `- Shipped score: ${score.summary.shippedCount}/50 (${shippedPct}%)`,
-    `- Partial credit score: ${(score.summary.shippedCount + 0.5 * score.summary.partialCount).toFixed(1)}/50 (${partialPct}%)`,
+    `- Paper score: ${score.parameters.filter((p) => p.resolutions.some((r) => r.exists)).length}/${TOTAL_PARAMETERS} (${paperPct}%)`,
+    `- Shipped score: ${score.summary.shippedCount}/${TOTAL_PARAMETERS} (${shippedPct}%)`,
+    `- Partial credit score: ${(score.summary.shippedCount + 0.5 * score.summary.partialCount).toFixed(1)}/${TOTAL_PARAMETERS} (${partialPct}%)`,
     `- Delta vs market average (${MARKET_AVG_PCT}%): ${Number(deltaMarket) >= 0 ? "+" : ""}${deltaMarket} points`,
     `- Delta vs top competitor (${TOP_COMPETITOR_PCT}%): ${Number(deltaTop) >= 0 ? "+" : ""}${deltaTop} points`,
     "",
@@ -248,9 +249,9 @@ function main(numbers: FinalNumbers): void {
     `Engines classified: LIVE=${numbers.engineCounts.LIVE} ORPHAN=${numbers.engineCounts.ORPHAN} DEAD=${numbers.engineCounts.DEAD}`,
   );
   console.log(
-    `Paper score: ${score.parameters.filter((p) => p.resolutions.some((r) => r.exists)).length}/50 (${paperPct}%)`,
+    `Paper score: ${score.parameters.filter((p) => p.resolutions.some((r) => r.exists)).length}/${TOTAL_PARAMETERS} (${paperPct}%)`,
   );
-  console.log(`Shipped score: ${score.summary.shippedCount}/50 (${shippedPct}%)`);
+  console.log(`Shipped score: ${score.summary.shippedCount}/${TOTAL_PARAMETERS} (${shippedPct}%)`);
   console.log(`Real differentiation: ${diff.pillarsShipped}/5 pillars shipped`);
   console.log(`Verdict: ${verdict}`);
   console.log(
