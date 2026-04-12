@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getVisibleSteps, shouldShowAgeRange, shouldShowAveragePrice, canProceed } from "../adaptiveFormRules";
+import { getVisibleSteps, shouldShowAgeRange, shouldShowAveragePrice, canProceed, getStepValidationError } from "../adaptiveFormRules";
 
 describe("getVisibleSteps", () => {
   it("returns 7 steps for default form", () => {
@@ -78,5 +78,83 @@ describe("canProceed", () => {
 
   it("unknown step returns false", () => {
     expect(canProceed("unknown", {})).toBe(false);
+  });
+});
+
+describe("getStepValidationError", () => {
+  it("returns null when the step is complete", () => {
+    expect(getStepValidationError("businessField", { businessField: "tech" })).toBeNull();
+    expect(getStepValidationError("channels", {})).toBeNull();
+    expect(
+      getStepValidationError("product", {
+        productDescription: "An AI coach for Hebrew founders",
+        salesModel: "subscription",
+      }),
+    ).toBeNull();
+  });
+
+  it("returns a bilingual reason for empty businessField", () => {
+    const err = getStepValidationError("businessField", {});
+    expect(err).not.toBeNull();
+    expect(err?.he).toContain("תחום");
+    expect(err?.en.toLowerCase()).toContain("business field");
+  });
+
+  it("returns a bilingual reason for empty experienceLevel", () => {
+    const err = getStepValidationError("experienceLevel", {});
+    expect(err).not.toBeNull();
+    expect(err?.he).toContain("ניסיון");
+    expect(err?.en.toLowerCase()).toContain("experience");
+  });
+
+  it("returns a bilingual reason for empty audience", () => {
+    const err = getStepValidationError("audience", {});
+    expect(err).not.toBeNull();
+    expect(err?.he).toContain("קהל");
+    expect(err?.en.toLowerCase()).toContain("audience");
+  });
+
+  it("returns a bilingual reason for empty budget", () => {
+    const err = getStepValidationError("budget", {});
+    expect(err).not.toBeNull();
+    expect(err?.he).toContain("תקציב");
+    expect(err?.en.toLowerCase()).toContain("budget");
+  });
+
+  it("returns a bilingual reason for empty goal", () => {
+    const err = getStepValidationError("goal", {});
+    expect(err).not.toBeNull();
+    expect(err?.he).toContain("מטרה");
+    expect(err?.en.toLowerCase()).toContain("goal");
+  });
+
+  it("product step lists both missing fields when neither is filled", () => {
+    const err = getStepValidationError("product", {});
+    expect(err).not.toBeNull();
+    expect(err?.en.toLowerCase()).toContain("product description");
+    expect(err?.en.toLowerCase()).toContain("sales model");
+    expect(err?.he).toContain("תיאור מוצר");
+    expect(err?.he).toContain("מודל מכירה");
+  });
+
+  it("product step lists only salesModel when description is filled", () => {
+    const err = getStepValidationError("product", { productDescription: "has content" });
+    expect(err).not.toBeNull();
+    expect(err?.en.toLowerCase()).toContain("sales model");
+    expect(err?.en.toLowerCase()).not.toContain("product description");
+  });
+
+  it("product step lists only description when salesModel is filled", () => {
+    const err = getStepValidationError("product", { salesModel: "subscription" });
+    expect(err).not.toBeNull();
+    expect(err?.en.toLowerCase()).toContain("product description");
+    expect(err?.en.toLowerCase()).not.toContain("sales model");
+  });
+
+  it("unknown step returns a generic bilingual reason", () => {
+    const err = getStepValidationError("unknown-step", {});
+    expect(err).not.toBeNull();
+    expect(typeof err?.he).toBe("string");
+    expect(typeof err?.en).toBe("string");
   });
 });

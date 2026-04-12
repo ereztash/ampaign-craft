@@ -401,8 +401,8 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | Optimization overlay engines (GRAOS) | 6 (M1–M6, `src/engine/optimization/`) |
 | Live engines (ENGINE_MANIFEST.isLive) | 29 |
 | Runtime reachability | 29 / 29 REACHABLE |
-| Tests | 632 passing (582 core + 50 GRAOS optimization; debugSwarm baseline excluded per plan) |
-| Components | 102 |
+| Tests | 651 passing (601 core + 50 GRAOS optimization; debugSwarm baseline excluded per plan) |
+| Components | 103 |
 | Pages | 17 |
 | Routes | 12 |
 | Tabs | 9 |
@@ -452,7 +452,7 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 ```bash
 npm install
 npm run dev          # Start dev server
-npm test             # Run 632+ tests (debugSwarm baseline excluded per plan)
+npm test             # Run 651+ tests (debugSwarm baseline excluded per plan)
 npx tsc --noEmit     # Type check
 npm run build        # Build for production
 ```
