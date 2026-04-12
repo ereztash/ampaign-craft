@@ -254,13 +254,36 @@ function getTrustSignals(disc: DISCProfile, formData: FormData): { he: string; e
 export function generateClosingStrategy(
   discProfile: DISCProfile,
   formData: FormData,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): NeuroClosingStrategy {
+  const handlers = [...OBJECTION_HANDLERS[discProfile.primary]];
+
+  // Cross-domain: inject real objections from AI Coach chat history
+  if (ukg?.chatInsights?.mentionedObjections?.length) {
+    for (const obj of ukg.chatInsights.mentionedObjections.slice(0, 2)) {
+      handlers.push({
+        objection: { he: obj, en: obj },
+        response: { he: `אני שומע את זה הרבה — ${obj}. בואי נטפל בזה ישירות.`, en: `I hear that a lot — ${obj}. Let's address it directly.` },
+        technique: "acknowledge",
+      });
+    }
+  }
+
+  // Cross-domain: weave differentiation mechanism into trust signals
+  const trust = getTrustSignals(discProfile, formData);
+  if (ukg?.differentiation?.mechanismStatement?.oneLiner?.en) {
+    trust.push({
+      he: ukg.differentiation.mechanismStatement.oneLiner.he,
+      en: ukg.differentiation.mechanismStatement.oneLiner.en,
+    });
+  }
+
   return {
     closingStyle: discProfile.communicationTone,
-    objectionHandlers: OBJECTION_HANDLERS[discProfile.primary],
+    objectionHandlers: handlers,
     pricePresentation: buildPricePresentation(discProfile, formData),
     followUpSequence: buildFollowUpSequence(discProfile, formData),
     urgencyTactics: getUrgencyTactics(discProfile),
-    trustSignals: getTrustSignals(discProfile, formData),
+    trustSignals: trust,
   };
 }

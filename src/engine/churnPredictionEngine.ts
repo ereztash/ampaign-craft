@@ -346,8 +346,25 @@ function generatePlaybook(formData: FormData, riskTier: string): { he: string; e
 // MAIN FUNCTION
 // ═══════════════════════════════════════════════
 
-export function assessChurnRisk(formData: FormData): ChurnRiskAssessment {
-  const { score: riskScore, signals } = calculateRiskScore(formData);
+export function assessChurnRisk(
+  formData: FormData,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
+): ChurnRiskAssessment {
+  let { score: riskScore, signals } = calculateRiskScore(formData);
+
+  // Cross-domain: DISC personality adjusts churn model
+  if (ukg?.discProfile) {
+    const p = ukg.discProfile.primary;
+    if (p === "S") { riskScore -= 5; signals.push({ he: "S-profile: נטישה שקטה אך איטית", en: "S-profile: slow but silent churn" }); }
+    if (p === "D") { riskScore += 5; signals.push({ he: "D-profile: יעזוב מהר אם לא רואה ROI", en: "D-profile: quick exit without visible ROI" }); }
+  }
+  // Cross-domain: imported data with declining trend = higher risk
+  if (ukg?.derived.urgencySignal === "acute") {
+    riskScore += 8;
+    signals.push({ he: "נתונים מיובאים מראים ירידה חדה", en: "Imported data shows sharp decline" });
+  } else if (ukg?.derived.urgencySignal === "mild") {
+    riskScore += 3;
+  }
 
   const riskTier: ChurnRiskAssessment["riskTier"] =
     riskScore >= 70 ? "critical" :

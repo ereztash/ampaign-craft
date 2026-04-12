@@ -63,6 +63,7 @@ export interface AnalyticsResult {
 export function generateBenchmarks(
   plans: SavedPlan[],
   blackboardCtx?: BlackboardWriteContext,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): AnalyticsResult {
   if (plans.length === 0) {
     return {

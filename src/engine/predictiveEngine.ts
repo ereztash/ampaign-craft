@@ -71,6 +71,7 @@ export function predictSuccess(
   funnelResult: FunnelResult,
   benchmarks: CampaignBenchmark[],
   blackboardCtx?: BlackboardWriteContext,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): PredictionResult {
   const industry = formData.businessField || "unknown";
   const riskFactors: RiskFactor[] = [];
@@ -252,13 +253,29 @@ export function predictSuccess(
     });
   }
 
+  // Cross-domain: real data adjusts prediction
+  if (ukg) {
+    if (ukg.derived.realMetrics.trendDirection === "declining") probability -= 5;
+    else if (ukg.derived.realMetrics.trendDirection === "improving") probability += 5;
+    if (ukg.derived.urgencySignal === "acute") {
+      riskFactors.push({
+        factor: { he: "מגמת ירידה חדה בנתונים מיובאים", en: "Sharp declining trend in imported data" },
+        impact: -8,
+        mitigation: { he: "בדוק ומטב קמפיינים פעילים", en: "Review and optimize active campaigns" },
+      });
+    }
+  }
+
   // Clamp final probability
   probability = clamp(probability, 10, 95);
 
   // Overall confidence based on data availability
-  const confidence = basedOnSamples > 0
+  let confidence = basedOnSamples > 0
     ? Math.min(0.9, 0.3 + basedOnSamples * 0.05)
-    : 0.3; // low confidence without benchmark data
+    : 0.3;
+  // Cross-domain: real data boosts confidence
+  if (ukg?.derived.dataConfidence === "rich") confidence = Math.min(0.95, confidence + 0.15);
+  else if (ukg?.derived.dataConfidence === "moderate") confidence = Math.min(0.9, confidence + 0.08);
 
   const result: PredictionResult = {
     successProbability: Math.round(probability),

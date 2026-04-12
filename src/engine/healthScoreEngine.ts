@@ -26,7 +26,10 @@ export interface HealthScore {
   };
 }
 
-export function calculateHealthScore(result: FunnelResult): HealthScore {
+export function calculateHealthScore(
+  result: FunnelResult,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
+): HealthScore {
   const { formData } = result;
   const breakdown: HealthScoreBreakdown[] = [];
 
@@ -134,7 +137,17 @@ export function calculateHealthScore(result: FunnelResult): HealthScore {
     tips: funnelTips,
   });
 
-  const total = breakdown.reduce((sum, b) => sum + b.score, 0);
+  // Cross-domain enrichment from UKG (additive bonus, capped at 100)
+  let crossDomainBonus = 0;
+  if (ukg) {
+    if (ukg.behavior.streak >= 4) crossDomainBonus += 3;
+    if (ukg.derived.dataConfidence === "rich") crossDomainBonus += 4;
+    else if (ukg.derived.dataConfidence === "moderate") crossDomainBonus += 2;
+    if (ukg.derived.realMetrics.avgCTR !== null && ukg.derived.realMetrics.avgCTR > 1) crossDomainBonus += 2;
+    if (ukg.chatInsights && ukg.chatInsights.goalClarity > 50) crossDomainBonus += 2;
+  }
+
+  const total = Math.min(100, breakdown.reduce((sum, b) => sum + b.score, 0) + crossDomainBonus);
   const tier: HealthScore["tier"] =
     total >= 80 ? "excellent" : total >= 60 ? "good" : total >= 40 ? "needs-work" : "critical";
 

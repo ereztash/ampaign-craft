@@ -40,6 +40,35 @@ export interface UserBehavior {
   stageOfChange: "precontemplation" | "contemplation" | "preparation" | "action" | "maintenance";
 }
 
+// Cross-domain input: extracted signals from AI Coach chat history
+export interface ChatInsights {
+  mentionedObjections: string[];
+  expressedPainPoints: string[];
+  requestedTopics: string[];
+  engagementLevel: "low" | "medium" | "high";
+  goalClarity: number; // 0-100
+  readinessSignal: "ready" | "exploring" | "stuck";
+}
+
+// Cross-domain input: signals from imported CSV/Excel data
+export interface ImportedDataSignals {
+  datasetType: "campaign_performance" | "budget_tracking" | "leads" | "content_performance" | "custom";
+  overallDirection: "improving" | "declining" | "stable";
+  confidence: number; // 0-1
+  metricHighlights: { metric: string; direction: "up" | "down"; changePct: number }[];
+  rowCount: number;
+}
+
+// Cross-domain input: signals from Meta Ads connection
+export interface MetaSignals {
+  connected: boolean;
+  spend: number;
+  cpl: number;
+  ctr: number;
+  cvr: number;
+  trendDirection: "improving" | "declining" | "stable";
+}
+
 export interface DifferentiationContext {
   mechanismStatement: MechanismStatement | null;
   competitors: string[];
@@ -49,6 +78,13 @@ export interface DifferentiationContext {
   committeeRoles: BuyingCommitteeRoleId[];
 }
 
+export interface RealMetrics {
+  avgCPL: number | null;
+  avgCTR: number | null;
+  avgCVR: number | null;
+  trendDirection: "improving" | "declining" | "stable" | null;
+}
+
 export interface DerivedInsights {
   framingPreference: "loss" | "gain" | "balanced";
   complexityLevel: "simple" | "standard" | "advanced";
@@ -56,6 +92,14 @@ export interface DerivedInsights {
   topPainPoint: { he: string; en: string };
   industryPainPoints: { he: string; en: string }[];
   priceContext: { formatted: string; isHighTicket: boolean; monthlyEquivalent: string };
+  // Cross-domain derived fields (populated when additional inputs are available)
+  discAwareFraming: "roi" | "social" | "stability" | "precision";
+  discCommunicationStyle: "system1" | "system2" | "balanced";
+  dataConfidence: "no_data" | "sparse" | "moderate" | "rich";
+  urgencySignal: "none" | "mild" | "acute";
+  voiceCalibration: "formal" | "dugri" | "mixed";
+  chatDerivedPain: { he: string; en: string } | null;
+  realMetrics: RealMetrics;
 }
 
 export interface UserKnowledgeGraph {
@@ -76,6 +120,9 @@ export interface UserKnowledgeGraph {
   behavior: UserBehavior;
   derived: DerivedInsights;
   discProfile: DISCProfile | null;
+  chatInsights: ChatInsights | null;
+  importedData: ImportedDataSignals | null;
+  metaSignals: MetaSignals | null;
 }
 
 // === INDUSTRY KNOWLEDGE ===
@@ -178,12 +225,19 @@ export function buildDefaultKnowledgeGraph() {
 
 // === BUILDER ===
 
+export interface CrossDomainInputs {
+  chatInsights?: ChatInsights | null;
+  importedData?: ImportedDataSignals | null;
+  metaSignals?: MetaSignals | null;
+}
+
 export function buildUserKnowledgeGraph(
   formData: FormData,
   differentiationResult?: DifferentiationResult | null,
   stylomeVoice?: StylomeVoice | null,
   userBehavior?: Partial<UserBehavior>,
   blackboardCtx?: BlackboardWriteContext,
+  crossDomain?: CrossDomainInputs,
 ): UserKnowledgeGraph {
   const field = formData.businessField || "other";
   const price = formData.averagePrice || 0;
@@ -209,8 +263,11 @@ export function buildUserKnowledgeGraph(
     stageOfChange: detectStageOfChange(userBehavior),
   };
 
-  // Build derived insights
-  const derived = buildDerivedInsights(formData, differentiation, stylomeVoice, behavior);
+  // Build derived insights (cross-domain inputs feed into the 7 new derived fields)
+  const derived = buildDerivedInsights(
+    formData, differentiation, stylomeVoice, behavior,
+    crossDomain?.chatInsights, crossDomain?.importedData, crossDomain?.metaSignals,
+  );
 
   const graph: UserKnowledgeGraph = {
     business: {
@@ -230,6 +287,9 @@ export function buildUserKnowledgeGraph(
     behavior,
     derived,
     discProfile: null,
+    chatInsights: crossDomain?.chatInsights ?? null,
+    importedData: crossDomain?.importedData ?? null,
+    metaSignals: crossDomain?.metaSignals ?? null,
   };
 
   // Infer DISC profile using the full graph context
@@ -256,6 +316,9 @@ function buildDerivedInsights(
   diff: DifferentiationContext | null,
   voice: StylomeVoice | null,
   behavior: UserBehavior,
+  chat?: ChatInsights | null,
+  imported?: ImportedDataSignals | null,
+  meta?: MetaSignals | null,
 ): DerivedInsights {
   const field = formData.businessField || "other";
   const price = formData.averagePrice || 0;
@@ -293,6 +356,14 @@ function buildDerivedInsights(
     topPainPoint,
     industryPainPoints,
     priceContext,
+    // Cross-domain derived fields
+    discAwareFraming: deriveDiscFraming(formData),
+    discCommunicationStyle: deriveDiscCommStyle(formData, voice),
+    dataConfidence: deriveDataConfidence(imported, meta),
+    urgencySignal: deriveUrgencySignal(imported),
+    voiceCalibration: deriveVoiceCalibration(voice, formData),
+    chatDerivedPain: deriveChatPain(chat),
+    realMetrics: deriveRealMetrics(imported, meta),
   };
 }
 
@@ -377,4 +448,246 @@ export function getFieldNameEn(field: string): string {
 
 export function formatPrice(price: number): string {
   return `₪${price.toLocaleString()}`;
+}
+
+// ═══════════════════════════════════════════════
+// Chat Insight Extraction (keyword-based, no LLM)
+// ═══════════════════════════════════════════════
+
+const OBJECTION_PATTERNS = [
+  /too expensive|יקר מדי|price is high|מחיר גבוה|can't afford|אין תקציב/i,
+  /not sure|לא בטוח|don't know if|לא יודע אם|maybe later|אולי אחר כך/i,
+  /competitor|מתחרים|alternative|אלטרנטיבה|someone else|מישהו אחר/i,
+  /doesn't work|לא עובד|not working|no results|אין תוצאות/i,
+  /too complex|מסובך מדי|confusing|מבלבל|overwhelming/i,
+];
+const PAIN_PATTERNS = [
+  /my customers? (?:are|don't|leave|complain)|הלקוחות שלי/i,
+  /the problem is|הבעיה היא|struggling with|מתקשה עם/i,
+  /losing money|מפסיד כסף|wasting budget|מבזבז תקציב/i,
+  /low conversion|המרה נמוכה|high churn|נטישה גבוהה/i,
+];
+const TOPIC_KEYWORDS: Record<string, RegExp> = {
+  pricing: /pricing|תמחור|price|מחיר/i,
+  whatsapp: /whatsapp|וואטסאפ/i,
+  seo: /seo|קידום אורגני|google|גוגל/i,
+  facebook: /facebook|meta|פייסבוק|מטא|ads|מודעות/i,
+  retention: /retention|שימור|churn|נטישה|loyalty|נאמנות/i,
+  sales: /sales|מכירות|pipeline|closing|סגירה/i,
+  content: /content|תוכן|copy|קופי|headline|כותרת/i,
+};
+const READY_PATTERNS = /\b(start|implement|ready|begin|let's go|מתחיל|מוכן|בוא נתחיל)\b/i;
+const EXPLORING_PATTERNS = /\b(maybe|thinking|consider|אולי|חושב|שוקל)\b/i;
+const STUCK_PATTERNS = /\b(confused|stuck|don't know|help|מבולבל|תקוע|לא יודע|עזרה)\b/i;
+const GOAL_KEYWORDS = /goal|target|objective|want to|need to|מטרה|יעד|רוצה|צריך/i;
+
+export function extractChatInsights(
+  messages: { role: string; content: string }[],
+): ChatInsights {
+  const userMessages = messages.filter((m) => m.role === "user");
+  const userText = userMessages.map((m) => m.content);
+
+  const mentionedObjections: string[] = [];
+  const expressedPainPoints: string[] = [];
+  const requestedTopics: string[] = [];
+
+  for (const text of userText) {
+    for (const pattern of OBJECTION_PATTERNS) {
+      const match = text.match(pattern);
+      if (match && !mentionedObjections.includes(match[0])) {
+        mentionedObjections.push(match[0]);
+      }
+    }
+    for (const pattern of PAIN_PATTERNS) {
+      const match = text.match(pattern);
+      if (match && !expressedPainPoints.includes(match[0])) {
+        expressedPainPoints.push(match[0]);
+      }
+    }
+    for (const [topic, re] of Object.entries(TOPIC_KEYWORDS)) {
+      if (re.test(text) && !requestedTopics.includes(topic)) {
+        requestedTopics.push(topic);
+      }
+    }
+  }
+
+  const msgCount = userMessages.length;
+  const engagementLevel: ChatInsights["engagementLevel"] =
+    msgCount < 3 ? "low" : msgCount < 10 ? "medium" : "high";
+
+  const goalMentions = userText.filter((t) => GOAL_KEYWORDS.test(t)).length;
+  const goalClarity = msgCount > 0 ? Math.min(100, Math.round((goalMentions / msgCount) * 100)) : 0;
+
+  let readinessSignal: ChatInsights["readinessSignal"] = "exploring";
+  const lastMessages = userText.slice(-3).join(" ");
+  if (READY_PATTERNS.test(lastMessages)) readinessSignal = "ready";
+  else if (STUCK_PATTERNS.test(lastMessages)) readinessSignal = "stuck";
+  else if (EXPLORING_PATTERNS.test(lastMessages)) readinessSignal = "exploring";
+
+  return {
+    mentionedObjections,
+    expressedPainPoints,
+    requestedTopics,
+    engagementLevel,
+    goalClarity,
+    readinessSignal,
+  };
+}
+
+// ═══════════════════════════════════════════════
+// Helper Loaders (read from localStorage / context)
+// ═══════════════════════════════════════════════
+
+export function loadChatInsights(): ChatInsights | null {
+  try {
+    const raw = localStorage.getItem("funnelforge-coach-messages");
+    if (!raw) return null;
+    const messages = JSON.parse(raw) as { role: string; content: string }[];
+    if (!Array.isArray(messages) || messages.length === 0) return null;
+    return extractChatInsights(messages);
+  } catch {
+    return null;
+  }
+}
+
+export function loadImportedDataSignals(): ImportedDataSignals | null {
+  try {
+    const raw = localStorage.getItem("funnelforge-data-sources");
+    if (!raw) return null;
+    const state = JSON.parse(raw);
+    const manual = state?.sources?.find((s: { id: string }) => s.id === "manual_import");
+    if (!manual || manual.status !== "connected" || !manual.recordCount) return null;
+    return {
+      datasetType: "custom",
+      overallDirection: "stable",
+      confidence: manual.recordCount > 30 ? 0.8 : manual.recordCount > 10 ? 0.6 : 0.3,
+      metricHighlights: [],
+      rowCount: manual.recordCount,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function loadMetaSignals(): MetaSignals | null {
+  try {
+    const raw = localStorage.getItem("funnelforge-meta-monitor");
+    if (!raw) return null;
+    const state = JSON.parse(raw);
+    if (!state?.connected || !state?.insights) return null;
+    const ins = state.insights;
+    return {
+      connected: true,
+      spend: parseFloat(ins.spend) || 0,
+      cpl: parseFloat(ins.cpc) || 0,
+      ctr: parseFloat(ins.ctr) || 0,
+      cvr: 0,
+      trendDirection: "stable",
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// Cross-Domain Derivation Helpers
+// Each function is pure and returns a safe default when its
+// primary input is absent, so every existing code path is unaffected.
+// ═══════════════════════════════════════════════
+
+function deriveDiscFraming(
+  formData: FormData,
+): DerivedInsights["discAwareFraming"] {
+  // D-types respond to ROI framing, I to social proof, S to stability, C to precision.
+  // Without a DISC quiz we approximate from proxy signals in FormData.
+  const goal = formData.mainGoal;
+  const exp = formData.experienceLevel;
+  if (goal === "revenue" || exp === "advanced") return "roi";
+  if (goal === "awareness" || goal === "engagement") return "social";
+  if (goal === "retention") return "stability";
+  if (goal === "leads" && formData.audienceType === "b2b") return "precision";
+  return "social"; // safe default for b2c beginners
+}
+
+function deriveDiscCommStyle(
+  formData: FormData,
+  voice: StylomeVoice | null,
+): DerivedInsights["discCommunicationStyle"] {
+  // Stylome dugri override: highly direct writing → system1 (gut reactions)
+  if (voice && voice.dugriScore > 0.7) return "system1";
+  if (voice && voice.register === "formal") return "system2";
+  // Proxy from FormData: advanced B2B → system2, beginner B2C → system1
+  if (formData.experienceLevel === "advanced" && formData.audienceType === "b2b") return "system2";
+  if (formData.experienceLevel === "beginner") return "system1";
+  return "balanced";
+}
+
+function deriveDataConfidence(
+  imported: ImportedDataSignals | null | undefined,
+  meta: MetaSignals | null | undefined,
+): DerivedInsights["dataConfidence"] {
+  let sources = 0;
+  if (imported && imported.rowCount > 0) sources++;
+  if (meta?.connected) sources++;
+  // FormData always exists, so a 3rd source is implicit
+  if (sources === 0) return "no_data";
+  if (sources === 1 && (imported?.rowCount ?? 0) < 30) return "sparse";
+  if (sources >= 2) return "rich";
+  return "moderate";
+}
+
+function deriveUrgencySignal(
+  imported: ImportedDataSignals | null | undefined,
+): DerivedInsights["urgencySignal"] {
+  if (!imported) return "none";
+  const declining = imported.metricHighlights.filter(
+    (m) => m.direction === "down" && Math.abs(m.changePct) > 10,
+  );
+  if (imported.overallDirection === "declining" && declining.length >= 2) return "acute";
+  if (imported.overallDirection === "declining" || declining.length >= 1) return "mild";
+  return "none";
+}
+
+function deriveVoiceCalibration(
+  voice: StylomeVoice | null | undefined,
+  formData: FormData,
+): DerivedInsights["voiceCalibration"] {
+  if (voice) return voice.register === "casual" ? "dugri" : voice.register;
+  // Without voice sample, approximate from business context
+  if (formData.businessField === "tech" || formData.audienceType === "b2b") return "formal";
+  if (formData.businessField === "personalBrand" || formData.businessField === "food") return "dugri";
+  return "mixed";
+}
+
+function deriveChatPain(
+  chat: ChatInsights | null | undefined,
+): DerivedInsights["chatDerivedPain"] {
+  if (!chat?.mentionedObjections?.length) return null;
+  const first = chat.mentionedObjections[0];
+  return { he: first, en: first }; // chat may be in either language
+}
+
+function deriveRealMetrics(
+  imported: ImportedDataSignals | null | undefined,
+  meta: MetaSignals | null | undefined,
+): RealMetrics {
+  // Prefer Meta (live API) over CSV (static upload)
+  const avgCPL = meta?.connected ? meta.cpl : importedMetric(imported, "cpl") ?? null;
+  const avgCTR = meta?.connected ? meta.ctr : importedMetric(imported, "ctr") ?? null;
+  const avgCVR = meta?.connected ? meta.cvr : importedMetric(imported, "cvr") ?? null;
+  const trendDirection = meta?.connected
+    ? meta.trendDirection
+    : imported?.overallDirection ?? null;
+  return { avgCPL, avgCTR, avgCVR, trendDirection };
+}
+
+function importedMetric(
+  imported: ImportedDataSignals | null | undefined,
+  keyword: string,
+): number | null {
+  if (!imported) return null;
+  const match = imported.metricHighlights.find(
+    (m) => m.metric.toLowerCase().includes(keyword),
+  );
+  return match ? match.changePct : null;
 }

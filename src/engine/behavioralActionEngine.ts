@@ -283,11 +283,25 @@ function buildCORRecoveryNudge(cor: CORResourceState, disc: "D" | "I" | "S" | "C
 // Main Engine
 // ───────────────────────────────────────────────
 
-export function computeMotivationState(input: BAEInput, bbCtx?: BlackboardWriteContext): MotivationState {
+export function computeMotivationState(
+  input: BAEInput,
+  bbCtx?: BlackboardWriteContext,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
+): MotivationState {
   const cor = computeCORState(input);
-  const m = computeMotivation(input);
+  let m = computeMotivation(input);
   const a = computeAbility(cor);
-  const t = computeTriggerReadiness(input);
+  let t = computeTriggerReadiness(input);
+
+  // Cross-domain: chat goal clarity adjusts trigger readiness
+  if (ukg?.chatInsights) {
+    if (ukg.chatInsights.goalClarity < 30) t = Math.max(0.1, t * 0.7); // stuck = lower trigger
+    else if (ukg.chatInsights.goalClarity > 70) t = Math.min(1, t * 1.2); // clear = higher trigger
+  }
+  // Cross-domain: urgency signal amplifies motivation
+  if (ukg?.derived.urgencySignal === "acute") m = Math.min(1, m + 0.15);
+  else if (ukg?.derived.urgencySignal === "mild") m = Math.min(1, m + 0.05);
+
   const foggScore = m * a * t;
   const triggerStyle = deriveTriggerStyle(m, a);
   const disc = getDominantDISC(input.discProfile);

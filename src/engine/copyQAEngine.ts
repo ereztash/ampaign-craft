@@ -26,7 +26,16 @@ const TRUST_WORDS = ["מוכח", "לקוחות", "ביקורות", "מחקר", "
 const POWER_WORDS = ["חינם", "חדש", "מיידי", "בלעדי", "free", "new", "instant", "exclusive", "guaranteed", "secret", "limited"];
 const CTA_WORDS = ["עכשיו", "התחל", "הצטרף", "קבל", "לחץ", "now", "start", "join", "get", "click", "try", "buy"];
 
-export function analyzeCopy(text: string, targetPersona: "system1" | "system2" | "balanced" = "balanced"): CopyQAResult {
+export function analyzeCopy(
+  text: string,
+  targetPersona: "system1" | "system2" | "balanced" = "balanced",
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
+): CopyQAResult {
+  // Cross-domain: auto-set persona from DISC communication style
+  const effectivePersona = targetPersona !== "balanced"
+    ? targetPersona
+    : ukg?.derived.discCommunicationStyle ?? "balanced";
+
   const risks: CopyRisk[] = [];
   const strengths: string[] = [];
   const suggestions: { he: string; en: string }[] = [];
@@ -82,14 +91,14 @@ export function analyzeCopy(text: string, targetPersona: "system1" | "system2" |
   // === Persona Mismatch ===
   const dataRatio = TRUST_WORDS.filter((w) => text.toLowerCase().includes(w)).length;
   const emotionRatio = FEAR_WORDS.filter((w) => text.toLowerCase().includes(w)).length + POWER_WORDS.filter((w) => text.toLowerCase().includes(w)).length;
-  if (targetPersona === "system2" && emotionRatio > dataRatio * 2) {
+  if (effectivePersona === "system2" && emotionRatio > dataRatio * 2) {
     risks.push({
       type: "persona_mismatch", severity: "medium",
       message: { he: "קהל אנליטי (System 2) אבל הקופי רגשי מדי — חוסר התאמה", en: "Analytical audience (System 2) but copy is too emotional — mismatch" },
       fix: { he: "הוסף מספרים, נתונים, ROI. הפחת מילות רגש", en: "Add numbers, data, ROI. Reduce emotional language" },
     });
     score -= 10;
-  } else if (targetPersona === "system1" && dataRatio > emotionRatio * 2) {
+  } else if (effectivePersona === "system1" && dataRatio > emotionRatio * 2) {
     risks.push({
       type: "persona_mismatch", severity: "medium",
       message: { he: "קהל רגשי (System 1) אבל הקופי יבש מדי — חוסר התאמה", en: "Emotional audience (System 1) but copy is too dry — mismatch" },
