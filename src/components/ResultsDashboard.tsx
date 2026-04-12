@@ -223,6 +223,20 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           </div>
         </motion.div>
 
+        {/* Cold-start onboarding banner */}
+        {graph.derived.coldStartMode && (
+          <motion.div {...motionProps} className="mb-6 rounded-xl border border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-700/40 dark:bg-emerald-900/20 p-4 text-start space-y-2">
+            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200" dir="auto">
+              {isHe ? "נקודת התחלה — כך תשפרו את התוכנית:" : "Starting point — here's how to improve your plan:"}
+            </p>
+            <ul className="text-xs text-emerald-800 dark:text-emerald-300 space-y-1 list-disc list-inside" dir="auto">
+              <li>{isHe ? "חברו מקור נתונים (Meta Ads, CSV) לקבלת תובנות מבוססות מספרים אמיתיים" : "Connect a data source (Meta Ads, CSV) for insights based on real numbers"}</li>
+              <li>{isHe ? "הריצו ניתוח סגנון כתיבה כדי שהקופי יתאים לקול שלכם" : "Run a writing style analysis so copy matches your voice"}</li>
+              <li>{isHe ? "נסו את המאמן השיווקי — כל שיחה מחדדת את האסטרטגיה" : "Try the AI Coach — every conversation sharpens the strategy"}</li>
+            </ul>
+          </motion.div>
+        )}
+
         {/* Funnel Visualization */}
         <motion.div {...motionProps} transition={reducedMotion ? { duration: 0 } : { delay: 0.2 }} className="mb-8">
           <Card>

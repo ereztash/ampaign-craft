@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
+import { UserRole, canPerform as canPerformAction } from "@/types/governance";
 
 // ═══════════════════════════════════════════════
 // Auth Context — Dual mode: Supabase (if available) or Local fallback
@@ -10,6 +11,7 @@ interface AppUser {
   id: string;
   email: string;
   displayName: string;
+  role: UserRole;
 }
 
 interface AuthContextValue {
@@ -18,6 +20,7 @@ interface AuthContextValue {
   tier: PricingTier;
   setTier: (tier: PricingTier) => void;
   canUse: (feature: Feature) => boolean;
+  canPerform: (action: string) => boolean;
   signUp: (email: string, password: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -105,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLocalAuth, setIsLocalAuth] = useState(true);
 
   const canUse = useCallback((feature: Feature) => canAccess(tier, feature), [tier]);
+  const canPerform = useCallback((action: string) => canPerformAction(user?.role ?? "viewer", action), [user?.role]);
 
   const setTier = useCallback((newTier: PricingTier) => {
     setTierState(newTier);
@@ -131,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           const { data: { session: s } } = await supabase.auth.getSession();
           if (s?.user && !cancelled) {
-            setUser({ id: s.user.id, email: s.user.email || "", displayName: s.user.email?.split("@")[0] || "" });
+            setUser({ id: s.user.id, email: s.user.email || "", displayName: s.user.email?.split("@")[0] || "", role: "owner" });
             // Fetch tier from profile
             const { data: profile } = await ((supabase as any).from("profiles")).select("display_name").eq("id", s.user.id).single();
             if (profile?.display_name === "pro" || profile?.display_name === "business") {
@@ -143,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, sess) => {
             if (cancelled) return;
             if (sess?.user) {
-              setUser({ id: sess.user.id, email: sess.user.email || "", displayName: sess.user.email?.split("@")[0] || "" });
+              setUser({ id: sess.user.id, email: sess.user.email || "", displayName: sess.user.email?.split("@")[0] || "", role: "owner" });
               const { data: prof } = await ((supabase as any).from("profiles")).select("display_name").eq("id", sess.user.id).single();
               if (prof?.display_name === "pro" || prof?.display_name === "business") {
                 setTierState(prof.display_name);
@@ -174,7 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const users = getLocalUsers();
           const found = users.find((u) => u.id === session.userId);
           if (found) {
-            setUser({ id: found.id, email: found.email, displayName: found.displayName });
+            setUser({ id: found.id, email: found.email, displayName: found.displayName, role: "owner" });
             setTierState(found.tier);
           }
         }
@@ -222,7 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     users.push(newUser);
     saveLocalUsers(users);
     setLocalSession({ userId: newUser.id, email: newUser.email });
-    setUser({ id: newUser.id, email: newUser.email, displayName: newUser.displayName });
+    setUser({ id: newUser.id, email: newUser.email, displayName: newUser.displayName, role: "owner" });
     setTierState(newUser.tier);
 
     return { error: null };
@@ -254,7 +258,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setLocalSession({ userId: found.id, email: found.email });
-    setUser({ id: found.id, email: found.email, displayName: found.displayName });
+    setUser({ id: found.id, email: found.email, displayName: found.displayName, role: "owner" });
     setTierState(found.tier);
 
     return { error: null };
@@ -274,7 +278,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [isLocalAuth]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, tier, setTier, canUse, signUp, signIn, signOut, isLocalAuth }}>
+    <AuthContext.Provider value={{ user, loading, tier, setTier, canUse, canPerform, signUp, signIn, signOut, isLocalAuth }}>
       {children}
     </AuthContext.Provider>
   );

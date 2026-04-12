@@ -5,6 +5,7 @@ import {
   conceptKey,
   type BlackboardWriteContext,
 } from "./blackboard/contract";
+import type { UserKnowledgeGraph } from "./userKnowledgeGraph";
 
 export const ENGINE_MANIFEST = {
   name: "guidanceEngine",
@@ -117,7 +118,13 @@ export const generateGuidance = (
   gaps: KpiGap[],
   result: FunnelResult,
   blackboardCtx?: BlackboardWriteContext,
+  ukg?: UserKnowledgeGraph,
 ): GuidanceItem[] => {
+  // Cold-start: return educational guidance when no real KPI data exists
+  if (ukg?.derived.coldStartMode || (gaps.length === 0 && ukg?.behavior.visitCount === 1)) {
+    return generateColdStartGuidance();
+  }
+
   const critical = gaps.filter((g) => g.status === "critical");
   const warning = gaps.filter((g) => g.status === "warning");
   const toProcess = [...critical, ...warning].slice(0, 3); // max 3 items
@@ -165,3 +172,52 @@ export const getOverallHealth = (
   if (score >= 50) return { score, label: { he: "דורש תשומת לב", en: "Needs Attention" }, color: "yellow" };
   return { score, label: { he: "קריטי", en: "Critical" }, color: "red" };
 };
+
+// ═══ Cold-Start Guidance ═══
+
+function generateColdStartGuidance(): GuidanceItem[] {
+  return [
+    {
+      priority: "high",
+      area: { he: "פרופיל עסקי", en: "Business Profile" },
+      issue: {
+        he: "ברוך הבא! השלם את הפרופיל העסקי כדי לקבל אסטרטגיה מותאמת אישית",
+        en: "Welcome! Complete your business profile to get a personalized strategy",
+      },
+      actions: [
+        { he: "מלא את תיאור המוצר/שירות שלך", en: "Fill in your product/service description" },
+        { he: "בחר את קהל היעד ותקציב השיווק", en: "Select your target audience and marketing budget" },
+        { he: "ציין את הערוצים הפעילים שלך (פייסבוק, אינסטגרם וכו')", en: "Indicate your active channels (Facebook, Instagram, etc.)" },
+      ],
+      metric: "profile",
+    },
+    {
+      priority: "medium",
+      area: { he: "משפך ראשון", en: "First Funnel" },
+      issue: {
+        he: "צור את המשפך השיווקי הראשון שלך — 2 דקות בלבד",
+        en: "Create your first marketing funnel — just 2 minutes",
+      },
+      actions: [
+        { he: "לחץ על 'צור משפך חדש' כדי להתחיל", en: "Click 'Create New Funnel' to get started" },
+        { he: "המערכת תייצר אסטרטגיה מלאה עם שלבים, ערוצים ותוכן", en: "The system will generate a full strategy with stages, channels, and content" },
+        { he: "שמור את התוכנית כדי לעקוב אחריה", en: "Save the plan to track your progress" },
+      ],
+      metric: "funnel",
+    },
+    {
+      priority: "medium",
+      area: { he: "מאמן AI", en: "AI Coach" },
+      issue: {
+        he: "נסה את המאמן השיווקי — שאל שאלה על העסק שלך",
+        en: "Try the AI Marketing Coach — ask a question about your business",
+      },
+      actions: [
+        { he: "שאל: 'מה האסטרטגיה הטובה ביותר לעסק שלי?'", en: "Ask: 'What's the best strategy for my business?'" },
+        { he: "המאמן ילמד את ההעדפות שלך ויתאים את ההמלצות", en: "The coach will learn your preferences and tailor recommendations" },
+        { he: "כל שיחה מעשירה את הפרופיל שלך", en: "Every conversation enriches your profile" },
+      ],
+      metric: "coach",
+    },
+  ];
+}

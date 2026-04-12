@@ -14,6 +14,7 @@ interface MetaConnectProps {
   onConnect: () => void;
   onDisconnect: () => void;
   onSelectAccount: (id: string, name: string) => void;
+  lastSyncTimestamp?: number | null;
 }
 
 const MetaConnect = ({
@@ -25,9 +26,13 @@ const MetaConnect = ({
   onConnect,
   onDisconnect,
   onSelectAccount,
+  lastSyncTimestamp,
 }: MetaConnectProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
+  const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+  const isStale = lastSyncTimestamp != null && (Date.now() - lastSyncTimestamp) > SEVEN_DAYS_MS;
+  const staleDate = lastSyncTimestamp ? new Date(lastSyncTimestamp).toLocaleDateString() : null;
 
   if (loading) {
     return (
@@ -111,6 +116,16 @@ const MetaConnect = ({
               </button>
             ))}
           </div>
+          {isStale && (
+            <Alert className="mt-3 border-amber-200 bg-amber-50/40 dark:border-amber-700/40 dark:bg-amber-900/20">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-xs text-amber-800 dark:text-amber-300">
+                {isHe
+                  ? `הנתונים עודכנו לאחרונה ב-${staleDate} — ייתכן שאינם מעודכנים`
+                  : `Data last synced on ${staleDate} — may be stale`}
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       )}
     </Card>

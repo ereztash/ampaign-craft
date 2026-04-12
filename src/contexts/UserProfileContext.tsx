@@ -34,6 +34,15 @@ export interface UserProfile {
   achievements: string[];
 
   investment: InvestmentMetrics;
+  milestones: OnboardingMilestones;
+}
+
+export interface OnboardingMilestones {
+  formCompleted: boolean;
+  firstPlanSaved: boolean;
+  dataSourceConnected: boolean;
+  stylomeAnalyzed: boolean;
+  coachUsed: boolean;
 }
 
 interface UserProfileContextType {
@@ -45,6 +54,7 @@ interface UserProfileContextType {
   persistUnifiedProfile: (p: UnifiedProfile) => void;
   addAchievement: (id: string) => void;
   refreshSavedPlanCount: () => void;
+  completeMilestone: (key: keyof OnboardingMilestones) => void;
 }
 
 // ═══════════════════════════════════════════════
@@ -58,6 +68,7 @@ const KEYS = {
   achievements: "funnelforge-achievements",
   unifiedProfile: "funnelforge-profile",
   investment: "funnelforge-investment",
+  milestones: "funnelforge-milestones",
 } as const;
 
 // ═══════════════════════════════════════════════
@@ -126,6 +137,10 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   const [investment, setInvestment] = useState<InvestmentMetrics>({
     plansCreated: 0, modulesCompleted: 0, totalVisits: 0, firstSeenDate: null, totalSessionsMinutes: 0,
   });
+  const [milestones, setMilestones] = useState<OnboardingMilestones>({
+    formCompleted: false, firstPlanSaved: false, dataSourceConnected: false,
+    stylomeAnalyzed: false, coachUsed: false,
+  });
 
   useEffect(() => {
     const profileData = safeParseJson<{ visitCount: number; lastVisitDate: string | null }>(
@@ -166,6 +181,12 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       setUnifiedProfileState(migrated);
       typeof window !== "undefined" && localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(migrated));
     }
+
+    const savedMilestones = safeParseJson<OnboardingMilestones>(KEYS.milestones, {
+      formCompleted: false, firstPlanSaved: false, dataSourceConnected: false,
+      stylomeAnalyzed: false, coachUsed: false,
+    });
+    setMilestones(savedMilestones);
 
     const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
     const modulesCompleted = (hasDiff ? 1 : 0) + (plans.length > 0 ? 1 : 0);
@@ -238,6 +259,15 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setLastPlanSummary(getLastPlanSummary(plans));
   }, []);
 
+  const completeMilestone = useCallback((key: keyof OnboardingMilestones) => {
+    setMilestones((prev) => {
+      if (prev[key]) return prev;
+      const updated = { ...prev, [key]: true };
+      typeof window !== "undefined" && localStorage.setItem(KEYS.milestones, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   const profile: UserProfile = {
     isReturningUser,
     visitCount,
@@ -253,6 +283,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     userSegment: deriveSegment(isReturningUser, experienceLevel),
     achievements,
     investment,
+    milestones,
   };
 
   return (
@@ -266,6 +297,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
         persistUnifiedProfile,
         addAchievement,
         refreshSavedPlanCount,
+        completeMilestone,
       }}
     >
       {children}
