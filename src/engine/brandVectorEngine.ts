@@ -32,7 +32,10 @@ const VECTOR_LABELS: Record<BrandVector, { he: string; en: string }> = {
   dopamine: { he: "מותג צמיחה (Dopamine-Forward)", en: "Growth Brand (Dopamine-Forward)" },
 };
 
-export function analyzeBrandVector(result: FunnelResult): BrandVectorResult {
+export function analyzeBrandVector(
+  result: FunnelResult,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
+): BrandVectorResult {
   const formData = result.formData;
 
   // Detect primary brand vector from form data

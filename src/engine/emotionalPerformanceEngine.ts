@@ -179,6 +179,7 @@ export function calculateEPS(
   stylome?: StylomeProfile,
   previousScore?: number,
   blackboardCtx?: BlackboardWriteContext,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): EPSResult {
   // Pull balance from brand vector if provided, otherwise neutral 33/33/34
   const balance: EmotionalBalance = brandVector

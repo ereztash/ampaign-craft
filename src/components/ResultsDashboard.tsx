@@ -22,6 +22,7 @@ import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getIsraeliToolsSummary } from "@/lib/toolRecommendations";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { loadChatInsights, loadImportedDataSignals, loadMetaSignals } from "@/engine/userKnowledgeGraph";
 import { getSocialProof } from "@/lib/socialProofData";
 import { calculateRoi } from "@/lib/roiCalculator";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
@@ -100,16 +101,21 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
     } catch { return null; }
   }, []);
 
-  // Knowledge graph + personalized result
+  // Knowledge graph + personalized result (cross-domain inputs included)
   const graph = useMemo(
-    () => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice, { visitCount: profile.visitCount, streak: 0, mastery: 0, segment: profile.userSegment }),
+    () => buildUserKnowledgeGraph(
+      result.formData, diffResult, stylomeVoice,
+      { visitCount: profile.visitCount, streak: 0, mastery: 0, segment: profile.userSegment },
+      undefined, // blackboardCtx
+      { chatInsights: loadChatInsights(), importedData: loadImportedDataSignals(), metaSignals: loadMetaSignals() },
+    ),
     [result.formData, diffResult, stylomeVoice, profile.visitCount, profile.userSegment],
   );
   const personalizedResult = useMemo(() => personalizeResult(result, graph), [result, graph]);
 
-  // MOAT features (memoized — only recompute when result changes)
-  const healthScore = useMemo(() => calculateHealthScore(result), [result]);
-  const costOfInaction = useMemo(() => calculateCostOfInaction(result), [result]);
+  // MOAT features (memoized — pass UKG for cross-domain enrichment)
+  const healthScore = useMemo(() => calculateHealthScore(result, graph), [result, graph]);
+  const costOfInaction = useMemo(() => calculateCostOfInaction(result, graph), [result, graph]);
   const marketEvents = useMemo(() => getEventsForField(result.formData.businessField || "other"), [result.formData.businessField]);
   const clgStrategy = useMemo(() => generateCLGStrategy(result.formData), [result.formData]);
   const flywheel = useMemo(() => generateRetentionFlywheel(result.formData), [result.formData]);

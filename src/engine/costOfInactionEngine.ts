@@ -38,10 +38,16 @@ const IMPROVEMENT_BY_LEVEL: Record<string, number> = {
   beginner: 0.35, intermediate: 0.25, advanced: 0.15, "": 0.25,
 };
 
-export function calculateCostOfInaction(result: FunnelResult): CostOfInaction {
+export function calculateCostOfInaction(
+  result: FunnelResult,
+  ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
+): CostOfInaction {
   const { formData } = result;
   const field = formData.businessField || "other";
-  const wasteRate = WASTE_RATES[field] || 0.30;
+  // Cross-domain: if real CPL is available, derive waste from it instead of industry tables
+  const wasteRate = (ukg?.derived.realMetrics.avgCPL != null && ukg.derived.realMetrics.avgCPL > 0)
+    ? Math.min(0.50, ukg.derived.realMetrics.avgCPL / 100) // normalize CPL into a 0-50% waste rate proxy
+    : (WASTE_RATES[field] || 0.30);
   const monthlyBudget = BUDGET_AMOUNTS[formData.budgetRange || "medium"] || 6000;
   const improvement = IMPROVEMENT_BY_LEVEL[formData.experienceLevel || ""] || 0.25;
   const avgPrice = formData.averagePrice || 500;

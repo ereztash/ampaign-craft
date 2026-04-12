@@ -5,7 +5,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
-import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph, loadChatInsights, loadImportedDataSignals, loadMetaSignals } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
@@ -40,12 +40,15 @@ const Dashboard = () => {
 
   // Personalized greeting from knowledge graph
   const graph = useMemo(() => {
-    if (profile.lastFormData) return buildUserKnowledgeGraph(profile.lastFormData);
+    if (profile.lastFormData) return buildUserKnowledgeGraph(
+      profile.lastFormData, undefined, undefined, undefined, undefined,
+      { chatInsights: loadChatInsights(), importedData: loadImportedDataSignals(), metaSignals: loadMetaSignals() },
+    );
     return null;
   }, [profile.lastFormData]);
 
   const healthScore = useMemo(() => {
-    if (lastPlan) return calculateHealthScore(lastPlan.result);
+    if (lastPlan) return calculateHealthScore(lastPlan.result, graph ?? undefined);
     return null;
   }, [lastPlan]);
 
@@ -76,7 +79,7 @@ const Dashboard = () => {
 
   const motivationState = useMemo(() => {
     const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
-    const coi = lastPlan ? calculateCostOfInaction(lastPlan.result) : undefined;
+    const coi = lastPlan ? calculateCostOfInaction(lastPlan.result, graph ?? undefined) : undefined;
     const baeInput: BAEInput = {
       healthScore: healthScore ?? undefined,
       costOfInaction: coi,

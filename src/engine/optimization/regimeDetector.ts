@@ -231,6 +231,35 @@ function aggregate(analyses: MetricAnalysis[]): RegimeOutput {
  * Falls back to `stable` with low confidence when all inputs have
  * fewer than 3 valid points.
  */
+/**
+ * Build synthetic RegimeInput entries from UKG cross-domain signals
+ * when the caller doesn't have a full timeseries (e.g. only a single
+ * Meta snapshot or CSV trend summary). Returns an empty array when
+ * UKG has no real metrics.
+ */
+export function buildRegimeInputFromUKG(
+  ukg: import("../userKnowledgeGraph").UserKnowledgeGraph,
+): RegimeInput[] {
+  const rm = ukg.derived.realMetrics;
+  if (rm.avgCPL == null && rm.avgCTR == null) return [];
+  const result: RegimeInput[] = [];
+  if (rm.avgCPL != null) {
+    result.push({
+      metric: "cpl",
+      values: [rm.avgCPL, rm.avgCPL * (rm.trendDirection === "improving" ? 0.95 : rm.trendDirection === "declining" ? 1.08 : 1)],
+      direction: "up" as const,
+    });
+  }
+  if (rm.avgCTR != null) {
+    result.push({
+      metric: "ctr",
+      values: [rm.avgCTR, rm.avgCTR * (rm.trendDirection === "improving" ? 1.05 : rm.trendDirection === "declining" ? 0.92 : 1)],
+      direction: "down" as const,
+    });
+  }
+  return result;
+}
+
 export function detectRegime(inputs: RegimeInput[]): RegimeOutput {
   if (!Array.isArray(inputs) || inputs.length === 0) {
     return {
