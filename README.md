@@ -38,7 +38,7 @@ Recommended pricing model, 3-tier structure with decoy, Hormozi offer stack (val
 Onboarding sequences by business type (ecommerce/SaaS/services/creator). Churn prediction engine with 3-stage model (Active → Disengaging → Silent), risk scoring across 10 industry verticals, NRR projections with/without intervention, and intervention playbooks. Referral program blueprint with WhatsApp templates, growth loop identification, loyalty program design.
 
 **Cross-Module Intelligence**
-UserKnowledgeGraph cross-references all user data (FormData + Differentiation + Stylome + DISC Profile + Behavior) and feeds every module. Blackboard Architecture orchestrates 12+ specialized agents via topological dependency resolution with async parallel execution. AI Coach has full context from all 5 modules. LLM Router dynamically selects Claude models (Haiku/Sonnet/Opus) based on task complexity with fallback chains and cost caps.
+UserKnowledgeGraph cross-references all 8 user data sources (FormData + Differentiation + Stylome + DISC + Behavior + Chat + Imported Data + Meta Ads) and feeds every module via 27 cross-domain connections. Blackboard Architecture orchestrates 12+ specialized agents via topological dependency resolution with async parallel execution. AI Coach has full context from all 5 modules. LLM Router dynamically selects Claude models (Haiku/Sonnet/Opus) based on task complexity with tier-based restrictions, fallback chains, and monthly cost caps. Cold-start detection ensures new users get immediate value. GDPR-compliant consent management gates training data capture. Network resilience layer handles offline scenarios with queued writes.
 
 ## Routes
 
@@ -61,7 +61,7 @@ UserKnowledgeGraph cross-references all user data (FormData + Differentiation + 
 
 ```
 src/
-├── engine/          # 45 pure-logic engines (29 carry an ENGINE_MANIFEST with isLive:true)
+├── engine/          # 47 pure-logic engines (29 carry an ENGINE_MANIFEST with isLive:true)
 │   ├── funnelEngine.ts              # Core funnel generation + personalizeResult
 │   ├── salesPipelineEngine.ts       # Sales pipeline + neuro-closing + DISC + personalized scripts
 │   ├── pricingIntelligenceEngine.ts # Pricing model + tiers + offer stack + guarantee + framing
@@ -80,7 +80,7 @@ src/
 │   ├── brandVectorEngine.ts         # Brand-neuro matching (cortisol/oxytocin/dopamine)
 │   ├── retentionFlywheelEngine.ts   # 4-type retention loop designer
 │   ├── stylomeEngine.ts             # Writing style fingerprint extractor + burstiness metrics
-│   ├── guidanceEngine.ts            # Meta Ads KPI remediation
+│   ├── guidanceEngine.ts            # Meta Ads KPI remediation + cold-start educational guidance
 │   ├── gapEngine.ts                 # Performance gap analysis
 │   ├── nextStepEngine.ts            # Personalized next-step recommendations
 │   ├── dataImportEngine.ts          # CSV/Excel data ingestion
@@ -100,6 +100,8 @@ src/
 │   ├── promptOptimizerEngine.ts     # Analyses training-pair feedback → prompt-level fixes
 │   ├── visualExportEngine.ts        # Platform-specific social post structuring (FB/IG/LI/X)
 │   ├── behavioralActionEngine.ts    # Behavioral nudge orchestration (COR/Fogg/DISC) — loss aversion + goal gradient + social proof
+│   ├── outputModeration.ts          # Post-generation content moderation (blocklist + negativity + pressure)
+│   ├── referralEngine.ts            # FunnelForge self-referral program (codes + rewards + stats)
 │   ├── researchOrchestrator.ts      # Shim exposing the research/ orchestrator as a direct engine
 │   ├── research/                    # Cross-domain research engine (real orchestrator lives here)
 │   ├── optimization/                # 6-engine GRAOS optimization overlay (strictly additive)
@@ -113,7 +115,7 @@ src/
 │   │   ├── blackboardStore.ts       # Shared knowledge space with reactive updates
 │   │   ├── agentRunner.ts           # Sync: topological sort + dependency-aware execution
 │   │   ├── asyncAgentRunner.ts      # Async: parallel execution + timeout + retry + cost caps
-│   │   ├── circuitBreaker.ts        # 3-state breaker (closed/open/half-open) for loop control
+│   │   ├── circuitBreaker.ts        # 3-state breaker (closed/open/half-open) + cost-aware tripping
 │   │   ├── agentTypes.ts            # AsyncAgentDefinition, AgentExecutionMeta, CircuitBreakerConfig
 │   │   ├── llmAgent.ts              # LLM agent factory (createLLMAgent) + JSON parser
 │   │   ├── index.ts                 # Public API: sync + async pipelines, QA agents, debug swarm
@@ -132,11 +134,15 @@ src/
 │           ├── marketAgent.ts       # Competitor analysis, pricing benchmarks, trends
 │           └── marketingAgent.ts    # Channel effectiveness, content strategy, Israeli market
 ├── services/        # External integrations
-│   ├── aiCopyService.ts             # Context-aware LLM copy generation (ENGINE_MANIFEST, isLive)
-│   ├── llmRouter.ts                 # Model selection (Haiku/Sonnet/Opus) + fallbacks + cost caps
+│   ├── aiCopyService.ts             # Context-aware LLM copy generation + pre-gen budget check
+│   ├── llmRouter.ts                 # Model selection + tier restriction + monthly tracking + cost caps
 │   ├── blackboardPersistence.ts     # Save/load board state + task queue + audit log
 │   ├── semanticSearch.ts            # pgvector-powered content similarity search
-│   └── eventQueue.ts               # PostgreSQL event bus (publish/query/convenience helpers)
+│   ├── eventQueue.ts               # PostgreSQL event bus (publish/query/convenience helpers)
+│   ├── auditLog.ts                  # Ring-buffer audit logger (500 entries, localStorage + Supabase)
+│   ├── dataGovernance.ts            # GDPR: right-to-delete + data export (Article 17 & 20)
+│   ├── networkResilience.ts         # Retry with backoff + offline queue + auto-flush
+│   └── shareService.ts             # Shareable plan links with expiry + privacy stripping
 ├── lib/             # Data libraries & utilities
 │   ├── agentOrchestrator.ts         # Tier-4 pillar: wraps agent-executor with agent_tasks row,
 │   │                                  direct invoke, task-status update, and 30s event_queue poll
@@ -154,6 +160,8 @@ src/
 │   ├── pricingTiers.ts              # Free/Pro/Business tier definitions
 │   ├── smartDefaults.ts             # Adaptive form defaults by business type
 │   ├── minimalFormDefaults.ts       # Minimal-mode form defaults
+│   ├── sanitize.ts                  # HTML sanitization (strips script/iframe/events/JS URLs)
+│   ├── fallbackTemplates.ts         # 40 bilingual templates for LLM fallback (10 industries × 4 tasks)
 │   └── ...                          # glossary, socialProofData, colorSemantics, utils
 ├── components/      # 99 React components
 │   └── reflective/                  # ReflectiveCard.tsx — 3-row reflective surface, feature-flagged
@@ -161,10 +169,10 @@ src/
 │                      SalesEntry, PricingEntry, RetentionEntry, DataHub, CommandCenter,
 │                      StrategyCanvas, AiCoachPage, Profile, Landing, Index, NotFound)
 ├── hooks/           # 14 custom hooks (includes useAICopy, useResearch)
-├── contexts/        # Auth (dual: Supabase + local) + UserProfile
+├── contexts/        # Auth (dual: Supabase + local + RBAC) + UserProfile + Team
 ├── i18n/            # 290+ bilingual translation keys (Hebrew + English)
 ├── integrations/    # Supabase client + types
-└── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention, qa, research)
+└── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention, qa, research, governance, team)
 supabase/functions/  # 12 Edge Functions
 ├── ai-coach/               # Claude marketing coach (full UserKnowledgeGraph context)
 ├── differentiation-agent/  # Claude Sonnet for 5-phase differentiation
@@ -292,6 +300,73 @@ Six small engines under `src/engine/optimization/` that observe the existing fun
 - All Hebrew reason strings have no numbers, no percents, no em dashes, no exclamation marks, and no banned words.
 - 50 new tests total (M1=6, M2=7, M3=6, M4=8, M5=13, M6=10), all green.
 - Low-coherence short-circuit: when the reflective engine sees contradictory or missing diagnostic inputs (`coherence_score < 0.6`), it emits a fixed neutral `watch` card rather than committing to a decision.
+
+## 5 Architectural Layers (added 2026-04-12)
+
+Five production-readiness layers addressing cold start, cost governance, security, fault tolerance, and viral growth.
+
+### Layer 1 — Cold Start & Time-to-Value
+
+New users get a meaningful "quick win" within 2 minutes, before connecting any data source.
+
+| Feature | File | What it does |
+|---|---|---|
+| `coldStartMode` flag | `userKnowledgeGraph.ts` | Derived boolean: `visitCount ≤ 2 && no external data` — engines check this to simplify output |
+| Cold-start guidance | `guidanceEngine.ts` | Returns 3 educational items (profile, first funnel, AI Coach) instead of KPI-gap analysis for new users |
+| Context-aware DAPL | `daplProfile.ts` | `initProfileWithContext(industry, experience, goal)` — sets informed priors instead of neutral 0.5 |
+| ExpressWizard default | `CommandCenter.tsx` | New users see ExpressWizard (2 clicks → instant plan) with "Switch to full wizard" fallback |
+| Onboarding milestones | `UserProfileContext.tsx` | Tracks 5 milestones (form, plan, data source, stylome, coach) with `completeMilestone()` |
+| Cold-start banner | `ResultsDashboard.tsx` | Contextual "Starting point — here's how to improve" with 3 actionable suggestions |
+
+### Layer 2 — Unit Economics / FinOps
+
+Tier-based cost governance prevents margin erosion from LLM usage.
+
+| Feature | File | What it does |
+|---|---|---|
+| Tier-based model restriction | `llmRouter.ts` | free→Haiku only, pro→Sonnet max, business→all models. `selectModel()` accepts optional `pricingTier` |
+| Pre-generation budget check | `aiCopyService.ts` | Checks `isOverMonthlyBudget()` before every LLM call; throws descriptive error with upgrade CTA |
+| Monthly usage tracking | `llmRouter.ts` | `getMonthlyUsage()` aggregates by month; per-tier caps: free=₪5, pro=₪50, business=₪200 |
+| Cost-aware circuit breaker | `circuitBreaker.ts` | `recordSuccess(confidence, costNIS)` — trips breaker if session cost exceeds 2× cap |
+| Usage dashboard | `UsageDashboard.tsx` | Displays calls, tokens, cost, progress bar; compact mode for AppTopBar |
+
+### Layer 3 — Security, Privacy & RBAC
+
+GDPR-compliant data governance with role-based access.
+
+| Feature | File | What it does |
+|---|---|---|
+| Governance types | `types/governance.ts` | `UserRole` (owner/admin/editor/viewer), `ConsentRecord`, `AuditEntry`, `canPerform()` |
+| Consent banner | `ConsentBanner.tsx` | First-visit modal with data processing (required) + training data opt-in (optional) |
+| Training data gating | `trainingDataEngine.ts` | `captureTrainingPair()` checks `consent.trainingDataOptIn` — skips silently if opted out |
+| Right-to-delete | `dataGovernance.ts` | `deleteAllUserData(userId)` purges localStorage + Supabase; `exportUserData()` for portability |
+| RBAC foundation | `AuthContext.tsx` | `role: UserRole` on AppUser, `canPerform(action)` in context; solo users default to "owner" |
+| HTML sanitization | `lib/sanitize.ts` | `sanitizeHTML()` strips script/iframe/event handlers; `escapeHTML()` for text rendering |
+| Audit logging | `auditLog.ts` | Ring buffer (500 entries) in localStorage; convenience helpers for plan/export/consent/delete events |
+
+### Layer 4 — Graceful Degradation & Fallbacks
+
+When dependencies fail, the app degrades to a less-intelligent but functional state.
+
+| Feature | File | What it does |
+|---|---|---|
+| Fallback templates | `lib/fallbackTemplates.ts` | 40 pre-written templates (10 industries × 4 task types), bilingual. Used when LLM fails |
+| Stale data warnings | `MetaConnect.tsx` | Amber badge when Meta data > 7 days old; shows "last synced on {date}" |
+| SentinelRail activated | `asyncAgentRunner.ts` | Records all agent success/failure events for anomaly detection |
+| Output moderation | `outputModeration.ts` | Post-generation check: blocklist, negativity, high-pressure, cortisol overload |
+| Network resilience | `networkResilience.ts` | `withRetry()`, offline queue (localStorage), auto-flush on `navigator.onLine` |
+
+### Layer 5 — PLG (Product-Led Growth)
+
+Self-growth mechanics so FunnelForge acquires users through its own product.
+
+| Feature | File | What it does |
+|---|---|---|
+| Shareable plan links | `shareService.ts` | `createShareLink(plan)` → `/shared/{id}` with 30-day expiry, sensitive data stripped |
+| Team foundation | `types/team.ts` + `TeamContext.tsx` | Team/TeamMember types, invite/remove/list, gated behind Business tier |
+| Referral engine | `referralEngine.ts` | Unique codes, reward structure (referrer=30d Pro, referee=14d Pro), stats tracking |
+| Export-as-link | `exportEngine.ts` | `exportAsLink()` uploads to Supabase Storage, returns 7-day signed URL |
+| Plan comments | `PlanComments.tsx` | Comment thread per plan, localStorage-backed, team/shared-link visible |
 
 ## Honest Market-Gap Metric (hardened 2026-04-10)
 
