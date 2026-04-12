@@ -100,6 +100,7 @@ export interface DerivedInsights {
   voiceCalibration: "formal" | "dugri" | "mixed";
   chatDerivedPain: { he: string; en: string } | null;
   realMetrics: RealMetrics;
+  coldStartMode: boolean;
 }
 
 export interface UserKnowledgeGraph {
@@ -364,6 +365,7 @@ function buildDerivedInsights(
     voiceCalibration: deriveVoiceCalibration(voice, formData),
     chatDerivedPain: deriveChatPain(chat),
     realMetrics: deriveRealMetrics(imported, meta),
+    coldStartMode: deriveColdStartMode(behavior, voice, chat, imported, meta),
   };
 }
 
@@ -690,4 +692,17 @@ function importedMetric(
     (m) => m.metric.toLowerCase().includes(keyword),
   );
   return match ? match.changePct : null;
+}
+
+function deriveColdStartMode(
+  behavior: UserBehavior,
+  voice: StylomeVoice | null | undefined,
+  chat: ChatInsights | null | undefined,
+  imported: ImportedDataSignals | null | undefined,
+  meta: MetaSignals | null | undefined,
+): boolean {
+  // Cold start = new user with minimal data enrichment
+  const isNew = behavior.visitCount <= 2;
+  const noExternalData = !voice && !chat && !imported && !meta?.connected;
+  return isNew && noExternalData;
 }

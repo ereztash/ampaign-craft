@@ -247,6 +247,55 @@ export function initProfile(): UserProfileVector {
 }
 
 /**
+ * Context-aware initialization for cold-start users.
+ * Instead of neutral 0.5 everywhere, set industry- and experience-informed
+ * priors so new users get better personalization from the very first interaction.
+ */
+export function initProfileWithContext(
+  businessField?: string,
+  experienceLevel?: string,
+  mainGoal?: string,
+): UserProfileVector {
+  const base = initProfile();
+
+  // Industry-informed priors
+  const industryOverrides: Record<string, Partial<Record<Dimension, number>>> = {
+    tech: { data_literacy: 0.7, strategic_depth: 0.6, brand_maturity: 0.5 },
+    fashion: { brand_maturity: 0.6, channel_confidence: 0.5, data_literacy: 0.4 },
+    food: { speed_preference: 0.6, risk_tolerance: 0.4, brand_maturity: 0.4 },
+    services: { detail_orientation: 0.6, strategic_depth: 0.5, channel_confidence: 0.4 },
+    education: { strategic_depth: 0.6, detail_orientation: 0.6, data_literacy: 0.5 },
+    health: { risk_tolerance: 0.3, brand_maturity: 0.5, detail_orientation: 0.6 },
+    realEstate: { risk_tolerance: 0.6, strategic_depth: 0.6, brand_maturity: 0.6 },
+    tourism: { speed_preference: 0.6, channel_confidence: 0.5, brand_maturity: 0.4 },
+    personalBrand: { brand_maturity: 0.3, channel_confidence: 0.4, risk_tolerance: 0.5 },
+  };
+
+  if (businessField && industryOverrides[businessField]) {
+    for (const [dim, val] of Object.entries(industryOverrides[businessField])) {
+      base[dim as Dimension] = val as number;
+    }
+  }
+
+  // Experience-level overrides
+  if (experienceLevel === "beginner") {
+    base.risk_tolerance = Math.min(base.risk_tolerance, 0.3);
+    base.detail_orientation = Math.min(base.detail_orientation, 0.3);
+    base.data_literacy = Math.min(base.data_literacy, 0.3);
+  } else if (experienceLevel === "advanced") {
+    base.risk_tolerance = Math.max(base.risk_tolerance, 0.7);
+    base.strategic_depth = Math.max(base.strategic_depth, 0.8);
+    base.data_literacy = Math.max(base.data_literacy, 0.7);
+  }
+
+  // Goal-based overrides
+  if (mainGoal === "sales") base.speed_preference = Math.max(base.speed_preference, 0.6);
+  if (mainGoal === "loyalty") base.strategic_depth = Math.max(base.strategic_depth, 0.7);
+
+  return base;
+}
+
+/**
  * Apply a single field event. Idempotent by construction:
  * the target dimension is set to a value that depends only on the
  * event, not on prior state. Unknown fields only bump `updated_at`.

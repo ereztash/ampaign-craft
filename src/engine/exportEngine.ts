@@ -252,3 +252,40 @@ export function downloadExport(result: ExportResult): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+// ═══════════════════════════════════════════════
+// EXPORT-AS-LINK
+// Uploads export to Supabase Storage and returns a signed URL.
+// Falls back to local download if Supabase is unavailable.
+// ═══════════════════════════════════════════════
+
+export async function exportAsLink(
+  result: ExportResult,
+): Promise<{ url: string; expiresAt: string } | null> {
+  const EXPIRY_SECONDS = 7 * 24 * 60 * 60; // 7 days
+
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const filePath = `exports/${result.filename}`;
+    const blob = new Blob([result.data], { type: result.mimeType });
+
+    const { error: uploadError } = await (supabase as any).storage
+      .from("exports")
+      .upload(filePath, blob, { contentType: result.mimeType, upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    const { data: signedData, error: signError } = await (supabase as any).storage
+      .from("exports")
+      .createSignedUrl(filePath, EXPIRY_SECONDS);
+
+    if (signError || !signedData?.signedUrl) throw signError || new Error("No signed URL");
+
+    const expiresAt = new Date(Date.now() + EXPIRY_SECONDS * 1000).toISOString();
+    return { url: signedData.signedUrl, expiresAt };
+  } catch {
+    // Supabase unavailable — fall back to local download
+    downloadExport(result);
+    return null;
+  }
+}

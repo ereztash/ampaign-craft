@@ -52,10 +52,35 @@ const TASK_COMPLEXITY: Record<CopyTask, { baseTier: ModelTier; maxTokens: number
   "agent-task": { baseTier: "standard", maxTokens: 2048 },
 };
 
+// ═══════════════════════════════════════════════
+// TIER-BASED MODEL RESTRICTION
+// ═══════════════════════════════════════════════
+
+export type PricingTier = "free" | "pro" | "business";
+
+const TIER_ORDER: ModelTier[] = ["fast", "standard", "deep"];
+
+const PRICING_TIER_MAX_MODEL: Record<PricingTier, ModelTier> = {
+  free: "fast",       // Haiku only
+  pro: "standard",    // Haiku + Sonnet
+  business: "deep",   // All models
+};
+
+export function getMaxTierForPricingTier(pricingTier: PricingTier): ModelTier {
+  return PRICING_TIER_MAX_MODEL[pricingTier] ?? "fast";
+}
+
+function clampTier(requested: ModelTier, maxAllowed: ModelTier): ModelTier {
+  const reqIdx = TIER_ORDER.indexOf(requested);
+  const maxIdx = TIER_ORDER.indexOf(maxAllowed);
+  return reqIdx <= maxIdx ? requested : maxAllowed;
+}
+
 /**
- * Selects the optimal model based on task, text length, and quality priority.
+ * Selects the optimal model based on task, text length, quality priority,
+ * and optional pricing tier restriction.
  */
-export function selectModel(config: LLMRouterConfig): ModelSelection {
+export function selectModel(config: LLMRouterConfig, pricingTier?: PricingTier): ModelSelection {
   const taskConfig = TASK_COMPLEXITY[config.task];
   let tier = taskConfig.baseTier;
 
@@ -69,6 +94,11 @@ export function selectModel(config: LLMRouterConfig): ModelSelection {
   if (config.qualityPriority === "speed") {
     if (tier === "deep") tier = "standard";
     else if (tier === "standard") tier = "fast";
+  }
+
+  // Clamp to pricing tier limit
+  if (pricingTier) {
+    tier = clampTier(tier, getMaxTierForPricingTier(pricingTier));
   }
 
   // Long text needs more tokens
@@ -121,6 +151,49 @@ export function getUsageHistory(): UsageRecord[] {
 
 export function getTotalCostNIS(): number {
   return getUsageHistory().reduce((sum, r) => sum + r.costNIS, 0);
+}
+
+// ═══════════════════════════════════════════════
+// MONTHLY USAGE TRACKING
+// ═══════════════════════════════════════════════
+
+const MONTHLY_CAPS: Record<PricingTier, number> = {
+  free: 5,       // 5 NIS/month
+  pro: 50,       // 50 NIS/month
+  business: 200, // 200 NIS/month
+};
+
+function currentMonthKey(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export interface MonthlyUsage {
+  totalTokens: number;
+  totalCostNIS: number;
+  callCount: number;
+  monthKey: string;
+}
+
+export function getMonthlyUsage(): MonthlyUsage {
+  const month = currentMonthKey();
+  const history = getUsageHistory();
+  const monthRecords = history.filter((r) => r.timestamp.startsWith(month));
+  return {
+    totalTokens: monthRecords.reduce((sum, r) => sum + r.tokensUsed, 0),
+    totalCostNIS: Math.round(monthRecords.reduce((sum, r) => sum + r.costNIS, 0) * 100) / 100,
+    callCount: monthRecords.length,
+    monthKey: month,
+  };
+}
+
+export function getMonthlyCap(pricingTier: PricingTier): number {
+  return MONTHLY_CAPS[pricingTier] ?? MONTHLY_CAPS.free;
+}
+
+export function isOverMonthlyBudget(pricingTier: PricingTier): boolean {
+  const usage = getMonthlyUsage();
+  return usage.totalCostNIS >= getMonthlyCap(pricingTier);
 }
 
 // ═══════════════════════════════════════════════

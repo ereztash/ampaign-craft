@@ -30,6 +30,7 @@ import type { SavedPlan } from "@/types/funnel";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Database, Wand2, Compass, Map } from "lucide-react";
+import ExpressWizard from "@/components/ExpressWizard";
 
 const CommandCenter = () => {
   const { language, t } = useLanguage();
@@ -134,6 +135,8 @@ const CommandCenter = () => {
   const completedModules = modules.filter((m) => m.completed).length;
 
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
+  const [showExpressWizard, setShowExpressWizard] = useState(!profile.lastFormData);
+  const isNewUser = !profile.lastFormData;
 
   const motivationState = useMemo(() => {
     const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
@@ -170,6 +173,17 @@ const CommandCenter = () => {
                 {isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot and intelligence"}
               </p>
             </>
+          ) : showExpressWizard ? (
+            <>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground md:text-4xl" dir="auto">
+                {isHe ? "בוא נתחיל — 2 לחיצות ויש לך תוכנית" : "Let's start — 2 clicks and you have a plan"}
+              </h1>
+              <p className="text-muted-foreground max-w-xl mx-auto" dir="auto">
+                {isHe
+                  ? `${totalUsers.toLocaleString()}+ בעלי עסקים כבר בפנים.`
+                  : `${totalUsers.toLocaleString()}+ business owners inside.`}
+              </p>
+            </>
           ) : (
             <>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground md:text-4xl" dir="auto">
@@ -193,6 +207,21 @@ const CommandCenter = () => {
           completedModules={completedModules}
           totalModules={modules.length}
         />
+
+        {isNewUser && showExpressWizard && (
+          <div className="space-y-2">
+            <ExpressWizard onComplete={(data) => {
+              localStorage.setItem("funnelforge-last-form", JSON.stringify(data));
+              setShowExpressWizard(false);
+              navigate("/wizard", { state: { expressData: data } });
+            }} />
+            <p className="text-center text-xs text-muted-foreground" dir="auto">
+              <button className="underline hover:text-foreground" onClick={() => { setShowExpressWizard(false); navigate("/wizard"); }}>
+                {isHe ? "מעדיף שליטה מלאה? עבור לאשף המלא" : "Prefer full control? Switch to full wizard"}
+              </button>
+            </p>
+          </div>
+        )}
 
         {!nudgeDismissed && motivationState.nudge && (
           <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />

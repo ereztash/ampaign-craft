@@ -136,6 +136,15 @@ export async function captureTrainingPair(
   userId?: string | null,
   options: CaptureOptions = {}
 ): Promise<string | null> {
+  // Gate behind training data consent (GDPR)
+  try {
+    const consentRaw = localStorage.getItem("funnelforge-consent");
+    if (consentRaw) {
+      const consent = JSON.parse(consentRaw);
+      if (consent.trainingDataOptIn === false) return null;
+    }
+  } catch { /* continue if consent not found — backwards compat */ }
+
   const engineVersion = options.engineVersion ?? "1.0.0";
   const metadata = options.metadata ?? {};
   const timestamp = new Date().toISOString();

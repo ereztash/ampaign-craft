@@ -14,6 +14,7 @@ import type {
   SessionCostTracker,
 } from "./agentTypes";
 import { DEFAULT_COST_CAP_NIS } from "./agentTypes";
+import { SentinelRail } from "./sentinelRail";
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
 const DEFAULT_MAX_RETRIES = 2;
@@ -124,8 +125,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number, agentName: string): Pro
 export class AsyncAgentRunner {
   private agents: AsyncAgentDefinition[] = [];
   private costTracker: SessionCostTracker;
+  private sentinel: SentinelRail;
 
   constructor(costCapNIS: number = DEFAULT_COST_CAP_NIS) {
+    this.sentinel = new SentinelRail();
     this.costTracker = {
       sessionId: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       totalTokensUsed: 0,
@@ -277,6 +280,10 @@ export class AsyncAgentRunner {
         meta.status = "completed";
         meta.completedAt = Date.now();
         meta.retryCount = attempt;
+
+        // Record execution in sentinel for anomaly detection
+        this.sentinel.record({ ts: Date.now(), conceptKey: `AGENT-${agent.name}-success` });
+
         return meta;
       } catch (err) {
         lastError = err instanceof Error ? err.message : String(err);
@@ -294,6 +301,10 @@ export class AsyncAgentRunner {
     meta.status = lastError?.includes("timed out") ? "timeout" : "failed";
     meta.error = lastError;
     meta.completedAt = Date.now();
+
+    // Record failure in sentinel
+    this.sentinel.record({ ts: Date.now(), conceptKey: `AGENT-${agent.name}-failure` });
+
     return meta;
   }
 

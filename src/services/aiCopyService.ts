@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════
 
 import { supabase } from "@/integrations/supabase/client";
-import { selectModel, trackUsage, type CopyTask, type ModelSelection } from "./llmRouter";
+import { selectModel, trackUsage, isOverMonthlyBudget, getMonthlyUsage, getMonthlyCap, wouldExceedCostCap, type CopyTask, type ModelSelection, type PricingTier } from "./llmRouter";
 import type { FunnelResult, FormData } from "@/types/funnel";
 import { analyzeAIDetection } from "@/engine/perplexityBurstiness";
 
@@ -120,12 +120,24 @@ function buildSystemPrompt(request: CopyGenerationRequest): string {
 /**
  * Generate marketing copy using Claude via Supabase Edge Function.
  */
-export async function generateCopy(request: CopyGenerationRequest): Promise<CopyGenerationResult> {
+export async function generateCopy(
+  request: CopyGenerationRequest,
+  pricingTier?: PricingTier,
+): Promise<CopyGenerationResult> {
+  // Pre-generation budget check
+  if (pricingTier && isOverMonthlyBudget(pricingTier)) {
+    const usage = getMonthlyUsage();
+    const cap = getMonthlyCap(pricingTier);
+    throw new Error(
+      `Monthly AI budget reached (₪${usage.totalCostNIS.toFixed(2)} / ₪${cap}). Upgrade your plan for more AI-powered content.`,
+    );
+  }
+
   const modelSelection = selectModel({
     task: request.task,
     textLength: request.task === "landing-page" || request.task === "email-sequence" ? "long" : "medium",
     qualityPriority: request.qualityPriority || "balanced",
-  });
+  }, pricingTier);
 
   const systemPrompt = buildSystemPrompt(request);
 

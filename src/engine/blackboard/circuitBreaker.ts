@@ -16,6 +16,7 @@ export interface CircuitBreakerSnapshot {
   lastConfidence: number;
   trippedAt: number | null;
   trippedReason: string | null;
+  sessionCostNIS: number;
 }
 
 /**
@@ -40,9 +41,12 @@ export class CircuitBreaker {
   private lastConfidence = 0;
   private trippedAt: number | null = null;
   private trippedReason: string | null = null;
+  private sessionCostNIS = 0;
+  private costCapNIS: number;
 
-  constructor(config: Partial<CircuitBreakerConfig> = {}) {
+  constructor(config: Partial<CircuitBreakerConfig> = {}, costCapNIS = 20) {
     this.config = { ...DEFAULT_CIRCUIT_BREAKER, ...config };
+    this.costCapNIS = costCapNIS;
   }
 
   /**
@@ -63,10 +67,11 @@ export class CircuitBreaker {
   /**
    * Record a successful iteration with a confidence score.
    */
-  recordSuccess(confidence: number): void {
+  recordSuccess(confidence: number, costNIS = 0): void {
     this.iteration++;
     this.lastConfidence = confidence;
     this.consecutiveFailures = 0;
+    this.sessionCostNIS += costNIS;
 
     if (confidence < this.config.minConfidence) {
       this.consecutiveLowConfidence++;
@@ -87,9 +92,10 @@ export class CircuitBreaker {
   /**
    * Record a failed iteration.
    */
-  recordFailure(error?: string): void {
+  recordFailure(error?: string, costNIS = 0): void {
     this.iteration++;
     this.consecutiveFailures++;
+    this.sessionCostNIS += costNIS;
     this.consecutiveLowConfidence++;
     this.lastConfidence = 0;
 
@@ -120,6 +126,11 @@ export class CircuitBreaker {
       this.trip(
         `${this.consecutiveLowConfidence} consecutive low-confidence results (below ${this.config.minConfidence})`
       );
+      return;
+    }
+
+    if (this.sessionCostNIS > this.costCapNIS) {
+      this.trip(`Session cost (₪${this.sessionCostNIS.toFixed(2)}) exceeded cap (₪${this.costCapNIS})`);
     }
   }
 
@@ -140,6 +151,7 @@ export class CircuitBreaker {
       lastConfidence: this.lastConfidence,
       trippedAt: this.trippedAt,
       trippedReason: this.trippedReason,
+      sessionCostNIS: this.sessionCostNIS,
     };
   }
 
@@ -154,5 +166,6 @@ export class CircuitBreaker {
     this.lastConfidence = 0;
     this.trippedAt = null;
     this.trippedReason = null;
+    this.sessionCostNIS = 0;
   }
 }
