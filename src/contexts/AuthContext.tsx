@@ -40,6 +40,7 @@ interface LocalUserRecord {
   displayName: string;
   passwordHash: string;
   tier: PricingTier;
+  role?: UserRole;
   createdAt: string;
 }
 
@@ -95,6 +96,29 @@ type ProfilesClient = {
 };
 function profilesDb(supa: unknown): ProfilesClient {
   return supa as ProfilesClient;
+}
+
+// ═══ Admin seed ═══
+// Seeds the built-in admin account on first load (demo/local auth only).
+// Plain-text password is never stored — only the SHA-256 hash.
+
+const ADMIN_SEED_ID = "admin-erez-seed";
+
+async function seedAdminUser() {
+  const users = getLocalUsers();
+  if (users.some((u) => u.id === ADMIN_SEED_ID)) return; // already seeded
+  const hash = await hashPassword("10031999");
+  const adminUser: LocalUserRecord = {
+    id: ADMIN_SEED_ID,
+    email: "erez",
+    displayName: "ארז",
+    passwordHash: hash,
+    tier: "pro",
+    role: "admin",
+    createdAt: new Date().toISOString(),
+  };
+  users.push(adminUser);
+  saveLocalUsers(users);
 }
 
 // ═══ Supabase availability check ═══
@@ -192,12 +216,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Local auth fallback
       if (!cancelled) {
         setIsLocalAuth(true);
+        await seedAdminUser();
         const session = getLocalSession();
         if (session) {
           const users = getLocalUsers();
           const found = users.find((u) => u.id === session.userId);
           if (found) {
-            setUser({ id: found.id, email: found.email, displayName: found.displayName, role: "owner" });
+            setUser({ id: found.id, email: found.email, displayName: found.displayName, role: found.role ?? "owner" });
             setTierState(found.tier);
           }
         }
@@ -277,7 +302,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setLocalSession({ userId: found.id, email: found.email });
-    setUser({ id: found.id, email: found.email, displayName: found.displayName, role: "owner" });
+    setUser({ id: found.id, email: found.email, displayName: found.displayName, role: found.role ?? "owner" });
     setTierState(found.tier);
 
     return { error: null };

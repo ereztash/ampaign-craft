@@ -26,7 +26,7 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
   const isHe = language === "he";
-  const isOwner = user?.role === "owner";
+  const isOwner = user?.role === "owner" || user?.role === "admin";
 
   return (
     <>
