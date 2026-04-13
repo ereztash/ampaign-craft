@@ -14,36 +14,55 @@ function saveLocal(plans: SavedPlan[]) {
   localStorage.setItem(LOCAL_KEY, JSON.stringify(plans));
 }
 
+// Typed helper that wraps supabase calls so we avoid repeated `as any`.
+// The generated Supabase client doesn't have types for runtime-created tables.
+type SupaRow = Record<string, unknown>;
+const db = supabase as unknown as {
+  from: (table: string) => {
+    select: (cols: string) => {
+      eq: (col: string, val: string) => {
+        order: (
+          col: string,
+          opts: { ascending: boolean },
+        ) => Promise<{ data: SupaRow[] | null; error: unknown }>;
+      };
+    };
+    insert: (
+      rows: SupaRow[],
+    ) => Promise<{ error: unknown }>;
+    delete: () => {
+      eq: (col: string, val: string) => {
+        eq: (col: string, val: string) => Promise<{ error: unknown }>;
+      };
+    };
+  };
+};
+
 export function useSavedPlans() {
   const { user } = useAuth();
   const [plans, setPlans] = useState<SavedPlan[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Load plans on mount and when auth changes
-  useEffect(() => {
-    loadPlans();
-  }, [user?.id]);
 
   const loadPlans = useCallback(async () => {
     setLoading(true);
 
     if (user) {
       // Try Supabase first
-      const { data, error } = await (supabase as any)
+      const { data, error } = await db
         .from("saved_plans")
         .select("*")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false }) as { data: any[] | null; error: any };
+        .order("created_at", { ascending: false });
 
       if (!error && data) {
         const supaPlans: SavedPlan[] = data.map((row) => ({
-          id: row.id,
-          name: row.name,
+          id: row.id as string,
+          name: row.name as string,
           result: row.result as unknown as FunnelResult,
-          savedAt: row.created_at,
+          savedAt: row.created_at as string,
         }));
 
-        // Migrate localStorage plans on first login
+        // Migrate localStorage plans that aren't yet in Supabase
         const localPlans = loadLocal();
         if (localPlans.length > 0) {
           const existingIds = new Set(supaPlans.map((p) => p.id));
@@ -51,21 +70,23 @@ export function useSavedPlans() {
           if (newPlans.length > 0) {
             await Promise.all(
               newPlans.map((p) =>
-                ((supabase as any).from("saved_plans")).insert([{
+                db.from("saved_plans").insert([{
                   id: p.id,
                   user_id: user.id,
                   name: p.name,
-                  result: JSON.parse(JSON.stringify(p.result)),
+                  result: JSON.parse(JSON.stringify(p.result)) as SupaRow,
                   created_at: p.savedAt,
                 }])
               )
             );
             supaPlans.push(...newPlans);
           }
-          // Clear localStorage after migration
-          localStorage.removeItem(LOCAL_KEY);
         }
 
+        // Always keep localStorage in sync as a local cache.
+        // DO NOT clear it — PlanView and CommandCenter read directly from
+        // localStorage and clearing causes "Plan not found" on next visit.
+        saveLocal(supaPlans);
         setPlans(supaPlans);
       } else {
         // Fallback to localStorage if Supabase fails
@@ -78,6 +99,11 @@ export function useSavedPlans() {
     setLoading(false);
   }, [user]);
 
+  // Load plans on mount and when auth changes
+  useEffect(() => {
+    void loadPlans();
+  }, [loadPlans]);
+
   const savePlan = useCallback(
     async (result: FunnelResult, name: string) => {
       const plan: SavedPlan = {
@@ -88,11 +114,11 @@ export function useSavedPlans() {
       };
 
       if (user) {
-        await ((supabase as any).from("saved_plans")).insert([{
+        await db.from("saved_plans").insert([{
           id: plan.id,
           user_id: user.id,
           name: plan.name,
-          result: JSON.parse(JSON.stringify(plan.result)),
+          result: JSON.parse(JSON.stringify(plan.result)) as SupaRow,
           created_at: plan.savedAt,
         }]);
       }
@@ -111,7 +137,7 @@ export function useSavedPlans() {
   const deletePlan = useCallback(
     async (id: string) => {
       if (user) {
-        await ((supabase as any).from("saved_plans")).delete().eq("id", id).eq("user_id", user.id);
+        await db.from("saved_plans").delete().eq("id", id).eq("user_id", user.id);
       }
 
       const local = loadLocal().filter((p) => p.id !== id);

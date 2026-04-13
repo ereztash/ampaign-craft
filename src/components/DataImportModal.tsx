@@ -69,7 +69,12 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
       setSchema(detectedSchema);
       setStep("preview");
     } catch (err) {
-      toast.error(isHe ? "שגיאה בקריאת הקובץ" : "Error reading file");
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(
+        isHe
+          ? `שגיאה בקריאת הקובץ: ${msg}`
+          : `Error reading file: ${msg}`,
+      );
     }
     setLoading(false);
   }, [isHe]);
