@@ -35,6 +35,38 @@ const StrategyCanvas = () => {
     }
   }, []);
 
+  // All hooks must be called unconditionally before any early returns
+  const { profile } = useUserProfile();
+  const { streak } = useAchievements(language);
+  const modules = useModuleStatus();
+  const [nudgeDismissed, setNudgeDismissed] = useState(false);
+
+  const plan = planId ? (plans.find((p) => p.id === planId) ?? null) : null;
+
+  const motivationState = useMemo(() => {
+    if (!plan) return null;
+    const graph = profile.lastFormData ? buildUserKnowledgeGraph(profile.lastFormData) : undefined;
+    const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
+    const healthObj = calculateHealthScore(plan.result);
+    const coi = calculateCostOfInaction(plan.result);
+    const completedModules = modules.filter((m) => m.completed).length;
+    const baeInput: BAEInput = {
+      healthScore: healthObj,
+      costOfInaction: coi,
+      discProfile: disc?.distribution,
+      investment: profile.investment,
+      modulesTotal: modules.length,
+      modulesCompleted: completedModules,
+      streakWeeks: streak.currentStreak,
+      achievementsUnlocked: 0,
+      achievementsTotal: 10,
+      businessField: plan.result.formData?.businessField || "other",
+      sessionMinutes: profile.investment.totalSessionsMinutes % 60 || 1,
+    };
+    return computeMotivationState(baeInput);
+  }, [plan, profile, modules, streak]);
+
+  // Early returns after all hooks
   if (!planId) {
     if (plans.length === 0) {
       return (
@@ -83,13 +115,6 @@ const StrategyCanvas = () => {
       </main>
     );
   }
-
-  const { profile } = useUserProfile();
-  const { streak } = useAchievements(language);
-  const modules = useModuleStatus();
-  const [nudgeDismissed, setNudgeDismissed] = useState(false);
-
-  const plan = plans.find((p) => p.id === planId) || null;
 
   if (!plan) {
     return (
@@ -161,32 +186,10 @@ const StrategyCanvas = () => {
     }
   };
 
-  const motivationState = useMemo(() => {
-    const graph = profile.lastFormData ? buildUserKnowledgeGraph(profile.lastFormData) : undefined;
-    const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
-    const healthObj = calculateHealthScore(plan.result);
-    const coi = calculateCostOfInaction(plan.result);
-    const completedModules = modules.filter((m) => m.completed).length;
-    const baeInput: BAEInput = {
-      healthScore: healthObj,
-      costOfInaction: coi,
-      discProfile: disc?.distribution,
-      investment: profile.investment,
-      modulesTotal: modules.length,
-      modulesCompleted: completedModules,
-      streakWeeks: streak.currentStreak,
-      achievementsUnlocked: 0,
-      achievementsTotal: 10,
-      businessField: plan.result.formData?.businessField || "other",
-      sessionMinutes: profile.investment.totalSessionsMinutes % 60 || 1,
-    };
-    return computeMotivationState(baeInput);
-  }, [plan, profile, modules, streak]);
-
   return (
     <main className="px-4 pb-8">
       <div className="mx-auto max-w-5xl pt-4">
-        {!nudgeDismissed && motivationState.nudge && (
+        {!nudgeDismissed && motivationState?.nudge && (
           <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />
         )}
         <StrategyMap result={plan.result} bottlenecks={bottlenecks} hasDifferentiation={hasDiff} />

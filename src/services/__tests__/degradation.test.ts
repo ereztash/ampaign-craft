@@ -59,7 +59,7 @@ describe("Output content moderation", () => {
 
   it("handles empty input", () => {
     expect(moderateOutput("").safe).toBe(true);
-    expect(moderateOutput(null as any).safe).toBe(true);
+    expect(moderateOutput(null as unknown as string).safe).toBe(true);
   });
 });
 

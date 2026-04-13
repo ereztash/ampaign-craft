@@ -63,7 +63,7 @@ export function useCampaignTracking(planId: string | null) {
   useEffect(() => {
     if (!planId) return;
     loadMetrics();
-  }, [planId, user?.id]);
+  }, [planId, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMetrics = useCallback(async () => {
     if (!planId) return;

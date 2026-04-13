@@ -4,6 +4,9 @@
 // ═══════════════════════════════════════════════
 
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+const db = supabase as unknown as SupabaseClient;
 
 // ═══════════════════════════════════════════════
 // TYPES
@@ -49,7 +52,7 @@ export async function publishEvent(
   userId: string,
   options: PublishOptions = {}
 ): Promise<{ eventId: string | null; error?: string }> {
-  const { data, error } = await (supabase.rpc as any)("publish_event", {
+  const { data, error } = await db.rpc("publish_event", {
     p_event_type: eventType,
     p_payload: payload,
     p_user_id: userId,
@@ -76,8 +79,8 @@ export async function getRecentEvents(
   userId: string,
   limit = 20
 ): Promise<{ events: QueueEvent[]; error?: string }> {
-  const { data, error } = await supabase
-    .from("event_queue" as any)
+  const { data, error } = await db
+    .from("event_queue")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
@@ -87,7 +90,7 @@ export async function getRecentEvents(
     return { events: [], error: error.message };
   }
 
-  const events: QueueEvent[] = (data || []).map((row: any) => ({
+  const events: QueueEvent[] = (data || []).map((row: Record<string, unknown>) => ({
     id: row.id,
     eventType: row.event_type,
     payload: row.payload,
@@ -108,8 +111,8 @@ export async function getRecentEvents(
 export async function getEventStatus(
   eventId: string
 ): Promise<{ event: QueueEvent | null; error?: string }> {
-  const { data, error } = await supabase
-    .from("event_queue" as any)
+  const { data, error } = await db
+    .from("event_queue")
     .select("*")
     .eq("id", eventId)
     .single();
@@ -120,7 +123,7 @@ export async function getEventStatus(
 
   if (!data) return { event: null };
 
-  const row = data as any;
+  const row = data as Record<string, unknown>;
   return {
     event: {
       id: row.id,

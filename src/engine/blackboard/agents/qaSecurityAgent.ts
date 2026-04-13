@@ -8,6 +8,17 @@ import type { AgentDefinition } from "../agentRunner";
 import type { QASecurityResult, QAFinding, QASeverity } from "@/types/qa";
 import type { FunnelResult } from "@/types/funnel";
 
+type AddFinding = (
+  category: QAFinding["category"],
+  severity: QASeverity,
+  messageHe: string,
+  messageEn: string,
+  location?: string,
+  suggestionHe?: string,
+  suggestionEn?: string,
+  autoFixable?: boolean
+) => void;
+
 export const qaSecurityAgent: AgentDefinition = {
   name: "qaSecurity",
   dependencies: ["funnel"],
@@ -145,7 +156,7 @@ const CREDIT_CARD_REGEX = /\b(?:\d{4}[-\s]?){3}\d{4}\b/;
 
 function detectPII(
   content: TextItem[],
-  addFinding: (...args: any[]) => void
+  addFinding: AddFinding
 ): boolean {
   let detected = false;
 
@@ -223,7 +234,7 @@ const TEMPLATE_INJECTION_PATTERNS = [
 
 function detectInjectionRisks(
   content: TextItem[],
-  addFinding: (...args: any[]) => void
+  addFinding: AddFinding
 ): number {
   let risks = 0;
 
@@ -263,7 +274,7 @@ const WHATSAPP_UNSAFE_PATTERNS = [
 
 function detectUnsafeTemplates(
   content: TextItem[],
-  addFinding: (...args: any[]) => void
+  addFinding: AddFinding
 ): number {
   let unsafe = 0;
 

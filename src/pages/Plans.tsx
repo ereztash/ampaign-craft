@@ -16,7 +16,7 @@ const Plans = () => {
   const plans = useMemo<SavedPlan[]>(() => {
     try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]").sort((a: SavedPlan, b: SavedPlan) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()); }
     catch { return []; }
-  }, [refreshKey]);
+  }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const deletePlan = (id: string) => {
     const updated = plans.filter((p) => p.id !== id);

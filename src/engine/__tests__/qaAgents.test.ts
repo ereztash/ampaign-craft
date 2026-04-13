@@ -172,7 +172,7 @@ describe("qaStaticAgent — runStaticAnalysis", () => {
   it("detects missing required fields", () => {
     const formData = makeFormData({
       businessField: "",
-      mainGoal: "" as any,
+      mainGoal: "",
     });
     const funnelResult = makeFunnelResult();
 
@@ -245,9 +245,9 @@ describe("qaStaticAgent — runStaticAnalysis", () => {
   it("computes score deductions correctly", () => {
     const formData = makeFormData({
       businessField: "",
-      audienceType: "" as any,
-      mainGoal: "" as any,
-      budgetRange: "" as any,
+      audienceType: "",
+      mainGoal: "",
+      budgetRange: "",
     });
     const funnelResult = makeFunnelResult();
 
@@ -260,9 +260,9 @@ describe("qaStaticAgent — runStaticAnalysis", () => {
   it("score never goes below 0", () => {
     const formData = makeFormData({
       businessField: "",
-      audienceType: "" as any,
-      mainGoal: "" as any,
-      budgetRange: "" as any,
+      audienceType: "",
+      mainGoal: "",
+      budgetRange: "",
       productDescription: "",
       existingChannels: [],
     });

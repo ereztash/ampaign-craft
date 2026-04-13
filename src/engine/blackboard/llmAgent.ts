@@ -4,7 +4,7 @@
 // a reusable agent template for the blackboard pipeline.
 // ═══════════════════════════════════════════════
 
-import type { Blackboard, BoardSection } from "./blackboardStore";
+import type { Blackboard, BlackboardState, BoardSection } from "./blackboardStore";
 import type { AsyncAgentDefinition, LLMAgentConfig } from "./agentTypes";
 import { selectModel, calculateCostNIS, type ModelTier } from "@/services/llmRouter";
 
@@ -72,7 +72,7 @@ export function createLLMAgent(config: LLMAgentConfig): AsyncAgentDefinition {
 
       // Write to board sections
       for (const section of config.writes) {
-        board.set(section, parsed as any);
+        board.set(section, parsed as unknown as BlackboardState[typeof section]);
       }
     },
   };

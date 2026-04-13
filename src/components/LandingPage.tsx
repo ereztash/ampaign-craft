@@ -29,7 +29,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
   const savedPlans = useMemo<SavedPlan[]>(() => {
     try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); }
     catch { return []; }
-  }, [profile.savedPlanCount]);
+  }, [profile.savedPlanCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pulse = useMemo(() => generateWeeklyPulse(savedPlans), [savedPlans]);
 

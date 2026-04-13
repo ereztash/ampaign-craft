@@ -6,7 +6,7 @@ import {
 } from "../userKnowledgeGraph";
 import { generateGuidance } from "../guidanceEngine";
 import { initProfileWithContext } from "../optimization/daplProfile";
-import { FormData } from "@/types/funnel";
+import { FormData, type FunnelResult } from "@/types/funnel";
 
 function makeFormData(overrides: Partial<FormData> = {}): FormData {
   return {
@@ -58,7 +58,7 @@ describe("coldStartMode detection", () => {
 describe("cold-start guidance", () => {
   it("returns educational items for cold-start user with no gaps", () => {
     const graph = buildUserKnowledgeGraph(makeFormData(), null, null, { visitCount: 1 });
-    const items = generateGuidance([], {} as any, undefined, graph);
+    const items = generateGuidance([], {} as unknown as FunnelResult, undefined, graph);
     expect(items.length).toBe(3);
     expect(items[0].metric).toBe("profile");
     expect(items[1].metric).toBe("funnel");
@@ -70,7 +70,7 @@ describe("cold-start guidance", () => {
   it("returns normal KPI guidance for returning user", () => {
     const graph = buildUserKnowledgeGraph(makeFormData(), null, null, { visitCount: 5, mastery: 30 });
     // With no gaps and non-cold-start user, returns empty
-    const items = generateGuidance([], {} as any, undefined, graph);
+    const items = generateGuidance([], {} as unknown as FunnelResult, undefined, graph);
     expect(items.length).toBe(0);
   });
 });

@@ -58,8 +58,9 @@ export async function deleteAllUserData(userId?: string): Promise<{ deletedKeys:
   if (userId) {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      await (supabase as any).from("shared_context").delete().eq("user_id", userId);
-      await (supabase as any).from("training_pairs").delete().eq("user_id", userId);
+      const db = supabase as unknown as import("@supabase/supabase-js").SupabaseClient;
+      await db.from("shared_context").delete().eq("user_id", userId);
+      await db.from("training_pairs").delete().eq("user_id", userId);
       deletedKeys.push("supabase:shared_context", "supabase:training_pairs");
     } catch {
       // Supabase unavailable — local deletion still succeeds

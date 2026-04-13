@@ -5,6 +5,9 @@
 // ═══════════════════════════════════════════════
 
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+const db = supabase as unknown as SupabaseClient;
 import type { FunnelResult } from "@/types/funnel";
 
 // ═══════════════════════════════════════════════
@@ -165,7 +168,7 @@ export async function searchSimilarContent(
   }
 
   // Use the RPC function to search
-  const { data, error } = await (supabase.rpc as any)("match_content", {
+  const { data, error } = await db.rpc("match_content", {
     query_embedding: embedData?.embedding,
     match_user_id: userId,
     match_threshold: options.threshold ?? 0.7,
@@ -177,7 +180,7 @@ export async function searchSimilarContent(
     return { results: [], error: error.message };
   }
 
-  const results: SearchResult[] = (data || []).map((row: any) => ({
+  const results: SearchResult[] = (data || []).map((row: Record<string, unknown>) => ({
     id: row.id,
     planId: row.plan_id,
     contentType: row.content_type,

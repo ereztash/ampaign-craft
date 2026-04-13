@@ -32,7 +32,7 @@ const Dashboard = () => {
 
   const savedPlans = useMemo<SavedPlan[]>(() => {
     try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; }
-  }, [profile.savedPlanCount]);
+  }, [profile.savedPlanCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pulse = useMemo(() => generateWeeklyPulse(savedPlans), [savedPlans]);
   const lastPlan = savedPlans.length > 0 ? [...savedPlans].sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())[0] : null;
@@ -50,7 +50,7 @@ const Dashboard = () => {
   const healthScore = useMemo(() => {
     if (lastPlan) return calculateHealthScore(lastPlan.result, graph ?? undefined);
     return null;
-  }, [lastPlan]);
+  }, [lastPlan, graph]);
 
   const nextStep = useMemo(() => {
     const fallbackGraph = graph || buildDefaultKnowledgeGraph();

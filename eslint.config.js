@@ -23,4 +23,20 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+  // Shadcn/ui generated files and context/hook files legitimately export
+  // both components and utilities from the same file — suppress the Fast
+  // Refresh warning for these directories.
+  {
+    files: [
+      "src/components/ui/**/*.{ts,tsx}",
+      "src/contexts/**/*.{ts,tsx}",
+      "src/i18n/**/*.{ts,tsx}",
+      "src/components/ConsentBanner.tsx",
+      "src/components/TutorialFlow.tsx",
+      "src/pages/Dashboard.tsx",
+    ],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 );

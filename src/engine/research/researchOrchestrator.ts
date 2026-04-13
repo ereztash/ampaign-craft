@@ -135,15 +135,15 @@ Respond in JSON:
     "claude-sonnet-4-6"
   );
 
-  const parsed = parseLLMJson<any[]>(raw);
+  const parsed = parseLLMJson<Record<string, unknown>[]>(raw);
   const items = Array.isArray(parsed) ? parsed : [parsed];
 
-  return items.map((item: any, i: number) => ({
+  return items.map((item: Record<string, unknown>, i: number) => ({
     id: `sq-${query.id}-${i + 1}`,
     parentId: query.id,
-    domain: validateDomain(item.domain),
-    question: item.question || query.question,
-    keywords: Array.isArray(item.keywords) ? item.keywords : [],
+    domain: validateDomain(item.domain as string),
+    question: (item.question as string) || query.question,
+    keywords: Array.isArray(item.keywords) ? (item.keywords as string[]) : [],
   }));
 }
 
@@ -238,7 +238,7 @@ Respond in JSON:
     "claude-sonnet-4-6"
   );
 
-  const parsed = parseLLMJson<any>(raw);
+  const parsed = parseLLMJson<Record<string, unknown>>(raw);
   const domains = [...new Set(findings.map((f) => f.domain))] as ResearchDomain[];
 
   // Select top findings by confidence
@@ -249,20 +249,20 @@ Respond in JSON:
   return {
     queryId: query.id,
     summary: {
-      he: parsed.summary_he || "",
-      en: parsed.summary_en || "",
+      he: (parsed.summary_he as string) || "",
+      en: (parsed.summary_en as string) || "",
     },
     keyFindings,
-    crossDomainInsights: (parsed.crossDomainInsights || []).map((i: any) => ({
+    crossDomainInsights: ((parsed.crossDomainInsights as Record<string, string>[] | undefined) || []).map((i: Record<string, string>) => ({
       he: i.he || "",
       en: i.en || "",
     })),
-    strategicRecommendations: (parsed.strategicRecommendations || []).map((r: any) => ({
+    strategicRecommendations: ((parsed.strategicRecommendations as Record<string, string>[] | undefined) || []).map((r: Record<string, string>) => ({
       priority: r.priority || "medium",
       recommendation: { he: r.recommendation_he || "", en: r.recommendation_en || "" },
       supportingFindings: [],
     })),
-    overallConfidence: clamp(parsed.overallConfidence ?? 0.6, 0, 1),
+    overallConfidence: clamp((parsed.overallConfidence as number) ?? 0.6, 0, 1),
     domains,
     totalFindings: findings.length,
     completedAt: new Date().toISOString(),

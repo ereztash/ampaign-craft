@@ -86,7 +86,8 @@ export async function createShareLink(plan: SavedPlan): Promise<string> {
   // Try Supabase first
   try {
     const { supabase } = await import("@/integrations/supabase/client");
-    await (supabase as any).from("shared_plans").insert({
+    const db = supabase as unknown as import("@supabase/supabase-js").SupabaseClient;
+    await db.from("shared_plans").insert({
       share_id: shareId,
       plan_id: plan.id,
       snapshot: JSON.stringify(snapshot),

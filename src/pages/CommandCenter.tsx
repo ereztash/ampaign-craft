@@ -42,7 +42,7 @@ const CommandCenter = () => {
   const location = useLocation();
   const reducedMotion = useReducedMotion();
   const totalUsers = getTotalUsers();
-  const { streak, mastery } = useAchievements(language);
+  const { streak, masteryFeatures } = useAchievements(language);
   const modules = useModuleStatus();
 
   useEffect(() => {
@@ -55,6 +55,7 @@ const CommandCenter = () => {
     } catch {
       return [];
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.savedPlanCount, profile.lastPlanSummary, location.key]);
 
   const latestPlan = useMemo(() => {
@@ -252,7 +253,7 @@ const CommandCenter = () => {
               graph={graph}
               hasDiff={hasDiff}
               planCount={plans.length}
-              masteryFeatures={new Set((mastery as any).features || [])}
+              masteryFeatures={masteryFeatures}
             />
           </div>
           <div className="lg:col-span-2 space-y-3">

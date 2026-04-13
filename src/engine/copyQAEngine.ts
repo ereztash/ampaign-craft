@@ -146,7 +146,7 @@ export function analyzeCopy(
   if (aiDetection.humanScore < 30) {
     risks.push({
       type: "ai_detected", severity: "high",
-      message: { he: `ציון אנושיות נמוך (${aiDetection.humanScore}/100) — הטקסט נראה מיוצר ע\"י AI`, en: `Low humanness score (${aiDetection.humanScore}/100) — text appears AI-generated` },
+      message: { he: `ציון אנושיות נמוך (${aiDetection.humanScore}/100) — הטקסט נראה מיוצר ע"י AI`, en: `Low humanness score (${aiDetection.humanScore}/100) — text appears AI-generated` },
       fix: { he: "הגדל שונות באורכי משפטים, השתמש במילים פחות צפויות, והוסף מעברי טון טבעיים", en: "Increase sentence length variation, use less predictable words, and add natural tone shifts" },
     });
     score -= 10;

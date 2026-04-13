@@ -34,7 +34,7 @@ export async function saveBlackboardSnapshot(
   executionResult?: PipelineExecutionResult
 ): Promise<string | null> {
   const { data, error } = await supabase
-    .from("blackboard_snapshots" as any)
+    .from("blackboard_snapshots" as unknown as string)
     .insert({
       plan_id: planId,
       state: JSON.parse(JSON.stringify(state)), // deep clone to JSONB
@@ -53,7 +53,7 @@ export async function saveBlackboardSnapshot(
     return null;
   }
 
-  return (data as any)?.id ?? null;
+  return (data as unknown as { id: string })?.id ?? null;
 }
 
 /**
@@ -63,7 +63,7 @@ export async function loadBlackboardSnapshot(
   planId: string
 ): Promise<BlackboardSnapshot | null> {
   const { data, error } = await supabase
-    .from("blackboard_snapshots" as any)
+    .from("blackboard_snapshots" as unknown as string)
     .select("*")
     .eq("plan_id", planId)
     .order("created_at", { ascending: false })
@@ -72,18 +72,18 @@ export async function loadBlackboardSnapshot(
 
   if (error || !data) return null;
 
-  const row = data as any;
+  const row = data as unknown as Record<string, unknown>;
   return {
-    id: row.id,
-    planId: row.plan_id,
+    id: row.id as string,
+    planId: row.plan_id as string,
     state: row.state as BlackboardState,
-    completedAgents: row.completed_agents || [],
-    errors: row.errors || [],
+    completedAgents: (row.completed_agents as string[]) || [],
+    errors: (row.errors as { agent: string; error: string }[]) || [],
     executionMeta: row.execution_meta as PipelineExecutionResult | null,
-    totalTokensUsed: row.total_tokens_used || 0,
-    totalCostNIS: row.total_cost_nis || 0,
-    durationMs: row.duration_ms,
-    createdAt: row.created_at,
+    totalTokensUsed: (row.total_tokens_used as number) || 0,
+    totalCostNIS: (row.total_cost_nis as number) || 0,
+    durationMs: row.duration_ms as number | null,
+    createdAt: row.created_at as string,
   };
 }
 
@@ -115,7 +115,7 @@ export async function enqueueAgentTask(
   planId?: string
 ): Promise<string | null> {
   const { data, error } = await supabase
-    .from("agent_tasks" as any)
+    .from("agent_tasks" as unknown as string)
     .insert({
       agent_name: agentName,
       input,
@@ -130,7 +130,7 @@ export async function enqueueAgentTask(
     return null;
   }
 
-  return (data as any)?.id ?? null;
+  return (data as unknown as { id: string })?.id ?? null;
 }
 
 /**
@@ -138,26 +138,26 @@ export async function enqueueAgentTask(
  */
 export async function getAgentTaskStatus(taskId: string): Promise<AgentTask | null> {
   const { data, error } = await supabase
-    .from("agent_tasks" as any)
+    .from("agent_tasks" as unknown as string)
     .select("*")
     .eq("id", taskId)
     .single();
 
   if (error || !data) return null;
 
-  const row = data as any;
+  const row = data as unknown as Record<string, unknown>;
   return {
-    id: row.id,
-    agentName: row.agent_name,
-    status: row.status,
-    input: row.input,
-    output: row.output,
-    error: row.error,
-    confidence: row.confidence,
-    tokensUsed: row.tokens_used,
-    costNIS: row.cost_nis,
-    retryCount: row.retry_count,
-    createdAt: row.created_at,
+    id: row.id as string,
+    agentName: row.agent_name as string,
+    status: row.status as string,
+    input: row.input as Record<string, unknown>,
+    output: row.output as Record<string, unknown> | null,
+    error: row.error as string | null,
+    confidence: row.confidence as number | null,
+    tokensUsed: row.tokens_used as number,
+    costNIS: row.cost_nis as number,
+    retryCount: row.retry_count as number,
+    createdAt: row.created_at as string,
   };
 }
 
@@ -176,7 +176,7 @@ export async function logAgentEvent(
   metadata?: Record<string, unknown>
 ): Promise<void> {
   const { error } = await supabase
-    .from("agent_execution_log" as any)
+    .from("agent_execution_log" as unknown as string)
     .insert({
       task_id: taskId,
       session_id: sessionId,
@@ -203,7 +203,7 @@ export async function getMonthlyAgentCost(userId: string): Promise<number> {
   startOfMonth.setHours(0, 0, 0, 0);
 
   const { data, error } = await supabase
-    .from("agent_tasks" as any)
+    .from("agent_tasks" as unknown as string)
     .select("cost_nis")
     .eq("user_id", userId)
     .gte("created_at", startOfMonth.toISOString())
@@ -211,5 +211,5 @@ export async function getMonthlyAgentCost(userId: string): Promise<number> {
 
   if (error || !data) return 0;
 
-  return (data as any[]).reduce((sum: number, row: any) => sum + (row.cost_nis || 0), 0);
+  return (data as unknown as Record<string, number>[]).reduce((sum: number, row) => sum + (row.cost_nis || 0), 0);
 }

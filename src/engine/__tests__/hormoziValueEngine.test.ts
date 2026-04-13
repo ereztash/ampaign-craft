@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { calculateValueScore } from "../hormoziValueEngine";
 import { FormData } from "@/types/funnel";
+import type { UserKnowledgeGraph } from "../userKnowledgeGraph";
 
 function makeFormData(overrides: Partial<FormData> = {}): FormData {
   return {
@@ -257,7 +258,7 @@ describe("Hormozi Value Equation Engine", () => {
         competitorCount: 1,
         industryPainPoints: [{ he: "עלויות גבוהות", en: "high costs" }],
       },
-    } as any);
+    } as unknown as UserKnowledgeGraph);
     expect(with_.dreamOutcome.score).toBeGreaterThan(without.dreamOutcome.score);
   });
 

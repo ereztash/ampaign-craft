@@ -155,10 +155,12 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setLastVisitDate(profileData.lastVisitDate);
     setIsReturningUser(isReturning);
 
-    typeof window !== "undefined" && localStorage.setItem(
-      KEYS.userProfile,
-      JSON.stringify({ visitCount: newVisitCount, lastVisitDate: new Date().toISOString() })
-    );
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        KEYS.userProfile,
+        JSON.stringify({ visitCount: newVisitCount, lastVisitDate: new Date().toISOString() })
+      );
+    }
 
     const lastForm = safeParseJson<FormData | null>(KEYS.lastForm, null);
     setLastFormData(lastForm);
@@ -179,7 +181,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     } else if (lastForm && lastForm.businessField) {
       const migrated = fromFormData(lastForm);
       setUnifiedProfileState(migrated);
-      typeof window !== "undefined" && localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(migrated));
+      if (typeof window !== "undefined") { localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(migrated)); }
     }
 
     const savedMilestones = safeParseJson<OnboardingMilestones>(KEYS.milestones, {
@@ -201,14 +203,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       totalSessionsMinutes: prevInvestment.totalSessionsMinutes,
     };
     setInvestment(updatedInvestment);
-    typeof window !== "undefined" && localStorage.setItem(KEYS.investment, JSON.stringify(updatedInvestment));
+    if (typeof window !== "undefined") { localStorage.setItem(KEYS.investment, JSON.stringify(updatedInvestment)); }
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setInvestment((prev) => {
         const updated = { ...prev, totalSessionsMinutes: prev.totalSessionsMinutes + 1 };
-        typeof window !== "undefined" && localStorage.setItem(KEYS.investment, JSON.stringify(updated));
+        if (typeof window !== "undefined") { localStorage.setItem(KEYS.investment, JSON.stringify(updated)); }
         return updated;
       });
     }, 60_000);
@@ -227,7 +229,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const persistFormData = useCallback((data: FormData) => {
-    typeof window !== "undefined" && localStorage.setItem(KEYS.lastForm, JSON.stringify(data));
+    if (typeof window !== "undefined") { localStorage.setItem(KEYS.lastForm, JSON.stringify(data)); }
     setLastFormData(data);
   }, []);
 
@@ -237,9 +239,9 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
 
   const persistUnifiedProfile = useCallback((p: UnifiedProfile) => {
     setUnifiedProfileState(p);
-    typeof window !== "undefined" && localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(p));
+    if (typeof window !== "undefined") { localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(p)); }
     const fd = toFormData(p);
-    typeof window !== "undefined" && localStorage.setItem(KEYS.lastForm, JSON.stringify(fd));
+    if (typeof window !== "undefined") { localStorage.setItem(KEYS.lastForm, JSON.stringify(fd)); }
     setLastFormData(fd);
     if (p.experienceLevel) setExperienceLevelState(p.experienceLevel);
   }, []);
@@ -248,7 +250,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setAchievements((prev) => {
       if (prev.includes(id)) return prev;
       const updated = [...prev, id];
-      typeof window !== "undefined" && localStorage.setItem(KEYS.achievements, JSON.stringify(updated));
+      if (typeof window !== "undefined") { localStorage.setItem(KEYS.achievements, JSON.stringify(updated)); }
       return updated;
     });
   }, []);
@@ -263,7 +265,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setMilestones((prev) => {
       if (prev[key]) return prev;
       const updated = { ...prev, [key]: true };
-      typeof window !== "undefined" && localStorage.setItem(KEYS.milestones, JSON.stringify(updated));
+      if (typeof window !== "undefined") { localStorage.setItem(KEYS.milestones, JSON.stringify(updated)); }
       return updated;
     });
   }, []);
