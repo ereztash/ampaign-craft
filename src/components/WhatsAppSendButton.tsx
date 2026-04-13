@@ -37,7 +37,7 @@ export function WhatsAppSendButton({
 
   const handleSend = () => {
     // Normalize phone: remove spaces, dashes, leading zeros, add country code if missing
-    let normalized = phone.replace(/[\s\-\(\)]/g, "");
+    let normalized = phone.replace(/[\s\-()]/g, "");
     if (normalized.startsWith("0")) {
       normalized = "972" + normalized.slice(1); // Israeli default
     }

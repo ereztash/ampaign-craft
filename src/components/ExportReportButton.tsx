@@ -113,7 +113,7 @@ export function ExportReportButton({
       addSeparator();
 
       // ── Executive Summary ─────────────────────────────────────
-      const summary = result.executiveSummary || (result as any).funnelResult?.executiveSummary;
+      const summary = result.executiveSummary || (result as unknown as { funnelResult?: { executiveSummary?: string } }).funnelResult?.executiveSummary;
       if (summary) {
         newPageIfNeeded(40);
         addSection(isHe ? "תמצית אסטרטגית" : "Executive Summary");
@@ -128,10 +128,10 @@ export function ExportReportButton({
         addSection(isHe ? "שלבי המשפך" : "Funnel Stages");
         for (const stage of stages) {
           newPageIfNeeded(15);
-          const stageName = typeof stage.name === "object" ? (stage.name as any)[language] ?? stage.name : stage.name;
+          const stageName = typeof stage.name === "object" ? (stage.name as Record<string, string>)[language] ?? stage.name : stage.name;
           addLine(`• ${stageName}`, { size: 9, bold: true, indent: 2 });
           if (stage.strategy) {
-            const strat = typeof stage.strategy === "object" ? (stage.strategy as any)[language] ?? "" : stage.strategy;
+            const strat = typeof stage.strategy === "object" ? (stage.strategy as Record<string, string>)[language] ?? "" : stage.strategy;
             if (strat) addLine(strat, { size: 8, indent: 6, color: [80, 80, 80] });
           }
           y += 1;
@@ -145,7 +145,7 @@ export function ExportReportButton({
         newPageIfNeeded(20);
         addSection(isHe ? "ערוצים מומלצים" : "Recommended Channels");
         channels.slice(0, 6).forEach((ch, i) => {
-          const name = typeof ch === "string" ? ch : (ch as any).name?.[language] ?? (ch as any).name ?? String(ch);
+          const name = typeof ch === "string" ? ch : (ch as Record<string, unknown>).name?.[language as keyof object] ?? (ch as Record<string, unknown>).name ?? String(ch);
           addLine(`${i + 1}. ${name}`, { size: 9, indent: 2 });
         });
         addSeparator();
@@ -157,15 +157,15 @@ export function ExportReportButton({
         newPageIfNeeded(20);
         addSection("KPIs");
         kpis.slice(0, 6).forEach((kpi) => {
-          const name = typeof kpi === "string" ? kpi : (kpi as any).name?.[language] ?? String(kpi);
-          const value = typeof kpi === "object" ? (kpi as any).target ?? "" : "";
+          const name = typeof kpi === "string" ? kpi : (kpi as Record<string, unknown>).name?.[language as keyof object] ?? String(kpi);
+          const value = typeof kpi === "object" ? (kpi as Record<string, unknown>).target ?? "" : "";
           addLine(`• ${name}${value ? ": " + value : ""}`, { size: 9, indent: 2 });
         });
         addSeparator();
       }
 
       // ── Footer ────────────────────────────────────────────────
-      const totalPages = (doc.internal as any).getNumberOfPages();
+      const totalPages = (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
         const footerY = doc.internal.pageSize.getHeight() - 8;
