@@ -17,6 +17,7 @@ import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
 import type { MetaInsights } from "@/types/meta";
 import { NudgeBanner } from "@/components/NudgeBanner";
+import { ModuleNextStep } from "@/components/ModuleNextStep";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, FileText, Plus } from "lucide-react";
@@ -208,6 +209,9 @@ const StrategyCanvas = () => {
         onEdit={() => navigate("/wizard")}
         onNewPlan={() => navigate("/wizard")}
       />
+      <div className="mx-auto max-w-5xl px-4">
+        <ModuleNextStep current={2} />
+      </div>
     </main>
   );
 };

@@ -8,6 +8,7 @@ import { generatePricingIntelligence } from "@/engine/pricingIntelligenceEngine"
 import { generateCLGStrategy } from "@/engine/clgEngine";
 import BackToHub from "@/components/BackToHub";
 import PricingIntelligenceTab from "@/components/PricingIntelligenceTab";
+import { ModuleNextStep } from "@/components/ModuleNextStep";
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
@@ -54,6 +55,7 @@ const PageComponent = () => {
               </div>
             )}
             <PricingIntelligenceTab result={result} />
+            <ModuleNextStep current={4} />
           </>
         ) : (
           <div className="text-center py-16 space-y-4">

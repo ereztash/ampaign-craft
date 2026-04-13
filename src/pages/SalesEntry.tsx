@@ -5,6 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
 import BackToHub from "@/components/BackToHub";
 import SalesTab from "@/components/SalesTab";
+import { ModuleNextStep } from "@/components/ModuleNextStep";
 import { Button } from "@/components/ui/button";
 import { TrendingUp } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
@@ -20,7 +21,10 @@ const PageComponent = () => {
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-5xl">
         <BackToHub currentPage={language === "he" ? "מכירות" : "Sales"} />
         {result ? (
-          <SalesTab result={result} />
+          <>
+            <SalesTab result={result} />
+            <ModuleNextStep current={3} />
+          </>
         ) : (
           <div className="text-center py-16 space-y-4">
             <Illustration type="sales" size={96} className="text-accent mx-auto" />
