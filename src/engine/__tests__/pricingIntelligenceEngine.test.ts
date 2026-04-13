@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { generatePricingIntelligence } from "../pricingIntelligenceEngine";
 import { buildUserKnowledgeGraph } from "../userKnowledgeGraph";
 import { FormData } from "@/types/funnel";
+import type { DifferentiationResult } from "@/types/differentiation";
 
 function makeFormData(overrides: Partial<FormData> = {}): FormData {
   return {
@@ -20,8 +21,66 @@ function makeFormData(overrides: Partial<FormData> = {}): FormData {
   };
 }
 
+/** Minimal DifferentiationResult that satisfies buildUserKnowledgeGraph's field accesses */
+function makeMinimalDiffResult(): DifferentiationResult {
+  return {
+    id: "test",
+    createdAt: new Date().toISOString(),
+    formData: {
+      businessName: "Test Co",
+      industry: "tech",
+      targetMarket: "b2b",
+      companySize: "2-10",
+      currentPositioning: "We help B2B companies grow",
+      topCompetitors: ["Competitor A", "Competitor B"],
+      priceRange: "mid",
+      claimExamples: [],
+      customerQuote: "",
+      lostDealReason: "",
+      negativeReviewTheme: "",
+      returnReason: "",
+      competitorOverlap: "",
+      ashamedPains: [],
+      hiddenValues: [],
+      internalFriction: "",
+      competitorArchetypes: [],
+      buyingCommitteeMap: [],
+      influenceNetwork: [],
+      decisionLatency: "weeks",
+      decisionSpeed: "days",
+      discoveryChannels: [],
+      confirmedTradeoffs: [],
+      selectedHybridCategory: "",
+    },
+    claimVerificationScore: 80,
+    differentiationStrength: 75,
+    verifiedClaims: [],
+    gapAnalysis: [],
+    hiddenValueProfile: [],
+    ashamedPainInsights: [],
+    competitorMap: [],
+    committeeNarratives: [],
+    mechanismStatement: {
+      oneLiner: { he: "אנחנו מציעים ניתוח AI", en: "We offer AI-powered analysis" },
+      mechanism: "AI-powered analysis",
+      proof: "Case studies with 3x ROI",
+      antiStatement: "Not a generic analytics tool",
+      perRole: {},
+    },
+    tradeoffDeclarations: [],
+    hybridCategory: { name: "AI Analytics", whitespace: "Simplicity + Power", rationale: "test" } as DifferentiationResult["hybridCategory"],
+    contraryMetrics: [],
+    executiveSummary: { he: "סיכום", en: "Summary" },
+    nextSteps: [],
+  } as unknown as DifferentiationResult;
+}
+
 function makeGraph(formData: FormData) {
   return buildUserKnowledgeGraph(formData);
+}
+
+function makeGraphWithDiff(formData: FormData) {
+  return buildUserKnowledgeGraph(formData, makeMinimalDiffResult());
 }
 
 describe("generatePricingIntelligence", () => {
@@ -47,15 +106,7 @@ describe("generatePricingIntelligence", () => {
 
   it("recommends value_based for B2B with high differentiation", () => {
     const formData = makeFormData({ audienceType: "b2b" });
-    // Build a graph that has differentiation data (triggers 70 strength)
-    const graph = buildUserKnowledgeGraph(formData, {
-      mechanismStatement: { mechanism: "AI-powered analysis", claim: "10x faster", proof: "case studies", category: "speed" },
-      competitors: ["Competitor A"],
-      tradeoffs: [],
-      hiddenValues: [],
-      competitorArchetypes: [],
-      committeeRoles: [],
-    });
+    const graph = makeGraphWithDiff(formData);
     const result = generatePricingIntelligence(formData, graph);
     expect(result.pricingModel.model).toBe("value_based");
   });
@@ -162,14 +213,7 @@ describe("generatePricingIntelligence", () => {
 
   it("competitive position is premium for high differentiation B2B", () => {
     const formData = makeFormData({ audienceType: "b2b" });
-    const graph = buildUserKnowledgeGraph(formData, {
-      mechanismStatement: { mechanism: "test", claim: "test", proof: "test", category: "quality" },
-      competitors: [],
-      tradeoffs: [],
-      hiddenValues: [],
-      competitorArchetypes: [],
-      committeeRoles: [],
-    });
+    const graph = makeGraphWithDiff(formData);
     const result = generatePricingIntelligence(formData, graph);
     expect(result.competitivePosition.position).toBe("premium");
   });

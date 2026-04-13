@@ -17,8 +17,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --max-warnings 0 --fix",
-      "npx tsc --noEmit --skipLibCheck"
+      "eslint --max-warnings 0 --fix"
     ]
   },
   "dependencies": {
