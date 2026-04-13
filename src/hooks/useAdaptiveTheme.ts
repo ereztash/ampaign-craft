@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 
 /**
  * Adaptive Theme Hook
@@ -9,6 +10,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
  */
 export function useAdaptiveTheme() {
   const { profile } = useUserProfile();
+  const { effectiveArchetypeId, confidenceTier, uiConfig } = useArchetype();
 
   useEffect(() => {
     const el = document.documentElement;
@@ -52,4 +54,26 @@ export function useAdaptiveTheme() {
     profile.lastFormData?.audienceType,
     profile.lastFormData?.experienceLevel,
   ]);
+
+  // Archetype attribute: set at "confident" and "strong" tiers
+  useEffect(() => {
+    const el = document.documentElement;
+    if (confidenceTier === "confident" || confidenceTier === "strong") {
+      el.setAttribute("data-archetype", effectiveArchetypeId);
+    } else {
+      el.removeAttribute("data-archetype");
+    }
+    return () => el.removeAttribute("data-archetype");
+  }, [effectiveArchetypeId, confidenceTier]);
+
+  // Information density: only at "strong" tier
+  useEffect(() => {
+    const el = document.documentElement;
+    if (confidenceTier === "strong") {
+      el.setAttribute("data-density", uiConfig.informationDensity);
+    } else {
+      el.removeAttribute("data-density");
+    }
+    return () => el.removeAttribute("data-density");
+  }, [uiConfig.informationDensity, confidenceTier]);
 }

@@ -1,0 +1,258 @@
+// ═══════════════════════════════════════════════
+// ArchetypeProfileCard — Glass Box user-facing card
+// Shows the user their detected archetype, confidence,
+// top contributing signals, and an option to override.
+// Visible to all authenticated users.
+// ═══════════════════════════════════════════════
+
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, Sparkles, Loader2 } from "lucide-react";
+import { useArchetype } from "@/contexts/ArchetypeContext";
+import { useLanguage } from "@/i18n/LanguageContext";
+import type { ArchetypeId } from "@/types/archetype";
+
+// ═══════════════════════════════════════════════
+// METADATA
+// ═══════════════════════════════════════════════
+
+const ARCHETYPE_ICONS: Record<ArchetypeId, string> = {
+  strategist: "🎯",
+  optimizer:  "📈",
+  pioneer:    "🚀",
+  connector:  "🤝",
+  closer:     "⚡",
+};
+
+const ARCHETYPE_LABELS: Record<ArchetypeId, { he: string; en: string }> = {
+  strategist: { he: "האסטרטג", en: "The Strategist" },
+  optimizer:  { he: "האופטימייזר", en: "The Optimizer" },
+  pioneer:    { he: "החלוץ", en: "The Pioneer" },
+  connector:  { he: "המחבר", en: "The Connector" },
+  closer:     { he: "הסגרן", en: "The Closer" },
+};
+
+const ARCHETYPE_DESCRIPTIONS: Record<ArchetypeId, { he: string; en: string }> = {
+  strategist: {
+    he: "אתה בונה מתוך נתונים — סידרנו לך את הכלים בהתאם",
+    en: "You build from data — we've arranged your tools accordingly",
+  },
+  optimizer: {
+    he: "אתה מוכוון שיפור — הדאשבורד שלך מחדד לנתונים הכי רלוונטיים",
+    en: "You're improvement-focused — your dashboard is tuned to the most relevant data",
+  },
+  pioneer: {
+    he: "אתה בונה משהו חדש — הובלנו אותך ישר לבנייה",
+    en: "You're building something new — we took you straight to building mode",
+  },
+  connector: {
+    he: "הלקוחות שלך הם הלב — שמנו retention בקדמת הבמה",
+    en: "Your customers are your heart — we put retention front and center",
+  },
+  closer: {
+    he: "אתה סוגר עסקאות — חישלנו לך את הנתיב הכי ישיר",
+    en: "You close deals — we sharpened the most direct path for you",
+  },
+};
+
+const SIGNAL_SOURCE_LABELS: Record<string, { he: string; en: string }> = {
+  formData:          { he: "טופס", en: "Form" },
+  discProfile:       { he: "DISC", en: "DISC" },
+  hormoziValue:      { he: "ערך", en: "Value" },
+  retentionFlywheel: { he: "Retention", en: "Retention" },
+  churnRisk:         { he: "Churn", en: "Churn" },
+  healthScore:       { he: "בריאות", en: "Health" },
+  costOfInaction:    { he: "COI", en: "COI" },
+  knowledgeGraph:    { he: "גרף ידע", en: "Knowledge" },
+};
+
+const ARCHETYPE_IDS: ArchetypeId[] = ["strategist", "optimizer", "pioneer", "connector", "closer"];
+
+// ═══════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════
+
+export default function ArchetypeProfileCard() {
+  const { profile, effectiveArchetypeId, confidenceTier, loading, setOverride } = useArchetype();
+  const { language } = useLanguage();
+  const isHe = language === "he";
+  const [signalsOpen, setSignalsOpen] = useState(false);
+  const [editingOverride, setEditingOverride] = useState(false);
+
+  if (loading) {
+    return (
+      <Card className="mb-6 border-primary/20">
+        <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {isHe ? "טוען פרופיל..." : "Loading profile..."}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // ── Cold start: no pipeline runs yet ──
+  if (confidenceTier === "none" && profile.sessionCount === 0) {
+    return (
+      <Card className="mb-6 border-dashed border-primary/30 bg-primary/3">
+        <CardContent className="p-4 flex items-start gap-3">
+          <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-foreground" dir="auto">
+              {isHe ? "עדיין לומדים אותך" : "Still learning about you"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5" dir="auto">
+              {isHe
+                ? "השלם ריצה אחת כדי לראות את הפרופיל האדפטיבי שלך"
+                : "Complete one pipeline run to see your adaptive profile"}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const archetype = effectiveArchetypeId;
+  const icon = ARCHETYPE_ICONS[archetype];
+  const label = ARCHETYPE_LABELS[archetype][isHe ? "he" : "en"];
+  const description = ARCHETYPE_DESCRIPTIONS[archetype][isHe ? "he" : "en"];
+  const confidencePercent = Math.round(profile.confidence * 100);
+
+  // Top 5 signals by total delta
+  const topSignals = [...profile.signalHistory]
+    .sort((a, b) => {
+      const sumA = Object.values(a.deltas).reduce((s, v) => s + (v ?? 0), 0);
+      const sumB = Object.values(b.deltas).reduce((s, v) => s + (v ?? 0), 0);
+      return sumB - sumA;
+    })
+    .slice(0, 5);
+
+  const isTentative = confidenceTier === "tentative";
+  const isOverridden = !!profile.overrideByUser;
+
+  return (
+    <Card className={`mb-6 transition-all ${isTentative ? "opacity-75" : ""} border-primary/20 bg-gradient-to-r from-primary/4 to-transparent`}>
+      <CardContent className="p-4 space-y-3">
+        {/* Header row */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="text-2xl" role="img" aria-label={label}>{icon}</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-foreground" dir="auto">
+                  {label}
+                </span>
+                {isTentative && (
+                  <Badge variant="outline" className="text-xs py-0">
+                    {isHe ? "משערים" : "Tentative"}
+                  </Badge>
+                )}
+                {isOverridden && (
+                  <Badge variant="outline" className="text-xs py-0 border-amber-500 text-amber-600">
+                    {isHe ? "ידני" : "Manual"}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{description}</p>
+            </div>
+          </div>
+
+          {/* Confidence display */}
+          {!isTentative && profile.confidence > 0 && (
+            <div className="text-end shrink-0">
+              <div className="text-lg font-bold tabular-nums text-primary">
+                {confidencePercent}%
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {isHe ? "ביטחון" : "confidence"}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Confidence progress bar */}
+        {profile.confidence > 0 && (
+          <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500"
+              style={{ width: `${confidencePercent}%` }}
+            />
+          </div>
+        )}
+
+        {/* Signals accordion */}
+        {topSignals.length > 0 && (
+          <Collapsible open={signalsOpen} onOpenChange={setSignalsOpen}>
+            <CollapsibleTrigger asChild>
+              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${signalsOpen ? "rotate-180" : ""}`} />
+                {isHe ? "מה הגיע לכאן?" : "What drove this?"}
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-2 space-y-1.5">
+                {topSignals.map((sig, i) => {
+                  const sourceLabel = SIGNAL_SOURCE_LABELS[sig.source]?.[isHe ? "he" : "en"] ?? sig.source;
+                  const totalDelta = Object.values(sig.deltas).reduce((s, v) => s + (v ?? 0), 0);
+                  return (
+                    <div key={i} className="flex items-center justify-between text-xs gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Badge variant="secondary" className="text-xs py-0 px-1.5 shrink-0">{sourceLabel}</Badge>
+                        <span className="text-muted-foreground truncate">{sig.field.split(".").pop()}</span>
+                        <span className="font-medium text-foreground truncate">{String(sig.value)}</span>
+                      </div>
+                      <span className="text-green-600 dark:text-green-400 font-medium shrink-0">+{totalDelta}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* Override control */}
+        {!editingOverride ? (
+          <button
+            className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
+            onClick={() => setEditingOverride(true)}
+          >
+            {isHe ? "שנה ידנית" : "Change manually"}
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Select
+              value={profile.overrideByUser ?? "auto"}
+              onValueChange={(val) => {
+                setOverride(val === "auto" ? null : val as ArchetypeId);
+                setEditingOverride(false);
+              }}
+            >
+              <SelectTrigger className="flex-1 h-7 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">{isHe ? "אוטומטי" : "Automatic"}</SelectItem>
+                {ARCHETYPE_IDS.map((id) => (
+                  <SelectItem key={id} value={id}>
+                    {ARCHETYPE_ICONS[id]} {ARCHETYPE_LABELS[id][isHe ? "he" : "en"]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs"
+              onClick={() => setEditingOverride(false)}
+            >
+              {isHe ? "ביטול" : "Cancel"}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

@@ -16,6 +16,7 @@ import { structureForAllPlatforms } from "@/engine/visualExportEngine";
 import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
 import { SavedPlan } from "@/types/funnel";
 import BackToHub from "@/components/BackToHub";
+import ArchetypeProfileCard from "@/components/ArchetypeProfileCard";
 import { NudgeBanner } from "@/components/NudgeBanner";
 import { PeerBenchmark } from "@/components/PeerBenchmark";
 import { Button } from "@/components/ui/button";
@@ -217,6 +218,9 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Adaptive Archetype Profile — Glass Box personalization card */}
+        <ArchetypeProfileCard />
 
         {/* Dynamic Next Step CTA (adaptive) */}
         <Card className="mb-6 cursor-pointer hover:shadow-lg transition-all border-2 border-amber-500/30 hover:border-amber-500 bg-gradient-to-r from-amber-500/5 to-transparent" role="button" tabIndex={0} onClick={() => navigate(nextStep.route)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(nextStep.route); } }}>

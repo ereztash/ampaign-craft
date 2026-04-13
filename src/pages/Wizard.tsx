@@ -13,6 +13,7 @@ import { generateCopy as aiCopyServiceGenerate } from "@/services/aiCopyService"
 import { runAgent, buildCopyPrompt } from "@/lib/agentOrchestrator";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 import BackToHub from "@/components/BackToHub";
 import SmartOnboarding from "@/components/SmartOnboarding";
 import ProcessingScreen from "@/components/ProcessingScreen";
@@ -24,6 +25,7 @@ const Wizard = () => {
   const isHe = language === "he";
   const { profile, persistFormData, persistUnifiedProfile } = useUserProfile();
   const { user } = useAuth();
+  const { updateFromBlackboard } = useArchetype();
 
   const [state, setState] = useState<WizardState>("onboarding");
   const [formDataCache, setFormDataCache] = useState<FormData | null>(null);
@@ -107,7 +109,10 @@ const Wizard = () => {
 
     setResult(personalized);
     setState("processing");
-  }, [persistFormData, persistUnifiedProfile, isHe]);
+
+    // Update archetype profile with available signals from this pipeline run
+    updateFromBlackboard({ formData: fd, knowledgeGraph: graph });
+  }, [persistFormData, persistUnifiedProfile, isHe, updateFromBlackboard]);
 
   const handleProcessingComplete = useCallback(() => {
     if (!result) return;
