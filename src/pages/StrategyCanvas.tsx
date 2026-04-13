@@ -18,6 +18,7 @@ import { computeMotivationState, type BAEInput } from "@/engine/behavioralAction
 import type { MetaInsights } from "@/types/meta";
 import { NudgeBanner } from "@/components/NudgeBanner";
 import { ModuleNextStep } from "@/components/ModuleNextStep";
+import { ExportReportButton } from "@/components/ExportReportButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, FileText, Plus } from "lucide-react";
@@ -196,7 +197,8 @@ const StrategyCanvas = () => {
             {isHe ? "פערי KPI זוהו" : "KPI gaps detected"}: {kpiGaps.length}
           </div>
         )}
-        <div className="mt-3 flex justify-end">
+        <div className="mt-3 flex justify-end gap-2">
+          <ExportReportButton result={plan.result} planName={plan.name} />
           <Button size="sm" variant="outline" onClick={handleLaunchResearch}>
             {isHe ? "הרץ מחקר אסטרטגי" : "Launch strategic research"}
           </Button>

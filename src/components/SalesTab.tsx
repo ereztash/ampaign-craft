@@ -16,6 +16,8 @@ import {
   TrendingUp, DollarSign, Clock, Target, ChevronDown, Copy, Check,
   Zap, MessageSquare, ArrowRight, Lightbulb, Brain, Users, FileText,
 } from "lucide-react";
+import { WhatsAppSendButton } from "@/components/WhatsAppSendButton";
+import { EmailComposer } from "@/components/EmailComposer";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -261,8 +263,10 @@ const SalesTab = ({ result }: SalesTabProps) => {
               <p className="text-sm text-foreground bg-accent/5 rounded-lg p-2.5" dir="auto">
                 {script.response[language]}
               </p>
-              <div className="mt-1.5">
+              <div className="mt-1.5 flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className="text-xs">{script.technique}</Badge>
+                <WhatsAppSendButton message={script.response[language]} size="sm" />
+                <EmailComposer body={script.response[language]} size="sm" />
               </div>
             </div>
           ))}

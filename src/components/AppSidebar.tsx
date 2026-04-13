@@ -14,7 +14,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users } from "lucide-react";
 
 const AppSidebar = () => {
   const { t, isRTL } = useLanguage();
@@ -83,6 +83,14 @@ const AppSidebar = () => {
                   <NavLink to="/plans">
                     <FileText />
                     <span>{t("navSavedPlans")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={nav("/crm")} tooltip="CRM">
+                  <NavLink to="/crm">
+                    <Users />
+                    <span>CRM</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
