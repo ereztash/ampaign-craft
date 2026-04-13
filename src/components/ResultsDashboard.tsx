@@ -12,6 +12,7 @@ const SalesTab = lazy(() => import("@/components/SalesTab"));
 const PricingIntelligenceTab = lazy(() => import("@/components/PricingIntelligenceTab"));
 const RetentionGrowthTab = lazy(() => import("@/components/RetentionGrowthTab"));
 const StrategyTab = lazy(() => import("@/components/StrategyTab"));
+const ExecutiveBriefTab = lazy(() => import("@/components/ExecutiveBriefTab"));
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -421,6 +422,13 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           <TabsContent value="retention" className="mt-6">
             <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
               <RetentionGrowthTab result={personalizedResult} />
+            </Suspense>
+          </TabsContent>
+
+          {/* Tab: Executive Brief */}
+          <TabsContent value="brief" className="mt-6">
+            <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
+              <ExecutiveBriefTab result={personalizedResult} />
             </Suspense>
           </TabsContent>
 

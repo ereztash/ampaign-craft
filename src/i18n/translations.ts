@@ -355,6 +355,7 @@ export const translations = {
   // Pricing & Retention tabs
   tabPricing: { he: "תמחור", en: "Pricing" },
   tabRetention: { he: "שימור וצמיחה", en: "Retention" },
+  tabBrief: { he: "בריף מנהלים", en: "Exec Brief" },
   groupStrategy: { he: "אסטרטגיה", en: "Strategy" },
   groupContent: { he: "תוכן", en: "Content" },
   groupGrowth: { he: "צמיחה", en: "Growth" },

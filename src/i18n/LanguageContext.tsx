@@ -20,7 +20,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    typeof window !== "undefined" && localStorage.setItem("funnelforge-lang", lang);
+    if (typeof window !== "undefined") { localStorage.setItem("funnelforge-lang", lang); }
   };
 
   const t = (key: TranslationKey): string => {

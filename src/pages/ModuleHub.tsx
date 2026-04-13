@@ -25,7 +25,7 @@ const PageComponent = () => {
   const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
   const totalUsers = getTotalUsers();
-  const { streak, mastery } = useAchievements(language);
+  const { streak, masteryFeatures } = useAchievements(language);
 
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5 } };
 
@@ -40,8 +40,8 @@ const PageComponent = () => {
 
   const nextStep = useMemo(() => {
     const fallbackGraph = graph || buildDefaultKnowledgeGraph();
-    return getRecommendedNextStep(fallbackGraph, hasDiff, planCount, new Set((mastery as any).features || []));
-  }, [graph, hasDiff, planCount, (mastery as any).features]);
+    return getRecommendedNextStep(fallbackGraph, hasDiff, planCount, masteryFeatures);
+  }, [graph, hasDiff, planCount, masteryFeatures]);
 
   return (
     <main className="min-h-screen bg-background">

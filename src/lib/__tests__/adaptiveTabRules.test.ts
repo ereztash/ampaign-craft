@@ -50,9 +50,9 @@ const defaultProfile: UserProfile = {
 };
 
 describe("getTabConfig", () => {
-  it("returns 8 tabs for subscription tech (includes pricing + retention)", () => {
+  it("returns 9 tabs for subscription tech (includes pricing + retention + brief)", () => {
     const tabs = getTabConfig(makeResult(), defaultProfile);
-    expect(tabs).toHaveLength(8);
+    expect(tabs).toHaveLength(9);
     const ids = tabs.map((t) => t.id);
     expect(ids).toContain("strategy");
     expect(ids).toContain("planning");
@@ -62,20 +62,21 @@ describe("getTabConfig", () => {
     expect(ids).toContain("pricing");
     expect(ids).toContain("retention");
     expect(ids).toContain("stylome");
+    expect(ids).toContain("brief");
   });
 
-  it("returns 8 tabs when branddna conditions not met (tech field)", () => {
+  it("returns 9 tabs when branddna conditions not met (tech field)", () => {
     const tabs = getTabConfig(makeResult({ businessField: "tech" }), defaultProfile);
     const ids = tabs.map((t) => t.id);
     expect(ids).not.toContain("branddna");
-    expect(tabs).toHaveLength(8);
+    expect(tabs).toHaveLength(9);
   });
 
   it("includes branddna for personalBrand", () => {
     const tabs = getTabConfig(makeResult({ businessField: "personalBrand" }), defaultProfile);
     const ids = tabs.map((t) => t.id);
     expect(ids).toContain("branddna");
-    expect(tabs).toHaveLength(9);
+    expect(tabs).toHaveLength(10);
   });
 
   it("includes branddna for services", () => {

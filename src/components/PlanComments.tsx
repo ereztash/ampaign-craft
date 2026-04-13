@@ -48,6 +48,7 @@ const PlanComments = ({ planId }: PlanCommentsProps) => {
   const [input, setInput] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const comments = useMemo(() => loadComments(planId), [planId, refreshKey]);
 
   const handleSubmit = () => {

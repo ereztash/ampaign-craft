@@ -299,7 +299,7 @@ Respond in this exact JSON:
   return {
     findingId: finding.id,
     description: parsed.description || { he: "הצעה", en: "Proposal" },
-    changes: (parsed.changes || []).map((c: any) => ({
+    changes: (parsed.changes || []).map((c: ProposedChange) => ({
       target: c.target || "unknown",
       action: c.action || "update",
       currentValue: c.currentValue,

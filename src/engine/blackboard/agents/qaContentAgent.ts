@@ -26,7 +26,8 @@ export const qaContentAgent: AsyncAgentDefinition = createLLMAgent({
     ];
 
     if (graph) {
-      parts.push(`Business context: ${(graph as any).identity?.industryLabel || graph.derived?.identityStatement?.en || "unknown"} industry, ${(graph as any).identity?.audienceLabel || graph.business?.audience || "unknown"} audience.`);
+      const graphRecord = graph as unknown as Record<string, Record<string, unknown>>;
+      parts.push(`Business context: ${graphRecord.identity?.industryLabel || graph.derived?.identityStatement?.en || "unknown"} industry, ${graphRecord.identity?.audienceLabel || graph.business?.audience || "unknown"} audience.`);
     }
 
     return parts.join("\n");
@@ -89,9 +90,9 @@ Respond in this exact JSON structure:
 
   outputParser: (raw: string): QAContentResult => {
     try {
-      const parsed = parseLLMJson<any>(raw);
+      const parsed = parseLLMJson<Record<string, unknown>>(raw);
 
-      const findings: QAFinding[] = (parsed.findings || []).map((f: any, i: number) => ({
+      const findings: QAFinding[] = ((parsed.findings as Record<string, unknown>[] | undefined) || []).map((f, i: number) => ({
         id: `content-${i + 1}`,
         category: f.category || "cultural",
         severity: f.severity || "info",

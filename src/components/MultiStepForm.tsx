@@ -58,7 +58,8 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
     }
   };
 
-  // Dynamic steps based on current form data
+  // Dynamic steps based on current form data — only re-compute on field changes that affect step visibility
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const visibleSteps = useMemo(() => getVisibleSteps(formData), [
     formData.businessField,
     formData.budgetRange,

@@ -21,6 +21,7 @@ import { EmailComposer } from "@/components/EmailComposer";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Quote } from "@/types/quote";
 import QuoteBuilder from "@/components/QuoteBuilder";
 
@@ -50,7 +51,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
 
   const handleQuoteComplete = useCallback(async (quote: Quote) => {
     try {
-      await (supabase as any).from("quotes").insert({
+      await (supabase as unknown as SupabaseClient).from("quotes").insert({
         data: quote,
         status: quote.status,
         recipient_name: quote.recipient.name,

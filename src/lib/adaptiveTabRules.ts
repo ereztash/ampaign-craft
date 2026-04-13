@@ -122,6 +122,16 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
       simplifiedMode: isBeginner,
       group: "content",
     },
+
+    // Executive Brief — one-page C-suite risk + NRR + action checklist
+    {
+      id: "brief",
+      labelKey: "tabBrief",
+      visible: !isBeginner,
+      priority: isAdvanced ? 20 : 47,
+      badge: isAdvanced ? { he: "חדש!", en: "New!" } : { he: "חדש", en: "New" },
+      group: "strategy",
+    },
   ];
 
   return tabs

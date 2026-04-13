@@ -252,5 +252,5 @@ export function useAchievements(language: "he" | "en" = "he") {
     })),
   }), [masteryFeatures]);
 
-  return { achievements, unlock, isUnlocked, unlockedCount, totalCount, streak, trackFeature, mastery };
+  return { achievements, unlock, isUnlocked, unlockedCount, totalCount, streak, trackFeature, mastery, masteryFeatures };
 }

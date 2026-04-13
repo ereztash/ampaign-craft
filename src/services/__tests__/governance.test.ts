@@ -59,7 +59,7 @@ describe("HTML sanitization", () => {
 
   it("handles empty input", () => {
     expect(sanitizeHTML("")).toBe("");
-    expect(sanitizeHTML(null as any)).toBe("");
+    expect(sanitizeHTML(null as unknown as string)).toBe("");
   });
 });
 

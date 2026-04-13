@@ -8,6 +8,17 @@ import type { AgentDefinition } from "../agentRunner";
 import type { QAStaticResult, QAFinding, QASeverity } from "@/types/qa";
 import type { FunnelResult, FormData } from "@/types/funnel";
 
+type AddFinding = (
+  category: QAFinding["category"],
+  severity: QASeverity,
+  messageHe: string,
+  messageEn: string,
+  location?: string,
+  suggestionHe?: string,
+  suggestionEn?: string,
+  autoFixable?: boolean
+) => void;
+
 export const qaStaticAgent: AgentDefinition = {
   name: "qaStatic",
   dependencies: ["funnel"],
@@ -77,7 +88,7 @@ export function runStaticAnalysis(formData: FormData, funnelResult: FunnelResult
 function validateBudget(
   result: FunnelResult,
   formData: FormData,
-  addFinding: (...args: any[]) => void
+  addFinding: AddFinding
 ): boolean {
   let valid = true;
 
@@ -132,7 +143,7 @@ function validateBudget(
 function validateKPIs(
   result: FunnelResult,
   formData: FormData,
-  addFinding: (...args: any[]) => void
+  addFinding: AddFinding
 ): boolean {
   let realistic = true;
 
@@ -142,11 +153,14 @@ function validateKPIs(
     for (const channel of (stage.channels || [])) {
       if (channel.kpis) {
         // Check CTR if present
-        const ctr = channel.kpis.find((k: any) =>
-          k.name?.toLowerCase?.()?.includes("ctr") || k.label?.toLowerCase?.()?.includes("ctr")
-        );
+        const ctr = channel.kpis.find((k) => {
+          const kpi = k as unknown as Record<string, unknown>;
+          return (kpi.name as string | undefined)?.toLowerCase?.()?.includes("ctr")
+            || (kpi.label as string | undefined)?.toLowerCase?.()?.includes("ctr");
+        });
         if (ctr) {
-          const ctrValue = parseFloat(String((ctr as any).value || (ctr as any).target || 0));
+          const kpiRecord = ctr as unknown as Record<string, unknown>;
+          const ctrValue = parseFloat(String(kpiRecord.value || kpiRecord.target || 0));
           if (ctrValue > 15) {
             addFinding(
               "kpi", "warning",
@@ -172,7 +186,7 @@ function validateKPIs(
 
 function validateCompleteness(
   formData: FormData,
-  addFinding: (...args: any[]) => void
+  addFinding: AddFinding
 ): boolean {
   let complete = true;
 
@@ -221,7 +235,7 @@ function validateCompleteness(
 function validateConsistency(
   formData: FormData,
   result: FunnelResult,
-  addFinding: (...args: any[]) => void
+  addFinding: AddFinding
 ): void {
   // B2B with consumer channels
   if (formData.audienceType === "b2b") {

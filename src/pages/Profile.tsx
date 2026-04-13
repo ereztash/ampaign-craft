@@ -101,12 +101,12 @@ const PageComponent = () => {
       // Supabase auth
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        const { data } = await (supabase as any)
+        const { data } = await supabase
           .from("profiles")
           .select("display_name")
           .eq("id", user.id)
           .single();
-        if ((data as any)?.display_name) setDisplayName((data as any).display_name);
+        if (data?.display_name) setDisplayName(data.display_name);
       } catch { /* ignore */ }
       setLoading(false);
     };
@@ -135,7 +135,7 @@ const PageComponent = () => {
     // Supabase save
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("profiles")
         .update({ display_name: displayName, updated_at: new Date().toISOString() })
         .eq("id", user.id);

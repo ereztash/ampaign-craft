@@ -269,13 +269,13 @@ export async function exportAsLink(
     const filePath = `exports/${result.filename}`;
     const blob = new Blob([result.data], { type: result.mimeType });
 
-    const { error: uploadError } = await (supabase as any).storage
+    const { error: uploadError } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient).storage
       .from("exports")
       .upload(filePath, blob, { contentType: result.mimeType, upsert: true });
 
     if (uploadError) throw uploadError;
 
-    const { data: signedData, error: signError } = await (supabase as any).storage
+    const { data: signedData, error: signError } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient).storage
       .from("exports")
       .createSignedUrl(filePath, EXPIRY_SECONDS);
 

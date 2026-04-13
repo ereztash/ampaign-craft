@@ -30,7 +30,8 @@ export async function parseXlsxFile(
   file: File
 ): Promise<{ sheetName: string; rows: Record<string, unknown>[] }[]> {
   const buffer = await file.arrayBuffer();
-  const workbook = XLSX.read(buffer, { cellDates: true });
+  // type: 'array' is required when passing an ArrayBuffer in xlsx 0.18.x
+  const workbook = XLSX.read(new Uint8Array(buffer), { type: "array", cellDates: true });
 
   return workbook.SheetNames.map((sheetName) => {
     const sheet = workbook.Sheets[sheetName];

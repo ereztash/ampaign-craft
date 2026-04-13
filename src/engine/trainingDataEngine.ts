@@ -4,6 +4,7 @@
 // future LLM fine-tuning. Fire-and-forget, offline-buffered.
 // ═══════════════════════════════════════════════
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 // ───────────────────────────────────────────────
@@ -163,7 +164,7 @@ export async function captureTrainingPair(
   }
 
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await (supabase as unknown as SupabaseClient)
       .from("training_pairs")
       .insert({
         engine_id: engineId,
@@ -224,7 +225,7 @@ export async function flushTrainingBuffer(userId: string): Promise<number> {
       metadata: p.metadata,
     }));
 
-    const { error } = await (supabase as any).from("training_pairs").insert(rows);
+    const { error } = await (supabase as unknown as SupabaseClient).from("training_pairs").insert(rows);
 
     if (error) {
       console.warn("[trainingData] flush failed:", error.message);
@@ -252,7 +253,7 @@ export async function updateFeedback(
   feedbackText?: string
 ): Promise<boolean> {
   try {
-    const { error } = await (supabase as any)
+    const { error } = await (supabase as unknown as SupabaseClient)
       .from("training_pairs")
       .update({
         quality,
@@ -279,7 +280,7 @@ export async function getTrainingPairs(
   filters: TrainingFilters = {}
 ): Promise<TrainingPair[]> {
   try {
-    let query = (supabase as any)
+    let query = (supabase as unknown as SupabaseClient)
       .from("training_pairs")
       .select("*")
       .order("timestamp", { ascending: false })
@@ -313,7 +314,7 @@ export async function getTrainingStats(userId?: string): Promise<TrainingStats> 
   };
 
   try {
-    let query = (supabase as any)
+    let query = (supabase as unknown as SupabaseClient)
       .from("training_pairs")
       .select("engine_id, quality, timestamp");
 

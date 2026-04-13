@@ -55,6 +55,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "brandVectorEngine",
   "businessFingerprintEngine",
   "campaignAnalyticsEngine",
+  "churnPlaybookEngine",
   "churnPredictionEngine",
   "clgEngine",
   "copyQAEngine",
@@ -66,6 +67,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "differentiationPhases",
   "discProfileEngine",
   "emotionalPerformanceEngine",
+  "executiveBriefEngine",
   "exportEngine",
   "funnelEngine",
   "gapEngine",
@@ -83,6 +85,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "pricingKnowledge",
   "promptOptimizerEngine",
   "pulseEngine",
+  "quoteAssemblyEngine",
   "referralEngine",
   "researchOrchestrator",
   "retentionFlywheelEngine",
@@ -94,6 +97,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "trainingDataEngine",
   "trainingExportEngine",
   "userKnowledgeGraph",
+  "uvpSynthesisEngine",
   "visualExportEngine",
 ] as const;
 

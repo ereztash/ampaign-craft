@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { useAuth } from "@/contexts/AuthContext";
 
 /**
@@ -17,7 +18,7 @@ export function useUserData() {
 
       if (!user) return;
 
-      const { error } = await (supabase as any)
+      const { error } = await (supabase as unknown as SupabaseClient)
         .from("user_form_data")
         .upsert(
           {
@@ -37,7 +38,7 @@ export function useUserData() {
   const loadFormData = useCallback(
     async <T = Record<string, unknown>>(formType: string, fallback: T): Promise<T> => {
       if (user) {
-        const { data, error } = await (supabase as any)
+        const { data, error } = await (supabase as unknown as SupabaseClient)
           .from("user_form_data")
           .select("data")
           .eq("user_id", user.id)
@@ -67,7 +68,7 @@ export function useUserData() {
 
       if (!user) return;
 
-      const { error } = await (supabase as any)
+      const { error } = await (supabase as unknown as SupabaseClient)
         .from("differentiation_results")
         .insert({
           user_id: user.id,
@@ -90,7 +91,7 @@ export function useUserData() {
         return [];
       }
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await (supabase as unknown as SupabaseClient)
         .from("differentiation_results")
         .select("*")
         .eq("user_id", user.id)
@@ -104,7 +105,7 @@ export function useUserData() {
 
   const checkIsAdmin = useCallback(async (): Promise<boolean> => {
     if (!user) return false;
-    const { data } = await (supabase as any)
+    const { data } = await (supabase as unknown as SupabaseClient)
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)

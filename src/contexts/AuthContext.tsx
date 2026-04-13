@@ -51,7 +51,7 @@ function getLocalUsers(): LocalUserRecord[] {
 }
 
 function saveLocalUsers(users: LocalUserRecord[]) {
-  typeof window !== "undefined" && localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+  if (typeof window !== "undefined") { localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users)); }
 }
 
 function getLocalSession(): { userId: string; email: string } | null {
@@ -64,9 +64,9 @@ function getLocalSession(): { userId: string; email: string } | null {
 
 function setLocalSession(session: { userId: string; email: string } | null) {
   if (session) {
-    typeof window !== "undefined" && localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session));
+    if (typeof window !== "undefined") { localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session)); }
   } else {
-    typeof window !== "undefined" && localStorage.removeItem(LOCAL_SESSION_KEY);
+    if (typeof window !== "undefined") { localStorage.removeItem(LOCAL_SESSION_KEY); }
   }
 }
 
@@ -76,6 +76,25 @@ async function hashPassword(password: string): Promise<string> {
   const data = encoder.encode(password + "funnelforge-salt-2026");
   const buffer = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ═══ Typed Supabase profiles accessor ═══
+// The generated client doesn't have runtime types for custom tables,
+// so we wrap with a minimal typed interface instead of using `as any`.
+
+type ProfileRecord = { display_name?: string };
+type ProfilesClient = {
+  from: (table: string) => {
+    select: (cols: string) => {
+      eq: (col: string, val: string) => {
+        single: () => Promise<{ data: ProfileRecord | null; error: unknown }>;
+      };
+    };
+    upsert: (row: Record<string, unknown>) => Promise<{ error: unknown }>;
+  };
+};
+function profilesDb(supa: unknown): ProfilesClient {
+  return supa as ProfilesClient;
 }
 
 // ═══ Supabase availability check ═══
@@ -137,7 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (s?.user && !cancelled) {
             setUser({ id: s.user.id, email: s.user.email || "", displayName: s.user.email?.split("@")[0] || "", role: "owner" });
             // Fetch tier from profile
-            const { data: profile } = await ((supabase as any).from("profiles")).select("display_name").eq("id", s.user.id).single();
+            const { data: profile } = await profilesDb(supabase).from("profiles").select("display_name").eq("id", s.user.id).single();
             if (profile?.display_name === "pro" || profile?.display_name === "business") {
               setTierState(profile.display_name);
             }
@@ -148,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (cancelled) return;
             if (sess?.user) {
               setUser({ id: sess.user.id, email: sess.user.email || "", displayName: sess.user.email?.split("@")[0] || "", role: "owner" });
-              const { data: prof } = await ((supabase as any).from("profiles")).select("display_name").eq("id", sess.user.id).single();
+              const { data: prof } = await profilesDb(supabase).from("profiles").select("display_name").eq("id", sess.user.id).single();
               if (prof?.display_name === "pro" || prof?.display_name === "business") {
                 setTierState(prof.display_name);
               }
@@ -199,7 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) return { error: error.message };
         const { data: { user: newUser } } = await supabase.auth.getUser();
         if (newUser) {
-          await ((supabase as any).from("profiles")).upsert({ id: newUser.id, display_name: email.split("@")[0], visit_count: 1 });
+          await profilesDb(supabase).from("profiles").upsert({ id: newUser.id, display_name: email.split("@")[0], visit_count: 1 });
         }
         return { error: null };
       } catch (err) {

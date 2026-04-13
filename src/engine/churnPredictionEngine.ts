@@ -350,7 +350,7 @@ export function assessChurnRisk(
   formData: FormData,
   ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): ChurnRiskAssessment {
-  let { score: riskScore, signals } = calculateRiskScore(formData);
+  const { score: riskScore, signals } = calculateRiskScore(formData);
 
   // Cross-domain: DISC personality adjusts churn model
   if (ukg?.discProfile) {

@@ -3,17 +3,11 @@ import { Blackboard } from "../blackboard";
 import type { QAFinding } from "@/types/qa";
 import type { FormData } from "@/types/funnel";
 
-// Mock supabase before importing debugSwarm
-const mockInvoke = vi.fn();
-vi.mock("@/integrations/supabase/client", () => ({
-  supabase: {
-    functions: {
-      invoke: (...args: any[]) => mockInvoke(...args),
-    },
-  },
-}));
+// Mock global fetch — debugSwarm calls fetch("/api/growth/agent-executor")
+const mockFetch = vi.fn();
+vi.stubGlobal("fetch", mockFetch);
 
-// Import after mock
+// Import after global stub
 import { runDebugSwarm } from "../blackboard/agents/debugSwarm";
 import type { DebugSwarmResult } from "../blackboard/agents/debugSwarm";
 
@@ -46,67 +40,64 @@ function makeFinding(overrides: Partial<QAFinding> = {}): QAFinding {
   };
 }
 
-// Simulate LLM responses for the three agents
+function makeFetchResponse(body: Record<string, unknown>): Response {
+  return {
+    ok: true,
+    json: async () => body,
+    status: 200,
+    statusText: "OK",
+  } as unknown as Response;
+}
+
+// Simulate LLM responses for the three agents (analyzer → proposer → critique cycle)
 function mockLLMResponses(
-  analysis: Record<string, any> = {},
-  proposal: Record<string, any> = {},
-  critique: Record<string, any> = {}
+  analysis: Record<string, unknown> = {},
+  proposal: Record<string, unknown> = {},
+  critique: Record<string, unknown> = {}
 ) {
   let callCount = 0;
-  mockInvoke.mockImplementation(async () => {
+  mockFetch.mockImplementation(async () => {
     callCount++;
     const phase = ((callCount - 1) % 3) + 1;
 
     if (phase === 1) {
-      // Analyzer
-      return {
-        data: {
-          text: JSON.stringify({
-            findingId: "test-1",
-            rootCause: "Budget percentages don't sum to 100%",
-            affectedSections: ["stages"],
-            complexity: "trivial",
-            ...analysis,
-          }),
-        },
-        error: null,
-      };
+      return makeFetchResponse({
+        text: JSON.stringify({
+          findingId: "test-1",
+          rootCause: "Budget percentages don't sum to 100%",
+          affectedSections: ["stages"],
+          complexity: "trivial",
+          ...analysis,
+        }),
+      });
     } else if (phase === 2) {
-      // Proposer
-      return {
-        data: {
-          text: JSON.stringify({
-            findingId: "test-1",
-            description: { he: "תיקון תקציב", en: "Fix budget" },
-            changes: [
-              {
-                target: "stages[0].budgetPercent",
-                action: "update",
-                proposedValue: "50",
-                rationale: "Rebalance budget",
-              },
-            ],
-            confidence: 0.85,
-            ...proposal,
-          }),
-        },
-        error: null,
-      };
+      return makeFetchResponse({
+        text: JSON.stringify({
+          findingId: "test-1",
+          description: { he: "תיקון תקציב", en: "Fix budget" },
+          changes: [
+            {
+              target: "stages[0].budgetPercent",
+              action: "update",
+              proposedValue: "50",
+              rationale: "Rebalance budget",
+            },
+          ],
+          confidence: 0.85,
+          ...proposal,
+        }),
+      });
     } else {
-      // Critique
-      return {
-        data: {
-          text: JSON.stringify({
-            findingId: "test-1",
-            approved: true,
-            confidence: 0.9,
-            concerns: [],
-            verdict: "Fix is correct and minimal",
-            ...critique,
-          }),
-        },
-        error: null,
-      };
+      return makeFetchResponse({
+        text: JSON.stringify({
+          findingId: "test-1",
+          approved: true,
+          confidence: 0.9,
+          concerns: [],
+          verdict: "Fix is correct and minimal",
+          ...critique,
+        }),
+      });
     }
   });
 }
@@ -137,8 +128,8 @@ describe("debugSwarm", () => {
     expect(iter.critique.approved).toBe(true);
     expect(iter.resolved).toBe(true);
 
-    // 3 LLM calls: analyzer + proposer + critique
-    expect(mockInvoke).toHaveBeenCalledTimes(3);
+    // 3 fetch calls: analyzer + proposer + critique
+    expect(mockFetch).toHaveBeenCalledTimes(3);
   });
 
   it("marks finding as unresolved when critique rejects proposal", async () => {
@@ -170,18 +161,18 @@ describe("debugSwarm", () => {
   it("processes multiple findings sequentially", async () => {
     const board = makeBoard();
     let callCount = 0;
-    mockInvoke.mockImplementation(async () => {
+    mockFetch.mockImplementation(async () => {
       callCount++;
       const findingNum = Math.ceil(callCount / 3);
       const phase = ((callCount - 1) % 3) + 1;
       const fid = `finding-${findingNum}`;
 
       if (phase === 1) {
-        return { data: { text: JSON.stringify({ findingId: fid, rootCause: "cause", affectedSections: [], complexity: "trivial" }) }, error: null };
+        return makeFetchResponse({ text: JSON.stringify({ findingId: fid, rootCause: "cause", affectedSections: [], complexity: "trivial" }) });
       } else if (phase === 2) {
-        return { data: { text: JSON.stringify({ findingId: fid, description: { he: "x", en: "x" }, changes: [{ target: "a", action: "update", proposedValue: "b", rationale: "c" }], confidence: 0.9 }) }, error: null };
+        return makeFetchResponse({ text: JSON.stringify({ findingId: fid, description: { he: "x", en: "x" }, changes: [{ target: "a", action: "update", proposedValue: "b", rationale: "c" }], confidence: 0.9 }) });
       } else {
-        return { data: { text: JSON.stringify({ findingId: fid, approved: true, confidence: 0.9, concerns: [], verdict: "ok" }) }, error: null };
+        return makeFetchResponse({ text: JSON.stringify({ findingId: fid, approved: true, confidence: 0.9, concerns: [], verdict: "ok" }) });
       }
     });
 
@@ -193,7 +184,7 @@ describe("debugSwarm", () => {
 
     expect(result.totalIterations).toBe(2);
     expect(result.resolvedFindings).toHaveLength(2);
-    expect(mockInvoke).toHaveBeenCalledTimes(6); // 3 calls per finding
+    expect(mockFetch).toHaveBeenCalledTimes(6); // 3 calls per finding
   });
 
   it("respects circuit breaker max iterations", async () => {
@@ -213,7 +204,7 @@ describe("debugSwarm", () => {
 
   it("trips circuit breaker on consecutive failures", async () => {
     const board = makeBoard();
-    mockInvoke.mockRejectedValue(new Error("LLM unavailable"));
+    mockFetch.mockRejectedValue(new Error("LLM unavailable"));
 
     const findings = [
       makeFinding({ id: "f-1", severity: "critical" }),
@@ -228,12 +219,14 @@ describe("debugSwarm", () => {
     expect(result.unresolvedFindings.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("handles LLM errors gracefully", async () => {
+  it("handles fetch errors gracefully", async () => {
     const board = makeBoard();
-    mockInvoke.mockResolvedValueOnce({
-      data: null,
-      error: { message: "API rate limit exceeded" },
-    });
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: "API rate limit exceeded" }),
+      status: 429,
+      statusText: "Too Many Requests",
+    } as unknown as Response);
 
     const findings = [makeFinding()];
     const result = await runDebugSwarm(board, findings);
@@ -250,7 +243,7 @@ describe("debugSwarm", () => {
     expect(result.resolvedFindings).toHaveLength(0);
     expect(result.unresolvedFindings).toHaveLength(0);
     expect(result.circuitTripped).toBe(false);
-    expect(mockInvoke).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("returns empty result for info-only findings", async () => {
@@ -262,7 +255,7 @@ describe("debugSwarm", () => {
     const result = await runDebugSwarm(board, findings);
 
     expect(result.totalIterations).toBe(0);
-    expect(mockInvoke).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("clamps confidence values to 0-1 range", async () => {

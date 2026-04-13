@@ -39,35 +39,38 @@ Return 1-3 most relevant findings.`;
 
   try {
     const raw = await invokeLLM(SYSTEM_PROMPT, prompt);
-    const parsed = parseLLMJson<any[]>(raw);
+    const parsed = parseLLMJson<Record<string, unknown>[]>(raw);
 
-    return (Array.isArray(parsed) ? parsed : [parsed]).map((f: any, i: number) => ({
+    return (Array.isArray(parsed) ? parsed : [parsed]).map((f: Record<string, unknown>, i: number) => ({
       id: `mkt-${subQuery.id}-${i + 1}`,
       subQueryId: subQuery.id,
       domain: "market" as const,
-      insight: { he: f.insight_he || "", en: f.insight_en || "" },
-      evidence: f.evidence || "",
-      sources: normalizeSources(f.sources),
-      confidence: clamp(f.confidence ?? 0.5, 0, 1),
-      actionable: f.actionable ?? false,
+      insight: { he: (f.insight_he as string) || "", en: (f.insight_en as string) || "" },
+      evidence: (f.evidence as string) || "",
+      sources: normalizeSources(f.sources as unknown[]),
+      confidence: clamp((f.confidence as number) ?? 0.5, 0, 1),
+      actionable: (f.actionable as boolean) ?? false,
       recommendation: f.recommendation_he
-        ? { he: f.recommendation_he, en: f.recommendation_en || "" }
+        ? { he: f.recommendation_he as string, en: (f.recommendation_en as string) || "" }
         : undefined,
-      marketAspect: f.marketAspect || "trend",
+      marketAspect: (f.marketAspect as string) || "trend",
     }));
   } catch {
     return [];
   }
 }
 
-function normalizeSources(raw: any[]): SourceCitation[] {
+function normalizeSources(raw: unknown[]): SourceCitation[] {
   if (!Array.isArray(raw)) return [];
-  return raw.map((s) => ({
-    title: s.title || "Unknown source",
-    url: s.url,
-    type: s.type || "article",
-    reliability: s.reliability || "medium",
-  }));
+  return raw.map((s) => {
+    const src = s as Record<string, unknown>;
+    return {
+      title: (src.title as string) || "Unknown source",
+      url: src.url as string | undefined,
+      type: (src.type as SourceCitation["type"]) || "article",
+      reliability: (src.reliability as SourceCitation["reliability"]) || "medium",
+    };
+  });
 }
 
 function clamp(v: number, min: number, max: number): number {

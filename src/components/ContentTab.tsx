@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo, lazy, Suspense } from "react";
 import CopyLabTab from "@/components/CopyLabTab";
 import NeuroStorytellingTab from "@/components/NeuroStorytellingTab";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { neuroVectorColors } from "@/lib/colorSemantics";
 import { FunnelResult } from "@/types/funnel";
+import { DifferentiationResult } from "@/types/differentiation";
 import { analyzeCopy } from "@/engine/copyQAEngine";
 import { scoreHebrewCopy, getHebrewCopyRules } from "@/lib/hebrewCopyOptimizer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,20 +12,32 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Languages, Sparkles } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ShieldCheck, Languages, Sparkles, Target } from "lucide-react";
 import { AICopyGenerator } from "@/components/AICopyGenerator";
+
+const UVPSynthesisTab = lazy(() => import("@/components/UVPSynthesisTab"));
 
 interface ContentTabProps {
   result: FunnelResult;
   isSimplified: boolean;
+  diffResult?: DifferentiationResult | null;
 }
 
-const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
+const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps) => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
   const [copyText, setCopyText] = useState("");
   const [copyQA, setCopyQA] = useState<ReturnType<typeof analyzeCopy> | null>(null);
   const [hebrewScore, setHebrewScore] = useState<ReturnType<typeof scoreHebrewCopy> | null>(null);
+  // Resolve diffResult from localStorage if not passed as prop
+  const resolvedDiff = useMemo<DifferentiationResult | null>(() => {
+    if (diffResult !== null) return diffResult;
+    try {
+      const raw = localStorage.getItem("funnelforge-differentiation-result");
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }, [diffResult]);
 
   const runCopyAudit = () => {
     if (!copyText.trim()) return;
@@ -54,6 +67,10 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
         <TabsTrigger value="aicopy" className="text-xs px-3 gap-1">
           <Sparkles className="h-3 w-3" />
           {isHe ? "AI קופי" : "AI Copy"}
+        </TabsTrigger>
+        <TabsTrigger value="uvp" className="text-xs px-3 gap-1">
+          <Target className="h-3 w-3" />
+          {isHe ? "הצעת ערך" : "UVP"}
         </TabsTrigger>
       </TabsList>
       </div>
@@ -235,11 +252,11 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{isHe ? "תנודתיות משפטים:" : "Burstiness:"}</span>
-                        <span className="font-medium">{(copyQA.aiDetection.burstiness as any).toFixed(1)}</span>
+                        <span className="font-medium">{Number(copyQA.aiDetection.burstiness).toFixed(1)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">{isHe ? "הפתעה לקסיקלית:" : "Perplexity:"}</span>
-                        <span className="font-medium">{(copyQA.aiDetection.perplexity as any).toFixed(1)}</span>
+                        <span className="font-medium">{Number(copyQA.aiDetection.perplexity).toFixed(1)}</span>
                       </div>
                     </div>
                   </div>
@@ -267,6 +284,13 @@ const ContentTab = ({ result, isSimplified }: ContentTabProps) => {
       {/* AI Copy Generator */}
       <TabsContent value="aicopy" className="mt-4">
         <AICopyGenerator funnelResult={result} />
+      </TabsContent>
+
+      {/* UVP Synthesis */}
+      <TabsContent value="uvp" className="mt-4">
+        <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+          <UVPSynthesisTab result={result} diffResult={resolvedDiff} />
+        </Suspense>
       </TabsContent>
     </Tabs>
   );
