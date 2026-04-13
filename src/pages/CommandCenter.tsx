@@ -33,6 +33,9 @@ import { Database, Wand2, Compass, Map, Users } from "lucide-react";
 import ExpressWizard from "@/components/ExpressWizard";
 import { InsightsCard } from "@/components/InsightsCard";
 import { AnalyticsConnectCard } from "@/components/AnalyticsConnectCard";
+import { useArchetype } from "@/contexts/ArchetypeContext";
+import { getPrimaryCtaVerbs } from "@/engine/behavioralHeuristicEngine";
+import ArchetypePipelineGuide from "@/components/ArchetypePipelineGuide";
 
 const CommandCenter = () => {
   const { language, t } = useLanguage();
@@ -161,6 +164,10 @@ const CommandCenter = () => {
     return computeMotivationState(baeInput);
   }, [latestPlan, profile, modules, completedModules, streak, graph]);
 
+  const { effectiveArchetypeId, confidenceTier } = useArchetype();
+  const ctaVerbs = getPrimaryCtaVerbs(effectiveArchetypeId);
+  const hasArchetype = confidenceTier !== "none";
+
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
 
   return (
@@ -173,7 +180,9 @@ const CommandCenter = () => {
                 {graph.derived.identityStatement[language]}
               </h1>
               <p className="text-sm text-muted-foreground" dir="auto">
-                {isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot and intelligence"}
+                {hasArchetype
+                  ? `${ctaVerbs[language]} · ${isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot"}`
+                  : isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot and intelligence"}
               </p>
             </>
           ) : showExpressWizard ? (
@@ -259,33 +268,41 @@ const CommandCenter = () => {
             />
           </div>
           <div className="lg:col-span-2 space-y-3">
-            <h2 className="text-lg font-bold text-foreground px-1" dir="auto">
-              {isHe ? "פעולות מהירות" : "Quick actions"}
-            </h2>
-            <Card>
-              <CardContent className="p-4 grid gap-2">
-                <Button className="w-full justify-start gap-2" variant={ctaVariant.id.endsWith("_treatment") ? "default" : "outline"} onClick={() => navigate("/data")}>
-                  <Database className="h-4 w-4" />
-                  {isHe ? "חבר מקור נתונים" : "Connect data source"}
-                </Button>
-                <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/wizard")}>
-                  <Wand2 className="h-4 w-4" />
-                  {isHe ? "תוכנית חדשה" : "New plan"}
-                </Button>
-                <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/differentiate")}>
-                  <Compass className="h-4 w-4" />
-                  {isHe ? "בידול" : "Differentiation"}
-                </Button>
-                <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate(plans.length ? `/strategy/${latestPlan?.id}` : "/strategy")}>
-                  <Map className="h-4 w-4" />
-                  {t("navStrategyCanvas")}
-                </Button>
-                <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/crm")}>
-                  <Users className="h-4 w-4" />
-                  {isHe ? "ניהול לידים (CRM)" : "Lead Management (CRM)"}
-                </Button>
-              </CardContent>
-            </Card>
+            {hasArchetype ? (
+              // Archetype pipeline guide replaces static quick actions (H5: Choice Architecture)
+              <ArchetypePipelineGuide />
+            ) : (
+              // Cold-start fallback: static quick actions
+              <>
+                <h2 className="text-lg font-bold text-foreground px-1" dir="auto">
+                  {isHe ? "פעולות מהירות" : "Quick actions"}
+                </h2>
+                <Card>
+                  <CardContent className="p-4 grid gap-2">
+                    <Button className="w-full justify-start gap-2" variant={ctaVariant.id.endsWith("_treatment") ? "default" : "outline"} onClick={() => navigate("/data")}>
+                      <Database className="h-4 w-4" />
+                      {isHe ? "חבר מקור נתונים" : "Connect data source"}
+                    </Button>
+                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/wizard")}>
+                      <Wand2 className="h-4 w-4" />
+                      {isHe ? "תוכנית חדשה" : "New plan"}
+                    </Button>
+                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/differentiate")}>
+                      <Compass className="h-4 w-4" />
+                      {isHe ? "בידול" : "Differentiation"}
+                    </Button>
+                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate(plans.length ? `/strategy/${latestPlan?.id}` : "/strategy")}>
+                      <Map className="h-4 w-4" />
+                      {t("navStrategyCanvas")}
+                    </Button>
+                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/crm")}>
+                      <Users className="h-4 w-4" />
+                      {isHe ? "ניהול לידים (CRM)" : "Lead Management (CRM)"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </>
+            )}
             <InsightsCard />
             <AnalyticsConnectCard />
             <ProgressMomentum

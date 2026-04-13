@@ -486,6 +486,19 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   L5 MICRO-INTERACTION DEFAULTS
+   Default values for CSS vars injected by useAdaptiveTheme at
+   "confident"/"strong" tiers via getL5CSSVars() (behavioralHeuristicEngine).
+   Overridden per-archetype: strategist 1.2× | optimizer 1.0× |
+   pioneer 0.8× spring | connector 1.1× | closer 0.7× sharp
+   ────────────────────────────────────────────────────────────────── */
+:root {
+  --motion-duration-multiplier: 1;
+  --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --cta-font-weight: 700;
+}
+
+/* ──────────────────────────────────────────────────────────────────
    LAYER COMPONENTS — Utility Classes
    Reusable design-system utilities that consume the COR SYS tokens.
    ────────────────────────────────────────────────────────────────── */
