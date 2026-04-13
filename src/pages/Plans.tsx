@@ -55,10 +55,10 @@ const Plans = () => {
         ) : (
           <div className="space-y-3">
             {plans.map((plan) => (
-              <Card key={plan.id} className="cursor-pointer hover:shadow-md transition-shadow" role="button" tabIndex={0} onClick={() => navigate(`/strategy/${plan.id}`)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(`/strategy/${plan.id}`); } }}>
+              <Card key={plan.id} className="cursor-pointer shadow-cor-1 hover:shadow-cor-3 hover:border-primary/40 transition-all duration-fast group" role="button" tabIndex={0} onClick={() => navigate(`/strategy/${plan.id}`)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(`/strategy/${plan.id}`); } }}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                       <FileText className="h-5 w-5 text-primary" />
                     </div>
                     <div>

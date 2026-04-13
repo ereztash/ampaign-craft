@@ -21,7 +21,7 @@ import { ModuleNextStep } from "@/components/ModuleNextStep";
 import { ExportReportButton } from "@/components/ExportReportButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, FileText, Plus } from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight, Clock, FileText, Plus } from "lucide-react";
 
 const StrategyCanvas = () => {
   const { planId, focus } = useParams<{ planId?: string; focus?: string }>();
@@ -60,27 +60,56 @@ const StrategyCanvas = () => {
       );
     }
 
+    const sortedPlans = plans
+      .slice()
+      .sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
+
     return (
       <main className="container mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-xl font-bold mb-4" dir="auto">
-          {isHe ? "בחר תוכנית" : "Choose a plan"}
-        </h1>
-        <div className="space-y-2">
-          {plans
-            .slice()
-            .sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())
-            .map((p) => (
-              <Link key={p.id} to={`/strategy/${p.id}`}>
-                <Card className="hover:bg-muted/40 transition-colors">
-                  <CardContent className="p-4 flex justify-between items-center">
-                    <span className="font-medium">{p.name}</span>
-                    <span className="text-xs text-muted-foreground">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-foreground" dir="auto">
+            {isHe ? "בחר תוכנית" : "Choose a plan"}
+          </h1>
+          <Button onClick={() => navigate("/wizard")} size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            {isHe ? "תוכנית חדשה" : "New plan"}
+          </Button>
+        </div>
+        <div className="space-y-3">
+          {sortedPlans.map((p, idx) => (
+            <Link key={p.id} to={`/strategy/${p.id}`}>
+              <Card className="shadow-cor-1 hover:shadow-cor-3 hover:border-primary/40 transition-all duration-fast group">
+                <CardContent className="p-4 flex items-center gap-3">
+                  {/* Icon */}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                    <FileText className="h-5 w-5 text-primary" />
+                  </div>
+                  {/* Text */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-foreground truncate" dir="auto">
+                        {p.name}
+                      </span>
+                      {idx === 0 && (
+                        <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-accent/15 text-accent shrink-0">
+                          {isHe ? "אחרון" : "Latest"}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                      <Clock className="h-3 w-3 shrink-0" />
                       {new Date(p.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
-                    </span>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                    </p>
+                  </div>
+                  {/* Chevron — directional for RTL/LTR */}
+                  {isHe
+                    ? <ChevronLeft className="h-4 w-4 text-muted-foreground group-hover:text-foreground shrink-0 transition-colors" />
+                    : <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground shrink-0 transition-colors" />
+                  }
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
       </main>
     );
