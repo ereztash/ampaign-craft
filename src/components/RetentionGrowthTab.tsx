@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, lazy, Suspense } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";
@@ -8,9 +8,13 @@ import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Copy, Check, ChevronDown, UserPlus, AlertTriangle, Gift, TrendingUp, Heart } from "lucide-react";
+import { Copy, Check, ChevronDown, UserPlus, AlertTriangle, Gift, TrendingUp, Heart, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
+
+const ChurnPlaybookTab = lazy(() => import("@/components/ChurnPlaybookTab"));
 
 interface Props { result: FunnelResult }
 
@@ -31,6 +35,24 @@ const RetentionGrowthTab = ({ result }: Props) => {
   };
 
   return (
+    <Tabs defaultValue="retention">
+      <TabsList className="h-9 w-max min-w-full justify-start gap-1 bg-muted/50 mb-5">
+        <TabsTrigger value="retention" className="text-xs px-3">
+          {isHe ? "שימור לקוחות" : "Retention"}
+        </TabsTrigger>
+        <TabsTrigger value="playbook" className="text-xs px-3 gap-1">
+          <ShieldAlert className="h-3 w-3" />
+          {isHe ? "ספר הנטישה" : "Churn Playbook"}
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="playbook">
+        <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+          <ChurnPlaybookTab result={result} />
+        </Suspense>
+      </TabsContent>
+
+      <TabsContent value="retention">
     <div className="space-y-6">
       {/* Impact Summary */}
       <Card className="border-accent/20 bg-accent/5">
@@ -216,6 +238,8 @@ const RetentionGrowthTab = ({ result }: Props) => {
         </Card>
       </Collapsible>
     </div>
+      </TabsContent>
+    </Tabs>
   );
 };
 
