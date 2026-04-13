@@ -40,6 +40,91 @@ Onboarding sequences by business type (ecommerce/SaaS/services/creator). Churn p
 **Cross-Module Intelligence**
 UserKnowledgeGraph cross-references all user data (FormData + Differentiation + Stylome + DISC Profile + Behavior) and feeds every module. Blackboard Architecture orchestrates 12+ specialized agents via topological dependency resolution with async parallel execution. AI Coach has full context from all 5 modules. LLM Router dynamically selects Claude models (Haiku/Sonnet/Opus) based on task complexity with fallback chains and cost caps.
 
+## UserArchetypeLayer — Adaptive Persona System
+
+5-archetype behavioral classification system grounded in Regulatory Focus Theory (Higgins 1997) × ELM (Petty & Cacioppo 1986). Every UI adaptation is traceable to a research source — no magic, no guessing.
+
+### 5 MECE Archetypes
+
+| Archetype | Regulatory Focus | Processing | Core Motivation |
+|---|---|---|---|
+| **Strategist** | Prevention | Systematic | Minimize risk through comprehensive understanding |
+| **Optimizer** | Promotion | Systematic | Maximize efficiency through measurement and iteration |
+| **Pioneer** | Promotion | Heuristic | Build something meaningful from a vision |
+| **Connector** | Prevention | Heuristic | Strengthen customer relationships and community |
+| **Closer** | Promotion | Heuristic | Close deals and drive revenue with maximum velocity |
+
+### Classification Pipeline
+
+14-signal classifier using behavioral signals across 8 sources:
+
+```
+formData → discProfile → hormoziValue → retentionFlywheel
+→ churnRisk → healthScore → costOfInaction → knowledgeGraph
+```
+
+Confidence tiers drive progressive UI adaptation:
+
+| Tier | Threshold | What activates |
+|---|---|---|
+| `none` | < 50% | Generic experience, no personalization |
+| `tentative` | 50–64% | Copy tone adapts (NudgeBanner accent) |
+| `confident` | 65–79% | CSS color palette + module reordering + L5 CSS vars |
+| `strong` | ≥ 80% | Full UI morphing: sidebar, density, workspace order |
+
+### 8 Behavioral Heuristics (H1–H8)
+
+Each heuristic resolves across 5 levels (L1 navigation → L5 CSS custom properties):
+
+| ID | Principle | Source |
+|---|---|---|
+| H1 | Certainty Provision | Pavlou & Fygenson 2006; Prospect Theory |
+| H2 | Cognitive Load Minimization | Sweller 1988 CLT; Miller 1956 |
+| H3 | Regulatory Fit | Higgins 2000 FIT; Avnet & Higgins 2006 |
+| H4 | Momentum Maintenance | Bandura 1977 SST; Thaler 1981 |
+| H5 | Choice Architecture | Iyengar & Lepper 2000; Schwartz 2004 |
+| H6 | Narrative Resonance | Escalas 2004 NRT; Bruner 1990 |
+| H7 | Relational Signaling | Haidt 2012 MFT; Buttle 2004 |
+| H8 | Temporal Urgency | Cialdini 1984; Gong.io 2019 |
+
+### Friction-Mapped Pipeline (Tier 2)
+
+Each archetype's `personalityProfile.pipeline` defines a 7-step recommended work sequence ordered by psychological friction sources. Every step carries a bilingual `frictionReason` traceable to the heuristic that motivates it. Example (Closer):
+
+```
+/sales      → temporal_friction  → "Zero-depth access — every click saved is a deal"
+/pricing    → temporal_friction  → "Pricing is the #1 deal blocker"
+/wizard     → choice_overload    → "'Give me the playbook' — one clear output"
+/differentiate → choice_overload → "Competitive ammunition"
+...
+```
+
+`ArchetypePipelineGuide` replaces static quick-action buttons in CommandCenter when `confidenceTier !== "none"`, showing the next step with a CTA verb framed to the archetype's regulatory focus.
+
+### Glass-Box Transparency (Tier 3)
+
+Every adaptation is explainable:
+- **AdminArchetypeDebugPanel** (owner-only): Active Heuristics with L1–L5 manifestations, Feature Importance bars per signal source, Classification Rule formula (`confidence = (top − 2nd) ÷ Σscores`) with live values
+- **ArchetypeProfileCard** (all users): Collapsible "Why this adapts your experience?" showing regulatory focus, processing style, core motivation, and active heuristic badges
+- **AppSidebar**: Info icon on reordered Modules group with tooltip explaining the adaptation
+
+### Key Files
+
+```
+src/engine/behavioralHeuristicEngine.ts  # H1–H8 registry, getL5CSSVars(), getPrimaryCtaVerbs(), deriveHeuristicSet()
+src/types/behavioralHeuristics.ts        # BehavioralHeuristic, L5CSSVars, PrimaryCtaVerbs
+src/types/archetype.ts                   # ArchetypeId, ConfidenceTier, PersonalityProfile, PipelineStep, FrictionClass
+src/lib/archetypeUIConfig.ts             # 5 ArchetypeUIConfig objects with full personalityProfile + pipeline
+src/engine/archetypeClassifier.ts        # 14-signal classifier → scores → ConfidenceTier
+src/contexts/ArchetypeContext.tsx        # Session persistence (localStorage + Supabase), setOverride(), clearProfile()
+src/hooks/useAdaptiveTheme.ts            # Sets data-archetype, data-density, data-field + L5 CSS vars on <html>
+src/hooks/useArchetypePipeline.ts        # Pipeline state hook (steps, nextStep, progressPercent, isActive)
+src/hooks/useArchetypeCopyTone.ts        # Returns CTATone | null — null at cold start
+src/components/ArchetypePipelineGuide.tsx # Friction-reasoned pipeline card with step list + CTA + "why?" collapsible
+src/components/AdminArchetypeDebugPanel.tsx # Owner Glass-Box: heuristics, feature importance, classification rule
+src/components/ArchetypeProfileCard.tsx  # User-facing: archetype + confidence + signals + "why this adapts?"
+```
+
 ## Routes
 
 ```
@@ -100,6 +185,8 @@ src/
 │   ├── promptOptimizerEngine.ts     # Analyses training-pair feedback → prompt-level fixes
 │   ├── visualExportEngine.ts        # Platform-specific social post structuring (FB/IG/LI/X)
 │   ├── behavioralActionEngine.ts    # Behavioral nudge orchestration (COR/Fogg/DISC) — loss aversion + goal gradient + social proof
+│   ├── behavioralHeuristicEngine.ts # H1–H8 heuristics with L1–L5 resolution; getL5CSSVars(), getPrimaryCtaVerbs(), deriveHeuristicSet()
+│   ├── archetypeClassifier.ts       # 14-signal → 5-archetype classifier with ConfidenceTier scoring
 │   ├── researchOrchestrator.ts      # Shim exposing the research/ orchestrator as a direct engine
 │   ├── research/                    # Cross-domain research engine (real orchestrator lives here)
 │   ├── optimization/                # 6-engine GRAOS optimization overlay (strictly additive)
@@ -160,11 +247,12 @@ src/
 ├── pages/           # 17 pages (ModuleHub, Dashboard, Wizard, Plans, PlanView, Differentiate,
 │                      SalesEntry, PricingEntry, RetentionEntry, DataHub, CommandCenter,
 │                      StrategyCanvas, AiCoachPage, Profile, Landing, Index, NotFound)
-├── hooks/           # 14 custom hooks (includes useAICopy, useResearch)
-├── contexts/        # Auth (dual: Supabase + local) + UserProfile
+├── hooks/           # 16 custom hooks (useAICopy, useResearch, useAdaptiveTheme, useArchetypePipeline, useArchetypeCopyTone, ...)
+├── contexts/        # Auth (dual: Supabase + local) + UserProfile + ArchetypeContext
 ├── i18n/            # 290+ bilingual translation keys (Hebrew + English)
 ├── integrations/    # Supabase client + types
-└── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention, qa, research)
+└── types/           # TypeScript type definitions (funnel, differentiation, pricing, retention, qa, research,
+                     #   archetype, behavioralHeuristics)
 supabase/functions/  # 12 Edge Functions
 ├── ai-coach/               # Claude marketing coach (full UserKnowledgeGraph context)
 ├── differentiation-agent/  # Claude Sonnet for 5-phase differentiation
