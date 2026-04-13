@@ -9,6 +9,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
+import { ArchetypeProvider } from "@/contexts/ArchetypeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
@@ -87,6 +88,7 @@ const App = () => (
     <AuthProvider>
       <LanguageProvider>
         <UserProfileProvider>
+          <ArchetypeProvider>
           <DataSourceProvider>
             <TooltipProvider>
               <Toaster />
@@ -100,6 +102,7 @@ const App = () => (
               </ErrorBoundary>
             </TooltipProvider>
           </DataSourceProvider>
+          </ArchetypeProvider>
         </UserProfileProvider>
       </LanguageProvider>
     </AuthProvider>

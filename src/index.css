@@ -406,6 +406,86 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   ADAPTIVE THEMING — Archetype Color Variants
+   Colors shift based on data-archetype attribute set by useAdaptiveTheme
+   when confidence tier reaches "confident" or "strong".
+   Each archetype maps to a behaviorally-grounded palette.
+   ────────────────────────────────────────────────────────────────── */
+
+/* Strategist — dark navy/teal: authority, precision, analytical depth */
+:root[data-archetype="strategist"] {
+  --primary: 218 62% 32%;
+  --accent:  192 46% 38%;
+  --chart-1: 218 62% 32%;
+}
+:root[data-archetype="strategist"].dark {
+  --primary: 218 55% 60%;
+  --accent:  192 42% 46%;
+}
+
+/* Optimizer — sky blue/green: efficiency, clarity, minimal friction */
+:root[data-archetype="optimizer"] {
+  --primary: 210 70% 46%;
+  --accent:  152 56% 40%;
+  --chart-1: 210 70% 46%;
+}
+:root[data-archetype="optimizer"].dark {
+  --primary: 210 62% 62%;
+  --accent:  152 50% 46%;
+}
+
+/* Pioneer — vibrant purple/orange: creativity, momentum, bold vision */
+:root[data-archetype="pioneer"] {
+  --primary: 270 64% 50%;
+  --accent:   28 80% 50%;
+  --chart-1: 270 64% 50%;
+}
+:root[data-archetype="pioneer"].dark {
+  --primary: 270 58% 66%;
+  --accent:   28 74% 58%;
+}
+
+/* Connector — warm green/teal: trust, belonging, relationship-first */
+:root[data-archetype="connector"] {
+  --primary: 148 54% 40%;
+  --accent:  172 52% 44%;
+  --chart-1: 148 54% 40%;
+}
+:root[data-archetype="connector"].dark {
+  --primary: 148 50% 54%;
+  --accent:  172 46% 48%;
+}
+
+/* Closer — bold red/orange: urgency, velocity, deal-closing energy */
+:root[data-archetype="closer"] {
+  --primary:   4 72% 46%;
+  --accent:   22 80% 50%;
+  --chart-1:   4 72% 46%;
+}
+:root[data-archetype="closer"].dark {
+  --primary:   4 66% 60%;
+  --accent:   22 74% 58%;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   ADAPTIVE THEMING — Information Density Variants
+   Set via data-density attribute at "strong" confidence tier.
+   ────────────────────────────────────────────────────────────────── */
+
+/* Compact density — tighter spacing for power-users (closer, optimizer) */
+:root[data-density="compact"] {
+  --spacing-unit: 0.875;
+}
+:root[data-density="compact"] .card {
+  padding: calc(0.875 * 1rem);
+}
+
+/* Rich density — more breathing room for analytical users (strategist) */
+:root[data-density="rich"] {
+  --spacing-unit: 1.125;
+}
+
+/* ──────────────────────────────────────────────────────────────────
    LAYER COMPONENTS — Utility Classes
    Reusable design-system utilities that consume the COR SYS tokens.
    ────────────────────────────────────────────────────────────────── */

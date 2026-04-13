@@ -1,6 +1,7 @@
 import { BusinessFingerprint } from "@/engine/businessFingerprintEngine";
 import { FunnelResult } from "@/types/funnel";
 import { UserProfile } from "@/contexts/UserProfileContext";
+import type { ArchetypeUIConfig, ConfidenceTier, TabId } from "@/types/archetype";
 
 export interface TabConfig {
   id: string;
@@ -19,7 +20,16 @@ export interface TabConfig {
  * - Segment B (Amplifier/Intermediate): All tabs, Brand DNA promoted, full views.
  * - Segment C (Analyst/Advanced): All tabs, Monitor & Data promoted, full views.
  */
-export function getTabConfig(result: FunnelResult, profile: UserProfile): TabConfig[] {
+export interface ArchetypeTabOverride {
+  config: ArchetypeUIConfig;
+  tier: ConfidenceTier;
+}
+
+export function getTabConfig(
+  result: FunnelResult,
+  profile: UserProfile,
+  archetypeOverride?: ArchetypeTabOverride | null,
+): TabConfig[] {
   const { formData } = result;
   const showBrandDna =
     formData.businessField === "personalBrand" || formData.businessField === "services";
@@ -134,9 +144,23 @@ export function getTabConfig(result: FunnelResult, profile: UserProfile): TabCon
     },
   ];
 
-  return tabs
-    .filter((tab) => tab.visible)
-    .sort((a, b) => a.priority - b.priority);
+  const baseTabs = tabs.filter((tab) => tab.visible);
+
+  // Apply archetype priority overrides at "confident" and "strong" tiers
+  if (
+    archetypeOverride &&
+    (archetypeOverride.tier === "confident" || archetypeOverride.tier === "strong")
+  ) {
+    const overrides = archetypeOverride.config.tabPriorityOverrides;
+    return baseTabs
+      .map((tab) => ({
+        ...tab,
+        priority: overrides[tab.id as TabId] ?? tab.priority,
+      }))
+      .sort((a, b) => a.priority - b.priority);
+  }
+
+  return baseTabs.sort((a, b) => a.priority - b.priority);
 }
 
 export function getTabConfigFromFingerprint(fp: BusinessFingerprint): TabConfig[] {

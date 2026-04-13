@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
-import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home } from "lucide-react";
+import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { Separator } from "@/components/ui/separator";
+
+const AdminArchetypeDebugPanel = lazy(() => import("@/components/AdminArchetypeDebugPanel"));
 
 interface AppTopBarProps {
   title?: string;
@@ -22,7 +24,9 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
+  const [debugOpen, setDebugOpen] = useState(false);
   const isHe = language === "he";
+  const isOwner = user?.role === "owner";
 
   return (
     <>
@@ -42,6 +46,19 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
           </span>
         )}
         <div className="ms-auto flex items-center gap-1">
+          {/* Owner-only: archetype debug panel trigger */}
+          {isOwner && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-9 w-9 rounded-full p-0 text-muted-foreground hover:text-foreground"
+              onClick={() => setDebugOpen(true)}
+              aria-label={isHe ? "פאנל ארכיטיפ" : "Archetype debug panel"}
+              title={isHe ? "פאנל ניפוי ארכיטיפ (בעלים בלבד)" : "Archetype debug panel (owner only)"}
+            >
+              <Brain className="h-4 w-4" />
+            </Button>
+          )}
           <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-9 min-w-[44px]" aria-label={isHe ? "Switch to English" : "עבור לעברית"}>
             <Globe className="h-4 w-4" />
             {language === "he" ? "EN" : "עב"}
@@ -95,6 +112,11 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
       </div>
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
       <AchievementBadgesPanel open={badgesOpen} onOpenChange={setBadgesOpen} />
+      {isOwner && (
+        <Suspense fallback={null}>
+          <AdminArchetypeDebugPanel open={debugOpen} onOpenChange={setDebugOpen} />
+        </Suspense>
+      )}
     </>
   );
 };

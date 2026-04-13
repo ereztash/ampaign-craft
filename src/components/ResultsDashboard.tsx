@@ -19,6 +19,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult } from "@/types/funnel";
 import { getTabConfig } from "@/lib/adaptiveTabRules";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getIsraeliToolsSummary } from "@/lib/toolRecommendations";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
@@ -82,9 +83,14 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
   const [coachOpen, setCoachOpen] = useState(false);
 
-  // Adaptive tabs (6 consolidated tabs)
-  const tabs = getTabConfig(result, profile);
-  const defaultTab = routeTab || tabs[0]?.id || "strategy";
+  // Adaptive tabs — archetype overrides applied at "confident" and "strong" tiers
+  const { uiConfig, confidenceTier } = useArchetype();
+  const archetypeOverride = { config: uiConfig, tier: confidenceTier };
+  const tabs = getTabConfig(result, profile, archetypeOverride);
+  const archetypeDefaultTab = (confidenceTier === "confident" || confidenceTier === "strong")
+    ? uiConfig.defaultTab
+    : null;
+  const defaultTab = routeTab || archetypeDefaultTab || tabs[0]?.id || "strategy";
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
 
