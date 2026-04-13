@@ -2,7 +2,16 @@
 // Archetype Types — UserArchetypeLayer
 // Behavioral science-grounded adaptive persona system.
 // Foundation: Regulatory Focus Theory (Higgins 1997) × ELM (Petty & Cacioppo 1986) × Stage.
+//
+// Architectural model: recursive resolution descent
+//   Meta-layer [archetype classification]
+//    → L1 Navigation  → L2 Layout  → L3 Component  → L4 Content  → L5 Interaction
+// Each level applies the same behavioral heuristics at finer granularity.
+// Full heuristic library: src/types/behavioralHeuristics.ts
+// Heuristic engine:       src/engine/behavioralHeuristicEngine.ts
 // ═══════════════════════════════════════════════
+
+export type { PersonalityProfile, PipelineStep } from "@/types/behavioralHeuristics";
 
 export type ArchetypeId =
   | "strategist"  // Prevention + Systematic + Established
@@ -114,4 +123,11 @@ export interface ArchetypeUIConfig {
   label: { he: string; en: string };
   /** One-line user-facing explanation of what changed */
   adaptationDescription: { he: string; en: string };
+  /**
+   * Behavioral science-grounded personality profile.
+   * Includes: regulatory focus, processing style, core motivation,
+   * research-backed friction sources, and friction-reduction tactics.
+   * Used by ArchetypePipelineGuide and AdminArchetypeDebugPanel.
+   */
+  personalityProfile: import("@/types/behavioralHeuristics").PersonalityProfile;
 }
