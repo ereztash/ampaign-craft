@@ -24,7 +24,9 @@ jobs:
 
       - name: Lint
         run: npx eslint src/ --ext .ts,.tsx --max-warnings 0
-        continue-on-error: true
+
+      - name: Security audit
+        run: npm audit --audit-level=high
 
       - name: Test
         run: npx vitest run

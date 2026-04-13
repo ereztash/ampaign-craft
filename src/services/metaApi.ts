@@ -40,7 +40,7 @@ export const exchangeForLongLivedToken = async (
   shortLivedToken: string
 ): Promise<{ access_token: string; expires_in: number }> => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   const res = await fetch(`${supabaseUrl}/functions/v1/meta-token-exchange`, {
     method: "POST",
     headers: {
