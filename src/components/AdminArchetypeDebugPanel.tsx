@@ -15,6 +15,7 @@ import { ChevronDown, RotateCcw, AlertTriangle } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { ArchetypeId } from "@/types/archetype";
+import { deriveHeuristicSet } from "@/engine/behavioralHeuristicEngine";
 
 // ═══════════════════════════════════════════════
 // CONSTANTS
@@ -245,6 +246,115 @@ export default function AdminArchetypeDebugPanel({ open, onOpenChange }: AdminAr
               </div>
             </CollapsibleContent>
           </Collapsible>
+
+          {/* ── 3b. Active Heuristics (Glass-Box) ── */}
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <button className="flex w-full items-center justify-between rounded-lg border border-border p-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide hover:bg-muted/40">
+                {isHe ? "היוריסטיקות פעילות" : "Active Heuristics"}
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-1 rounded-b-lg border border-t-0 border-border p-3 space-y-3">
+                {deriveHeuristicSet(effectiveArchetypeId).map((h) => (
+                  <div key={h.id} className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-primary">{h.id}</span>
+                      <span className="text-xs font-semibold">{h.principle}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground italic">{h.source}</p>
+                    <div className="space-y-0.5">
+                      {(["L1", "L2", "L3", "L4", "L5"] as const).map((lvl) => (
+                        <div key={lvl} className="flex gap-2 text-xs">
+                          <span className="font-mono text-muted-foreground/60 shrink-0 w-5">{lvl}</span>
+                          <span className="text-muted-foreground">{h.manifestations[lvl]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* ── 3c. Feature Importance (Glass-Box ML pattern) ── */}
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <button className="flex w-full items-center justify-between rounded-lg border border-border p-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide hover:bg-muted/40">
+                {isHe ? "חשיבות פיצ'רים" : "Feature Importance"}
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-1 rounded-b-lg border border-t-0 border-border p-3 space-y-2">
+                {(() => {
+                  // Aggregate signal deltas by source
+                  const totals: Record<string, number> = {};
+                  for (const sig of profile.signalHistory) {
+                    const delta = Object.values(sig.deltas).reduce((s, v) => s + (v ?? 0), 0);
+                    totals[sig.source] = (totals[sig.source] ?? 0) + delta;
+                  }
+                  const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+                  const totalContrib = sorted.reduce((s, [, v]) => s + v, 0);
+                  if (sorted.length === 0) {
+                    return (
+                      <p className="text-xs text-muted-foreground">{isHe ? "אין סיגנלים עדיין" : "No signals yet"}</p>
+                    );
+                  }
+                  return sorted.map(([source, value]) => {
+                    const pct = totalContrib > 0 ? Math.round((value / totalContrib) * 100) : 0;
+                    return (
+                      <div key={source} className="space-y-0.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-mono text-muted-foreground">{source}</span>
+                          <span className="font-medium">{pct}%</span>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-primary transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* ── 3d. Classification Rule (Glass-Box formula) ── */}
+          <section className="rounded-lg border border-border p-4 space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              {isHe ? "כלל סיווג" : "Classification Rule"}
+            </h3>
+            {(() => {
+              const sorted = (Object.entries(profile.scores) as [ArchetypeId, number][])
+                .sort((a, b) => b[1] - a[1]);
+              const total = sorted.reduce((s, [, v]) => s + v, 0);
+              const top = sorted[0];
+              const second = sorted[1];
+              return (
+                <div className="space-y-1 text-xs font-mono">
+                  <p className="text-muted-foreground">
+                    confidence = (top − 2nd) ÷ Σscores
+                  </p>
+                  <p className="text-foreground">
+                    = ({top?.[1] ?? 0} − {second?.[1] ?? 0}) ÷ {total} ={" "}
+                    <strong className={confidenceColor(profile.confidence)}>
+                      {confidencePercent(profile.confidence)}
+                    </strong>
+                  </p>
+                  <div className="flex gap-3 mt-2 text-muted-foreground">
+                    <span className={profile.confidenceTier === "tentative" ? "text-amber-500 font-bold" : ""}>tentative ≥ 50%</span>
+                    <span className={profile.confidenceTier === "confident" ? "text-blue-500 font-bold" : ""}>confident ≥ 65%</span>
+                    <span className={profile.confidenceTier === "strong" ? "text-green-500 font-bold" : ""}>strong ≥ 80%</span>
+                  </div>
+                </div>
+              );
+            })()}
+          </section>
 
           {/* ── 5. Manual override ── */}
           <section className="rounded-lg border border-border p-4 space-y-3">
