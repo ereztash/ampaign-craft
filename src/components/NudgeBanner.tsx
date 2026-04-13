@@ -1,5 +1,6 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { BehavioralNudge } from "@/engine/behavioralActionEngine";
+import { useArchetypeCopyTone } from "@/hooks/useArchetypeCopyTone";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,15 +22,26 @@ interface NudgeBannerProps {
   onDismiss?: () => void;
 }
 
+// Tone → border-start accent class (H3: Regulatory Fit — border color matches regulatory frame)
+const TONE_BORDER: Record<string, string> = {
+  urgency:      "border-s-4 border-s-red-500",
+  relational:   "border-s-4 border-s-green-500",
+  analytical:   "border-s-4 border-s-blue-700",
+  inspirational: "border-s-4 border-s-purple-500",
+  direct:       "",
+};
+
 export function NudgeBanner({ nudge, onDismiss }: NudgeBannerProps) {
   const { language } = useLanguage();
   const reducedMotion = useReducedMotion();
   const navigate = useNavigate();
+  const tone = useArchetypeCopyTone();
 
   if (!nudge) return null;
 
   const config = NUDGE_CONFIG[nudge.type] || NUDGE_CONFIG.social_proof;
   const Icon = config.icon;
+  const toneBorder = tone ? (TONE_BORDER[tone] ?? "") : "";
 
   return (
     <AnimatePresence>
@@ -38,7 +50,7 @@ export function NudgeBanner({ nudge, onDismiss }: NudgeBannerProps) {
         animate={{ opacity: 1, y: 0 }}
         exit={reducedMotion ? undefined : { opacity: 0, y: -8 }}
         transition={reducedMotion ? { duration: 0 } : { duration: 0.3 }}
-        className={`rounded-xl border p-3 mb-4 ${config.accent}`}
+        className={`rounded-xl border p-3 mb-4 ${config.accent} ${toneBorder}`}
       >
         <div className="flex items-center gap-3">
           <Icon className="h-4 w-4 shrink-0 text-foreground/70" />
