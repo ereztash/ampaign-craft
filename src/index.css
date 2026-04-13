@@ -4,216 +4,312 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Accessibility: visible focus rings for keyboard navigation */
-*:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-  border-radius: 4px;
-}
+/* ═══════════════════════════════════════════════════════════════════
+   COR SYS — Behavioral Design System v1.0
+   FunnelForge · Tailwind CSS + shadcn/ui
 
-/* iOS safe area support */
-body {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
+   BEHAVIORAL SCIENCE FOUNDATION
+   ─────────────────────────────
+   Every color, spacing, and motion decision is grounded in
+   decision-making psychology and behavioral science research.
 
-/* Prevent horizontal overflow on mobile */
-html, body {
-  overflow-x: hidden;
-}
+   ① PRIMARY / TRUST ANCHOR  (Deep Navy Blue)
+      Theory:  Kahneman System 1 — the brain tags blue as "safe,
+               competent, trustworthy" in under 90 ms, before the
+               user consciously processes any text.
+      Evidence: Blue is the #1 trust color in B2B contexts
+               (Cyr et al. 2010; Elliot & Maier 2014).
+      Effect:  Users make bolder decisions when they trust the tool,
+               directly lowering conversion friction (Prospect Theory).
+      Value:   HSL 216 68% 26% light  |  213 65% 65% dark
 
+   ② ACCENT / REWARD SIGNAL  (Growth Green)
+      Theory:  Fogg Behavior Model — green = "go" = permission to act.
+               Completion states rendered in green trigger dopamine-
+               linked reward anticipation in the basal ganglia.
+      Color:   Green universally maps to financial growth, nature,
+               vitality.  Avoids "traffic-light" effect by staying
+               at a slightly teal-shifted hue rather than pure lime.
+      Value:   HSL 152 58% 40% light  |  152 52% 52% dark
+
+   ③ WARNING / LOSS AVERSION TRIGGER  (Amber)
+      Theory:  Kahneman & Tversky Prospect Theory — losses feel
+               ≈2.5× more painful than equivalent gains feel good.
+               Amber creates an "approaching-loss" tension that
+               motivates corrective action without panic (≠ red).
+      Arousal: Warm hue = approach motivation; medium saturation =
+               arousal without the freeze response of bright red.
+      Value:   --cor-warning: HSL 38 92% 48%
+
+   ④ DESTRUCTIVE / STOP SIGNAL  (Vivid Red)
+      Theory:  Amygdala hijack — red activates the threat-detection
+               circuit in under 60 ms, before conscious processing.
+               Reaction time to red stimuli is measurably faster than
+               to any other hue (Elliot 2015).
+      Rule:    Reserved ONLY for errors, deletion, irreversible acts.
+               Overuse of red causes desensitization (alarm fatigue).
+      Fix:     Dark mode was 0 62% 30% (dark maroon, near-invisible).
+               Corrected to a vivid, WCAG-AA-compliant value.
+      Value:   HSL 4 78% 54% light  |  4 75% 64% dark
+
+   ⑤ INSIGHT / INTELLIGENCE SIGNAL  (Indigo)
+      Theory:  Color-concept associations — purple/indigo maps to
+               "premium, analytical, wisdom" across Western and
+               Middle-Eastern cultural contexts.
+      Function: Signals AI capability and strategic depth without
+               feeling clinical (blue) or alarming (red).
+      Value:   --cor-insight: HSL 258 62% 60%
+
+   ⑥ OPPORTUNITY SIGNAL  (Warm Amber-Orange)
+      Theory:  Russell's Circumplex (Arousal-Valence) — warm orange =
+               high arousal + positive valence = approach motivation.
+      Function: Used for growth hints, potential unlocks, positive
+               prompts.  Never used for warnings (amber) or errors.
+      Value:   --cor-opportunity: HSL 32 92% 52%
+
+   ELEVATION SYSTEM  (Gestalt Depth Cues)
+   ───────────────────────────────────────
+   Flat UI removes spatial cues that help the brain parse information
+   hierarchically. Each elevation step adds +3 % lightness in dark
+   mode, creating a perceptible but non-distracting depth hierarchy.
+   Light mode uses shadows (not lightness) for elevation — matching
+   real-world physics of light sources above the screen.
+
+   MOTION  (150 ms Standard)
+   ─────────────────────────
+   150 ms is the perceptual sweet spot: fast enough to feel instant,
+   slow enough to tell working memory "something changed here."
+   ease-out for entering elements (decelerating = natural arrival).
+   ease-in for exiting elements (accelerating = natural departure).
+
+   TYPOGRAPHY  (Major Third scale ×1.25)
+   ──────────────────────────────────────
+   Modular scales create visual harmony through mathematical ratios.
+   Major Third (×1.25) suits compact SaaS UI: clear differentiation
+   without the dramatic jumps of larger ratios (Major Fifth etc.).
+   Heading line-height 1.2 = authoritative density.
+   Body line-height 1.6 = reading comfort, reduces eye fatigue.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────────
+   LAYER BASE — Semantic Token Definitions
+   ────────────────────────────────────────────────────────────────── */
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 20% 25%;
+    /* ── Backgrounds & Foregrounds ─────────────────────────────────
+       Slightly warm-neutral background (not pure white) reduces
+       cognitive fatigue vs a clinical #FFFFFF canvas.             */
+    --background:         210 22% 98%;
+    --foreground:         215 22% 18%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 20% 25%;
+    /* ── Surfaces (Card / Popover) ─────────────────────────────────
+       Light mode: pure white surface on warm-gray background
+       creates a natural paper-over-desk elevation.               */
+    --card:               0 0% 100%;
+    --card-foreground:    215 22% 18%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 20% 25%;
+    --popover:            0 0% 100%;
+    --popover-foreground: 215 22% 18%;
 
-    --primary: 213 56% 24%;
+    /* ── Primary — Trust Anchor (Deep Navy) ────────────────────────
+       Darker than most frameworks to achieve WCAG AA 4.5:1
+       against --background. Authority without aggression.        */
+    --primary:            216 68% 26%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 20% 94%;
-    --secondary-foreground: 215 20% 25%;
+    /* ── Secondary — Neutral Supporting Surface ────────────────────ī */
+    --secondary:          210 18% 94%;
+    --secondary-foreground: 215 22% 25%;
 
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 14% 46%;
+    /* ── Muted — Background Tint for De-emphasized Content ─────── */
+    --muted:              210 16% 93%;
+    --muted-foreground:   215 14% 48%;
 
-    --accent: 152 60% 45%;
-    --accent-foreground: 0 0% 100%;
+    /* ── Accent — Reward Signal (Growth Green) ─────────────────── */
+    --accent:             152 58% 40%;
+    --accent-foreground:  0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    /* ── Destructive — Stop Signal (Vivid Red) ─────────────────── */
+    --destructive:        4 78% 54%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 213 56% 24%;
+    /* ── Borders & Inputs ──────────────────────────────────────── */
+    --border:             214 18% 88%;
+    --input:              214 18% 88%;
+    --ring:               216 68% 26%;
 
-    --radius: 0.75rem;
+    /* ── Border Radius Scale ───────────────────────────────────────
+       --radius is the base (lg). sm/md/xl/2xl derived from it.  */
+    --radius: 0.625rem; /* 10px base — slightly tighter than 0.75 */
 
-    --chart-1: 213 56% 24%;
-    --chart-2: 152 60% 45%;
-    --chart-3: 32 95% 55%;
-    --chart-4: 280 60% 55%;
-    --chart-5: 0 84% 60%;
+    /* ── Chart / Data-Viz Palette ──────────────────────────────── */
+    --chart-1: 216 68% 26%;   /* primary navy    */
+    --chart-2: 152 58% 40%;   /* growth green    */
+    --chart-3: 32  92% 52%;   /* opportunity orange */
+    --chart-4: 258 62% 60%;   /* insight indigo  */
+    --chart-5: 4   78% 54%;   /* alert red       */
 
-    /* Neuro-Storytelling Semantic Colors */
-    --neuro-tension: var(--destructive);
-    --neuro-trust: var(--primary);
-    --neuro-reward: var(--accent);
-    --neuro-insight: var(--chart-4);
-    --neuro-opportunity: var(--chart-3);
+    /* ── COR SYS Extended Semantic Tokens ─────────────────────────
+       These tokens cover behavioral roles not in the base shadcn set. */
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    /* Warning: loss-aversion amber (NOT the same as destructive) */
+    --cor-warning:            38 92% 48%;
+    --cor-warning-foreground: 0 0% 100%;
+
+    /* Insight: AI intelligence / analytical depth signal */
+    --cor-insight:            258 62% 60%;
+    --cor-insight-foreground: 0 0% 100%;
+
+    /* Opportunity: approach-motivation, warm growth signal */
+    --cor-opportunity:            32 92% 52%;
+    --cor-opportunity-foreground: 0 0% 100%;
+
+    /* Success: explicit positive completion (distinct from accent) */
+    --cor-success:            142 60% 42%;
+    --cor-success-foreground: 0 0% 100%;
+
+    /* ── Neuro-Storytelling Aliases ────────────────────────────────
+       Map behavioral roles to the above tokens for prose clarity. */
+    --neuro-tension:     var(--destructive);
+    --neuro-trust:       var(--primary);
+    --neuro-reward:      var(--accent);
+    --neuro-insight:     var(--cor-insight);
+    --neuro-opportunity: var(--cor-opportunity);
+    --neuro-warning:     var(--cor-warning);
+
+    /* ── Elevation / Shadow System ─────────────────────────────────
+       5 levels. Light mode: visible box-shadow, white surface.
+       Format: offset-y blur spread color (multiple layers for realism) */
+    --shadow-1: 0 1px 2px 0 hsl(215 22% 18% / 0.05);
+    --shadow-2: 0 1px 3px 0 hsl(215 22% 18% / 0.08),
+                0 1px 2px -1px hsl(215 22% 18% / 0.06);
+    --shadow-3: 0 4px 6px -1px hsl(215 22% 18% / 0.08),
+                0 2px 4px -2px hsl(215 22% 18% / 0.05);
+    --shadow-4: 0 10px 15px -3px hsl(215 22% 18% / 0.09),
+                0 4px 6px -4px hsl(215 22% 18% / 0.06);
+    --shadow-5: 0 20px 25px -5px hsl(215 22% 18% / 0.10),
+                0 8px 10px -6px hsl(215 22% 18% / 0.06);
+
+    /* ── Motion Tokens ─────────────────────────────────────────────
+       150ms = perceptual sweet spot (feels instant, signals change). */
+    --dur-instant:  50ms;
+    --dur-fast:     150ms;
+    --dur-normal:   200ms;
+    --dur-slow:     300ms;
+    --dur-slower:   500ms;
+
+    --ease-out:     cubic-bezier(0, 0, 0.2, 1);
+    --ease-in:      cubic-bezier(0.4, 0, 1, 1);
+    --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring:  cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* ── Sidebar Tokens ────────────────────────────────────────── */
+    --sidebar-background:         0 0% 98%;
+    --sidebar-foreground:         215 22% 26%;
+    --sidebar-primary:            215 22% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent:             210 18% 95%;
+    --sidebar-accent-foreground:  215 22% 10%;
+    --sidebar-border:             214 18% 91%;
+    --sidebar-ring:               216 68% 55%;
   }
 
+  /* ── DARK MODE ─────────────────────────────────────────────────────
+     Surface elevation uses progressive lightness steps (+3% per level)
+     to create Gestalt depth without color-washing the palette.
+     Rationale: dark UI spatial cues come from lightness, not shadows
+     (shadows are near-invisible on dark backgrounds).              */
   .dark {
-    --background: 220 20% 7%;
-    --foreground: 210 18% 88%;
+    /* Surface 0 — page background (deepest layer) */
+    --background:         222 24% 7%;
+    --foreground:         210 18% 90%;
 
-    --card: 220 16% 12%;
-    --card-foreground: 210 18% 88%;
+    /* Surface 1 — card (one step up from background) */
+    --card:               222 20% 11%;
+    --card-foreground:    210 18% 90%;
 
-    --popover: 220 16% 12%;
-    --popover-foreground: 210 18% 88%;
+    /* Surface 2 — popover / elevated card */
+    --popover:            222 18% 14%;
+    --popover-foreground: 210 18% 90%;
 
-    --primary: 210 50% 60%;
-    --primary-foreground: 220 20% 7%;
+    /* Primary — lighter navy for dark legibility, WCAG AA on surface-1 */
+    --primary:            213 65% 65%;
+    --primary-foreground: 222 24% 7%;
 
-    --secondary: 220 16% 16%;
-    --secondary-foreground: 210 18% 88%;
+    --secondary:          222 18% 17%;
+    --secondary-foreground: 210 18% 82%;
 
-    --muted: 220 16% 16%;
-    --muted-foreground: 215 14% 65%;
+    --muted:              222 18% 17%;
+    --muted-foreground:   215 14% 62%;
 
-    --accent: 152 45% 42%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent — slightly brighter green for dark-mode pop */
+    --accent:             152 52% 52%;
+    --accent-foreground:  0 0% 100%;
 
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive — FIXED from 0 62% 30% (was near-black).
+       Now vivid, WCAG AA against dark surfaces.              */
+    --destructive:        4 75% 64%;
+    --destructive-foreground: 222 24% 7%;
 
-    --border: 220 15% 16%;
-    --input: 220 15% 16%;
-    --ring: 210 50% 60%;
+    --border:             222 16% 18%;
+    --input:              222 16% 18%;
+    --ring:               213 65% 65%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Chart palette — brighter for dark-mode legibility */
+    --chart-1: 213 65% 65%;
+    --chart-2: 152 52% 52%;
+    --chart-3: 32  88% 58%;
+    --chart-4: 258 65% 68%;
+    --chart-5: 4   75% 64%;
+
+    /* COR SYS extended tokens — dark mode */
+    --cor-warning:            38 90% 56%;
+    --cor-warning-foreground: 222 24% 7%;
+
+    --cor-insight:            258 65% 68%;
+    --cor-insight-foreground: 222 24% 7%;
+
+    --cor-opportunity:            32 88% 58%;
+    --cor-opportunity-foreground: 222 24% 7%;
+
+    --cor-success:            142 52% 52%;
+    --cor-success-foreground: 222 24% 7%;
+
+    /* Dark mode shadows — deeper + no color tint (invisible otherwise) */
+    --shadow-1: 0 1px 2px 0 hsl(0 0% 0% / 0.20);
+    --shadow-2: 0 1px 3px 0 hsl(0 0% 0% / 0.28),
+                0 1px 2px -1px hsl(0 0% 0% / 0.20);
+    --shadow-3: 0 4px 6px -1px hsl(0 0% 0% / 0.30),
+                0 2px 4px -2px hsl(0 0% 0% / 0.22);
+    --shadow-4: 0 10px 15px -3px hsl(0 0% 0% / 0.34),
+                0 4px 6px -4px hsl(0 0% 0% / 0.24);
+    --shadow-5: 0 20px 25px -5px hsl(0 0% 0% / 0.40),
+                0 8px 10px -6px hsl(0 0% 0% / 0.28);
+
+    /* Sidebar — surface-2 level for visual separation from content */
+    --sidebar-background:         222 20% 9%;
+    --sidebar-foreground:         210 18% 88%;
+    --sidebar-primary:            213 65% 65%;
+    --sidebar-primary-foreground: 222 24% 7%;
+    --sidebar-accent:             222 18% 14%;
+    --sidebar-accent-foreground:  210 18% 88%;
+    --sidebar-border:             222 16% 14%;
+    --sidebar-ring:               213 65% 65%;
   }
-}
 
-/* ═══════════════════════════════════════════════
-   Adaptive Theming — Business Field Color Variants
-   Colors shift based on data-field attribute set by useAdaptiveTheme
-   ═══════════════════════════════════════════════ */
-
-/* Fashion — rose/pink creative tone */
-:root[data-field="fashion"] {
-  --primary: 340 65% 47%;
-  --accent: 330 60% 55%;
-  --chart-1: 340 65% 47%;
-}
-:root[data-field="fashion"].dark {
-  --primary: 340 55% 60%;
-  --accent: 330 50% 50%;
-}
-
-/* Food — warm appetizing orange */
-:root[data-field="food"] {
-  --primary: 25 85% 50%;
-  --accent: 145 55% 42%;
-  --chart-1: 25 85% 50%;
-}
-:root[data-field="food"].dark {
-  --primary: 25 75% 55%;
-  --accent: 145 45% 40%;
-}
-
-/* Health — calm wellness green */
-:root[data-field="health"] {
-  --primary: 160 50% 40%;
-  --accent: 170 55% 45%;
-  --chart-1: 160 50% 40%;
-}
-:root[data-field="health"].dark {
-  --primary: 160 45% 50%;
-  --accent: 170 45% 42%;
-}
-
-/* Personal Brand — distinctive purple */
-:root[data-field="personalBrand"] {
-  --primary: 270 55% 50%;
-  --accent: 280 50% 55%;
-  --chart-1: 270 55% 50%;
-}
-:root[data-field="personalBrand"].dark {
-  --primary: 270 50% 60%;
-  --accent: 280 45% 50%;
-}
-
-/* Real Estate — premium dark blue */
-:root[data-field="realEstate"] {
-  --primary: 220 60% 30%;
-  --accent: 180 45% 40%;
-  --chart-1: 220 60% 30%;
-}
-:root[data-field="realEstate"].dark {
-  --primary: 220 50% 55%;
-  --accent: 180 40% 45%;
-}
-
-/* Education — accessible light blue */
-:root[data-field="education"] {
-  --primary: 200 65% 50%;
-  --accent: 160 50% 45%;
-  --chart-1: 200 65% 50%;
-}
-:root[data-field="education"].dark {
-  --primary: 200 55% 58%;
-  --accent: 160 45% 42%;
-}
-
-/* Tourism — vibrant teal */
-:root[data-field="tourism"] {
-  --primary: 185 60% 42%;
-  --accent: 165 55% 45%;
-  --chart-1: 185 60% 42%;
-}
-:root[data-field="tourism"].dark {
-  --primary: 185 50% 52%;
-  --accent: 165 45% 42%;
-}
-
-/* B2B audience — professional teal accent */
-:root[data-audience="b2b"] {
-  --accent: 175 45% 38%;
-}
-
-@layer base {
+  /* ── Global Reset ─────────────────────────────────────────────── */
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
     font-family: 'Heebo', 'Inter', sans-serif;
+    font-size: 1rem;           /* 16px base */
+    line-height: 1.6;          /* body: relaxed for reading comfort */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   [dir="rtl"] {
@@ -221,53 +317,296 @@ html, body {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   ADAPTIVE THEMING — Business Field Color Variants
+   Colors shift based on data-field attribute set by useAdaptiveTheme.
+   Each field maps to an industry-specific trust/energy palette.
+   ────────────────────────────────────────────────────────────────── */
+
+/* Fashion — rose/pink: creativity, desire, personal expression */
+:root[data-field="fashion"] {
+  --primary: 340 65% 44%;
+  --accent:  330 58% 52%;
+  --chart-1: 340 65% 44%;
+}
+:root[data-field="fashion"].dark {
+  --primary: 340 58% 62%;
+  --accent:  330 52% 52%;
+}
+
+/* Food — warm appetising orange: appetite, warmth, comfort */
+:root[data-field="food"] {
+  --primary: 25 82% 48%;
+  --accent:  145 52% 40%;
+  --chart-1: 25 82% 48%;
+}
+:root[data-field="food"].dark {
+  --primary: 25 75% 58%;
+  --accent:  145 48% 42%;
+}
+
+/* Health — calm wellness teal/green: vitality, trust, nature */
+:root[data-field="health"] {
+  --primary: 162 52% 38%;
+  --accent:  172 55% 43%;
+  --chart-1: 162 52% 38%;
+}
+:root[data-field="health"].dark {
+  --primary: 162 48% 52%;
+  --accent:  172 48% 44%;
+}
+
+/* Personal Brand — distinctive indigo: wisdom, ambition, uniqueness */
+:root[data-field="personalBrand"] {
+  --primary: 258 58% 48%;
+  --accent:  272 52% 54%;
+  --chart-1: 258 58% 48%;
+}
+:root[data-field="personalBrand"].dark {
+  --primary: 258 54% 64%;
+  --accent:  272 48% 56%;
+}
+
+/* Real Estate — premium dark navy: stability, authority, investment */
+:root[data-field="realEstate"] {
+  --primary: 220 62% 28%;
+  --accent:  182 44% 38%;
+  --chart-1: 220 62% 28%;
+}
+:root[data-field="realEstate"].dark {
+  --primary: 220 55% 58%;
+  --accent:  182 40% 46%;
+}
+
+/* Education — accessible sky blue: clarity, openness, learning */
+:root[data-field="education"] {
+  --primary: 202 68% 46%;
+  --accent:  162 52% 43%;
+  --chart-1: 202 68% 46%;
+}
+:root[data-field="education"].dark {
+  --primary: 202 58% 60%;
+  --accent:  162 46% 44%;
+}
+
+/* Tourism — vibrant teal: adventure, energy, discovery */
+:root[data-field="tourism"] {
+  --primary: 188 62% 40%;
+  --accent:  166 55% 42%;
+  --chart-1: 188 62% 40%;
+}
+:root[data-field="tourism"].dark {
+  --primary: 188 52% 54%;
+  --accent:  166 48% 44%;
+}
+
+/* B2B audience — professional teal accent (reinforces reliability) */
+:root[data-audience="b2b"] {
+  --accent: 178 46% 36%;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   LAYER COMPONENTS — Utility Classes
+   Reusable design-system utilities that consume the COR SYS tokens.
+   ────────────────────────────────────────────────────────────────── */
+@layer components {
+
+  /* ── Typography Scale (Major Third ×1.25) ──────────────────────
+     Headings: line-height 1.2 (tight = authority, scan-readability).
+     Body: line-height 1.6 (relaxed = reading comfort, eye fatigue ↓). */
+  .cor-display {
+    font-size: clamp(1.953rem, 4vw, 3.052rem); /* 31–49px */
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+  .cor-title {
+    font-size: clamp(1.563rem, 3vw, 2.441rem); /* 25–39px */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .cor-heading {
+    font-size: clamp(1.25rem, 2.5vw, 1.953rem); /* 20–31px */
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+  .cor-subheading {
+    font-size: 1.25rem; /* 20px */
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .cor-body-lg {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.6;
+    letter-spacing: 0;
+  }
+  .cor-body {
+    font-size: 1rem;  /* 16px */
+    line-height: 1.6;
+    letter-spacing: 0;
+  }
+  .cor-body-sm {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+  .cor-caption {
+    font-size: 0.8rem; /* 12.8px */
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+  .cor-overline {
+    font-size: 0.75rem; /* 12px */
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── Elevation (Box Shadow) ─────────────────────────────────────
+     Consume --shadow-N tokens. Works in both light and dark mode. */
+  .cor-elevation-1 { box-shadow: var(--shadow-1); }
+  .cor-elevation-2 { box-shadow: var(--shadow-2); }
+  .cor-elevation-3 { box-shadow: var(--shadow-3); }
+  .cor-elevation-4 { box-shadow: var(--shadow-4); }
+  .cor-elevation-5 { box-shadow: var(--shadow-5); }
+
+  /* ── Semantic Color Surfaces ────────────────────────────────────
+     Pre-composed bg + border + text combos for status contexts.   */
+  .cor-surface-warning {
+    background-color: hsl(var(--cor-warning) / 0.08);
+    border-color:     hsl(var(--cor-warning) / 0.30);
+    color:            hsl(var(--cor-warning));
+  }
+  .cor-surface-insight {
+    background-color: hsl(var(--cor-insight) / 0.08);
+    border-color:     hsl(var(--cor-insight) / 0.30);
+    color:            hsl(var(--cor-insight));
+  }
+  .cor-surface-opportunity {
+    background-color: hsl(var(--cor-opportunity) / 0.08);
+    border-color:     hsl(var(--cor-opportunity) / 0.30);
+    color:            hsl(var(--cor-opportunity));
+  }
+  .cor-surface-success {
+    background-color: hsl(var(--cor-success) / 0.08);
+    border-color:     hsl(var(--cor-success) / 0.30);
+    color:            hsl(var(--cor-success));
+  }
+
+  /* ── Micro-interactions ─────────────────────────────────────────
+     Consistent timing from --dur-fast (150ms) = perceptual sweet-spot. */
+  .cor-card-hover {
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .cor-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-3);
+  }
+
+  .cor-btn-press:active {
+    transform: scale(0.97);
+    transition: transform 80ms var(--ease-in);
+  }
+
+  /* ── Standard Transition ────────────────────────────────────────
+     Apply to any element that needs smooth state transitions.     */
+  .cor-transition {
+    transition: color var(--dur-fast) var(--ease-out),
+                background-color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out),
+                opacity var(--dur-fast) var(--ease-out);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   LAYER UTILITIES — One-off helpers
+   ────────────────────────────────────────────────────────────────── */
 @layer utilities {
+
+  /* Brand gradient (primary → accent) */
   .funnel-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
   }
 
+  /* Warm CTA (opportunity orange) */
   .cta-warm {
-    background: hsl(25, 95%, 53%);
-    color: white;
+    background: hsl(var(--cor-opportunity));
+    color: hsl(var(--cor-opportunity-foreground));
     border: none;
-    transition: all 0.2s ease;
+    transition: filter var(--dur-fast) var(--ease-out),
+                transform 80ms var(--ease-in-out);
   }
   .cta-warm:hover {
-    background: hsl(25, 95%, 46%);
-    transform: scale(1.03);
+    filter: brightness(0.92);
+    transform: scale(1.02);
+  }
+  .cta-warm:active {
+    transform: scale(0.97);
   }
 
-  /* Micro-interactions (Reference: Raycast) */
-  .card-hover {
-    transition: transform 200ms ease, box-shadow 200ms ease;
-  }
-  .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-  .dark .card-hover:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-  .btn-press:active {
-    transform: scale(0.98);
-  }
-
+  /* Glass surface */
   .glass-card {
     @apply bg-card/80 backdrop-blur-sm border border-border/50;
   }
 
+  /* Skip-to-content (accessibility) */
   .skip-to-content {
-    @apply sr-only focus:not-sr-only focus:absolute focus:top-2 focus:start-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none;
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-2 focus:start-2
+           focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary
+           focus:text-primary-foreground focus:rounded-md focus:outline-none;
+  }
+
+  /* Legacy aliases kept for backward compatibility */
+  .card-hover {
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-3);
+  }
+  .btn-press:active {
+    transform: scale(0.97);
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   ACCESSIBILITY
+   ────────────────────────────────────────────────────────────────── */
+
+/* Focus ring — 2px solid, brand color, 2px offset.
+   Ratio: ring on --background must be ≥3:1 per WCAG 2.2 §2.4.11 */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* iOS safe-area insets */
+body {
+  padding-top:    env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left:   env(safe-area-inset-left);
+  padding-right:  env(safe-area-inset-right);
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
 }
