@@ -7,6 +7,7 @@ import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";
 import BackToHub from "@/components/BackToHub";
 import RetentionGrowthTab from "@/components/RetentionGrowthTab";
+import { ModuleNextStep } from "@/components/ModuleNextStep";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
@@ -41,6 +42,7 @@ const PageComponent = () => {
               </div>
             )}
             <RetentionGrowthTab result={result} />
+            <ModuleNextStep current={5} />
           </>
         ) : (
           <div className="text-center py-16 space-y-4">

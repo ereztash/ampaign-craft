@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook } from "lucide-react";
+import { McpIntegrationPanel } from "@/components/McpIntegrationPanel";
 import { useToast } from "@/hooks/use-toast";
 import {
   createEmptyIntegrationState,
@@ -272,6 +273,9 @@ const PageComponent = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {/* MCP Integration */}
+        <McpIntegrationPanel />
       </div>
     </div>
   );

@@ -29,8 +29,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { SavedPlan } from "@/types/funnel";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { Database, Wand2, Compass, Map } from "lucide-react";
+import { Database, Wand2, Compass, Map, Users } from "lucide-react";
 import ExpressWizard from "@/components/ExpressWizard";
+import { InsightsCard } from "@/components/InsightsCard";
+import { AnalyticsConnectCard } from "@/components/AnalyticsConnectCard";
 
 const CommandCenter = () => {
   const { language, t } = useLanguage();
@@ -277,8 +279,14 @@ const CommandCenter = () => {
                   <Map className="h-4 w-4" />
                   {t("navStrategyCanvas")}
                 </Button>
+                <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/crm")}>
+                  <Users className="h-4 w-4" />
+                  {isHe ? "ניהול לידים (CRM)" : "Lead Management (CRM)"}
+                </Button>
               </CardContent>
             </Card>
+            <InsightsCard />
+            <AnalyticsConnectCard />
             <ProgressMomentum
               modules={modules}
               streakWeeks={streak.currentStreak}

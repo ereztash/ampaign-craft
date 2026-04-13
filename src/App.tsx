@@ -29,6 +29,7 @@ const PricingEntry = lazy(() => import("./pages/PricingEntry"));
 const RetentionEntry = lazy(() => import("./pages/RetentionEntry"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const SharedQuote = lazy(() => import("./pages/SharedQuote"));
+const CrmPage = lazy(() => import("./pages/CrmPage"));
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,7 @@ const AnimatedRoutes = () => {
             <Route path="sales" element={<SalesEntry />} />
             <Route path="pricing" element={<PricingEntry />} />
             <Route path="retention" element={<RetentionEntry />} />
+            <Route path="crm" element={<CrmPage />} />
             <Route path="profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Route>
