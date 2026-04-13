@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { getL5CSSVars } from "@/engine/behavioralHeuristicEngine";
-import type { L5CSSVars } from "@/types/behavioralHeuristics";
 
 /**
  * Adaptive Theme Hook
@@ -85,12 +84,12 @@ export function useAdaptiveTheme() {
   useEffect(() => {
     if (confidenceTier !== "confident" && confidenceTier !== "strong") return;
     const el = document.documentElement;
-    const vars: L5CSSVars = getL5CSSVars(effectiveArchetypeId);
-    (Object.entries(vars) as [keyof L5CSSVars, string][]).forEach(([prop, value]) => {
+    const vars = getL5CSSVars(effectiveArchetypeId);
+    Object.entries(vars).forEach(([prop, value]) => {
       el.style.setProperty(prop, value);
     });
     return () => {
-      (Object.keys(vars) as (keyof L5CSSVars)[]).forEach((prop) => {
+      Object.keys(vars).forEach((prop) => {
         el.style.removeProperty(prop);
       });
     };

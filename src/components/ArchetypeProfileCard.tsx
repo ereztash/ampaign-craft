@@ -227,7 +227,7 @@ export default function ArchetypeProfileCard() {
             <CollapsibleContent>
               {(() => {
                 const profile_ = uiConfig.personalityProfile;
-                const heuristics = deriveHeuristicSet(archetype);
+                const heuristics = deriveHeuristicSet(archetype).activeHeuristics;
                 return (
                   <div className="mt-2 space-y-2">
                     {/* Regulatory focus + processing style badges */}
@@ -245,7 +245,7 @@ export default function ArchetypeProfileCard() {
                     </div>
                     {/* Core motivation */}
                     <p className="text-xs text-muted-foreground italic" dir="auto">
-                      {profile_.coreMotivation}
+                      {profile_.coreMotivation[isHe ? "he" : "en"]}
                     </p>
                     {/* Active heuristic badges */}
                     <div className="flex flex-wrap gap-1">

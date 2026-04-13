@@ -20,26 +20,57 @@ import type { ArchetypeId, ArchetypeUIConfig, PersonalityProfile } from "@/types
 const STRATEGIST_PROFILE: PersonalityProfile = {
   regulatoryFocus: "prevention",
   processingStyle: "systematic",
-  coreMotivation: "Minimize risk through comprehensive understanding before acting",
+  coreMotivation: {
+    he: "מזעור סיכון דרך הבנה מקיפה לפני פעולה",
+    en: "Minimize risk through comprehensive understanding before acting",
+  },
   primaryFrictions: [
     {
       id: "uncertainty_aversion",
-      label: "Uncertainty Aversion",
-      source: "Pavlou & Fygenson 2006; Prospect Theory",
+      frictionClass: "uncertainty_aversion",
+      source: "Pavlou & Fygenson 2006; Prospect Theory (Kahneman & Tversky 1979)",
+      trigger: {
+        he: "הצורך לוודאות לפני פעולה מעכב כל שלב",
+        en: "Need for certainty before acting stalls every step",
+      },
+      reduction: {
+        he: "נתונים קודם — כל שלב הבא הופך להוכחה",
+        en: "Data first — every downstream step becomes evidence",
+      },
+      addressedAt: ["L1_navigation", "L3_component", "L4_content"],
     },
     {
       id: "cognitive_overload",
-      label: "Cognitive Overload",
+      frictionClass: "cognitive_overload",
       source: "Sweller 1988 CLT — oversimplification hides nuance",
+      trigger: {
+        he: "פישוט יתר מסתיר ניואנסים קריטיים",
+        en: "Oversimplification hides critical nuances",
+      },
+      reduction: {
+        he: "פריסה עשירה בנתונים; פרטים מלאים לפני סיכום",
+        en: "Data-rich layout; full detail before summary",
+      },
+      addressedAt: ["L2_layout", "L3_component"],
     },
     {
       id: "regulatory_mismatch",
-      label: "Regulatory Mismatch",
+      frictionClass: "regulatory_mismatch",
       source: "Higgins 2000 FIT — gain-framed CTAs feel ungrounded",
+      trigger: {
+        he: "קריאות לפעולה ממוקדות-רווח מרגישות לא נכונות",
+        en: "Gain-framed CTAs feel ungrounded",
+      },
+      reduction: {
+        he: "ניסוח מניעה: 'הגן', 'ודא', 'הימנע מסיכון'",
+        en: "Prevention framing: 'protect', 'ensure', 'avoid risk'",
+      },
+      addressedAt: ["L4_content", "L5_interaction"],
     },
   ],
   pipeline: [
     {
+      id: "data",
       routePath: "/data",
       label: { he: "חבר נתונים", en: "Connect Data" },
       frictionReason: {
@@ -50,6 +81,7 @@ const STRATEGIST_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-data-sources",
     },
     {
+      id: "differentiate",
       routePath: "/differentiate",
       label: { he: "הגדר בידול", en: "Define Differentiation" },
       frictionReason: {
@@ -60,6 +92,7 @@ const STRATEGIST_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-differentiation-result",
     },
     {
+      id: "wizard",
       routePath: "/wizard",
       label: { he: "בנה תוכנית", en: "Build Plan" },
       frictionReason: {
@@ -70,6 +103,7 @@ const STRATEGIST_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-plans",
     },
     {
+      id: "strategy",
       routePath: "/strategy",
       label: { he: "מפת אסטרטגיה", en: "Strategy Canvas" },
       frictionReason: {
@@ -79,6 +113,7 @@ const STRATEGIST_PROFILE: PersonalityProfile = {
       frictionClass: "cognitive_overload",
     },
     {
+      id: "dashboard",
       routePath: "/dashboard",
       label: { he: "אמת את התוכנית", en: "Validate Plan" },
       frictionReason: {
@@ -88,6 +123,7 @@ const STRATEGIST_PROFILE: PersonalityProfile = {
       frictionClass: "uncertainty_aversion",
     },
     {
+      id: "pricing",
       routePath: "/pricing",
       label: { he: "תמחור אסטרטגי", en: "Strategic Pricing" },
       frictionReason: {
@@ -97,6 +133,7 @@ const STRATEGIST_PROFILE: PersonalityProfile = {
       frictionClass: "cognitive_overload",
     },
     {
+      id: "retention",
       routePath: "/retention",
       label: { he: "שמר לקוחות", en: "Retain Customers" },
       frictionReason: {
@@ -111,26 +148,57 @@ const STRATEGIST_PROFILE: PersonalityProfile = {
 const OPTIMIZER_PROFILE: PersonalityProfile = {
   regulatoryFocus: "promotion",
   processingStyle: "systematic",
-  coreMotivation: "Maximize efficiency through measurement and continuous iteration",
+  coreMotivation: {
+    he: "מקסום יעילות דרך מדידה ואיטרציה מתמשכת",
+    en: "Maximize efficiency through measurement and continuous iteration",
+  },
   primaryFrictions: [
     {
       id: "momentum_loss",
-      label: "Momentum Loss",
+      frictionClass: "momentum_loss",
       source: "Bandura 1977 SST; Hamari 2014 — no improvement metrics kills motivation",
+      trigger: {
+        he: "חוסר מדדי שיפור מרסק מוטיבציה",
+        en: "No improvement metrics kills motivation",
+      },
+      reduction: {
+        he: "מדד בסיס מיידי + מחוונים לשיפור",
+        en: "Immediate baseline + improvement indicators",
+      },
+      addressedAt: ["L1_navigation", "L3_component"],
     },
     {
       id: "cognitive_overload",
-      label: "Cognitive Overload",
+      frictionClass: "cognitive_overload",
       source: "Sweller 1988 — irrelevant data, not data volume, is the overload",
+      trigger: {
+        he: "נתונים לא רלוונטיים — לא הנפח — הם ההצפה",
+        en: "Irrelevant data — not volume — is the overload",
+      },
+      reduction: {
+        he: "סינון לנתוני אופטימיזציה בעלי מינוף גבוה בלבד",
+        en: "Filter to high-leverage optimization data only",
+      },
+      addressedAt: ["L2_layout", "L3_component"],
     },
     {
       id: "regulatory_mismatch",
-      label: "Regulatory Mismatch",
+      frictionClass: "regulatory_mismatch",
       source: "Higgins 2000 FIT — loss-framing feels defeatist when optimizing",
+      trigger: {
+        he: "ניסוח הפסד מרגיש מנוצח בזמן אופטימיזציה",
+        en: "Loss-framing feels defeatist when optimizing",
+      },
+      reduction: {
+        he: "ניסוח רווח: 'שפר', 'הגדל', 'הגע'",
+        en: "Gain framing: 'improve', 'increase', 'reach'",
+      },
+      addressedAt: ["L4_content"],
     },
   ],
   pipeline: [
     {
+      id: "dashboard",
       routePath: "/dashboard",
       label: { he: "ראה מצב נוכחי", en: "See Current State" },
       frictionReason: {
@@ -140,6 +208,7 @@ const OPTIMIZER_PROFILE: PersonalityProfile = {
       frictionClass: "momentum_loss",
     },
     {
+      id: "data",
       routePath: "/data",
       label: { he: "חבר נתונים", en: "Connect Data" },
       frictionReason: {
@@ -150,6 +219,7 @@ const OPTIMIZER_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-data-sources",
     },
     {
+      id: "wizard",
       routePath: "/wizard",
       label: { he: "בנה תוכנית", en: "Build Plan" },
       frictionReason: {
@@ -160,6 +230,7 @@ const OPTIMIZER_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-plans",
     },
     {
+      id: "retention",
       routePath: "/retention",
       label: { he: "הפחת נטישה", en: "Reduce Churn" },
       frictionReason: {
@@ -169,6 +240,7 @@ const OPTIMIZER_PROFILE: PersonalityProfile = {
       frictionClass: "momentum_loss",
     },
     {
+      id: "pricing",
       routePath: "/pricing",
       label: { he: "מטב תמחור", en: "Optimize Pricing" },
       frictionReason: {
@@ -178,6 +250,7 @@ const OPTIMIZER_PROFILE: PersonalityProfile = {
       frictionClass: "regulatory_mismatch",
     },
     {
+      id: "strategy",
       routePath: "/strategy",
       label: { he: "לוח בקרה", en: "Strategy Canvas" },
       frictionReason: {
@@ -187,6 +260,7 @@ const OPTIMIZER_PROFILE: PersonalityProfile = {
       frictionClass: "cognitive_overload",
     },
     {
+      id: "differentiate",
       routePath: "/differentiate",
       label: { he: "בדל עצמך", en: "Differentiate" },
       frictionReason: {
@@ -202,26 +276,57 @@ const OPTIMIZER_PROFILE: PersonalityProfile = {
 const PIONEER_PROFILE: PersonalityProfile = {
   regulatoryFocus: "promotion",
   processingStyle: "heuristic",
-  coreMotivation: "Build something meaningful from a vision, fast",
+  coreMotivation: {
+    he: "בניית משהו משמעותי מחזון, במהירות",
+    en: "Build something meaningful from a vision, fast",
+  },
   primaryFrictions: [
     {
       id: "choice_overload",
-      label: "Choice Overload",
+      frictionClass: "choice_overload",
       source: "Iyengar & Lepper 2000 — too many options paralyze the vision",
+      trigger: {
+        he: "יותר מדי אפשרויות מקפיאות את החזון",
+        en: "Too many options paralyze the vision",
+      },
+      reduction: {
+        he: "שלב אחד בכל פעם; גילוי פרוגרסיבי",
+        en: "One step at a time; progressive disclosure",
+      },
+      addressedAt: ["L1_navigation", "L2_layout", "L3_component"],
     },
     {
       id: "narrative_dissonance",
-      label: "Narrative Dissonance",
+      frictionClass: "narrative_dissonance",
       source: "Escalas 2004 NRT — data-heavy interfaces feel cold",
+      trigger: {
+        he: "ממשקים עמוסי-נתונים מרגישים קרים ומנוכרים",
+        en: "Data-heavy interfaces feel cold and alienating",
+      },
+      reduction: {
+        he: "תוצאות ודוגמאות לפני מתודולוגיה; סיפור לפני מדדים",
+        en: "Outcomes and examples before methodology; story before metrics",
+      },
+      addressedAt: ["L2_layout", "L4_content"],
     },
     {
       id: "momentum_loss",
-      label: "Momentum Loss",
+      frictionClass: "momentum_loss",
       source: "Bandura 1977; Thaler 1981 — not creating immediately kills creative energy",
+      trigger: {
+        he: "אי-יצירה מיידית הורגת אנרגיה יצירתית",
+        en: "Not creating immediately kills creative energy",
+      },
+      reduction: {
+        he: "פלט מיידי ויצירתי לפני כל ניתוח",
+        en: "Immediate creative output before any analysis",
+      },
+      addressedAt: ["L1_navigation", "L5_interaction"],
     },
   ],
   pipeline: [
     {
+      id: "wizard",
       routePath: "/wizard",
       label: { he: "בנה תוכנית", en: "Build Plan" },
       frictionReason: {
@@ -232,6 +337,7 @@ const PIONEER_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-plans",
     },
     {
+      id: "differentiate",
       routePath: "/differentiate",
       label: { he: "גלה זהות", en: "Discover Identity" },
       frictionReason: {
@@ -242,6 +348,7 @@ const PIONEER_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-differentiation-result",
     },
     {
+      id: "strategy",
       routePath: "/strategy",
       label: { he: "מפת אסטרטגיה", en: "Strategy Canvas" },
       frictionReason: {
@@ -251,6 +358,7 @@ const PIONEER_PROFILE: PersonalityProfile = {
       frictionClass: "choice_overload",
     },
     {
+      id: "ai",
       routePath: "/ai",
       label: { he: "קבל הדרכה", en: "Get AI Guidance" },
       frictionReason: {
@@ -261,6 +369,7 @@ const PIONEER_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-coach-messages",
     },
     {
+      id: "sales",
       routePath: "/sales",
       label: { he: "פתח מכירות", en: "Develop Sales" },
       frictionReason: {
@@ -270,6 +379,7 @@ const PIONEER_PROFILE: PersonalityProfile = {
       frictionClass: "momentum_loss",
     },
     {
+      id: "dashboard",
       routePath: "/dashboard",
       label: { he: "ראה תוצאות", en: "See Results" },
       frictionReason: {
@@ -279,6 +389,7 @@ const PIONEER_PROFILE: PersonalityProfile = {
       frictionClass: "narrative_dissonance",
     },
     {
+      id: "data",
       routePath: "/data",
       label: { he: "חבר נתונים", en: "Connect Data" },
       frictionReason: {
@@ -294,26 +405,57 @@ const PIONEER_PROFILE: PersonalityProfile = {
 const CONNECTOR_PROFILE: PersonalityProfile = {
   regulatoryFocus: "prevention",
   processingStyle: "heuristic",
-  coreMotivation: "Strengthen customer relationships and community through authentic care",
+  coreMotivation: {
+    he: "חיזוק קשרי לקוחות וקהילה דרך דאגה אמיתית",
+    en: "Strengthen customer relationships and community through authentic care",
+  },
   primaryFrictions: [
     {
       id: "relational_distance",
-      label: "Relational Distance",
+      frictionClass: "relational_distance",
       source: "Haidt 2012 MFT; Buttle 2004 — transactional language betrays relationships",
+      trigger: {
+        he: "שפה עסקאית מרגישה בגידה ביחסים",
+        en: "Transactional language feels like betrayal of relationships",
+      },
+      reduction: {
+        he: "שפה חמה; כלי שימור לקוחות קודמים לכל",
+        en: "Warm language; retention tools come first",
+      },
+      addressedAt: ["L1_navigation", "L4_content"],
     },
     {
       id: "choice_overload",
-      label: "Choice Overload",
+      frictionClass: "choice_overload",
       source: "Iyengar & Lepper 2000 — too many options without relational context",
+      trigger: {
+        he: "יותר מדי אפשרויות ללא הקשר יחסי",
+        en: "Too many options without relational context",
+      },
+      reduction: {
+        he: "מסלול ממוקד יחסים; שלב אחד ברור",
+        en: "Relationship-focused path; one clear step",
+      },
+      addressedAt: ["L2_layout", "L3_component"],
     },
     {
       id: "uncertainty_aversion",
-      label: "Uncertainty Aversion",
+      frictionClass: "uncertainty_aversion",
       source: "Higgins 1997 vigilance — uncertainty about customer happiness",
+      trigger: {
+        he: "חוסר ודאות לגבי אושר הלקוחות מדאיג",
+        en: "Uncertainty about customer happiness is worrying",
+      },
+      reduction: {
+        he: "מדדי בריאות לקוחות תמיד גלויים; בדיקות בטיחות",
+        en: "Customer health metrics always visible; safety checks",
+      },
+      addressedAt: ["L2_layout", "L3_component"],
     },
   ],
   pipeline: [
     {
+      id: "retention",
       routePath: "/retention",
       label: { he: "שמר לקוחות", en: "Retain Customers" },
       frictionReason: {
@@ -323,6 +465,7 @@ const CONNECTOR_PROFILE: PersonalityProfile = {
       frictionClass: "relational_distance",
     },
     {
+      id: "ai",
       routePath: "/ai",
       label: { he: "שוחח עם AI", en: "Talk to AI Coach" },
       frictionReason: {
@@ -333,6 +476,7 @@ const CONNECTOR_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-coach-messages",
     },
     {
+      id: "wizard",
       routePath: "/wizard",
       label: { he: "בנה תוכנית", en: "Build Plan" },
       frictionReason: {
@@ -343,6 +487,7 @@ const CONNECTOR_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-plans",
     },
     {
+      id: "strategy",
       routePath: "/strategy",
       label: { he: "מפת אסטרטגיה", en: "Strategy Canvas" },
       frictionReason: {
@@ -352,6 +497,7 @@ const CONNECTOR_PROFILE: PersonalityProfile = {
       frictionClass: "uncertainty_aversion",
     },
     {
+      id: "sales",
       routePath: "/sales",
       label: { he: "שיחות לקוחות", en: "Customer Conversations" },
       frictionReason: {
@@ -361,6 +507,7 @@ const CONNECTOR_PROFILE: PersonalityProfile = {
       frictionClass: "relational_distance",
     },
     {
+      id: "differentiate",
       routePath: "/differentiate",
       label: { he: "גלה ייחוד", en: "Discover Uniqueness" },
       frictionReason: {
@@ -371,6 +518,7 @@ const CONNECTOR_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-differentiation-result",
     },
     {
+      id: "dashboard",
       routePath: "/dashboard",
       label: { he: "אמת בריאות", en: "Validate Health" },
       frictionReason: {
@@ -385,26 +533,57 @@ const CONNECTOR_PROFILE: PersonalityProfile = {
 const CLOSER_PROFILE: PersonalityProfile = {
   regulatoryFocus: "promotion",
   processingStyle: "heuristic",
-  coreMotivation: "Close deals and drive revenue with maximum velocity",
+  coreMotivation: {
+    he: "סגירת עסקאות ומינוף הכנסות במהירות מקסימלית",
+    en: "Close deals and drive revenue with maximum velocity",
+  },
   primaryFrictions: [
     {
       id: "temporal_friction",
-      label: "Temporal Friction",
+      frictionClass: "temporal_friction",
       source: "Cialdini 1984; Gong.io 2019 — every second between intent and execution is a lost deal",
+      trigger: {
+        he: "כל שניה בין כוונה לביצוע היא עסקה אבודה",
+        en: "Every second between intent and execution is a lost deal",
+      },
+      reduction: {
+        he: "גישה ישירה לכלי סגירה; מינימום קליקים",
+        en: "Zero-depth access to closing tools; minimum clicks",
+      },
+      addressedAt: ["L1_navigation", "L5_interaction"],
     },
     {
       id: "choice_overload",
-      label: "Choice Overload",
+      frictionClass: "choice_overload",
       source: "Fasolo 2007; Lincoln 2014 — multiple options slow the close",
+      trigger: {
+        he: "אפשרויות מרובות מאטות את הסגירה",
+        en: "Multiple options slow the close",
+      },
+      reduction: {
+        he: "CTA אחד ראשי; אפשרויות משניות מוסתרות",
+        en: "One primary CTA; secondary options hidden",
+      },
+      addressedAt: ["L2_layout", "L3_component"],
     },
     {
       id: "momentum_loss",
-      label: "Momentum Loss",
+      frictionClass: "momentum_loss",
       source: "Thaler 1981 hyperbolic discounting — for closers, momentum IS urgency",
+      trigger: {
+        he: "עיכוב בין כוונה לפעולה הורג את הדחף",
+        en: "Delay between intent and action kills the drive",
+      },
+      reduction: {
+        he: "מוציאי בלמים; תגובה מהירה; אנימציות מינימליות",
+        en: "Blocker removal; fast feedback; minimal animations",
+      },
+      addressedAt: ["L3_component", "L5_interaction"],
     },
   ],
   pipeline: [
     {
+      id: "sales",
       routePath: "/sales",
       label: { he: "סגור עסקאות", en: "Close Deals" },
       frictionReason: {
@@ -414,6 +593,7 @@ const CLOSER_PROFILE: PersonalityProfile = {
       frictionClass: "temporal_friction",
     },
     {
+      id: "pricing",
       routePath: "/pricing",
       label: { he: "הכן תמחור", en: "Prepare Pricing" },
       frictionReason: {
@@ -423,6 +603,7 @@ const CLOSER_PROFILE: PersonalityProfile = {
       frictionClass: "temporal_friction",
     },
     {
+      id: "wizard",
       routePath: "/wizard",
       label: { he: "קבל פלייבוק", en: "Get Playbook" },
       frictionReason: {
@@ -433,6 +614,7 @@ const CLOSER_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-plans",
     },
     {
+      id: "differentiate",
       routePath: "/differentiate",
       label: { he: "זיהוי יתרון", en: "Competitive Advantage" },
       frictionReason: {
@@ -443,6 +625,7 @@ const CLOSER_PROFILE: PersonalityProfile = {
       completionKey: "funnelforge-differentiation-result",
     },
     {
+      id: "strategy",
       routePath: "/strategy",
       label: { he: "דאשבורד עסקאות", en: "Deal Dashboard" },
       frictionReason: {
@@ -452,6 +635,7 @@ const CLOSER_PROFILE: PersonalityProfile = {
       frictionClass: "momentum_loss",
     },
     {
+      id: "dashboard",
       routePath: "/dashboard",
       label: { he: "מדדי מהירות", en: "Velocity Metrics" },
       frictionReason: {
@@ -461,6 +645,7 @@ const CLOSER_PROFILE: PersonalityProfile = {
       frictionClass: "momentum_loss",
     },
     {
+      id: "data",
       routePath: "/data",
       label: { he: "עקוב אוטומטית", en: "Track Automatically" },
       frictionReason: {

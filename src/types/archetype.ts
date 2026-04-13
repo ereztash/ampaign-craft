@@ -2,7 +2,16 @@
 // Archetype Types — UserArchetypeLayer
 // Behavioral science-grounded adaptive persona system.
 // Foundation: Regulatory Focus Theory (Higgins 1997) × ELM (Petty & Cacioppo 1986) × Stage.
+//
+// Architectural model: recursive resolution descent
+//   Meta-layer [archetype classification]
+//    → L1 Navigation  → L2 Layout  → L3 Component  → L4 Content  → L5 Interaction
+// Each level applies the same behavioral heuristics at finer granularity.
+// Full heuristic library: src/types/behavioralHeuristics.ts
+// Heuristic engine:       src/engine/behavioralHeuristicEngine.ts
 // ═══════════════════════════════════════════════
+
+export type { PersonalityProfile, PipelineStep, FrictionClass } from "@/types/behavioralHeuristics";
 
 export type ArchetypeId =
   | "strategist"  // Prevention + Systematic + Established
@@ -94,48 +103,6 @@ export type CTATone =
   | "relational"    // Connector
   | "urgency";      // Closer (high-confidence)
 
-// ═══════════════════════════════════════════════
-// PERSONALITY PROFILE — Pipeline + Friction Layer
-// Each archetype has a friction map and a recommended pipeline.
-// Every pipeline step is traceable to a behavioral friction source.
-// ═══════════════════════════════════════════════
-
-/** Friction classes — psychological sources of user resistance */
-export type FrictionClass =
-  | "uncertainty_aversion"  // Acting before data feels reckless (Pavlou & Fygenson 2006)
-  | "cognitive_overload"    // Oversimplification hides important nuance (Sweller 1988)
-  | "regulatory_mismatch"   // Gain-framed CTAs feel wrong for prevention types (Higgins 2000)
-  | "momentum_loss"         // Delay between intent and action kills drive (Bandura 1977)
-  | "choice_overload"       // Too many options paralyze vision (Iyengar & Lepper 2000)
-  | "narrative_dissonance"  // Data-heavy interfaces feel cold (Escalas 2004)
-  | "relational_distance"   // Transactional language betrays relationships (Haidt 2012)
-  | "temporal_friction";    // Every click between intent and execution is a lost deal (Cialdini 1984)
-
-/** A friction source attached to an archetype's psychology */
-export interface PersonalityFriction {
-  id: FrictionClass;
-  label: string;              // Short human-readable label
-  source: string;             // Research citation
-}
-
-/** A single step in an archetype's recommended pipeline */
-export interface PipelineStep {
-  routePath: string;                        // e.g. "/data", "/wizard"
-  label: { he: string; en: string };        // Step title shown in guide
-  frictionReason: { he: string; en: string }; // "Why here" — traceable to friction
-  frictionClass: FrictionClass;             // Primary friction this step addresses
-  completionKey?: string;                   // localStorage key to check completion
-}
-
-/** Psychological profile + friction-mapped pipeline for an archetype */
-export interface PersonalityProfile {
-  regulatoryFocus: "prevention" | "promotion";
-  processingStyle: "systematic" | "heuristic";
-  coreMotivation: string;                   // One-sentence core motivation
-  primaryFrictions: PersonalityFriction[];  // Top 3 friction sources
-  pipeline: PipelineStep[];                 // Recommended 7-step sequence
-}
-
 export interface ArchetypeUIConfig {
   archetypeId: ArchetypeId;
   /** Ordered list of workspace nav items (first = top of sidebar group) */
@@ -156,6 +123,11 @@ export interface ArchetypeUIConfig {
   label: { he: string; en: string };
   /** One-line user-facing explanation of what changed */
   adaptationDescription: { he: string; en: string };
-  /** Behavioral psychology profile with friction map + pipeline */
-  personalityProfile: PersonalityProfile;
+  /**
+   * Behavioral science-grounded personality profile.
+   * Includes: regulatory focus, processing style, core motivation,
+   * research-backed friction sources, and friction-reduction tactics.
+   * Used by ArchetypePipelineGuide and AdminArchetypeDebugPanel.
+   */
+  personalityProfile: import("@/types/behavioralHeuristics").PersonalityProfile;
 }

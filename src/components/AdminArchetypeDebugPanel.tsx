@@ -257,7 +257,7 @@ export default function AdminArchetypeDebugPanel({ open, onOpenChange }: AdminAr
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-1 rounded-b-lg border border-t-0 border-border p-3 space-y-3">
-                {deriveHeuristicSet(effectiveArchetypeId).map((h) => (
+                {deriveHeuristicSet(effectiveArchetypeId).activeHeuristics.map((h) => (
                   <div key={h.id} className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-mono font-bold text-primary">{h.id}</span>
@@ -265,9 +265,9 @@ export default function AdminArchetypeDebugPanel({ open, onOpenChange }: AdminAr
                     </div>
                     <p className="text-xs text-muted-foreground italic">{h.source}</p>
                     <div className="space-y-0.5">
-                      {(["L1", "L2", "L3", "L4", "L5"] as const).map((lvl) => (
+                      {(["L1_navigation", "L2_layout", "L3_component", "L4_content", "L5_interaction"] as const).map((lvl) => (
                         <div key={lvl} className="flex gap-2 text-xs">
-                          <span className="font-mono text-muted-foreground/60 shrink-0 w-5">{lvl}</span>
+                          <span className="font-mono text-muted-foreground/60 shrink-0 w-6">{lvl.split("_")[0]}</span>
                           <span className="text-muted-foreground">{h.manifestations[lvl]}</span>
                         </div>
                       ))}

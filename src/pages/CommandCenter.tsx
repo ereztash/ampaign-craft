@@ -181,7 +181,7 @@ const CommandCenter = () => {
               </h1>
               <p className="text-sm text-muted-foreground" dir="auto">
                 {hasArchetype
-                  ? `${ctaVerbs[language]} · ${isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot"}`
+                  ? `${ctaVerbs.primary[language]} · ${isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot"}`
                   : isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot and intelligence"}
               </p>
             </>

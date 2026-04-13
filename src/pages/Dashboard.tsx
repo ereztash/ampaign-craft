@@ -195,7 +195,7 @@ const Dashboard = () => {
             </h1>
             <p className="text-sm text-muted-foreground" dir="auto">
               {healthScore
-                ? `${confidenceTier !== "none" ? `${ctaVerbs[language]} · ` : ""}${isHe ? "ציון בריאות שיווקית:" : "Marketing Health Score:"} ${healthScore.total}/100 (${healthScore.tier})`
+                ? `${confidenceTier !== "none" ? `${ctaVerbs.primary[language]} · ` : ""}${isHe ? "ציון בריאות שיווקית:" : "Marketing Health Score:"} ${healthScore.total}/100 (${healthScore.tier})`
                 : (isHe ? "הנה מה שחדש מאז הביקור האחרון שלך" : "Here's what's new since your last visit")}
             </p>
           </div>

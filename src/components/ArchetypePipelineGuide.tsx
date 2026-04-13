@@ -33,7 +33,7 @@ export default function ArchetypePipelineGuide() {
 
   if (!isActive) return null;
 
-  const heuristics = deriveHeuristicSet(effectiveArchetypeId);
+  const heuristics = deriveHeuristicSet(effectiveArchetypeId).activeHeuristics;
   const ctaVerbs = getPrimaryCtaVerbs(effectiveArchetypeId);
   const { coreMotivation } = uiConfig.personalityProfile;
   const nextStep = steps[currentStepIndex] ?? null;
@@ -102,7 +102,7 @@ export default function ArchetypePipelineGuide() {
                     className="shrink-0 h-7 text-xs gap-1"
                     onClick={() => navigate(step.routePath)}
                   >
-                    {ctaVerbs[language]}
+                    {ctaVerbs.primary[language]}
                     <ArrowRight className="h-3 w-3 rtl:rotate-180" aria-hidden="true" />
                   </Button>
                 )}
@@ -131,7 +131,7 @@ export default function ArchetypePipelineGuide() {
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 <p className="text-xs text-muted-foreground italic" dir="auto">
-                  {coreMotivation}
+                  {coreMotivation[isHe ? "he" : "en"]}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {heuristics.map((h) => (
