@@ -167,6 +167,21 @@ STRIPE_WEBHOOK_SECRET=
 
 ---
 
+## Documentation
+
+Detailed reference docs live in [`/docs`](./docs/):
+
+| File | Contents |
+|------|----------|
+| [`docs/architecture.md`](./docs/architecture.md) | Engine directory, MAS-CC agents, GRAOS overlay, Edge Functions, DB schema |
+| [`docs/archetype-system.md`](./docs/archetype-system.md) | 5 archetypes, 8 heuristics, classification pipeline, blind-spot nudges, key files |
+| [`docs/knowledge-and-moat.md`](./docs/knowledge-and-moat.md) | 46 embedded knowledge domains, MOAT data flywheel architecture |
+| [`docs/market-research.md`](./docs/market-research.md) | Target market, competitive landscape, differentiation matrix, growth levers |
+| [`docs/financials.md`](./docs/financials.md) | Pricing tiers, unit economics, revenue projections, valuation scenarios, seed round |
+| [`docs/verification-and-metrics.md`](./docs/verification-and-metrics.md) | Honest market-gap metric, verification gate scripts, key project numbers |
+
+---
+
 ## License
 
 Proprietary. All rights reserved.
