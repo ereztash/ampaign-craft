@@ -70,6 +70,8 @@ function TrackedInsightCard({
 }: TrackedInsightCardProps) {
   const isHe = language === "he";
   const recIdRef = useRef<string | null>(null);
+  // Micro-behavior: track hover start time
+  const hoverStartRef = useRef<number | null>(null);
 
   // Log recommendation shown once on mount
   useEffect(() => {
@@ -86,26 +88,32 @@ function TrackedInsightCard({
   }, [item.id]);
 
   const recId = () => recIdRef.current ?? item.id;
+  const hoverMs = () =>
+    hoverStartRef.current !== null ? Date.now() - hoverStartRef.current : null;
 
   const handlePrimary = () => {
-    captureVariantPick(recId(), "primary", position, userId);
+    captureVariantPick(recId(), "primary", position, userId, hoverMs());
     captureOutcome(recId(), userId, "navigated");
     onNavigate(item.route);
   };
 
   const handleVariation = () => {
-    captureVariantPick(recId(), "variation", position, userId);
+    captureVariantPick(recId(), "variation", position, userId, hoverMs());
     onNavigate(item.route);
   };
 
   const handleSkip = () => {
-    captureVariantPick(recId(), "skip", position, userId);
+    captureVariantPick(recId(), "skip", position, userId, hoverMs());
     captureOutcome(recId(), userId, "dismissed");
     onSkip(item.id);
   };
 
   return (
-    <div className="group relative">
+    <div
+      className="group relative"
+      onMouseEnter={() => { hoverStartRef.current = Date.now(); }}
+      onMouseLeave={() => { hoverStartRef.current = null; }}
+    >
       <InsightCard
         language={language as "he" | "en"}
         variant={item.variant}

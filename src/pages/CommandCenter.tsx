@@ -36,6 +36,7 @@ import { AnalyticsConnectCard } from "@/components/AnalyticsConnectCard";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { getPrimaryCtaVerbs } from "@/engine/behavioralHeuristicEngine";
 import ArchetypePipelineGuide from "@/components/ArchetypePipelineGuide";
+import { snapshotEngineOutputs, captureContentSnapshot } from "@/engine/outcomeLoopEngine";
 
 const CommandCenter = () => {
   const { language, t } = useLanguage();
@@ -167,6 +168,39 @@ const CommandCenter = () => {
   const { effectiveArchetypeId, confidenceTier } = useArchetype();
   const ctaVerbs = getPrimaryCtaVerbs(effectiveArchetypeId);
   const hasArchetype = confidenceTier !== "none";
+
+  // ── MOAT Flywheel: engine output snapshot (time-series history) ──────
+  useEffect(() => {
+    snapshotEngineOutputs({
+      userId: user?.id ?? null,
+      archetypeId: effectiveArchetypeId,
+      confidenceTier,
+      healthScore: healthTotal,
+      bottleneckCount: bottlenecks.length,
+      criticalBottleneckCount: bottlenecks.filter((b) => b.severity === "critical").length,
+      successProbability: successForecast?.successProbability ?? null,
+      planCount: plans.length,
+      connectedSources: connectedCount,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveArchetypeId, healthTotal, bottlenecks.length, plans.length, connectedCount]);
+
+  // ── MOAT Flywheel: content snapshot (embedding-ready text capture) ───
+  useEffect(() => {
+    if (!profile.lastFormData) return;
+    captureContentSnapshot({
+      userId: user?.id ?? null,
+      archetypeId: effectiveArchetypeId,
+      formData: {
+        businessField: profile.lastFormData.businessField,
+        audienceType: profile.lastFormData.audienceType,
+        productDescription: profile.lastFormData.productDescription,
+        interests: profile.lastFormData.interests,
+        mainGoal: profile.lastFormData.mainGoal,
+      },
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.lastFormData, effectiveArchetypeId]);
 
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
 

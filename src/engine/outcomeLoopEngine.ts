@@ -47,7 +47,37 @@ export interface VariantPickEvent {
   user_id: string | null;
   choice: VariantPickChoice;
   position: number;                 // 0-indexed position in the list (recency signal)
+  hover_ms: number | null;          // ms hovered before deciding (micro-behavior signal)
   picked_at: string;
+}
+
+// ── Engine output snapshot (time-series history) ──
+export interface EngineSnapshot {
+  id: string;
+  user_id: string | null;
+  archetype_id: string;
+  confidence_tier: string;
+  health_score: number | null;
+  bottleneck_count: number;
+  critical_bottleneck_count: number;
+  success_probability: number | null;
+  plan_count: number;
+  connected_sources: number;
+  snapshotted_at: string;
+}
+
+// ── Content snapshot (ready for server-side embedding) ──
+export interface ContentSnapshot {
+  id: string;
+  user_id: string | null;
+  archetype_id: string;
+  business_field: string;
+  audience_type: string;
+  product_description: string;      // key text field for embedding
+  interests: string;
+  main_goal: string;
+  embedding_status: "pending" | "done" | "failed";
+  created_at: string;
 }
 
 export interface OutcomeReport {
@@ -185,18 +215,21 @@ export function captureRecommendationShown(
 /**
  * Record user's explicit variant pick (Midjourney transfer).
  * primary = "Use this" / variation = "Try different" / skip = "Not for me"
+ * hoverMs = milliseconds hovered before deciding (micro-behavior signal).
  */
 export function captureVariantPick(
   recommendationId: string,
   choice: VariantPickChoice,
   position: number,
-  userId: string | null
+  userId: string | null,
+  hoverMs: number | null = null
 ): void {
   const event: VariantPickEvent = {
     recommendation_id: recommendationId,
     user_id: userId,
     choice,
     position,
+    hover_ms: hoverMs,
     picked_at: new Date().toISOString(),
   };
 
@@ -324,4 +357,144 @@ export function buildContextSnapshot(params: {
     archetype_confidence: Math.round(params.archetypeConfidence * 100),
     language: params.language,
   };
+}
+
+// ───────────────────────────────────────────────
+// Engine output history (time-series snapshots)
+// ───────────────────────────────────────────────
+
+const ENGINE_HISTORY_KEY = "funnelforge-engine-history";
+const ENGINE_HISTORY_MAX = 90; // ~3 months of daily snapshots
+
+function readEngineHistory(): EngineSnapshot[] {
+  try {
+    const raw = localStorage.getItem(ENGINE_HISTORY_KEY);
+    return raw ? (JSON.parse(raw) as EngineSnapshot[]) : [];
+  } catch { return []; }
+}
+
+/**
+ * Snapshot the current engine output state.
+ * Call from CommandCenter when key computed values change.
+ * Persists to localStorage (offline-first) + Supabase (async).
+ * Deduplicates: skips if last snapshot was < 5 minutes ago with same values.
+ */
+export function snapshotEngineOutputs(params: {
+  userId: string | null;
+  archetypeId: string;
+  confidenceTier: string;
+  healthScore: number | null;
+  bottleneckCount: number;
+  criticalBottleneckCount: number;
+  successProbability: number | null;
+  planCount: number;
+  connectedSources: number;
+}): void {
+  const history = readEngineHistory();
+  const last = history[history.length - 1];
+
+  // Deduplicate: skip if nothing meaningful changed and <5 min ago
+  if (last) {
+    const ageSec = (Date.now() - new Date(last.snapshotted_at).getTime()) / 1000;
+    if (
+      ageSec < 300 &&
+      last.health_score === params.healthScore &&
+      last.bottleneck_count === params.bottleneckCount &&
+      last.plan_count === params.planCount
+    ) return;
+  }
+
+  const snapshot: EngineSnapshot = {
+    id: crypto.randomUUID(),
+    user_id: params.userId,
+    archetype_id: params.archetypeId,
+    confidence_tier: params.confidenceTier,
+    health_score: params.healthScore,
+    bottleneck_count: params.bottleneckCount,
+    critical_bottleneck_count: params.criticalBottleneckCount,
+    success_probability: params.successProbability,
+    plan_count: params.planCount,
+    connected_sources: params.connectedSources,
+    snapshotted_at: new Date().toISOString(),
+  };
+
+  // Persist to localStorage
+  const updated = [...history, snapshot].slice(-ENGINE_HISTORY_MAX);
+  try { localStorage.setItem(ENGINE_HISTORY_KEY, JSON.stringify(updated)); } catch { /* full */ }
+
+  // Async Supabase sync (fire-and-forget)
+  void (async () => {
+    const db = await getSupabase();
+    if (!db) return;
+    try {
+      await (db as unknown as {
+        from: (t: string) => { insert: (r: unknown) => Promise<{ error: unknown }> }
+      }).from("engine_snapshots").insert(snapshot);
+    } catch { /* offline — already in localStorage */ }
+  })();
+}
+
+/**
+ * Read engine history from localStorage (no network call).
+ * Useful for rendering trend sparklines in AdminArchetypeDebugPanel.
+ */
+export function getEngineHistory(): EngineSnapshot[] {
+  return readEngineHistory();
+}
+
+// ───────────────────────────────────────────────
+// Content snapshots (embedding-ready text capture)
+// ───────────────────────────────────────────────
+
+const CONTENT_SNAP_KEY = "funnelforge-content-snapshots";
+const CONTENT_SNAP_MAX = 50;
+
+/**
+ * Capture a structured content snapshot from the user's form data.
+ * Text fields are stored as-is with embedding_status: "pending".
+ * A Supabase Edge Function / pg_cron job embeds them server-side.
+ * Call when profile.lastFormData changes (debounced in the component).
+ */
+export function captureContentSnapshot(params: {
+  userId: string | null;
+  archetypeId: string;
+  formData: {
+    businessField?: string;
+    audienceType?: string;
+    productDescription?: string;
+    interests?: string;
+    mainGoal?: string;
+  };
+}): void {
+  const snapshot: ContentSnapshot = {
+    id: crypto.randomUUID(),
+    user_id: params.userId,
+    archetype_id: params.archetypeId,
+    business_field: params.formData.businessField ?? "",
+    audience_type: params.formData.audienceType ?? "",
+    product_description: params.formData.productDescription ?? "",
+    interests: params.formData.interests ?? "",
+    main_goal: params.formData.mainGoal ?? "",
+    embedding_status: "pending",
+    created_at: new Date().toISOString(),
+  };
+
+  // Persist to localStorage
+  try {
+    const raw = localStorage.getItem(CONTENT_SNAP_KEY);
+    const arr: ContentSnapshot[] = raw ? JSON.parse(raw) : [];
+    arr.push(snapshot);
+    localStorage.setItem(CONTENT_SNAP_KEY, JSON.stringify(arr.slice(-CONTENT_SNAP_MAX)));
+  } catch { /* storage full */ }
+
+  // Async Supabase sync
+  void (async () => {
+    const db = await getSupabase();
+    if (!db) return;
+    try {
+      await (db as unknown as {
+        from: (t: string) => { insert: (r: unknown) => Promise<{ error: unknown }> }
+      }).from("content_snapshots").insert(snapshot);
+    } catch { /* offline */ }
+  })();
 }

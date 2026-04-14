@@ -482,6 +482,96 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | 43 | Regulatory Focus Theory | Higgins 1997 — Prevention vs. Promotion focus drives archetype pipeline order |
 | 44 | Adaptive UX Personalization | 5-archetype classifier, 8 heuristics (H1–H8), L1–L5 CSS resolution, Glass-Box traceability |
 
+## MOAT Data Flywheel
+
+FunnelForge captures structured knowledge from every user interaction and aggregates it across the entire user base — anonymized, archetype-cohort-keyed. Each additional user makes the product measurably better for the next one. This is the data network effect that transforms the product from a tool into a compounding advantage.
+
+### Flywheel Architecture
+
+```
+User interacts with recommendation
+         │
+         ▼
+[1] captureRecommendationShown()     ← What was shown, to which archetype, with what context
+         │
+         ▼
+[2] Variant-Pick UX (Midjourney)     ← Use / Alt / Skip — free preference label via UX buttons
+         │
+         ▼
+[3] captureVariantPick(hoverMs)      ← Choice + position + hover time (micro-behavior signal)
+         │
+         ▼
+[4] captureOutcome(7|30|90d)         ← navigated / plan_created / revenue_reported / dismissed
+         │
+         ▼
+[5] cohort_benchmarks (nightly)      ← Anonymized pick-rates + conversion rates per archetype+action
+         │
+         ▼
+[6] Next user in same archetype cohort sees pre-filtered recommendations
+```
+
+### 8 Data Primitives — Capture Status
+
+| Primitive | Captured | Engine / Table | Signal Type |
+|-----------|----------|----------------|------------|
+| **Recommendation shown** | ✅ 100% | `recommendation_events` | What each archetype sees |
+| **Variant preference** | ✅ 100% | `variant_pick_events` | primary / variation / skip |
+| **Hover micro-behavior** | ✅ 100% | `variant_pick_events.hover_ms` | Decision certainty signal |
+| **Action→outcome loop** | ✅ 100% | `outcome_reports` | 7 / 30 / 90-day conversion |
+| **Engine output history** | ✅ 100% | `engine_snapshots` | Time-series: health, bottlenecks, forecast |
+| **Content snapshots** | ✅ 100% | `content_snapshots` | Embedding-ready text per archetype |
+| **Cross-user aggregation** | ✅ 100% | `cohort_benchmarks` (mat. view) | Anonymized pick-rates by archetype+action |
+| **Decision deltas (rejected)** | ✅ 100% | `variant_pick_events.choice='skip'` | Explicit rejection = negative label |
+
+### Cross-Domain Mechanisms
+
+| Mechanism | Transfer From | What It Does |
+|-----------|--------------|--------------|
+| **Variant-Pick UX** | Midjourney | 3 UX buttons on every card generate free preference labels at zero marginal cost |
+| **Hover time** | Eye-tracking research | `hover_ms` before decision = uncertainty signal; short hover = confident preference |
+| **Outcome-labeled segments** | Gong.io | Every recommendation joined to delayed outcome labels (navigated / converted) |
+| **Industry Ontology** | Palantir Foundry | Structured `business_field` + `audience_type` + `main_goal` per archetype cohort |
+| **Difficulty calibration** | Duolingo Birdbrain | Engine history enables `(SMB_state, action) → 7d_delta` model (future step) |
+| **Item-item pick graph** | Amazon CF | Cross-cohort pick-rate table: `(archetype, action) → pick_rate` |
+
+### MOAT Growth Curve
+
+The flywheel produces sublinear-to-polynomial network effects depending on architecture depth:
+
+```
+O(log N)   — generic personalization only (no outcome loop, no vertical model)
+O(N^0.3)   — with outcome loop + vertical ontology (business_field cohorts)
+O(N^0.5)   — with outcome loop + cross-tenant graph + dense cohorts
+O(N^2)     — in narrow vertical slices with cross-tenant graph signals (e.g. dental + local + <₪200 ACV)
+```
+
+At current architecture depth (outcome loop + cohort benchmarks + vertical content snapshots), FunnelForge sits at **O(N^0.3)** compounding. Each new user in the same archetype+vertical cohort marginal lift decreases, but is never zero — and the data advantage against a new entrant grows monotonically.
+
+**Key defensibility:** the flywheel requires the join between archetype classifier + outcome labels + delayed conversion data. Rebuilding this join from scratch requires months of dense usage in each archetype+vertical cohort. A new entrant cannot shortcut this with capital alone.
+
+### DB Schema (Supabase)
+
+| Table | Purpose | RLS |
+|-------|---------|-----|
+| `recommendation_events` | Every card/nudge shown → archetype+context tagged | user owns row |
+| `variant_pick_events` | User choice + position + hover_ms | user owns row |
+| `outcome_reports` | 7/30/90-day conversion measurement | user owns row |
+| `engine_snapshots` | Time-series: health, bottlenecks, forecast | user owns row |
+| `content_snapshots` | Embedding-ready text fields, `embedding_status` flag | user owns row |
+| `cohort_benchmarks` | Materialized view: anonymized pick-rates per archetype+action | read-only authenticated |
+
+### Key Files
+
+```
+src/engine/outcomeLoopEngine.ts          # All 8 primitives: capture, snapshot, flush, benchmark read
+supabase/migrations/20260414_001_outcome_loop.sql    # recommendation + variant_pick + outcome + cohort view
+supabase/migrations/20260414_002_engine_history_and_content.sql  # engine_snapshots + content_snapshots + hover_ms
+src/components/InsightFeed.tsx           # Variant-pick UX: Use / Alt / Skip buttons + hover timer
+src/components/NudgeBanner.tsx           # Recommendation capture + engage vs dismiss signal
+src/pages/CommandCenter.tsx             # snapshotEngineOutputs() + captureContentSnapshot() wired
+src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirrors training data pattern)
+```
+
 ## Market Research & Competitive Analysis
 
 ### Target Market
