@@ -126,11 +126,11 @@ const AppSidebar = () => {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive(item.to, item.end)}
-                      tooltip={t(item.labelKey)}
+                      tooltip={t(item.labelKey as Parameters<typeof t>[0])}
                     >
                       <NavLink to={item.to} end={item.end}>
                         {item.icon}
-                        <span>{t(item.labelKey)}</span>
+                        <span>{t(item.labelKey as Parameters<typeof t>[0])}</span>
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -146,15 +146,19 @@ const AppSidebar = () => {
             <SidebarGroupLabel className="flex items-center gap-1">
               {t("navModules")}
               {modulesReordered && (
-                <Info
-                  className="h-3 w-3 text-muted-foreground/60 shrink-0"
-                  aria-hidden="true"
+                <span
+                  className="inline-flex"
                   title={
                     isRTL
                       ? `מסודר עבור ${uiConfig.label.he} — ${uiConfig.adaptationDescription.he}`
                       : `Ordered for ${uiConfig.label.en} — ${uiConfig.adaptationDescription.en}`
                   }
-                />
+                >
+                  <Info
+                    className="h-3 w-3 text-muted-foreground/60 shrink-0"
+                    aria-hidden="true"
+                  />
+                </span>
               )}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -164,11 +168,11 @@ const AppSidebar = () => {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive(item.to)}
-                      tooltip={t(item.labelKey)}
+                      tooltip={t(item.labelKey as Parameters<typeof t>[0])}
                     >
                       <NavLink to={item.to}>
                         {item.icon}
-                        <span>{t(item.labelKey)}</span>
+                        <span>{t(item.labelKey as Parameters<typeof t>[0])}</span>
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

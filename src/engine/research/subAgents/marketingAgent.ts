@@ -52,7 +52,7 @@ Return 1-3 most relevant findings.`;
       recommendation: f.recommendation_he
         ? { he: f.recommendation_he as string, en: (f.recommendation_en as string) || "" }
         : undefined,
-      marketingAspect: (f.marketingAspect as string) || "channel",
+      marketingAspect: ((f.marketingAspect as string) || "channel") as MarketingFinding["marketingAspect"],
     }));
   } catch {
     return [];
