@@ -325,7 +325,7 @@ export async function getCohortBenchmarks(
       };
     };
     const typed = db as unknown as BenchQuery;
-    let query = typed.from("cohort_benchmarks").select("*").eq("archetype_id", archetypeId);
+    const query = typed.from("cohort_benchmarks").select("*").eq("archetype_id", archetypeId);
     const result = actionId
       ? await query.eq("action_id", actionId).limit(20)
       : await query.limit(20);

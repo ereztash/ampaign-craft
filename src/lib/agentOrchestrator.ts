@@ -8,9 +8,27 @@
 //   1. Records a pending row in `agent_tasks` for traceability.
 //   2. Calls `agent-executor` with the assembled prompt.
 //   3. Updates the `agent_tasks` row on success.
-//   4. Best-effort polls `event_queue` for an `agent.completed`
-//      event up to 30 seconds so callers can observe the async
-//      completion path, falling back to the direct invoke result.
+//   4. Listens for an `agent.completed` event via Supabase Realtime
+//      (postgres_changes on `event_queue`) for up to 30 seconds,
+//      falling back to the direct invoke result if none arrives.
+//
+// Realtime vs. polling rationale
+// ────────────────────────────────
+// The previous implementation polled the `event_queue` table via REST
+// every 1 000 ms for up to 30 seconds — up to 30 HTTP round-trips per
+// runAgent() call. Under concurrent users this compounds into
+// significant REST API load.
+//
+// Supabase Realtime uses a single persistent WebSocket multiplexed
+// across all channels in the tab. Subscribing to a channel costs one
+// message on the existing socket; receiving the event costs nothing
+// extra. The subscription is cleaned up immediately on resolution or
+// timeout, so no channel accumulates between calls.
+//
+// The function gracefully degrades when:
+//   - Realtime is not enabled on `event_queue` (timeout fires, directOutput returned)
+//   - The WebSocket connection fails (CHANNEL_ERROR status → resolve null immediately)
+//   - The event never arrives within 30 s (timeout → directOutput)
 //
 // Gracefully degrades when the schema pieces don't exist yet —
 // any supabase error is swallowed and the direct response is
@@ -18,6 +36,7 @@
 // ═══════════════════════════════════════════════
 
 import { supabase } from "@/integrations/supabase/client";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 export interface RunAgentParams {
   userId: string;
@@ -44,8 +63,7 @@ interface AgentExecutorResponse {
   error?: string;
 }
 
-const POLL_INTERVAL_MS = 1000;
-const POLL_TIMEOUT_MS = 30_000;
+const COMPLETION_TIMEOUT_MS = 30_000;
 
 type LooseSupabase = {
   from: (table: string) => {
@@ -56,18 +74,6 @@ type LooseSupabase = {
     };
     update: (row: Record<string, unknown>) => {
       eq: (col: string, val: string) => Promise<{ error: { message: string } | null }>;
-    };
-    select: (cols: string) => {
-      eq: (col: string, val: string) => {
-        eq: (col: string, val: string) => {
-          order: (col: string, opts: Record<string, unknown>) => {
-            limit: (n: number) => Promise<{
-              data: Array<{ payload: Record<string, unknown>; created_at: string }> | null;
-              error: { message: string } | null;
-            }>;
-          };
-        };
-      };
     };
   };
   functions: {
@@ -124,37 +130,84 @@ async function markTaskCompleted(taskId: string, output: string): Promise<void> 
   }
 }
 
-async function pollForCompletion(
+// ── Realtime event listener ───────────────────────────────────────────
+
+/**
+ * Wait for an `agent.completed` event on the `event_queue` table via
+ * Supabase Realtime (single WebSocket message, zero polling overhead).
+ *
+ * Returns the enriched `output` string from the event payload, or null
+ * if the event does not arrive within `COMPLETION_TIMEOUT_MS`.
+ *
+ * The Realtime channel is always cleaned up before resolution (either
+ * on event receipt, timeout, or subscription error) — no channel leak.
+ */
+async function waitForCompletionEvent(
   userId: string,
   taskId: string,
-  startedAt: number,
 ): Promise<string | null> {
-  const deadline = startedAt + POLL_TIMEOUT_MS;
-  while (Date.now() < deadline) {
-    try {
-      const { data, error } = await loose()
-        .from("event_queue")
-        .select("payload, created_at")
-        .eq("user_id", userId)
-        .eq("event_type", "agent.completed")
-        .order("created_at", { ascending: false })
-        .limit(5);
-      if (!error && Array.isArray(data)) {
-        const match = data.find(
-          (row) => (row.payload as { taskId?: string } | undefined)?.taskId === taskId,
-        );
-        if (match) {
-          const payload = match.payload as { output?: string } | undefined;
-          return payload?.output ?? null;
-        }
+  return new Promise<string | null>((resolve) => {
+    let settled = false;
+    let channel: RealtimeChannel | null = null;
+
+    /** Call once — subsequent calls are no-ops (guards against double cleanup). */
+    const settle = (output: string | null): void => {
+      if (settled) return;
+      settled = true;
+      if (channel) {
+        // Fire-and-forget: removeChannel is async but we don't need to await it.
+        void supabase.removeChannel(channel);
+        channel = null;
       }
-    } catch {
-      /* poll best-effort */
-    }
-    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-  }
-  return null;
+      resolve(output);
+    };
+
+    // Hard deadline — fires if no event arrives or subscription fails.
+    const timer = setTimeout(() => settle(null), COMPLETION_TIMEOUT_MS);
+
+    channel = supabase
+      .channel(`agent-task-${taskId}`, {
+        config: { broadcast: { ack: false } },
+      })
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "event_queue",
+          // Row-level filter: only events for this user.
+          // Requires Realtime to be enabled and the filter column indexed.
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload: { new: Record<string, unknown> }) => {
+          const row = payload.new;
+          if (row?.event_type !== "agent.completed") return;
+
+          // Match on task ID embedded in the event payload.
+          const eventPayload = row?.payload as
+            | { taskId?: string; output?: string }
+            | undefined;
+          if (eventPayload?.taskId !== taskId) return;
+
+          clearTimeout(timer);
+          settle(eventPayload?.output ?? null);
+        },
+      )
+      .subscribe((status: string) => {
+        // Graceful degradation: if the subscription cannot be established
+        // (Realtime not enabled, network error, etc.), resolve immediately
+        // so the caller falls back to the direct invoke output.
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          clearTimeout(timer);
+          settle(null);
+        }
+      });
+  });
 }
+
+// ═══════════════════════════════════════════════
+// Public API
+// ═══════════════════════════════════════════════
 
 /**
  * Run a single agent execution end to end.
@@ -163,11 +216,10 @@ async function pollForCompletion(
  *   1. Insert a pending row into `agent_tasks`.
  *   2. Invoke `agent-executor` with the assembled prompt.
  *   3. On success, update the task row.
- *   4. Poll `event_queue` briefly for an `agent.completed` event,
+ *   4. Subscribe to `event_queue` via Realtime for up to 30 s,
  *      falling back to the direct invoke output on timeout.
  */
 export async function runAgent(params: RunAgentParams): Promise<AgentResult> {
-  const startedAt = Date.now();
   const taskId = (await insertPendingTask(params)) ?? "";
 
   try {
@@ -198,17 +250,16 @@ export async function runAgent(params: RunAgentParams): Promise<AgentResult> {
       await markTaskCompleted(taskId, directOutput);
     }
 
-    // Best-effort poll for the async event. If the queue-processor already
-    // emitted an event, we return the richer payload. Otherwise we fall
-    // back to the direct invoke response.
-    let pollOutput: string | null = null;
+    // Best-effort wait for the richer async event payload.
+    // Uses Realtime (one WebSocket message) instead of polling (≤30 REST calls).
+    let eventOutput: string | null = null;
     if (taskId) {
-      pollOutput = await pollForCompletion(params.userId, taskId, startedAt);
+      eventOutput = await waitForCompletionEvent(params.userId, taskId);
     }
 
     return {
-      output: pollOutput ?? directOutput,
-      status: pollOutput === null && !directOutput ? "timeout" : "completed",
+      output: eventOutput ?? directOutput,
+      status: eventOutput === null && !directOutput ? "timeout" : "completed",
       taskId,
     };
   } catch (err) {

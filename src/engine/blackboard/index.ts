@@ -43,6 +43,17 @@ export { qaContentAgent } from "./agents/qaContentAgent";
 export { qaSecurityAgent } from "./agents/qaSecurityAgent";
 export { qaOrchestratorAgent } from "./agents/qaOrchestratorAgent";
 
+// Φ_META_AGENT (MAS-CC Phase 4 — ontological survival metrics)
+export { metaAgent } from "./agents/metaAgent";
+export type {
+  MetaMetrics,
+  AgentMetaStats,
+  WriteRejectionEvent,
+  HalfLifeEvent,
+  WriteSuccessEvent,
+  WriteEventContext,
+} from "./blackboardStore";
+
 // Debug swarm (MAS-CC Phase 2.3)
 export { runDebugSwarm } from "./agents/debugSwarm";
 export type {
@@ -55,7 +66,11 @@ export type {
 } from "./agents/debugSwarm";
 
 // LLM agent factory
-export { createLLMAgent, parseLLMJson } from "./llmAgent";
+export { createLLMAgent, parseLLMJson, getModelForTier } from "./llmAgent";
+
+// Ontological verifier (write contract)
+export { verifyWrite } from "./ontologicalVerifier";
+export type { VerifyResult, WriteContext } from "./ontologicalVerifier";
 
 import { Blackboard } from "./blackboardStore";
 import { AgentRunner } from "./agentRunner";
@@ -68,6 +83,7 @@ import { closingAgent } from "./agents/closingAgent";
 import { coiAgent } from "./agents/coiAgent";
 import { retentionAgent } from "./agents/retentionAgent";
 import { healthAgent } from "./agents/healthAgent";
+import { metaAgent } from "./agents/metaAgent";
 import type { FormData } from "@/types/funnel";
 import type { BlackboardState } from "./blackboardStore";
 import type { PipelineExecutionResult } from "./agentTypes";
@@ -79,23 +95,30 @@ const ALL_SYNC_AGENTS = [
 
 /**
  * Create a default pipeline with all registered agents (sync).
+ * Φ_META_AGENT is registered last — its dependency list ensures it
+ * always executes after all other agents in topological order.
  */
 export function createDefaultPipeline(): AgentRunner {
   const runner = new AgentRunner();
   for (const agent of ALL_SYNC_AGENTS) {
     runner.register(agent);
   }
+  runner.register(metaAgent);
   return runner;
 }
 
 /**
  * Create a default async pipeline (wraps sync agents, supports parallel execution).
+ * Φ_META_AGENT runs synchronously as the final layer.
  */
 export function createDefaultAsyncPipeline(costCapNIS?: number): AsyncAgentRunner {
   const runner = new AsyncAgentRunner(costCapNIS);
   for (const agent of ALL_SYNC_AGENTS) {
     runner.registerSync(agent);
   }
+  // metaAgent must run after all other agents — registerSync wraps it as async
+  // while preserving its declared dependencies for topological ordering.
+  runner.registerSync(metaAgent);
   return runner;
 }
 

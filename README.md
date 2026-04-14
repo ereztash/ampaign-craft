@@ -760,6 +760,82 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 | Pro | ₪99/month | Unlimited funnels, Sales + Pricing + Retention tabs, AI Coach (50 msgs) |
 | Business | ₪249/month | WhatsApp templates, Campaign Cockpit, Template Marketplace, unlimited AI, AI Copy Generation |
 
+## Financial Evaluation
+
+> Updated: 2026-04-14. All figures in NIS unless stated. Exchange rate: 1 USD ≈ ₪3.65.
+
+### Market Sizing
+
+| Layer | Scope | Size | Method |
+|-------|-------|------|--------|
+| **TAM** | All Israeli SMB marketing spend capturable as SaaS | ₪16B/yr | 560K SMBs × ₪2,400/mo avg spend (D&B IL 2023) × 12 |
+| **SAM** | Israeli SMBs with digital presence, willing to pay for a strategy tool | ₪540M/yr | 180K businesses × 20% SaaS-adoption probability × ₪125 blended ARPU × 12 |
+| **SOM** | Realistically acquirable within 5 years at current distribution channels | ₪54M/yr | SAM × 10% — WhatsApp-native funnel + consultant channel |
+
+### Unit Economics
+
+| Metric | Value | Basis |
+|--------|-------|-------|
+| **Blended ARPU** | ₪125/mo (~$34) | 83% Pro (₪99) × 17% Business (₪249) among paying |
+| **Monthly churn target** | 2.5% | Below Israeli SMB SaaS avg (3–5%); archetype MOAT reduces switch intent |
+| **LTV** | ₪5,000 (~$1,370) | ARPU ÷ monthly churn |
+| **CAC target** | ₪200 (~$55) | Content + WhatsApp referral loop; no paid acquisition required at seed |
+| **LTV : CAC** | **25×** | Well above the 3× SaaS threshold |
+| **Payback period** | **1.6 months** | CAC ÷ ARPU |
+| **Gross margin** | ~78% | ARPU minus Supabase + Anthropic API COGS at scale |
+
+> CAC is structurally low because the product generates WhatsApp templates and referral blueprints — users naturally share FunnelForge-generated content, each share carrying an implicit product ad. The MOAT flywheel (archetype cohort data → better recommendations → higher satisfaction) further reduces churn without additional spend.
+
+### Revenue Projections
+
+| Year | Paying Users | MRR | ARR (₪) | ARR ($) | Notes |
+|------|-------------|-----|---------|---------|-------|
+| **Y1** | 250 | ₪31K | ₪375K | $103K | Organic launch, consultant channel warm-up |
+| **Y2** | 900 | ₪113K | ₪1.35M | $370K | Referral loops active, first cohort studies publishable |
+| **Y3** | 2,500 | ₪313K | ₪3.75M | $1.03M | Arabic expansion opens; Series A trigger |
+| **Y4** | 6,000 | ₪750K | ₪9M | $2.47M | Consultant reseller program at scale |
+| **Y5** | 12,000 | ₪1.5M | ₪18M | $4.93M | Regional leader; diaspora + MENA expansion |
+
+Assumptions: 3% monthly net new user growth Y1–Y2, 5% Y3–Y5; 2.5% monthly churn; blended ARPU ₪125 stable; no pricing increase modeled.
+
+### Valuation Scenarios
+
+Israeli SaaS ARR multiples (2025–2026 seed/growth market):
+- **Seed / pre-revenue**: 4–6× ARR on forward 12-month projection
+- **Growth (>₪1M ARR)**: 8–12× trailing ARR
+- **MOAT premium** (+20–30%): applicable when data flywheel is demonstrably compounding (cross-cohort benchmark lift measurable at N > 500 paying users)
+
+| Milestone | ARR | Multiple | Valuation (₪) | Valuation ($) |
+|-----------|-----|----------|--------------|--------------|
+| Seed (Y1 close) | ₪375K | 6× | **₪2.25M** | **$616K** |
+| Series A trigger (₪1M ARR, ~Y2) | ₪1.35M | 10× | **₪13.5M** | **$3.7M** |
+| Growth (Y3) | ₪3.75M | 12× | **₪45M** | **$12.3M** |
+| Scale (Y4) | ₪9M | 14× | **₪126M** | **$34.5M** |
+| Regional leader (Y5) | ₪18M | 15× | **₪270M** | **$74M** |
+
+### Seed Round Sizing
+
+| Use of Funds | Amount | Purpose |
+|-------------|--------|---------|
+| Cloud infra (Supabase + Anthropic API) | ₪60K | First 12 months at 500 paying users |
+| Content + WhatsApp marketing | ₪80K | Hebrew SEO, LinkedIn, consultant partnerships |
+| First hire (Sales / Customer Success) | ₪180K | 12-month salary (IL mid-market) |
+| Legal / IP | ₪30K | IP registration, terms, data processor agreements |
+| **Total seed ask** | **₪350K (~$96K)** | **18-month runway to ₪1M ARR trigger** |
+
+### MOAT Valuation Impact
+
+The archetype data flywheel converts a standard SaaS into a **learning platform** — each user's choices improve the model for all users in their archetype+vertical cohort. This structural property justifies the MOAT premium:
+
+| Stage | N paying users | Flywheel state | Justifiable premium |
+|-------|---------------|----------------|---------------------|
+| Cold start | < 200 | Cohort benchmarks empty | None |
+| Emerging | 200–1,000 | Pick-rate signals detectable per archetype | +10% |
+| Compounding | 1,000–5,000 | Cross-cohort lift measurable (O(N^0.3)) | +20% |
+| Defensible | > 5,000 | Vertical ontology dense; 6–18 month rebuild gap | +30% |
+
+At Y3 (2,500 paying users, ₪3.75M ARR), the +20% MOAT premium on 12× = effectively **14.4× multiple**, implying ₪54M ($14.8M) valuation — ₪9M above a non-flywheel equivalent.
+
 ## Getting Started
 
 ```bash
