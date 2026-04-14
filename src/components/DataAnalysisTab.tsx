@@ -110,6 +110,7 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
                 <Button
                   variant="ghost"
                   size="sm"
+                  aria-label={isHe ? `מחק את מערך הנתונים ${ds.name}` : `Delete dataset ${ds.name}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     deleteDataset(ds.id);
@@ -117,7 +118,7 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
                     toast.success(isHe ? "נמחק" : "Deleted");
                   }}
                 >
-                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                  <Trash2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 </Button>
               </CardContent>
             </Card>
@@ -179,35 +180,64 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={selectedDataset.rows.slice(0, 100)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey={selectedDataset.schema.columns.find((c) => c.role === "date")?.name}
-                      tick={{ fontSize: 11 }}
-                      tickFormatter={(v) => {
-                        if (v instanceof Date) return v.toLocaleDateString();
-                        if (typeof v === "string" && v.length > 10) return v.slice(0, 10);
-                        return String(v);
-                      }}
-                    />
-                    <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip />
-                    {selectedDataset.schema.columns
-                      .filter((c) => c.role === "metric")
-                      .slice(0, 4)
-                      .map((col, i) => (
-                        <Line
-                          key={col.name}
-                          type="monotone"
-                          dataKey={col.name}
-                          stroke={chartColorPalette[i % chartColorPalette.length]}
-                          strokeWidth={2}
-                          dot={false}
+                <figure aria-label={isHe ? `גרף מגמות: ${selectedDataset.name}` : `Trends chart: ${selectedDataset.name}`}>
+                  <figcaption className="sr-only">
+                    {isHe
+                      ? `גרף קווים המציג מגמות לאורך זמן עבור ${selectedDataset.name}. ${analysis!.summary.direction === "improving" ? "מגמה חיובית כוללת." : analysis!.summary.direction === "declining" ? "מגמה שלילית כוללת." : "מגמה יציבה כוללת."}`
+                      : `Line chart showing trends over time for ${selectedDataset.name}. Overall ${analysis!.summary.direction} trend.`}
+                  </figcaption>
+                  <div aria-hidden="true">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={selectedDataset.rows.slice(0, 100)}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey={selectedDataset.schema.columns.find((c) => c.role === "date")?.name}
+                          tick={{ fontSize: 11 }}
+                          tickFormatter={(v) => {
+                            if (v instanceof Date) return v.toLocaleDateString();
+                            if (typeof v === "string" && v.length > 10) return v.slice(0, 10);
+                            return String(v);
+                          }}
                         />
+                        <YAxis tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        {selectedDataset.schema.columns
+                          .filter((c) => c.role === "metric")
+                          .slice(0, 4)
+                          .map((col, i) => (
+                            <Line
+                              key={col.name}
+                              type="monotone"
+                              dataKey={col.name}
+                              stroke={chartColorPalette[i % chartColorPalette.length]}
+                              strokeWidth={2}
+                              dot={false}
+                            />
+                          ))}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                  {/* Screen-reader text alternative for the line chart */}
+                  <table className="sr-only">
+                    <caption>{isHe ? "נתוני מגמות" : "Trend data"}</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">{isHe ? "מדד" : "Metric"}</th>
+                        <th scope="col">{isHe ? "שינוי" : "Change"}</th>
+                        <th scope="col">{isHe ? "תובנה" : "Insight"}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analysis!.trends.map((trend) => (
+                        <tr key={trend.metric}>
+                          <td>{trend.metric}</td>
+                          <td>{trend.changePercent > 0 ? "+" : ""}{trend.changePercent}%</td>
+                          <td>{trend.insight[language]}</td>
+                        </tr>
                       ))}
-                  </LineChart>
-                </ResponsiveContainer>
+                    </tbody>
+                  </table>
+                </figure>
               </CardContent>
             </Card>
           )}

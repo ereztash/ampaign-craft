@@ -40,6 +40,7 @@ function buildRadarPath(values: number[], cx: number, cy: number, maxR: number):
 
 const RadarChart = ({ dimensions }: { dimensions: FingerprintDimensions }) => {
   const { language } = useLanguage();
+  const isHe = language === "he";
   const cx = 100;
   const cy = 100;
   const maxR = 80;
@@ -49,60 +50,100 @@ const RadarChart = ({ dimensions }: { dimensions: FingerprintDimensions }) => {
 
   const gridLevels = [0.25, 0.5, 0.75, 1];
 
-  return (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      {gridLevels.map((level) => (
-        <polygon
-          key={level}
-          points={DIMENSION_KEYS.map((_, i) => {
-            const angle = (360 / DIMENSION_KEYS.length) * i;
-            const { x, y } = polarToCartesian(cx, cy, maxR * level, angle);
-            return `${x.toFixed(1)},${y.toFixed(1)}`;
-          }).join(" ")}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.5"
-          className="text-border"
-        />
-      ))}
+  const sorted = useMemo(
+    () => [...DIMENSION_KEYS].sort((a, b) => dimensions[b] - dimensions[a]),
+    [dimensions],
+  );
+  const topKey = sorted[0];
+  const bottomKey = sorted[sorted.length - 1];
+  const chartLabel = isHe ? "טביעת אצבע עסקית — מפת מאפיינים" : "Business DNA — dimension radar chart";
+  const chartDesc = isHe
+    ? `ממד חזק: ${DIMENSION_LABELS[topKey].he} (${Math.round(dimensions[topKey] * 100)}%). ממד חלש: ${DIMENSION_LABELS[bottomKey].he} (${Math.round(dimensions[bottomKey] * 100)}%).`
+    : `Strongest: ${DIMENSION_LABELS[topKey].en} (${Math.round(dimensions[topKey] * 100)}%). Weakest: ${DIMENSION_LABELS[bottomKey].en} (${Math.round(dimensions[bottomKey] * 100)}%).`;
 
-      {DIMENSION_KEYS.map((_, i) => {
-        const angle = (360 / DIMENSION_KEYS.length) * i;
-        const { x, y } = polarToCartesian(cx, cy, maxR, angle);
-        return (
-          <line
-            key={i}
-            x1={cx}
-            y1={cy}
-            x2={x}
-            y2={y}
+  return (
+    <>
+      <svg
+        viewBox="0 0 200 200"
+        className="w-full max-w-[200px] mx-auto"
+        role="img"
+        aria-label={chartLabel}
+      >
+        <title>{chartLabel}</title>
+        <desc>{chartDesc}</desc>
+        {gridLevels.map((level) => (
+          <polygon
+            key={level}
+            points={DIMENSION_KEYS.map((_, i) => {
+              const angle = (360 / DIMENSION_KEYS.length) * i;
+              const { x, y } = polarToCartesian(cx, cy, maxR * level, angle);
+              return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).join(" ")}
+            fill="none"
             stroke="currentColor"
             strokeWidth="0.5"
             className="text-border"
           />
-        );
-      })}
+        ))}
 
-      <path d={dataPath} fill="hsl(var(--primary) / 0.2)" stroke="hsl(var(--primary))" strokeWidth="2" />
+        {DIMENSION_KEYS.map((_, i) => {
+          const angle = (360 / DIMENSION_KEYS.length) * i;
+          const { x, y } = polarToCartesian(cx, cy, maxR, angle);
+          return (
+            <line
+              key={i}
+              x1={cx}
+              y1={cy}
+              x2={x}
+              y2={y}
+              stroke="currentColor"
+              strokeWidth="0.5"
+              className="text-border"
+            />
+          );
+        })}
 
-      {DIMENSION_KEYS.map((k, i) => {
-        const angle = (360 / DIMENSION_KEYS.length) * i;
-        const { x, y } = polarToCartesian(cx, cy, maxR + 18, angle);
-        return (
-          <text
-            key={k}
-            x={x}
-            y={y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className="fill-muted-foreground"
-            fontSize="6"
-          >
-            {DIMENSION_LABELS[k][language]}
-          </text>
-        );
-      })}
-    </svg>
+        <path d={dataPath} fill="hsl(var(--primary) / 0.2)" stroke="hsl(var(--primary))" strokeWidth="2" />
+
+        {DIMENSION_KEYS.map((k, i) => {
+          const angle = (360 / DIMENSION_KEYS.length) * i;
+          const { x, y } = polarToCartesian(cx, cy, maxR + 18, angle);
+          return (
+            <text
+              key={k}
+              x={x}
+              y={y}
+              textAnchor="middle"
+              dominantBaseline="central"
+              className="fill-muted-foreground"
+              fontSize="6"
+              aria-hidden="true"
+            >
+              {DIMENSION_LABELS[k][language]}
+            </text>
+          );
+        })}
+      </svg>
+
+      {/* Screen-reader text alternative for the radar chart */}
+      <table className="sr-only">
+        <caption>{isHe ? "ערכי מאפיינים עסקיים" : "Business dimension values"}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{isHe ? "מאפיין" : "Dimension"}</th>
+            <th scope="col">{isHe ? "ערך" : "Value"}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {DIMENSION_KEYS.map((k) => (
+            <tr key={k}>
+              <td>{DIMENSION_LABELS[k][language]}</td>
+              <td>{Math.round(dimensions[k] * 100)}%</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 };
 
