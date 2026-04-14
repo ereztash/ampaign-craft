@@ -1,0 +1,671 @@
+// ═══════════════════════════════════════════════
+// PricingWizard — 4-step behavioural-science pricing flow
+//
+// Step 1 — Value Quantification  (Hormozi D × T axes)
+// Step 2 — Van Westendorp PSM    (too-cheap floor × stretch ceiling)
+// Step 3 — Offer Architecture    (Hormozi E × P axes + differentiators)
+// Step 4 — Revenue Architecture  (model + goal → LTV/CAC/customers)
+//
+// The wizard never asks "what's your price?" — it DERIVES the optimal
+// price from customer-perception signals and value-delivery evidence.
+// ═══════════════════════════════════════════════
+
+import { useState } from "react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { SalesModel } from "@/types/funnel";
+import {
+  DIFFERENTIATOR_OPTIONS,
+  type PricingWizardInput,
+  type DreamOutcomeLevel,
+  type TimeToValue,
+  type EffortLevel,
+  type SocialProofLevel,
+} from "@/engine/pricingWizardEngine";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import { ArrowRight, ArrowLeft, Zap, BarChart2, Layers, Target, Info } from "lucide-react";
+
+// ── Props ────────────────────────────────────────────────────────────────
+
+interface Props {
+  /** Pre-fill from existing formData when available. */
+  initialSalesModel?: SalesModel | "";
+  audienceIsB2B?: boolean;
+  onComplete: (data: PricingWizardInput) => void;
+}
+
+// ── Constants ────────────────────────────────────────────────────────────
+
+const STEPS = 4;
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+function formatNIS(n: number) {
+  return `₪${Math.round(n).toLocaleString("he-IL")}`;
+}
+
+function OptionCard({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full text-start rounded-xl border-2 p-3.5 transition-colors ${
+        selected ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+            selected ? "border-primary" : "border-muted-foreground"
+          }`}
+        >
+          {selected && <div className="w-2 h-2 rounded-full bg-primary" />}
+        </div>
+        <div className="min-w-0">{children}</div>
+      </div>
+    </button>
+  );
+}
+
+function StepHeader({
+  icon: Icon,
+  title,
+  subtitle,
+}: {
+  icon: React.ElementType;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div className="text-center space-y-1">
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-2">
+        <Icon className="w-5 h-5 text-primary" />
+      </div>
+      <h3 className="text-xl font-bold" dir="auto">{title}</h3>
+      <p className="text-sm text-muted-foreground" dir="auto">{subtitle}</p>
+    </div>
+  );
+}
+
+// ── Component ────────────────────────────────────────────────────────────
+
+const PricingWizard = ({
+  initialSalesModel = "",
+  audienceIsB2B = false,
+  onComplete,
+}: Props) => {
+  const { language } = useLanguage();
+  const isHe = language === "he";
+
+  // Step index
+  const [step, setStep] = useState(0);
+
+  // Step 1 — Value Quantification
+  const [dreamOutcome, setDreamOutcome]   = useState<DreamOutcomeLevel>("significant");
+  const [timeToValue,  setTimeToValue]    = useState<TimeToValue>("moderate");
+
+  // Step 2 — PSM
+  const [tooChcapPrice, setTooChcapPrice]   = useState<number>(0);
+  const [tooChcapInput, setTooChcapInput]   = useState("");
+  const [stretchPrice,  setStretchPrice]    = useState<number>(0);
+  const [stretchInput,  setStretchInput]    = useState("");
+
+  // Step 3 — Offer Architecture
+  const [effortLevel,     setEffortLevel]    = useState<EffortLevel>("medium");
+  const [socialProof,     setSocialProof]    = useState<SocialProofLevel>("some");
+  const [differentiators, setDifferentiators] = useState<string[]>([]);
+
+  // Step 4 — Revenue Architecture
+  const [salesModel,           setSalesModel]           = useState<SalesModel>(
+    (initialSalesModel as SalesModel) || "oneTime",
+  );
+  const [retention,            setRetention]            = useState(12);
+  const [revenueGoal,          setRevenueGoal]          = useState(0);
+  const [revenueInput,         setRevenueInput]         = useState("");
+
+  // ── Toggle differentiator ──────────────────────────────────────────────
+
+  const toggleDiff = (key: string) => {
+    setDifferentiators((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    );
+  };
+
+  // ── Validation ─────────────────────────────────────────────────────────
+
+  const canAdvance = () => {
+    if (step === 1) return tooChcapPrice > 0 && stretchPrice > tooChcapPrice;
+    return true;
+  };
+
+  // ── Navigation ─────────────────────────────────────────────────────────
+
+  const advance = () => { if (step < STEPS - 1) setStep(step + 1); };
+  const back    = () => { if (step > 0) setStep(step - 1); };
+
+  const finish = () => {
+    onComplete({
+      dreamOutcome,
+      timeToValue,
+      tooChcapPrice,
+      stretchPrice,
+      effortLevel,
+      socialProof,
+      differentiators,
+      salesModel,
+      avgRetentionMonths: retention,
+      revenueGoalMonthly: revenueGoal,
+      audienceIsB2B,
+    });
+  };
+
+  // ── PSM preview ────────────────────────────────────────────────────────
+
+  const psmMidpoint =
+    tooChcapPrice > 0 && stretchPrice > tooChcapPrice
+      ? Math.round(Math.sqrt(tooChcapPrice * stretchPrice))
+      : null;
+
+  // ── Step content ────────────────────────────────────────────────────────
+
+  const stepContent = [
+
+    // ── STEP 0 — Value Quantification ────────────────────────────────────
+    <div key="value" className="space-y-5">
+      <StepHeader
+        icon={Zap}
+        title={isHe ? "מה הלקוח מרוויח?" : "What does your customer gain?"}
+        subtitle={isHe
+          ? "לא שואלים את המחיר — גוזרים אותו מהערך"
+          : "We don't ask your price — we derive it from value"}
+      />
+
+      <div className="space-y-3">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+          {isHe ? "תוצאה חלומית (Dream Outcome):" : "Dream Outcome:"}
+        </p>
+        {(
+          [
+            {
+              id: "transformative" as DreamOutcomeLevel,
+              he: "טרנספורמציה",
+              en: "Transformative",
+              subHe: "שינוי חיים / עסק — תוצאה שמשנה הכל",
+              subEn: "Life/business change — outcome that changes everything",
+            },
+            {
+              id: "significant" as DreamOutcomeLevel,
+              he: "משמעותי",
+              en: "Significant",
+              subHe: "שיפור גדול ניתן למדידה — הכנסות, זמן, לקוחות",
+              subEn: "Large measurable improvement — revenue, time, clients",
+            },
+            {
+              id: "moderate" as DreamOutcomeLevel,
+              he: "בינוני",
+              en: "Moderate",
+              subHe: "עזרה ממוקדת — תוצאה ברורה אבל מוגבלת",
+              subEn: "Focused help — clear but limited outcome",
+            },
+            {
+              id: "incremental" as DreamOutcomeLevel,
+              he: "שיפור קטן",
+              en: "Incremental",
+              subHe: "שיפור הדרגתי — ניסוי ולמידה",
+              subEn: "Gradual improvement — trial and learning",
+            },
+          ] as const
+        ).map((opt) => (
+          <OptionCard
+            key={opt.id}
+            selected={dreamOutcome === opt.id}
+            onClick={() => setDreamOutcome(opt.id)}
+          >
+            <div className="font-medium text-sm" dir="auto">{isHe ? opt.he : opt.en}</div>
+            <div className="text-xs text-muted-foreground" dir="auto">{isHe ? opt.subHe : opt.subEn}</div>
+          </OptionCard>
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+          {isHe ? "מהירות לתוצאה (Time to Value):" : "Time to Value:"}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {(
+            [
+              { id: "immediate" as TimeToValue, he: "מיידי (< שבוע)",   en: "Immediate (< 1 week)" },
+              { id: "fast"      as TimeToValue, he: "מהיר (2–4 שבועות)", en: "Fast (2–4 weeks)" },
+              { id: "moderate"  as TimeToValue, he: "בינוני (1–3 חודשים)", en: "Moderate (1–3 months)" },
+              { id: "slow"      as TimeToValue, he: "ארוך (3+ חודשים)",   en: "Slow (3+ months)" },
+            ] as const
+          ).map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setTimeToValue(opt.id)}
+              className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
+                timeToValue === opt.id
+                  ? "border-primary bg-primary/5 font-medium"
+                  : "border-border hover:border-primary/40"
+              }`}
+              dir="auto"
+            >
+              {isHe ? opt.he : opt.en}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>,
+
+    // ── STEP 1 — Van Westendorp PSM ───────────────────────────────────────
+    <div key="psm" className="space-y-5">
+      <StepHeader
+        icon={BarChart2}
+        title={isHe ? "מה הרגישות של הלקוח למחיר?" : "What is your customer's price sensitivity?"}
+        subtitle={isHe
+          ? "שתי שאלות — מגדירות את טווח ה-WTP (Van Westendorp PSM)"
+          : "Two questions — define the WTP range (Van Westendorp PSM)"}
+      />
+
+      <div className="rounded-xl border bg-muted/30 p-3 flex items-start gap-2">
+        <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+        <p className="text-xs text-muted-foreground" dir="auto">
+          {isHe
+            ? "חשוב: ענה מנקודת מבט הלקוח שלך — כמה הוא ישלם, לא כמה העלות שלך."
+            : "Important: answer from your customer's perspective — what they'd pay, not your cost."}
+        </p>
+      </div>
+
+      {/* Too cheap */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium" dir="auto">
+          {isHe
+            ? "🟡 מחיר שמרגיש זול מדי — לקוח יתחיל לפקפק באיכות:"
+            : "🟡 Price that feels too cheap — customer starts doubting quality:"}
+        </label>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-bold text-muted-foreground">₪</span>
+          <input
+            type="number"
+            min={0}
+            placeholder="0"
+            value={tooChcapInput}
+            onChange={(e) => {
+              setTooChcapInput(e.target.value);
+              const n = parseFloat(e.target.value);
+              if (!isNaN(n) && n >= 0) setTooChcapPrice(n);
+            }}
+            className="w-32 text-2xl font-bold text-center bg-transparent border-b-2 border-amber-400 focus:outline-none focus:border-amber-500"
+            dir="ltr"
+          />
+        </div>
+      </div>
+
+      {/* Stretch price */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium" dir="auto">
+          {isHe
+            ? "🔴 מחיר שמרגיש יקר אבל שווה — לקוח יהסס אבל ישלם:"
+            : "🔴 Price that feels expensive but worth it — customer hesitates but pays:"}
+        </label>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-bold text-muted-foreground">₪</span>
+          <input
+            type="number"
+            min={0}
+            placeholder="0"
+            value={stretchInput}
+            onChange={(e) => {
+              setStretchInput(e.target.value);
+              const n = parseFloat(e.target.value);
+              if (!isNaN(n) && n > 0) setStretchPrice(n);
+            }}
+            className="w-32 text-2xl font-bold text-center bg-transparent border-b-2 border-rose-400 focus:outline-none focus:border-rose-500"
+            dir="ltr"
+          />
+        </div>
+        {stretchPrice > 0 && stretchPrice <= tooChcapPrice && (
+          <p className="text-xs text-destructive" dir="auto">
+            {isHe ? "המחיר היקר חייב להיות גבוה מהמחיר הזול" : "Stretch price must be higher than the floor"}
+          </p>
+        )}
+      </div>
+
+      {/* PSM preview */}
+      {psmMidpoint !== null && (
+        <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4 space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground" dir="auto">
+              {isHe ? "טווח מחיר מקובל:" : "Acceptable price range:"}
+            </span>
+            <Badge>
+              {formatNIS(tooChcapPrice)} — {formatNIS(stretchPrice)}
+            </Badge>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground" dir="auto">
+              {isHe ? "נקודת מחיר אופטימלית (PSM):" : "Optimal Price Point (PSM):"}
+            </span>
+            <Badge variant="default" className="font-bold">
+              ~ {formatNIS(psmMidpoint)}
+            </Badge>
+          </div>
+          <p className="text-xs text-muted-foreground" dir="auto">
+            {isHe
+              ? "המחיר הסופי ישתנה בהתאם לציון הערך ועוצמת הבידול"
+              : "Final price adjusts based on value score and differentiation premium"}
+          </p>
+        </div>
+      )}
+    </div>,
+
+    // ── STEP 2 — Offer Architecture ───────────────────────────────────────
+    <div key="offer" className="space-y-5">
+      <StepHeader
+        icon={Layers}
+        title={isHe ? "עוצמת ההצעה שלך" : "Your offer strength"}
+        subtitle={isHe
+          ? "קובע את כפולת המחיר (Hormozi E×P + בידול)"
+          : "Determines your price multiplier (Hormozi E×P + differentiation)"}
+      />
+
+      {/* Effort level */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+          {isHe ? "כמה מאמץ מצד הלקוח?" : "How much effort does the customer need?"}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {(
+            [
+              { id: "zero"   as EffortLevel, he: "אפס — הכל מוכן",        en: "Zero — fully done-for-you" },
+              { id: "low"    as EffortLevel, he: "נמוך — ניהול קל",        en: "Low — light management" },
+              { id: "medium" as EffortLevel, he: "בינוני — צריך לתרגל",    en: "Medium — requires practice" },
+              { id: "high"   as EffortLevel, he: "גבוה — תהליך ארוך",      en: "High — lengthy process" },
+            ] as const
+          ).map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setEffortLevel(opt.id)}
+              className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
+                effortLevel === opt.id
+                  ? "border-primary bg-primary/5 font-medium"
+                  : "border-border hover:border-primary/40"
+              }`}
+              dir="auto"
+            >
+              {isHe ? opt.he : opt.en}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Social proof */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+          {isHe ? "כמה הוכחה חברתית יש לך?" : "How much social proof do you have?"}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {(
+            [
+              { id: "none"        as SocialProofLevel, he: "אין עדיין",          en: "None yet" },
+              { id: "some"        as SocialProofLevel, he: "כמה ביקורות",         en: "A few reviews" },
+              { id: "strong"      as SocialProofLevel, he: "המלצות + תוצאות",    en: "Testimonials + results" },
+              { id: "exceptional" as SocialProofLevel, he: "Case Studies מוכחים", en: "Proven case studies" },
+            ] as const
+          ).map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setSocialProof(opt.id)}
+              className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
+                socialProof === opt.id
+                  ? "border-primary bg-primary/5 font-medium"
+                  : "border-border hover:border-primary/40"
+              }`}
+              dir="auto"
+            >
+              {isHe ? opt.he : opt.en}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Differentiators (multi-select) */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+          {isHe ? "מה מבדל אותך? (בחר הכל שרלוונטי)" : "What differentiates you? (select all that apply)"}
+        </p>
+        <div className="space-y-1.5">
+          {DIFFERENTIATOR_OPTIONS.map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => toggleDiff(opt.key)}
+              className={`w-full flex items-center gap-2.5 rounded-lg border-2 px-3 py-2 text-start transition-colors ${
+                differentiators.includes(opt.key)
+                  ? "border-accent bg-accent/5"
+                  : "border-border hover:border-accent/40"
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${
+                  differentiators.includes(opt.key)
+                    ? "bg-accent border-accent"
+                    : "border-muted-foreground"
+                }`}
+              >
+                {differentiators.includes(opt.key) && (
+                  <span className="text-accent-foreground text-[10px] font-bold leading-none">✓</span>
+                )}
+              </div>
+              <div className="flex items-center justify-between flex-1 min-w-0">
+                <span className="text-sm" dir="auto">{isHe ? opt.he : opt.en}</span>
+                <Badge variant="outline" className="text-xs shrink-0 ms-2">+{opt.premiumPct}%</Badge>
+              </div>
+            </button>
+          ))}
+        </div>
+        {differentiators.length > 0 && (
+          <p className="text-xs text-accent text-center" dir="auto">
+            {isHe
+              ? `פרמיה כוללת: ~${differentiators.reduce((s, k) => s + (DIFFERENTIATOR_OPTIONS.find((o) => o.key === k)?.premiumPct ?? 0), 0)}% מעל ה-OPP`
+              : `Total premium: ~${differentiators.reduce((s, k) => s + (DIFFERENTIATOR_OPTIONS.find((o) => o.key === k)?.premiumPct ?? 0), 0)}% above OPP`}
+          </p>
+        )}
+      </div>
+    </div>,
+
+    // ── STEP 3 — Revenue Architecture ────────────────────────────────────
+    <div key="revenue" className="space-y-5">
+      <StepHeader
+        icon={Target}
+        title={isHe ? "ארכיטקטורת הכנסות" : "Revenue architecture"}
+        subtitle={isHe
+          ? "מודל המכירה ויעד הכנסה → LTV + CAC מומלץ"
+          : "Sales model + revenue goal → LTV + recommended CAC"}
+      />
+
+      {/* Sales model */}
+      <div className="grid gap-2">
+        {(
+          [
+            {
+              id:    "oneTime"      as SalesModel,
+              he:    "תשלום חד-פעמי",
+              en:    "One-time payment",
+              subHe: "קורס, מוצר, פרויקט",
+              subEn: "Course, product, project",
+            },
+            {
+              id:    "subscription" as SalesModel,
+              he:    "מנוי חוזר",
+              en:    "Recurring subscription",
+              subHe: "חודשי / שנתי",
+              subEn: "Monthly / annual",
+            },
+            {
+              id:    "leads"        as SalesModel,
+              he:    "ליד / שיחת מכירה",
+              en:    "Lead / sales call",
+              subHe: "שירות, ייעוץ",
+              subEn: "Service, consulting",
+            },
+          ] as const
+        ).map((opt) => (
+          <OptionCard
+            key={opt.id}
+            selected={salesModel === opt.id}
+            onClick={() => setSalesModel(opt.id)}
+          >
+            <div className="font-medium text-sm" dir="auto">{isHe ? opt.he : opt.en}</div>
+            <div className="text-xs text-muted-foreground" dir="auto">{isHe ? opt.subHe : opt.subEn}</div>
+          </OptionCard>
+        ))}
+      </div>
+
+      {salesModel === "subscription" && (
+        <div className="space-y-2 rounded-xl border p-3 bg-muted/30">
+          <div className="flex items-center justify-between text-sm">
+            <span dir="auto">{isHe ? "תקופת שימור ממוצעת:" : "Avg retention:"}</span>
+            <Badge variant="outline">
+              {retention} {isHe ? "חודשים" : "months"}
+            </Badge>
+          </div>
+          <Slider
+            value={[retention]}
+            onValueChange={([v]) => setRetention(v)}
+            min={1}
+            max={36}
+            step={1}
+          />
+        </div>
+      )}
+
+      {/* Revenue goal */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium" dir="auto">
+          {isHe ? "יעד הכנסה חודשי (אופציונלי):" : "Monthly revenue goal (optional):"}
+        </label>
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-bold text-muted-foreground">₪</span>
+          <input
+            type="number"
+            min={0}
+            placeholder="0"
+            value={revenueInput}
+            onChange={(e) => {
+              setRevenueInput(e.target.value);
+              const n = parseFloat(e.target.value);
+              if (!isNaN(n) && n >= 0) setRevenueGoal(n);
+            }}
+            className="w-32 text-2xl font-bold text-center bg-transparent border-b-2 border-primary focus:outline-none"
+            dir="ltr"
+          />
+          <span className="text-sm text-muted-foreground" dir="auto">
+            {isHe ? "/חודש" : "/month"}
+          </span>
+        </div>
+      </div>
+
+      {/* PSM range reminder */}
+      {psmMidpoint !== null && (
+        <div className="rounded-xl border bg-muted/30 p-3 text-sm space-y-1" dir="auto">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{isHe ? "OPP (PSM):" : "OPP (PSM):"}</span>
+            <span className="font-medium">~ {formatNIS(psmMidpoint)}</span>
+          </div>
+          {revenueGoal > 0 && psmMidpoint > 0 && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{isHe ? "לקוחות נדרשים:" : "Customers needed:"}</span>
+              <span className="font-bold text-primary">
+                {Math.ceil(revenueGoal / psmMidpoint)}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>,
+  ];
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  return (
+    <div className="max-w-lg mx-auto space-y-8 py-4">
+      {/* Progress */}
+      <div className="space-y-2">
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span dir="auto">
+            {isHe ? `שלב ${step + 1} מתוך ${STEPS}` : `Step ${step + 1} of ${STEPS}`}
+          </span>
+          <span>{Math.round(((step + 1) / STEPS) * 100)}%</span>
+        </div>
+        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-300"
+            style={{ width: `${((step + 1) / STEPS) * 100}%` }}
+          />
+        </div>
+        <div className="flex justify-between text-[10px] text-muted-foreground/60" dir="auto">
+          {[
+            isHe ? "ערך" : "Value",
+            isHe ? "PSM" : "PSM",
+            isHe ? "הצעה" : "Offer",
+            isHe ? "הכנסות" : "Revenue",
+          ].map((label, i) => (
+            <span key={i} className={i === step ? "text-primary font-medium" : ""}>{label}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="min-h-[360px]">
+        {stepContent[step]}
+      </div>
+
+      {/* Navigation */}
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          onClick={back}
+          disabled={step === 0}
+          className="gap-1"
+        >
+          {isHe ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+          {isHe ? "חזור" : "Back"}
+        </Button>
+
+        {step < STEPS - 1 ? (
+          <Button
+            onClick={advance}
+            disabled={!canAdvance()}
+            className="gap-1 flex-1 cta-warm"
+          >
+            {isHe ? "המשך" : "Next"}
+            {isHe ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+          </Button>
+        ) : (
+          <Button
+            onClick={finish}
+            className="gap-1 flex-1 cta-warm"
+          >
+            {isHe ? "ייצר אסטרטגיית תמחור" : "Generate Pricing Strategy"}
+            {isHe ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+          </Button>
+        )}
+      </div>
+
+      {/* Methodology footnote */}
+      <p className="text-center text-[10px] text-muted-foreground/60" dir="auto">
+        Van Westendorp PSM · Hormozi Value Eq. · Kahneman Prospect Theory · Ariely Decoy Effect
+      </p>
+    </div>
+  );
+};
+
+export default PricingWizard;
