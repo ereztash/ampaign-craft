@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { getBlindSpotProfile } from "@/lib/archetypeBlindSpots";
+import { emitArchetypeEvent } from "@/lib/archetypeAnalytics";
+import type { RevealSource } from "@/lib/archetypeAnalytics";
 import { tx } from "@/i18n/tx";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +35,12 @@ const ARCHETYPE_ICONS: Record<string, string> = {
   closer:     "⚡",
 };
 
-export default function ArchetypeRevealScreen() {
+interface ArchetypeRevealScreenProps {
+  /** Where the user navigated from — used in analytics. Defaults to "auto". */
+  source?: RevealSource;
+}
+
+export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeRevealScreenProps) {
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
   const {
@@ -48,23 +55,44 @@ export default function ArchetypeRevealScreen() {
   const blindSpots = getBlindSpotProfile(effectiveArchetypeId);
   const icon = ARCHETYPE_ICONS[effectiveArchetypeId] ?? "✦";
 
-  // Mark reveal as seen on first mount
+  // Mark reveal as seen + emit analytics on first mount
   useEffect(() => {
     markRevealSeen();
-  }, [markRevealSeen]);
+    emitArchetypeEvent("archetype_revealed", {
+      archetypeId: effectiveArchetypeId,
+      tier: confidenceTier,
+      source,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAccept = () => {
     setAdaptationsEnabled(true);
+    emitArchetypeEvent("archetype_opted_in", {
+      archetypeId: effectiveArchetypeId,
+      tier: confidenceTier,
+      source,
+    });
     navigate(-1);
   };
 
   const handleDecline = () => {
     setAdaptationsEnabled(false);
+    emitArchetypeEvent("archetype_opted_out", {
+      archetypeId: effectiveArchetypeId,
+      tier: confidenceTier,
+      source,
+    });
     navigate(-1);
   };
 
   const handleDisable = () => {
     setAdaptationsEnabled(false);
+    emitArchetypeEvent("archetype_opted_out", {
+      archetypeId: effectiveArchetypeId,
+      tier: confidenceTier,
+      source,
+    });
     navigate(-1);
   };
 

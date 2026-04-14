@@ -9,6 +9,7 @@ import AppTopBar from "@/components/AppTopBar";
 import MobileTabBar from "@/components/MobileTabBar";
 import LoadingFallback from "@/components/LoadingFallback";
 import { useAdaptiveTheme } from "@/hooks/useAdaptiveTheme";
+import { BlindSpotNudge } from "@/components/BlindSpotNudge";
 
 const AppShell = () => {
   const { isRTL } = useLanguage();
@@ -46,6 +47,7 @@ const AppShell = () => {
               </Suspense>
             </main>
             <MobileTabBar />
+            <BlindSpotNudge />
           </SidebarInset>
         </div>
       </SidebarProvider>
