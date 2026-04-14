@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState, lazy, Suspense } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -15,10 +16,12 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
+
+const AdminArchetypeDebugPanel = lazy(() => import("@/components/AdminArchetypeDebugPanel"));
 
 // ═══════════════════════════════════════════════
 // NAV ITEM DEFINITIONS
@@ -58,7 +61,12 @@ const AppSidebar = () => {
   const { t, isRTL } = useLanguage();
   const { pathname } = useLocation();
   const { uiConfig, confidenceTier } = useArchetype();
+  const { user } = useAuth();
   const side = isRTL ? "right" : "left";
+  const isHe = isRTL;
+
+  const isOwner = user?.role === "owner" || user?.role === "admin";
+  const [debugOpen, setDebugOpen] = useState(false);
 
   const isActive = (to: string, end = false) =>
     pathname === to || (!end && pathname.startsWith(to + "/"));
@@ -96,94 +104,129 @@ const AppSidebar = () => {
   }, [uiConfig.modulesOrder, modulesReordered]);
 
   return (
-    <Sidebar side={side} collapsible="icon" variant="sidebar" className="border-e border-sidebar-border">
-      <SidebarHeader className="border-b border-sidebar-border">
-        <NavLink to="/" className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient shrink-0">
-            <span className="text-sm font-bold text-accent-foreground">F</span>
-          </div>
-          <span className="font-bold text-sidebar-foreground group-data-[collapsible=icon]:hidden truncate">{t("appName")}</span>
-        </NavLink>
-      </SidebarHeader>
+    <>
+      <Sidebar side={side} collapsible="icon" variant="sidebar" className="border-e border-sidebar-border">
+        <SidebarHeader className="border-b border-sidebar-border">
+          <NavLink to="/" className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient shrink-0">
+              <span className="text-sm font-bold text-accent-foreground">F</span>
+            </div>
+            <span className="font-bold text-sidebar-foreground group-data-[collapsible=icon]:hidden truncate">{t("appName")}</span>
+          </NavLink>
+        </SidebarHeader>
 
-      <SidebarContent>
-        {/* Workspace group */}
-        <SidebarGroup>
-          <SidebarGroupLabel>{t("navWorkspace")}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {orderedWorkspace.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item.to, item.end)}
-                    tooltip={t(item.labelKey)}
-                  >
-                    <NavLink to={item.to} end={item.end}>
-                      {item.icon}
-                      <span>{t(item.labelKey)}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarContent>
+          {/* Workspace group */}
+          <SidebarGroup>
+            <SidebarGroupLabel>{t("navWorkspace")}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {orderedWorkspace.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.to, item.end)}
+                      tooltip={t(item.labelKey)}
+                    >
+                      <NavLink to={item.to} end={item.end}>
+                        {item.icon}
+                        <span>{t(item.labelKey)}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        <SidebarSeparator />
+          <SidebarSeparator />
 
-        {/* Modules group */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="flex items-center gap-1">
-            {t("navModules")}
-            {modulesReordered && (
-              <Info
-                className="h-3 w-3 text-muted-foreground/60 shrink-0"
-                aria-hidden="true"
-                title={
-                  isRTL
-                    ? `מסודר עבור ${uiConfig.label.he} — ${uiConfig.adaptationDescription.he}`
-                    : `Ordered for ${uiConfig.label.en} — ${uiConfig.adaptationDescription.en}`
-                }
-              />
-            )}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {orderedModules.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item.to)}
-                    tooltip={t(item.labelKey)}
-                  >
-                    <NavLink to={item.to}>
-                      {item.icon}
-                      <span>{t(item.labelKey)}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+          {/* Modules group */}
+          <SidebarGroup>
+            <SidebarGroupLabel className="flex items-center gap-1">
+              {t("navModules")}
+              {modulesReordered && (
+                <Info
+                  className="h-3 w-3 text-muted-foreground/60 shrink-0"
+                  aria-hidden="true"
+                  title={
+                    isRTL
+                      ? `מסודר עבור ${uiConfig.label.he} — ${uiConfig.adaptationDescription.he}`
+                      : `Ordered for ${uiConfig.label.en} — ${uiConfig.adaptationDescription.en}`
+                  }
+                />
+              )}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {orderedModules.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.to)}
+                      tooltip={t(item.labelKey)}
+                    >
+                      <NavLink to={item.to}>
+                        {item.icon}
+                        <span>{t(item.labelKey)}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-      <SidebarFooter className="border-t border-sidebar-border">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/profile")} tooltip={t("navProfile")}>
-              <NavLink to="/profile">
-                <UserCircle />
-                <span>{t("navProfile")}</span>
-              </NavLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+          {/* Admin group — owner / admin only */}
+          {isOwner && (
+            <>
+              <SidebarSeparator />
+              <SidebarGroup>
+                <SidebarGroupLabel className="text-amber-600 dark:text-amber-400">
+                  {isHe ? "ניהול" : "Admin"}
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        onClick={() => setDebugOpen(true)}
+                        tooltip={isHe ? "פאנל ארכיטיפ" : "Archetype debug panel"}
+                        className="cursor-pointer"
+                      >
+                        <Brain className="text-amber-600 dark:text-amber-400" />
+                        <span>{isHe ? "פאנל ארכיטיפ" : "Archetype Panel"}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </>
+          )}
+        </SidebarContent>
 
-      <SidebarRail />
-    </Sidebar>
+        <SidebarFooter className="border-t border-sidebar-border">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActive("/profile")} tooltip={t("navProfile")}>
+                <NavLink to="/profile">
+                  <UserCircle />
+                  <span>{t("navProfile")}</span>
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+
+        <SidebarRail />
+      </Sidebar>
+
+      {/* Admin panel — rendered outside Sidebar to escape stacking context */}
+      {isOwner && (
+        <Suspense fallback={null}>
+          <AdminArchetypeDebugPanel open={debugOpen} onOpenChange={setDebugOpen} />
+        </Suspense>
+      )}
+    </>
   );
 };
 

@@ -187,6 +187,7 @@ src/
 │   ├── behavioralActionEngine.ts    # Behavioral nudge orchestration (COR/Fogg/DISC) — loss aversion + goal gradient + social proof
 │   ├── behavioralHeuristicEngine.ts # H1–H8 heuristics with L1–L5 resolution; getL5CSSVars(), getPrimaryCtaVerbs(), deriveHeuristicSet()
 │   ├── archetypeClassifier.ts       # 14-signal → 5-archetype classifier with ConfidenceTier scoring
+│   ├── outcomeLoopEngine.ts         # MOAT flywheel core: captureRecommendationShown, captureVariantPick (hover_ms), captureOutcome, snapshotEngineOutputs, captureContentSnapshot, getCohortBenchmarks, flushOutcomeBuffer
 │   ├── researchOrchestrator.ts      # Shim exposing the research/ orchestrator as a direct engine
 │   ├── research/                    # Cross-domain research engine (real orchestrator lives here)
 │   ├── optimization/                # 6-engine GRAOS optimization overlay (strictly additive)
@@ -267,10 +268,21 @@ supabase/functions/  # 12 Edge Functions
 ├── webhook-dispatch/       # Outbound webhook delivery with retries
 └── webhook-receive/        # Inbound webhook receiver
 supabase/migrations/
+├── 20260405_*                             # Initial schema (profiles, auth helpers)
 ├── 20260409_001_agent_infrastructure.sql  # agent_tasks, blackboard_snapshots, execution_log
 ├── 20260409_002_campaign_analytics.sql    # campaign_benchmarks, user_integrations, notification_preferences
 ├── 20260409_003_vector_search.sql         # pgvector, content_embeddings, code_embeddings, match functions
-└── 20260409_004_event_queue.sql           # event_queue with claim/complete/fail/publish/cleanup
+├── 20260409_004_event_queue.sql           # event_queue with claim/complete/fail/publish/cleanup
+├── 20260409_005_add_tier_column.sql       # profiles.tier column (free/pro/business)
+├── 20260409_006_ab_testing.sql            # ab_experiments, ab_assignments
+├── 20260409_173*                          # Auto-generated Supabase migrations
+├── 20260410_001_training_data.sql         # training_pairs — MOAT flywheel I/O capture
+├── 20260410_002_blackboard_contract.sql   # Blackboard contract tables
+├── 20260411_001_quotes.sql                # Shared quote tokens
+├── 20260411_000000_sentinel_view.sql      # Sentinel analytics view
+├── 20260413_001_user_archetype_profiles.sql  # UserArchetypeLayer — per-user archetype profile + signals
+├── 20260414_001_outcome_loop.sql          # Outcome loop — recommendation_events, variant_pick_events, outcome_reports, cohort_benchmarks
+└── 20260414_002_engine_history_and_content.sql  # engine_snapshots, content_snapshots (embedding-ready), hover_ms micro-behavior
 scripts/
 ├── analyze-codebase.ts         # Extracts semantic code chunks for embedding
 ├── audit-engines.ts            # Classifies every engine as LIVE / ORPHAN / DEAD based on
@@ -297,6 +309,53 @@ reports/
 ├── reachability-audit.json     # Per-live-engine REACHABLE / IMPORTED_BUT_UNCALLED / NO_IMPORT
 └── tier4-e2e.log               # Tier-4 multi-agent pillar end-to-end verification
 ```
+
+## Authentication
+
+### Dual-Mode Auth (Supabase + Local fallback)
+
+`AuthContext` runs in two modes depending on environment:
+
+| Mode | Condition | Persistence |
+|------|-----------|-------------|
+| **Supabase** | `VITE_SUPABASE_URL` set + service reachable | Supabase Auth (JWT) |
+| **Local** | No Supabase / offline | `localStorage` (SHA-256 hashed passwords) |
+
+The mode is detected at startup via a 3-second HEAD probe to the Supabase REST endpoint. The switch is fully transparent — components only consume `useAuth()`.
+
+### Role System
+
+| Role | Access |
+|------|--------|
+| `owner` | Full admin features + AdminArchetypeDebugPanel |
+| `admin` | Same as owner |
+| `editor` | Standard user access |
+| `viewer` | Read-only |
+
+All Supabase-authenticated users receive `role: "owner"` by default (demo/beta mode). Local-auth users receive `role: "owner"` on signup, or the stored role on sign-in.
+
+### Built-in Admin Account (local auth only)
+
+A seed admin account is created automatically on first local-auth startup:
+
+| Field | Value |
+|-------|-------|
+| Username / email | `erez` |
+| Password | `10031999` |
+| Display name | `ארז` |
+| Role | `admin` |
+| Tier | `pro` |
+
+Password is stored as SHA-256 hash (`password + "funnelforge-salt-2026"`) — never in plaintext. The seed is idempotent (runs once via `ADMIN_SEED_ID` guard).
+
+### Admin Entry Points
+
+Admin features (AdminArchetypeDebugPanel) are accessible from two places:
+
+1. **Sidebar** — "ניהול / Admin" section (amber) visible for `owner` and `admin` roles, with a labeled "פאנל ארכיטיפ" button.
+2. **Top bar** — Amber Brain icon + "Admin" label (md+ screens).
+
+Both open the same `AdminArchetypeDebugPanel` Sheet, which shows: classification summary, score distribution chart, signal breakdown table, active heuristics (L1–L5), feature importance bars, classification rule formula with live values, and manual archetype override.
 
 ## MAS-CC: Multi-Agent System Architecture
 
