@@ -15,7 +15,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
@@ -63,7 +63,7 @@ const AppSidebar = () => {
   const isActive = (to: string, end = false) =>
     pathname === to || (!end && pathname.startsWith(to + "/"));
 
-  // Reorder workspace and module items when confidence is "strong"
+  // Workspace reordering: "strong" only (full morphing — more disorienting)
   const orderedWorkspace = useMemo<NavItem[]>(() => {
     if (confidenceTier !== "strong") return WORKSPACE_ITEMS;
     const ids = reorderNavItems(
@@ -74,8 +74,11 @@ const AppSidebar = () => {
     return ids.map((id) => map.get(id)!).filter(Boolean);
   }, [uiConfig.workspaceOrder, confidenceTier]);
 
+  // Module reordering: "confident" and "strong" — lower friction since modules
+  // are already numbered and users expect their order to reflect priority (H5)
+  const modulesReordered = confidenceTier === "confident" || confidenceTier === "strong";
   const orderedModules = useMemo<NavItem[]>(() => {
-    if (confidenceTier !== "strong") return MODULE_ITEMS;
+    if (!modulesReordered) return MODULE_ITEMS;
     const ids = reorderNavItems(
       MODULE_ITEMS.map((i) => i.id),
       uiConfig.modulesOrder,
@@ -90,7 +93,7 @@ const AppSidebar = () => {
         icon: <span className="font-mono text-xs w-4 text-center">{idx + 1}</span>,
       };
     }).filter(Boolean) as NavItem[];
-  }, [uiConfig.modulesOrder, confidenceTier]);
+  }, [uiConfig.modulesOrder, modulesReordered]);
 
   return (
     <Sidebar side={side} collapsible="icon" variant="sidebar" className="border-e border-sidebar-border">
@@ -131,7 +134,20 @@ const AppSidebar = () => {
 
         {/* Modules group */}
         <SidebarGroup>
-          <SidebarGroupLabel>{t("navModules")}</SidebarGroupLabel>
+          <SidebarGroupLabel className="flex items-center gap-1">
+            {t("navModules")}
+            {modulesReordered && (
+              <Info
+                className="h-3 w-3 text-muted-foreground/60 shrink-0"
+                aria-hidden="true"
+                title={
+                  isRTL
+                    ? `מסודר עבור ${uiConfig.label.he} — ${uiConfig.adaptationDescription.he}`
+                    : `Ordered for ${uiConfig.label.en} — ${uiConfig.adaptationDescription.en}`
+                }
+              />
+            )}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {orderedModules.map((item) => (

@@ -15,6 +15,7 @@ import { ChevronDown, Sparkles, Loader2 } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { ArchetypeId } from "@/types/archetype";
+import { deriveHeuristicSet } from "@/engine/behavioralHeuristicEngine";
 
 // ═══════════════════════════════════════════════
 // METADATA
@@ -77,10 +78,11 @@ const ARCHETYPE_IDS: ArchetypeId[] = ["strategist", "optimizer", "pioneer", "con
 // ═══════════════════════════════════════════════
 
 export default function ArchetypeProfileCard() {
-  const { profile, effectiveArchetypeId, confidenceTier, loading, setOverride } = useArchetype();
+  const { profile, effectiveArchetypeId, confidenceTier, uiConfig, loading, setOverride } = useArchetype();
   const { language } = useLanguage();
   const isHe = language === "he";
   const [signalsOpen, setSignalsOpen] = useState(false);
+  const [whyOpen, setWhyOpen] = useState(false);
   const [editingOverride, setEditingOverride] = useState(false);
 
   if (loading) {
@@ -209,6 +211,58 @@ export default function ArchetypeProfileCard() {
                   );
                 })}
               </div>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* Glass-Box: Why this adapts your experience */}
+        {(confidenceTier === "confident" || confidenceTier === "strong") && (
+          <Collapsible open={whyOpen} onOpenChange={setWhyOpen}>
+            <CollapsibleTrigger asChild>
+              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${whyOpen ? "rotate-180" : ""}`} />
+                {isHe ? "למה זה מותאם עבורך?" : "Why this adapts your experience?"}
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              {(() => {
+                const profile_ = uiConfig.personalityProfile;
+                const heuristics = deriveHeuristicSet(archetype).activeHeuristics;
+                return (
+                  <div className="mt-2 space-y-2">
+                    {/* Regulatory focus + processing style badges */}
+                    <div className="flex flex-wrap gap-1">
+                      <Badge variant="outline" className="text-xs py-0 px-1.5">
+                        {profile_.regulatoryFocus === "prevention"
+                          ? (isHe ? "מניעה" : "Prevention Focus")
+                          : (isHe ? "קידום" : "Promotion Focus")}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs py-0 px-1.5">
+                        {profile_.processingStyle === "systematic"
+                          ? (isHe ? "שיטתי" : "Systematic")
+                          : (isHe ? "היוריסטי" : "Heuristic")}
+                      </Badge>
+                    </div>
+                    {/* Core motivation */}
+                    <p className="text-xs text-muted-foreground italic" dir="auto">
+                      {profile_.coreMotivation[isHe ? "he" : "en"]}
+                    </p>
+                    {/* Active heuristic badges */}
+                    <div className="flex flex-wrap gap-1">
+                      {heuristics.map((h) => (
+                        <Badge
+                          key={h.id}
+                          variant="secondary"
+                          className="text-xs py-0 px-1.5"
+                          title={h.source}
+                        >
+                          {h.id}: {h.principle}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </CollapsibleContent>
           </Collapsible>
         )}

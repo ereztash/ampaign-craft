@@ -9,6 +9,9 @@ import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph, loadChatInsights, 
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
+import { useArchetypePipeline } from "@/hooks/useArchetypePipeline";
+import { getPrimaryCtaVerbs } from "@/engine/behavioralHeuristicEngine";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
 import { assignToCohort } from "@/engine/behavioralCohortEngine";
 import { inferDISCProfile } from "@/engine/discProfileEngine";
@@ -53,10 +56,29 @@ const Dashboard = () => {
     return null;
   }, [lastPlan, graph]);
 
-  const nextStep = useMemo(() => {
+  const staticNextStep = useMemo(() => {
     const fallbackGraph = graph || buildDefaultKnowledgeGraph();
     return getRecommendedNextStep(fallbackGraph, hasDiff, savedPlans.length, new Set<string>());
   }, [graph, hasDiff, savedPlans.length]);
+
+  const { effectiveArchetypeId, confidenceTier } = useArchetype();
+  const ctaVerbs = getPrimaryCtaVerbs(effectiveArchetypeId);
+  const { nextStep: pipelineNextStep, isActive: pipelineActive } = useArchetypePipeline();
+
+  // Resolve which next step to show — pipeline takes precedence when active
+  const nextStep = pipelineActive && pipelineNextStep
+    ? {
+        route: pipelineNextStep.routePath,
+        title: pipelineNextStep.label,
+        description: pipelineNextStep.frictionReason,
+        color: "text-primary",
+      }
+    : {
+        route: staticNextStep.route,
+        title: staticNextStep.title,
+        description: staticNextStep.description,
+        color: staticNextStep.color,
+      };
 
   // Campaign analytics benchmarks — computed from the user's own saved plans.
   const analytics = useMemo(() => generateBenchmarks(savedPlans), [savedPlans]);
@@ -173,7 +195,7 @@ const Dashboard = () => {
             </h1>
             <p className="text-sm text-muted-foreground" dir="auto">
               {healthScore
-                ? `${isHe ? "ציון בריאות שיווקית:" : "Marketing Health Score:"} ${healthScore.total}/100 (${healthScore.tier})`
+                ? `${confidenceTier !== "none" ? `${ctaVerbs.primary[language]} · ` : ""}${isHe ? "ציון בריאות שיווקית:" : "Marketing Health Score:"} ${healthScore.total}/100 (${healthScore.tier})`
                 : (isHe ? "הנה מה שחדש מאז הביקור האחרון שלך" : "Here's what's new since your last visit")}
             </p>
           </div>

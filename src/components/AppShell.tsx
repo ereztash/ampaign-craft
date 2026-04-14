@@ -8,9 +8,12 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import AppTopBar from "@/components/AppTopBar";
 import MobileTabBar from "@/components/MobileTabBar";
 import LoadingFallback from "@/components/LoadingFallback";
+import { useAdaptiveTheme } from "@/hooks/useAdaptiveTheme";
 
 const AppShell = () => {
   const { isRTL } = useLanguage();
+  // Activates all [data-archetype], [data-density], [data-field] CSS blocks in index.css
+  useAdaptiveTheme();
 
   return (
     // MotionConfig `reducedMotion="user"` respects the OS-level

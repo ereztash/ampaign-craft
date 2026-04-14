@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
+import { getL5CSSVars } from "@/engine/behavioralHeuristicEngine";
 
 /**
  * Adaptive Theme Hook
@@ -76,4 +77,21 @@ export function useAdaptiveTheme() {
     }
     return () => el.removeAttribute("data-density");
   }, [uiConfig.informationDensity, confidenceTier]);
+
+  // L5 CSS vars: micro-interaction tuning at "confident" and "strong" tiers.
+  // Produces --motion-duration-multiplier, --motion-easing, --cta-font-weight.
+  // Grounded in H1–H8 heuristics (see behavioralHeuristicEngine.ts).
+  useEffect(() => {
+    if (confidenceTier !== "confident" && confidenceTier !== "strong") return;
+    const el = document.documentElement;
+    const vars = getL5CSSVars(effectiveArchetypeId);
+    Object.entries(vars).forEach(([prop, value]) => {
+      el.style.setProperty(prop, value);
+    });
+    return () => {
+      Object.keys(vars).forEach((prop) => {
+        el.style.removeProperty(prop);
+      });
+    };
+  }, [effectiveArchetypeId, confidenceTier]);
 }

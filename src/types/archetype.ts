@@ -11,7 +11,7 @@
 // Heuristic engine:       src/engine/behavioralHeuristicEngine.ts
 // ═══════════════════════════════════════════════
 
-export type { PersonalityProfile, PipelineStep } from "@/types/behavioralHeuristics";
+export type { PersonalityProfile, PipelineStep, FrictionClass } from "@/types/behavioralHeuristics";
 
 export type ArchetypeId =
   | "strategist"  // Prevention + Systematic + Established
