@@ -359,7 +359,7 @@ export function computeMotivationState(
   }
 
   // Training flywheel
-  captureTrainingPair("behavioral_action", input as unknown as Record<string, unknown>, result as unknown as Record<string, unknown>).catch(() => {});
+  captureTrainingPair("behavioral_cohort", input as unknown as Record<string, unknown>, result as unknown as Record<string, unknown>).catch(() => {});
 
   return result;
 }

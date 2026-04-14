@@ -47,6 +47,8 @@ const defaultProfile: UserProfile = {
   prefersReducedMotion: false,
   achievements: [],
   unifiedProfile: null,
+  investment: { plansCreated: 0, modulesCompleted: 0, totalVisits: 0, firstSeenDate: null, totalSessionsMinutes: 0 },
+  milestones: { formCompleted: false, firstPlanSaved: false, dataSourceConnected: false, stylomeAnalyzed: false, coachUsed: false },
 };
 
 describe("getTabConfig", () => {

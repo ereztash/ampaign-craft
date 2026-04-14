@@ -4,7 +4,12 @@
 // and server-side agent access to blackboard data.
 // ═══════════════════════════════════════════════
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as _supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+// Cast to untyped client since these tables aren't in the generated schema yet
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = _supabase as unknown as SupabaseClient<any>;
 import type { BlackboardState } from "@/engine/blackboard/blackboardStore";
 import type { PipelineExecutionResult } from "@/engine/blackboard/agentTypes";
 
@@ -34,10 +39,10 @@ export async function saveBlackboardSnapshot(
   executionResult?: PipelineExecutionResult
 ): Promise<string | null> {
   const { data, error } = await supabase
-    .from("blackboard_snapshots" as unknown as string)
+    .from("blackboard_snapshots")
     .insert({
       plan_id: planId,
-      state: JSON.parse(JSON.stringify(state)), // deep clone to JSONB
+      state: JSON.parse(JSON.stringify(state)),
       completed_agents: state.completedAgents,
       errors: state.errors,
       execution_meta: executionResult ? JSON.parse(JSON.stringify(executionResult)) : null,
@@ -63,7 +68,7 @@ export async function loadBlackboardSnapshot(
   planId: string
 ): Promise<BlackboardSnapshot | null> {
   const { data, error } = await supabase
-    .from("blackboard_snapshots" as unknown as string)
+    .from("blackboard_snapshots")
     .select("*")
     .eq("plan_id", planId)
     .order("created_at", { ascending: false })
@@ -115,7 +120,7 @@ export async function enqueueAgentTask(
   planId?: string
 ): Promise<string | null> {
   const { data, error } = await supabase
-    .from("agent_tasks" as unknown as string)
+    .from("agent_tasks")
     .insert({
       agent_name: agentName,
       input,
@@ -138,7 +143,7 @@ export async function enqueueAgentTask(
  */
 export async function getAgentTaskStatus(taskId: string): Promise<AgentTask | null> {
   const { data, error } = await supabase
-    .from("agent_tasks" as unknown as string)
+    .from("agent_tasks")
     .select("*")
     .eq("id", taskId)
     .single();
@@ -176,7 +181,7 @@ export async function logAgentEvent(
   metadata?: Record<string, unknown>
 ): Promise<void> {
   const { error } = await supabase
-    .from("agent_execution_log" as unknown as string)
+    .from("agent_execution_log")
     .insert({
       task_id: taskId,
       session_id: sessionId,
@@ -203,7 +208,7 @@ export async function getMonthlyAgentCost(userId: string): Promise<number> {
   startOfMonth.setHours(0, 0, 0, 0);
 
   const { data, error } = await supabase
-    .from("agent_tasks" as unknown as string)
+    .from("agent_tasks")
     .select("cost_nis")
     .eq("user_id", userId)
     .gte("created_at", startOfMonth.toISOString())

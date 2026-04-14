@@ -246,15 +246,19 @@ export function buildRegimeInputFromUKG(
   if (rm.avgCPL != null) {
     result.push({
       metric: "cpl",
-      values: [rm.avgCPL, rm.avgCPL * (rm.trendDirection === "improving" ? 0.95 : rm.trendDirection === "declining" ? 1.08 : 1)],
-      direction: "up" as const,
+      series: [
+        { ts: Date.now() - 86400000, value: rm.avgCPL },
+        { ts: Date.now(), value: rm.avgCPL * (rm.trendDirection === "improving" ? 0.95 : rm.trendDirection === "declining" ? 1.08 : 1) },
+      ],
     });
   }
   if (rm.avgCTR != null) {
     result.push({
       metric: "ctr",
-      values: [rm.avgCTR, rm.avgCTR * (rm.trendDirection === "improving" ? 1.05 : rm.trendDirection === "declining" ? 0.92 : 1)],
-      direction: "down" as const,
+      series: [
+        { ts: Date.now() - 86400000, value: rm.avgCTR },
+        { ts: Date.now(), value: rm.avgCTR * (rm.trendDirection === "improving" ? 1.05 : rm.trendDirection === "declining" ? 0.92 : 1) },
+      ],
     });
   }
   return result;

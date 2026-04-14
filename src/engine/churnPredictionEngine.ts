@@ -350,18 +350,19 @@ export function assessChurnRisk(
   formData: FormData,
   ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): ChurnRiskAssessment {
-  const { score: riskScore, signals } = calculateRiskScore(formData);
+  const { score: baseRiskScore, signals } = calculateRiskScore(formData);
+  let riskScore = baseRiskScore;
 
   // Cross-domain: DISC personality adjusts churn model
   if (ukg?.discProfile) {
     const p = ukg.discProfile.primary;
-    if (p === "S") { riskScore -= 5; signals.push({ he: "S-profile: נטישה שקטה אך איטית", en: "S-profile: slow but silent churn" }); }
-    if (p === "D") { riskScore += 5; signals.push({ he: "D-profile: יעזוב מהר אם לא רואה ROI", en: "D-profile: quick exit without visible ROI" }); }
+    if (p === "S") { riskScore -= 5; signals.push({ signal: "disc-s", severity: "low", description: { he: "S-profile: נטישה שקטה אך איטית", en: "S-profile: slow but silent churn" } }); }
+    if (p === "D") { riskScore += 5; signals.push({ signal: "disc-d", severity: "medium", description: { he: "D-profile: יעזוב מהר אם לא רואה ROI", en: "D-profile: quick exit without visible ROI" } }); }
   }
   // Cross-domain: imported data with declining trend = higher risk
   if (ukg?.derived.urgencySignal === "acute") {
     riskScore += 8;
-    signals.push({ he: "נתונים מיובאים מראים ירידה חדה", en: "Imported data shows sharp decline" });
+    signals.push({ signal: "data-decline", severity: "high", description: { he: "נתונים מיובאים מראים ירידה חדה", en: "Imported data shows sharp decline" } });
   } else if (ukg?.derived.urgencySignal === "mild") {
     riskScore += 3;
   }

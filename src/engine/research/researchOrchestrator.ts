@@ -258,9 +258,9 @@ Respond in JSON:
       en: i.en || "",
     })),
     strategicRecommendations: ((parsed.strategicRecommendations as Record<string, string>[] | undefined) || []).map((r: Record<string, string>) => ({
-      priority: r.priority || "medium",
+      priority: (r.priority || "medium") as "high" | "medium" | "low",
       recommendation: { he: r.recommendation_he || "", en: r.recommendation_en || "" },
-      supportingFindings: [],
+      supportingFindings: [] as string[],
     })),
     overallConfidence: clamp((parsed.overallConfidence as number) ?? 0.6, 0, 1),
     domains,

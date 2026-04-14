@@ -174,7 +174,7 @@ export function generateDifferentiation(
   const ashamedPainInsights: AshamedPainInsight[] = aiResults.phase3?.ashamedPainInsights || [];
 
   const competitorMap: CompetitorArchetype[] = aiResults.phase4?.competitorMap || formData.competitorArchetypes;
-  const committeeNarratives: BuyingCommitteeRole[] = aiResults.phase4?.committeeNarratives || formData.buyingCommitteeMap;
+  const committeeNarratives: BuyingCommitteeRole[] = aiResults.phase4?.committeeNarratives || formData.buyingCommitteeMap || [];
 
   const contraryMetrics = aiResults.phase5?.contraryMetrics || selectContraryMetrics(formData);
   const hybridCategory = aiResults.phase5?.hybridCategory || suggestHybridCategory(formData);

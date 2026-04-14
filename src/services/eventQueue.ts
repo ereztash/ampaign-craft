@@ -3,10 +3,11 @@
 // Events are processed by the queue-processor Edge Function.
 // ═══════════════════════════════════════════════
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as _supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const db = supabase as unknown as SupabaseClient;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = _supabase as unknown as SupabaseClient<any>;
 
 // ═══════════════════════════════════════════════
 // TYPES
@@ -91,15 +92,15 @@ export async function getRecentEvents(
   }
 
   const events: QueueEvent[] = (data || []).map((row: Record<string, unknown>) => ({
-    id: row.id,
-    eventType: row.event_type,
-    payload: row.payload,
-    status: row.status,
-    attempts: row.attempts,
-    createdAt: row.created_at,
-    completedAt: row.completed_at,
-    error: row.error,
-    result: row.result,
+    id: row.id as string,
+    eventType: row.event_type as EventType,
+    payload: row.payload as Record<string, unknown>,
+    status: row.status as string,
+    attempts: row.attempts as number,
+    createdAt: row.created_at as string,
+    completedAt: row.completed_at as string | undefined,
+    error: row.error as string | undefined,
+    result: row.result as Record<string, unknown> | undefined,
   }));
 
   return { events };
@@ -126,15 +127,15 @@ export async function getEventStatus(
   const row = data as Record<string, unknown>;
   return {
     event: {
-      id: row.id,
-      eventType: row.event_type,
-      payload: row.payload,
-      status: row.status,
-      attempts: row.attempts,
-      createdAt: row.created_at,
-      completedAt: row.completed_at,
-      error: row.error,
-      result: row.result,
+      id: row.id as string,
+      eventType: row.event_type as EventType,
+      payload: row.payload as Record<string, unknown>,
+      status: row.status as string,
+      attempts: row.attempts as number,
+      createdAt: row.created_at as string,
+      completedAt: row.completed_at as string | undefined,
+      error: row.error as string | undefined,
+      result: row.result as Record<string, unknown> | undefined,
     },
   };
 }

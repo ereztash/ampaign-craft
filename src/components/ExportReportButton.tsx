@@ -113,11 +113,11 @@ export function ExportReportButton({
       addSeparator();
 
       // ── Executive Summary ─────────────────────────────────────
-      const summary = result.executiveSummary || (result as unknown as { funnelResult?: { executiveSummary?: string } }).funnelResult?.executiveSummary;
+      const summary = (result as unknown as Record<string, unknown>).executiveSummary || ((result as unknown as Record<string, unknown>).funnelResult as Record<string, unknown>)?.executiveSummary;
       if (summary) {
         newPageIfNeeded(40);
         addSection(isHe ? "תמצית אסטרטגית" : "Executive Summary");
-        addLine(summary, { size: 9, indent: 2 });
+        addLine(String(summary), { size: 9, indent: 2 });
         addSeparator();
       }
 
@@ -130,8 +130,8 @@ export function ExportReportButton({
           newPageIfNeeded(15);
           const stageName = typeof stage.name === "object" ? (stage.name as Record<string, string>)[language] ?? stage.name : stage.name;
           addLine(`• ${stageName}`, { size: 9, bold: true, indent: 2 });
-          if (stage.strategy) {
-            const strat = typeof stage.strategy === "object" ? (stage.strategy as Record<string, string>)[language] ?? "" : stage.strategy;
+          if ((stage as unknown as Record<string, unknown>).strategy) {
+            const strat = typeof (stage as unknown as Record<string, unknown>).strategy === "object" ? ((stage as unknown as Record<string, Record<string, string>>).strategy)[language] ?? "" : (stage as unknown as Record<string, string>).strategy;
             if (strat) addLine(strat, { size: 8, indent: 6, color: [80, 80, 80] });
           }
           y += 1;
@@ -140,7 +140,7 @@ export function ExportReportButton({
       }
 
       // ── Recommended Channels ──────────────────────────────────
-      const channels = result.recommendedChannels ?? [];
+      const channels = (result as unknown as Record<string, unknown[]>).recommendedChannels ?? [];
       if (channels.length > 0) {
         newPageIfNeeded(20);
         addSection(isHe ? "ערוצים מומלצים" : "Recommended Channels");
