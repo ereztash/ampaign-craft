@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Plus, X } from "lucide-react";
 
 interface PhaseCardProps {
@@ -129,7 +130,7 @@ function CompetitorList({ formData, onUpdate, placeholder, maxItems }: { formDat
     <div className="space-y-2">
       {competitors.map((c, i) => (
         <div key={i} className="flex items-center gap-2">
-          <Input value={c} onChange={(e) => change(i, e.target.value)} placeholder={`${placeholder} ${i + 1}`} aria-label={`${language === "he" ? "מתחרה" : "Competitor"} ${i + 1}`} dir="auto" />
+          <Input value={c} onChange={(e) => change(i, e.target.value)} placeholder={`${placeholder} ${i + 1}`} aria-label={`${tx({ he: "מתחרה", en: "Competitor" }, language)} ${i + 1}`} dir="auto" />
           <Button variant="ghost" size="icon" onClick={() => remove(i)} className="shrink-0"><X className="h-4 w-4" /></Button>
         </div>
       ))}

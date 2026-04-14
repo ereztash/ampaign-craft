@@ -105,7 +105,7 @@ const AppSidebar = () => {
 
   return (
     <>
-      <Sidebar side={side} collapsible="icon" variant="sidebar" className="border-e border-sidebar-border">
+      <Sidebar side={side} collapsible="icon" variant="sidebar" className="border-e border-sidebar-border" role="navigation" aria-label={isHe ? "ניווט ראשי" : "Main navigation"}>
         <SidebarHeader className="border-b border-sidebar-border">
           <NavLink to="/" className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient shrink-0">

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { tx } from "@/i18n/tx";
 import {
   Select,
   SelectContent,
@@ -117,27 +118,27 @@ export default function QuoteBuilder({
     return calculateQuoteTotal(quote.lineItems, quote.discount);
   }, [quote]);
 
-  const bil = (t: BilingualText) => (isHe ? t.he : t.en);
+  const bil = (t: BilingualText) => (tx(t, language));
 
   // ─── Step 1: Recipient + Tier ───
   const renderStep1 = () => (
     <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold" dir="auto">
-          {isHe ? "פרטי הלקוח" : "Client Details"}
+          {tx({ he: "פרטי הלקוח", en: "Client Details" }, language)}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label dir="auto">{isHe ? "שם הלקוח *" : "Client Name *"}</Label>
+            <Label dir="auto">{tx({ he: "שם הלקוח *", en: "Client Name *" }, language)}</Label>
             <Input
               value={recipient.name}
               onChange={(e) => setRecipient({ ...recipient, name: e.target.value })}
-              placeholder={isHe ? "ישראל ישראלי" : "John Doe"}
+              placeholder={tx({ he: "ישראל ישראלי", en: "John Doe" }, language)}
               dir="auto"
             />
           </div>
           <div className="space-y-2">
-            <Label dir="auto">{isHe ? "חברה" : "Company"}</Label>
+            <Label dir="auto">{tx({ he: "חברה", en: "Company" }, language)}</Label>
             <Input
               value={recipient.company || ""}
               onChange={(e) => setRecipient({ ...recipient, company: e.target.value })}
@@ -145,7 +146,7 @@ export default function QuoteBuilder({
             />
           </div>
           <div className="space-y-2">
-            <Label dir="auto">{isHe ? "אימייל" : "Email"}</Label>
+            <Label dir="auto">{tx({ he: "אימייל", en: "Email" }, language)}</Label>
             <Input
               type="email"
               value={recipient.email || ""}
@@ -154,7 +155,7 @@ export default function QuoteBuilder({
             />
           </div>
           <div className="space-y-2">
-            <Label dir="auto">{isHe ? "תפקיד" : "Role"}</Label>
+            <Label dir="auto">{tx({ he: "תפקיד", en: "Role" }, language)}</Label>
             <Input
               value={recipient.role || ""}
               onChange={(e) => setRecipient({ ...recipient, role: e.target.value })}
@@ -166,7 +167,7 @@ export default function QuoteBuilder({
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold" dir="auto">
-          {isHe ? "בחר חבילה" : "Select Package"}
+          {tx({ he: "בחר חבילה", en: "Select Package" }, language)}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {pricingResult.tierStructure.tiers.map((tier, idx) => (
@@ -181,7 +182,7 @@ export default function QuoteBuilder({
             >
               <CardHeader className="pb-2">
                 {tier.isPrimary && (
-                  <Badge className="w-fit mb-1">{isHe ? "מומלץ" : "Recommended"}</Badge>
+                  <Badge className="w-fit mb-1">{tx({ he: "מומלץ", en: "Recommended" }, language)}</Badge>
                 )}
                 <CardTitle className="text-base" dir="auto">
                   {bil(tier.name)}
@@ -206,7 +207,7 @@ export default function QuoteBuilder({
       </div>
 
       <div className="space-y-2">
-        <Label dir="auto">{isHe ? "מטבע" : "Currency"}</Label>
+        <Label dir="auto">{tx({ he: "מטבע", en: "Currency" }, language)}</Label>
         <Select value={currency} onValueChange={(v) => setCurrency(v as QuoteCurrency)}>
           <SelectTrigger className="w-32">
             <SelectValue />
@@ -222,10 +223,10 @@ export default function QuoteBuilder({
       <div className="flex justify-between pt-4">
         <Button variant="ghost" onClick={onBack}>
           <ArrowRight className="h-4 w-4 me-1" />
-          {isHe ? "חזרה" : "Back"}
+          {tx({ he: "חזרה", en: "Back" }, language)}
         </Button>
         <Button onClick={handleGenerateQuote} disabled={!recipient.name.trim()}>
-          {isHe ? "המשך" : "Continue"}
+          {tx({ he: "המשך", en: "Continue" }, language)}
           <ArrowLeft className="h-4 w-4 ms-1" />
         </Button>
       </div>
@@ -238,18 +239,18 @@ export default function QuoteBuilder({
     return (
       <div className="space-y-6">
         <h3 className="text-lg font-semibold" dir="auto">
-          {isHe ? "התאמה אישית" : "Customize Quote"}
+          {tx({ he: "התאמה אישית", en: "Customize Quote" }, language)}
         </h3>
 
         {/* Line Items Table */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Label dir="auto" className="text-base font-medium">
-              {isHe ? "פריטים" : "Line Items"}
+              {tx({ he: "פריטים", en: "Line Items" }, language)}
             </Label>
             <Button size="sm" variant="outline" onClick={addLineItem}>
               <Plus className="h-4 w-4 me-1" />
-              {isHe ? "הוסף פריט" : "Add Item"}
+              {tx({ he: "הוסף פריט", en: "Add Item" }, language)}
             </Button>
           </div>
 
@@ -257,10 +258,10 @@ export default function QuoteBuilder({
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="p-2 text-start" dir="auto">{isHe ? "פריט" : "Item"}</th>
-                  <th className="p-2 w-20 text-center">{isHe ? "כמות" : "Qty"}</th>
-                  <th className="p-2 w-28 text-center">{isHe ? "מחיר" : "Price"}</th>
-                  <th className="p-2 w-28 text-center">{isHe ? "סה״כ" : "Total"}</th>
+                  <th className="p-2 text-start" dir="auto">{tx({ he: "פריט", en: "Item" }, language)}</th>
+                  <th className="p-2 w-20 text-center">{tx({ he: "כמות", en: "Qty" }, language)}</th>
+                  <th className="p-2 w-28 text-center">{tx({ he: "מחיר", en: "Price" }, language)}</th>
+                  <th className="p-2 w-28 text-center">{tx({ he: "סה״כ", en: "Total" }, language)}</th>
                   <th className="p-2 w-10" />
                 </tr>
               </thead>
@@ -325,13 +326,13 @@ export default function QuoteBuilder({
           <div className="flex justify-end">
             <div className="w-64 space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">{isHe ? "סכום ביניים" : "Subtotal"}</span>
+                <span className="text-muted-foreground">{tx({ he: "סכום ביניים", en: "Subtotal" }, language)}</span>
                 <span className="font-medium">{formatQuotePrice(recalcTotals.subtotal, quote.currency)}</span>
               </div>
 
               {/* Discount */}
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground text-xs">{isHe ? "הנחה" : "Discount"}</span>
+                <span className="text-muted-foreground text-xs">{tx({ he: "הנחה", en: "Discount" }, language)}</span>
                 <Select
                   value={quote.discount?.type || "percent"}
                   onValueChange={(v) =>
@@ -367,7 +368,7 @@ export default function QuoteBuilder({
               </div>
 
               <div className="flex justify-between border-t pt-2">
-                <span className="font-semibold">{isHe ? "סה״כ" : "Total"}</span>
+                <span className="font-semibold">{tx({ he: "סה״כ", en: "Total" }, language)}</span>
                 <span className="font-bold text-lg">
                   {formatQuotePrice(recalcTotals.total, quote.currency)}
                 </span>
@@ -379,7 +380,7 @@ export default function QuoteBuilder({
         {/* Bonuses */}
         <div className="space-y-2">
           <Label dir="auto" className="text-base font-medium">
-            {isHe ? "בונוסים" : "Bonuses"}
+            {tx({ he: "בונוסים", en: "Bonuses" }, language)}
           </Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {pricingResult.offerStack.bonuses.map((bonus, i) => {
@@ -415,17 +416,17 @@ export default function QuoteBuilder({
         {/* Payment Terms & Notes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label dir="auto">{isHe ? "תנאי תשלום" : "Payment Terms"}</Label>
+            <Label dir="auto">{tx({ he: "תנאי תשלום", en: "Payment Terms" }, language)}</Label>
             <Textarea
               value={quote.paymentTerms || ""}
               onChange={(e) => setQuote({ ...quote, paymentTerms: e.target.value })}
-              placeholder={isHe ? "לדוגמה: 50% מקדמה, 50% בסיום" : "e.g. 50% upfront, 50% on completion"}
+              placeholder={tx({ he: "לדוגמה: 50% מקדמה, 50% בסיום", en: "e.g. 50% upfront, 50% on completion" }, language)}
               rows={2}
               dir="auto"
             />
           </div>
           <div className="space-y-2">
-            <Label dir="auto">{isHe ? "הערות" : "Notes"}</Label>
+            <Label dir="auto">{tx({ he: "הערות", en: "Notes" }, language)}</Label>
             <Textarea
               value={quote.notes || ""}
               onChange={(e) => setQuote({ ...quote, notes: e.target.value })}
@@ -438,7 +439,7 @@ export default function QuoteBuilder({
         <div className="flex justify-between pt-4">
           <Button variant="ghost" onClick={() => setStep(1)}>
             <ArrowRight className="h-4 w-4 me-1" />
-            {isHe ? "חזרה" : "Back"}
+            {tx({ he: "חזרה", en: "Back" }, language)}
           </Button>
           <Button
             onClick={() => {
@@ -450,7 +451,7 @@ export default function QuoteBuilder({
               setStep(3);
             }}
           >
-            {isHe ? "תצוגה מקדימה" : "Preview"}
+            {tx({ he: "תצוגה מקדימה", en: "Preview" }, language)}
             <ArrowLeft className="h-4 w-4 ms-1" />
           </Button>
         </div>
@@ -500,20 +501,20 @@ export default function QuoteBuilder({
       <div className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h3 className="text-lg font-semibold" dir="auto">
-            {isHe ? "תצוגה מקדימה" : "Preview"}
+            {tx({ he: "תצוגה מקדימה", en: "Preview" }, language)}
           </h3>
           <div className="flex gap-2 flex-wrap">
             <Button variant="outline" size="sm" onClick={() => setStep(2)}>
               <ArrowRight className="h-4 w-4 me-1" />
-              {isHe ? "עריכה" : "Edit"}
+              {tx({ he: "עריכה", en: "Edit" }, language)}
             </Button>
             <Button variant="outline" size="sm" onClick={handleExportPdf}>
               <Download className="h-4 w-4 me-1" />
-              {isHe ? "הורד PDF" : "Download PDF"}
+              {tx({ he: "הורד PDF", en: "Download PDF" }, language)}
             </Button>
             <Button size="sm" onClick={() => onComplete(finalQuote)}>
               <FileText className="h-4 w-4 me-1" />
-              {isHe ? "סיום ושמירה" : "Finish & Save"}
+              {tx({ he: "סיום ושמירה", en: "Finish & Save" }, language)}
             </Button>
           </div>
         </div>
@@ -524,9 +525,9 @@ export default function QuoteBuilder({
 
   // ─── Step Indicator ───
   const steps = [
-    { num: 1, label: isHe ? "לקוח וחבילה" : "Client & Package" },
-    { num: 2, label: isHe ? "התאמה" : "Customize" },
-    { num: 3, label: isHe ? "תצוגה" : "Preview" },
+    { num: 1, label: tx({ he: "לקוח וחבילה", en: "Client & Package" }, language) },
+    { num: 2, label: tx({ he: "התאמה", en: "Customize" }, language) },
+    { num: 3, label: tx({ he: "תצוגה", en: "Preview" }, language) },
   ];
 
   return (

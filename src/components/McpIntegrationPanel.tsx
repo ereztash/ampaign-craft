@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import {
   Card,
   CardContent,
@@ -117,12 +118,12 @@ export function McpIntegrationPanel() {
       await navigator.clipboard.writeText(text);
       setCopied(key);
       toast({
-        title: isHe ? "הועתק ללוח" : "Copied to clipboard",
+        title: tx({ he: "הועתק ללוח", en: "Copied to clipboard" }, language),
       });
       setTimeout(() => setCopied(null), 2000);
     } catch {
       toast({
-        title: isHe ? "שגיאה בהעתקה" : "Copy failed",
+        title: tx({ he: "שגיאה בהעתקה", en: "Copy failed" }, language),
         variant: "destructive",
       });
     }
@@ -153,7 +154,7 @@ export function McpIntegrationPanel() {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Bot className="h-5 w-5 text-primary" />
-            {isHe ? "חיבור Claude MCP" : "Claude MCP Connection"}
+            {tx({ he: "חיבור Claude MCP", en: "Claude MCP Connection" }, language)}
           </CardTitle>
           <CardDescription>
             {isHe
@@ -172,7 +173,7 @@ export function McpIntegrationPanel() {
           <div className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-primary" />
             <CardTitle className="text-base">
-              {isHe ? "חיבור Claude Desktop / Code" : "Claude Desktop / Code"}
+              {tx({ he: "חיבור Claude Desktop / Code", en: "Claude Desktop / Code" }, language)}
             </CardTitle>
           </div>
           <Badge variant="outline" className="text-xs font-normal gap-1">
@@ -192,7 +193,7 @@ export function McpIntegrationPanel() {
         {MCP_ENDPOINT ? (
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              {isHe ? "כתובת שרת MCP" : "MCP Server URL"}
+              {tx({ he: "כתובת שרת MCP", en: "MCP Server URL" }, language)}
             </p>
             <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2">
               <code className="flex-1 text-xs break-all text-foreground">
@@ -225,7 +226,7 @@ export function McpIntegrationPanel() {
           <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1">
               <Key className="h-3 w-3" />
-              {isHe ? "טוקן הזדהות (JWT)" : "Auth Token (JWT)"}
+              {tx({ he: "טוקן הזדהות (JWT)", en: "Auth Token (JWT)" }, language)}
             </p>
             <Button
               variant="ghost"
@@ -237,7 +238,7 @@ export function McpIntegrationPanel() {
               <RefreshCw
                 className={`h-3 w-3 ${loadingToken ? "animate-spin" : ""}`}
               />
-              {isHe ? "רענן" : "Refresh"}
+              {tx({ he: "רענן", en: "Refresh" }, language)}
             </Button>
           </div>
 
@@ -345,7 +346,7 @@ export function McpIntegrationPanel() {
                     {tool.name}
                   </code>
                   <span className="text-muted-foreground" dir="auto">
-                    {isHe ? tool.he : tool.en}
+                    {tx(tool, language)}
                   </span>
                 </li>
               ))}
@@ -356,7 +357,7 @@ export function McpIntegrationPanel() {
         {/* Instructions link */}
         <div className="rounded-md border border-primary/20 bg-primary/5 p-3 text-xs" dir="auto">
           <p className="font-medium text-foreground mb-1">
-            {isHe ? "איך מחברים?" : "How to connect?"}
+            {tx({ he: "איך מחברים?", en: "How to connect?" }, language)}
           </p>
           <ol className="space-y-1 text-muted-foreground list-decimal list-inside">
             {isHe ? (
@@ -407,7 +408,7 @@ export function McpIntegrationPanel() {
             className="mt-2 inline-flex items-center gap-1 text-primary hover:underline"
           >
             <ExternalLink className="h-3 w-3" />
-            {isHe ? "מדריך MCP מלא" : "Full MCP guide"}
+            {tx({ he: "מדריך MCP מלא", en: "Full MCP guide" }, language)}
           </a>
         </div>
       </CardContent>

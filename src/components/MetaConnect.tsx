@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { MetaAdAccount } from "@/types/meta";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { tx } from "@/i18n/tx";
 
 interface MetaConnectProps {
   connected: boolean;
@@ -40,7 +41,7 @@ const MetaConnect = ({
         <CardContent className="flex items-center gap-3 py-6">
           <Loader2 className="h-5 w-5 animate-spin text-primary" />
           <span className="text-sm text-primary">
-            {isHe ? "מתחבר לחשבון מטא..." : "Connecting to Meta..."}
+            {tx({ he: "מתחבר לחשבון מטא...", en: "Connecting to Meta..." }, language)}
           </span>
         </CardContent>
       </Card>
@@ -53,7 +54,7 @@ const MetaConnect = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Facebook className="h-5 w-5 text-blue-600" />
-            {isHe ? "חבר חשבון Meta Ads" : "Connect Meta Ads Account"}
+            {tx({ he: "חבר חשבון Meta Ads", en: "Connect Meta Ads Account" }, language)}
           </CardTitle>
           <CardDescription>
             {isHe
@@ -70,7 +71,7 @@ const MetaConnect = ({
           )}
           <Button onClick={onConnect} className="gap-2 bg-primary hover:bg-primary/90">
             <Facebook className="h-4 w-4" />
-            {isHe ? "כניסה עם Facebook" : "Continue with Facebook"}
+            {tx({ he: "כניסה עם Facebook", en: "Continue with Facebook" }, language)}
           </Button>
           <p className="text-xs text-muted-foreground">
             {isHe
@@ -88,17 +89,17 @@ const MetaConnect = ({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
             <CheckCircle2 className="h-5 w-5 text-green-600" />
-            {isHe ? "מחובר ל-Meta Ads" : "Connected to Meta Ads"}
+            {tx({ he: "מחובר ל-Meta Ads", en: "Connected to Meta Ads" }, language)}
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onDisconnect} className="text-muted-foreground">
-            {isHe ? "נתק" : "Disconnect"}
+            {tx({ he: "נתק", en: "Disconnect" }, language)}
           </Button>
         </div>
       </CardHeader>
       {accounts.length > 0 && (
         <CardContent>
           <p className="text-sm font-medium mb-3">
-            {isHe ? "בחר חשבון פרסום לניטור:" : "Select ad account to monitor:"}
+            {tx({ he: "בחר חשבון פרסום לניטור:", en: "Select ad account to monitor:" }, language)}
           </p>
           <div className="space-y-2">
             {accounts.map((account) => (

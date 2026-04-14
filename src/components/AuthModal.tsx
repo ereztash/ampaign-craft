@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { tx } from "@/i18n/tx";
 import { Loader2 } from "lucide-react";
 
 interface AuthModalProps {
@@ -28,11 +29,11 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
     setError(null);
     setSuccess(null);
     if (!email || !password) {
-      setError(isHe ? "נא למלא אימייל וסיסמה" : "Please fill in email and password");
+      setError(tx({ he: "נא למלא אימייל וסיסמה", en: "Please fill in email and password" }, language));
       return;
     }
     if (password.length < 6) {
-      setError(isHe ? "סיסמה חייבת להכיל לפחות 6 תווים" : "Password must be at least 6 characters");
+      setError(tx({ he: "סיסמה חייבת להכיל לפחות 6 תווים", en: "Password must be at least 6 characters" }, language));
       return;
     }
 
@@ -43,7 +44,7 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
     if (result.error) {
       setError(result.error);
     } else if (mode === "register") {
-      setSuccess(isHe ? "נרשמת בהצלחה!" : "Registered successfully!");
+      setSuccess(tx({ he: "נרשמת בהצלחה!", en: "Registered successfully!" }, language));
       setTimeout(() => onOpenChange(false), 1000);
     } else {
       onOpenChange(false);
@@ -55,20 +56,20 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">
-            {isHe ? "התחברות ל-FunnelForge" : "Sign in to FunnelForge"}
+            {tx({ he: "התחברות ל-FunnelForge", en: "Sign in to FunnelForge" }, language)}
           </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="login" className="mt-2">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">{isHe ? "התחברות" : "Login"}</TabsTrigger>
-            <TabsTrigger value="register">{isHe ? "הרשמה" : "Register"}</TabsTrigger>
+            <TabsTrigger value="login">{tx({ he: "התחברות", en: "Login" }, language)}</TabsTrigger>
+            <TabsTrigger value="register">{tx({ he: "הרשמה", en: "Register" }, language)}</TabsTrigger>
           </TabsList>
 
           {(["login", "register"] as const).map((mode) => (
             <TabsContent key={mode} value={mode} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor={`${mode}-email`}>{isHe ? "אימייל" : "Email"}</Label>
+                <Label htmlFor={`${mode}-email`}>{tx({ he: "אימייל", en: "Email" }, language)}</Label>
                 <Input
                   id={`${mode}-email`}
                   type="email"
@@ -79,13 +80,13 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`${mode}-password`}>{isHe ? "סיסמה" : "Password"}</Label>
+                <Label htmlFor={`${mode}-password`}>{tx({ he: "סיסמה", en: "Password" }, language)}</Label>
                 <Input
                   id={`${mode}-password`}
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={isHe ? "לפחות 6 תווים" : "At least 6 characters"}
+                  placeholder={tx({ he: "לפחות 6 תווים", en: "At least 6 characters" }, language)}
                   dir="ltr"
                 />
               </div>
@@ -104,8 +105,8 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
               >
                 {loading && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
                 {mode === "login"
-                  ? (isHe ? "התחבר" : "Sign In")
-                  : (isHe ? "הירשם" : "Sign Up")}
+                  ? (tx({ he: "התחבר", en: "Sign In" }, language))
+                  : (tx({ he: "הירשם", en: "Sign Up" }, language))}
               </Button>
             </TabsContent>
           ))}

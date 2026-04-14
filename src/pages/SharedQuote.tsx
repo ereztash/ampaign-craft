@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { tx } from "@/i18n/tx";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useLanguage } from "@/i18n/LanguageContext";
 import QuotePreview from "@/components/QuotePreview";
@@ -18,7 +19,7 @@ export default function SharedQuote() {
 
   useEffect(() => {
     if (!token) {
-      setError(isHe ? "קישור לא תקין" : "Invalid link");
+      setError(tx({ he: "קישור לא תקין", en: "Invalid link" }, language));
       setLoading(false);
       return;
     }
@@ -32,23 +33,23 @@ export default function SharedQuote() {
           .maybeSingle();
 
         if (dbError || !data) {
-          setError(isHe ? "הצעת מחיר לא נמצאה" : "Quote not found");
+          setError(tx({ he: "הצעת מחיר לא נמצאה", en: "Quote not found" }, language));
           return;
         }
 
         if (data.valid_until && new Date(data.valid_until) < new Date()) {
-          setError(isHe ? "הצעת מחיר זו פגה תוקף" : "This quote has expired");
+          setError(tx({ he: "הצעת מחיר זו פגה תוקף", en: "This quote has expired" }, language));
           return;
         }
 
         setQuote(data.data as Quote);
       } catch {
-        setError(isHe ? "שגיאה בטעינת ההצעה" : "Error loading quote");
+        setError(tx({ he: "שגיאה בטעינת ההצעה", en: "Error loading quote" }, language));
       } finally {
         setLoading(false);
       }
     })();
-  }, [token, isHe]);
+  }, [token, isHe, language]);
 
   if (loading) return <LoadingFallback />;
 

@@ -9,6 +9,7 @@ import type { PricingWizardRecommendation } from "@/engine/pricingWizardEngine";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Check, Copy, DollarSign, Layers, Brain, BarChart3, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
@@ -45,7 +46,7 @@ const PricingWizardResults = ({ rec }: Props) => {
   const copy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(key);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -59,7 +60,7 @@ const PricingWizardResults = ({ rec }: Props) => {
             {/* Main price */}
             <div className="text-center">
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1" dir="auto">
-                {isHe ? "מחיר אופטימלי (Charm)" : "Optimal Price (Charm)"}
+                {tx({ he: "מחיר אופטימלי (Charm)", en: "Optimal Price (Charm)" }, language)}
               </p>
               <div className="text-5xl font-bold text-primary">{formatNIS(rec.charmPrice)}</div>
               <div className="text-sm text-muted-foreground mt-1" dir="auto">
@@ -71,7 +72,7 @@ const PricingWizardResults = ({ rec }: Props) => {
             <div className="flex-1 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground" dir="auto">
-                  {isHe ? "טווח מקובל (PSM):" : "Acceptable range (PSM):"}
+                  {tx({ he: "טווח מקובל (PSM):", en: "Acceptable range (PSM):" }, language)}
                 </span>
                 <span className="font-medium">
                   {formatNIS(rec.acceptableRange.low)} — {formatNIS(rec.acceptableRange.high)}
@@ -79,18 +80,18 @@ const PricingWizardResults = ({ rec }: Props) => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground" dir="auto">
-                  {isHe ? "עיגון מחיר (Anchor):" : "Price Anchor:"}
+                  {tx({ he: "עיגון מחיר (Anchor):", en: "Price Anchor:" }, language)}
                 </span>
                 <span className="font-medium line-through opacity-60">{formatNIS(rec.anchorPrice)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground" dir="auto">
-                  {isHe ? "פרמיית בידול:" : "Differentiation premium:"}
+                  {tx({ he: "פרמיית בידול:", en: "Differentiation premium:" }, language)}
                 </span>
                 <Badge variant={rec.differentiationPremium > 0 ? "default" : "secondary"}>
                   {rec.differentiationPremium > 0
                     ? `+${Math.round(rec.differentiationPremium * 100)}%`
-                    : isHe ? "ללא" : "None"}
+                    : tx({ he: "ללא", en: "None" }, language)}
                 </Badge>
               </div>
             </div>
@@ -103,18 +104,18 @@ const PricingWizardResults = ({ rec }: Props) => {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Brain className="h-4 w-4 text-primary" />
-            {isHe ? "ציוני מדע ההתנהגות" : "Behavioural Science Scores"}
+            {tx({ he: "ציוני מדע ההתנהגות", en: "Behavioural Science Scores" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <ScoreBar
             value={rec.hormoziScore}
-            label={isHe ? "Hormozi Value Score (D×P / T×E)" : "Hormozi Value Score (D×P / T×E)"}
+            label={tx({ he: "Hormozi Value Score (D×P / T×E)", en: "Hormozi Value Score (D×P / T×E)" }, language)}
           />
           <ScoreBar
             value={rec.psmOPP}
             max={Math.max(rec.acceptableRange.high * 1.2, 1)}
-            label={isHe ? "Van Westendorp OPP (₪)" : "Van Westendorp OPP (₪)"}
+            label={tx({ he: "Van Westendorp OPP (₪)", en: "Van Westendorp OPP (₪)" }, language)}
           />
           <p className="text-xs text-muted-foreground" dir="auto">
             {rec.rationale[language]}
@@ -127,7 +128,7 @@ const PricingWizardResults = ({ rec }: Props) => {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Layers className="h-4 w-4 text-primary" />
-            {isHe ? "ארכיטקטורת 3 Tiers (Decoy Effect)" : "3-Tier Architecture (Decoy Effect)"}
+            {tx({ he: "ארכיטקטורת 3 Tiers (Decoy Effect)", en: "3-Tier Architecture (Decoy Effect)" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -145,12 +146,12 @@ const PricingWizardResults = ({ rec }: Props) => {
               >
                 {tier.isPrimary && (
                   <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap">
-                    {isHe ? "מומלץ" : "Recommended"}
+                    {tx({ he: "מומלץ", en: "Recommended" }, language)}
                   </Badge>
                 )}
                 {tier.role === "decoy" && (
                   <Badge variant="outline" className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap">
-                    {isHe ? "עוגן נמוך" : "Low anchor"}
+                    {tx({ he: "עוגן נמוך", en: "Low anchor" }, language)}
                   </Badge>
                 )}
                 <div className="text-sm font-medium mt-2 mb-1" dir="auto">
@@ -158,7 +159,7 @@ const PricingWizardResults = ({ rec }: Props) => {
                 </div>
                 <div className="text-2xl font-bold">{formatNIS(tier.price)}</div>
                 <div className="text-[10px] text-muted-foreground mt-1" dir="auto">
-                  {isHe ? "שנתי:" : "Annual:"} {formatNIS(tier.annualPrice)}/mo
+                  {tx({ he: "שנתי:", en: "Annual:" }, language)} {formatNIS(tier.annualPrice)}/mo
                 </div>
               </div>
             ))}
@@ -176,7 +177,7 @@ const PricingWizardResults = ({ rec }: Props) => {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-accent" />
-            {isHe ? "מסגור פסיכולוגי (Kahneman Prospect Theory)" : "Psychological Framing (Kahneman Prospect Theory)"}
+            {tx({ he: "מסגור פסיכולוגי (Kahneman Prospect Theory)", en: "Psychological Framing (Kahneman Prospect Theory)" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -195,7 +196,7 @@ const PricingWizardResults = ({ rec }: Props) => {
             <div key={frame.key} className="rounded-lg border bg-muted/30 p-3">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-medium text-muted-foreground" dir="auto">
-                  {isHe ? frame.label.he : frame.label.en}
+                  {tx(frame.label, language)}
                 </span>
                 <Button
                   size="sm"
@@ -222,7 +223,7 @@ const PricingWizardResults = ({ rec }: Props) => {
               <CardTitle className="text-sm flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
-                  {isHe ? "ארכיטקטורת הכנסות" : "Revenue Architecture"}
+                  {tx({ he: "ארכיטקטורת הכנסות", en: "Revenue Architecture" }, language)}
                 </span>
                 <ChevronDown className="h-4 w-4" />
               </CardTitle>
@@ -238,7 +239,7 @@ const PricingWizardResults = ({ rec }: Props) => {
                 <div>
                   <div className="text-xl font-bold">{formatNIS(rec.recommendedCAC)}</div>
                   <div className="text-xs text-muted-foreground">
-                    {isHe ? "CAC מקסימלי" : "Max CAC"}
+                    {tx({ he: "CAC מקסימלי", en: "Max CAC" }, language)}
                   </div>
                 </div>
                 <div>
@@ -246,14 +247,14 @@ const PricingWizardResults = ({ rec }: Props) => {
                     <>
                       <div className="text-xl font-bold text-primary">{rec.customersNeeded}</div>
                       <div className="text-xs text-muted-foreground" dir="auto">
-                        {isHe ? "לקוחות/חודש" : "customers/month"}
+                        {tx({ he: "לקוחות/חודש", en: "customers/month" }, language)}
                       </div>
                     </>
                   ) : (
                     <>
                       <div className="text-xl font-bold text-muted-foreground">—</div>
                       <div className="text-xs text-muted-foreground" dir="auto">
-                        {isHe ? "הגדר יעד" : "Set goal"}
+                        {tx({ he: "הגדר יעד", en: "Set goal" }, language)}
                       </div>
                     </>
                   )}

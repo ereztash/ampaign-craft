@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════
 
 import { FormData } from "@/types/funnel";
-import { RetentionResult, OnboardingSequence, ReferralBlueprint, ChurnPlaybook, GrowthLoopResult, LoyaltyStrategy, RetentionImpact, RetentionTrigger } from "@/types/retention";
+import { RetentionResult, OnboardingSequence, ReferralBlueprint, ChurnPlaybook, GrowthLoopResult, LoyaltyStrategy, RetentionImpact, RetentionTrigger, OnboardingStep } from "@/types/retention";
 import { UserKnowledgeGraph, formatPrice } from "./userKnowledgeGraph";
 import { ONBOARDING_SEQUENCES, CHURN_SIGNALS, REFERRAL_TEMPLATES, RETENTION_TRIGGERS } from "./retentionKnowledge";
 import {
@@ -12,6 +12,7 @@ import {
   conceptKey,
   type BlackboardWriteContext,
 } from "./blackboard/contract";
+import { RetentionPersonalizationContext } from "./retentionPersonalizationContext";
 
 export const ENGINE_MANIFEST = {
   name: "retentionGrowthEngine",
@@ -28,17 +29,18 @@ export function generateRetentionStrategy(
   formData: FormData,
   graph: UserKnowledgeGraph,
   blackboardCtx?: BlackboardWriteContext,
+  ctx?: RetentionPersonalizationContext,
 ): RetentionResult {
   const businessType = detectBusinessType(formData);
 
   const result: RetentionResult = {
-    onboarding: designOnboardingSequence(businessType, graph),
+    onboarding: designOnboardingSequence(businessType, graph, ctx),
     triggerMap: buildRetentionTriggerMap(graph),
-    referralBlueprint: createReferralBlueprint(graph),
-    churnPlaybook: generateChurnPlaybook(graph),
+    referralBlueprint: createReferralBlueprint(graph, ctx),
+    churnPlaybook: generateChurnPlaybook(graph, ctx),
     growthLoop: identifyGrowthLoop(formData, graph),
     loyaltyStrategy: designLoyaltyProgram(formData, graph),
-    projectedImpact: calculateRetentionImpact(formData, graph),
+    projectedImpact: calculateRetentionImpact(formData, graph, ctx),
   };
 
   if (blackboardCtx) {
@@ -70,28 +72,70 @@ function detectBusinessType(formData: FormData): "ecommerce" | "saas" | "service
 
 // ═══ ONBOARDING SEQUENCE ═══
 
-function designOnboardingSequence(type: ReturnType<typeof detectBusinessType>, graph: UserKnowledgeGraph): OnboardingSequence {
-  const steps = ONBOARDING_SEQUENCES[type] || ONBOARDING_SEQUENCES.ecommerce;
+function fillTokens(
+  text: string,
+  product: string,
+  benefit: string,
+  reward: string,
+  ahaAction: string,
+): string {
+  return text
+    .replace(/\{מוצר\}|\{product\}/g, product)
+    .replace(/\{benefit\}|\{תועלת\}/g, benefit)
+    .replace(/\{reward\}|\{פרס\}/g, reward)
+    .replace(/\{ahaAction\}/g, ahaAction);
+}
 
+function personaliseSteps(
+  steps: OnboardingStep[],
+  ctx: RetentionPersonalizationContext,
+): OnboardingStep[] {
+  const product   = ctx.productName;
+  const benefit   = ctx.coreBenefit.en;   // used for en templates
+  const benefitHe = ctx.coreBenefit.he;   // used for he templates
+  const reward    = `₪${ctx.referralReward.amount}`;
+  const ahaEn     = ctx.ahaAction.en;
+  const ahaHe     = ctx.ahaAction.he;
+
+  return steps.map((step) => ({
+    ...step,
+    template: {
+      he: fillTokens(step.template.he, product, benefitHe, reward, ahaHe),
+      en: fillTokens(step.template.en, product, benefit,   reward, ahaEn),
+    },
+  }));
+}
+
+function designOnboardingSequence(
+  type: ReturnType<typeof detectBusinessType>,
+  graph: UserKnowledgeGraph,
+  ctx?: RetentionPersonalizationContext,
+): OnboardingSequence {
+  const rawSteps = ONBOARDING_SEQUENCES[type] || ONBOARDING_SEQUENCES.ecommerce;
+  const steps    = ctx ? personaliseSteps(rawSteps, ctx) : rawSteps;
+
+  // Use ctx-derived AHA metric when available (from dream outcome axis)
   const ahaMetrics: Record<string, { he: string; en: string }> = {
-    ecommerce: { he: "הלקוח השתמש במוצר + לא החזיר", en: "Customer used product + didn't return" },
-    saas: { he: "הלקוח השלים את הפעולה המרכזית הראשונה", en: "Customer completed first core action" },
-    services: { he: "הלקוח ראה תוצאה ראשונה מדידה", en: "Customer saw first measurable result" },
-    creator: { he: "הלקוח השתתף בדיון בקהילה", en: "Customer participated in community discussion" },
+    ecommerce: ctx?.ahaAction ?? { he: "הלקוח השתמש במוצר + לא החזיר", en: "Customer used product + didn't return" },
+    saas:      ctx?.ahaAction ?? { he: "הלקוח השלים את הפעולה המרכזית הראשונה", en: "Customer completed first core action" },
+    services:  ctx?.ahaAction ?? { he: "הלקוח ראה תוצאה ראשונה מדידה", en: "Customer saw first measurable result" },
+    creator:   ctx?.ahaAction ?? { he: "הלקוח השתתף בדיון בקהילה", en: "Customer participated in community discussion" },
   };
 
-  const timeToValue: Record<string, string> = {
-    ecommerce: "1-3 days",
-    saas: "24 hours",
-    services: "7 days",
-    creator: "3 days",
+  // Time-to-value: use ctx-derived days when available, fall back to category defaults
+  const ttv = ctx?.onboardingDays;
+  const timeToValueMap: Record<string, string> = {
+    ecommerce: ttv ? `${ttv} day${ttv === 1 ? "" : "s"}` : "1-3 days",
+    saas:      ttv ? `${ttv} day${ttv === 1 ? "" : "s"}` : "24 hours",
+    services:  ttv ? `${ttv} day${ttv === 1 ? "" : "s"}` : "7 days",
+    creator:   ttv ? `${ttv} day${ttv === 1 ? "" : "s"}` : "3 days",
   };
 
   return {
     type,
     steps,
-    ahaMetric: ahaMetrics[type],
-    timeToValue: timeToValue[type],
+    ahaMetric:   ahaMetrics[type],
+    timeToValue: timeToValueMap[type],
   };
 }
 
@@ -103,43 +147,85 @@ function buildRetentionTriggerMap(_graph: UserKnowledgeGraph): RetentionTrigger[
 
 // ═══ REFERRAL BLUEPRINT ═══
 
-function createReferralBlueprint(graph: UserKnowledgeGraph): ReferralBlueprint {
+function createReferralBlueprint(
+  graph: UserKnowledgeGraph,
+  ctx?: RetentionPersonalizationContext,
+): ReferralBlueprint {
   // Subscription → two-sided, one-time → tiered, services → one-sided
   const model = graph.business.salesModel === "subscription" ? "two_sided"
     : graph.business.salesModel === "leads" || graph.business.audience === "b2b" ? "one_sided"
     : "tiered";
 
-  const template = REFERRAL_TEMPLATES.find((t) => t.model === model) || REFERRAL_TEMPLATES[0];
+  const template  = REFERRAL_TEMPLATES.find((t) => t.model === model) || REFERRAL_TEMPLATES[0];
+  const product   = ctx?.productName ?? "המוצר";
+  const benefit   = ctx?.coreBenefit.en ?? "the benefit";
+  const benefitHe = ctx?.coreBenefit.he ?? "התועלת";
+
+  // Use context-derived reward if available, otherwise fall back to template default
+  const rewardHe = ctx ? `₪${ctx.referralReward.amount} לשניכם` : template.reward.he;
+  const rewardEn = ctx ? `₪${ctx.referralReward.amount} each` : template.reward.en;
+  const rewardStr = ctx ? `₪${ctx.referralReward.amount}` : "₪50";
 
   return {
     model,
-    label: template.label,
+    label:    template.label,
     mechanics: template.mechanics,
-    reward: template.reward,
-    template: template.whatsappTemplate,
+    reward:   { he: rewardHe, en: rewardEn },
+    template: {
+      he: fillTokens(template.whatsappTemplate.he, product, benefitHe, rewardStr, ""),
+      en: fillTokens(template.whatsappTemplate.en, product, benefit,   rewardStr, ""),
+    },
     bestTiming: { he: "7-14 ימים אחרי רכישה (שיא השביעות רצון)", en: "7-14 days after purchase (peak satisfaction)" },
   };
 }
 
 // ═══ CHURN PLAYBOOK ═══
 
-function generateChurnPlaybook(graph: UserKnowledgeGraph): ChurnPlaybook {
+function generateChurnPlaybook(
+  graph: UserKnowledgeGraph,
+  ctx?: RetentionPersonalizationContext,
+): ChurnPlaybook {
   const price = formatPrice(graph.business.price);
+
+  // Win-back Day 0: empathy — open conversation, do NOT sell
+  const day0HeBase = `היי {שם}, חסר לנו! 😢\nשמתי לב שלא היית פעיל/ה בזמן האחרון.\nמה קרה? אני כאן אם צריך עזרה.`;
+  const day0EnBase = `Hey {name}, we miss you! 😢\nNoticed you haven't been active recently.\nWhat happened? I'm here if you need help.`;
+
+  // Win-back Day 3: show the value they came for (use ctx win-back frame)
+  const day3He = ctx
+    ? `היי {שם}, הכנו לך משהו:\n${ctx.winBackFrame.he}\nזה בדיוק מה שחיפשת. חוזר/ת?`
+    : `היי {שם}, הכנו לך משהו:\n{newFeature}\nזה בדיוק מה שביקשת. חוזר/ת?`;
+  const day3En = ctx
+    ? `Hey {name}, we prepared something:\n${ctx.winBackFrame.en}\nExactly what you were looking for. Coming back?`
+    : `Hey {name}, we made something for you:\n{newFeature}\nExactly what you asked for. Coming back?`;
 
   const winbackSequence = [
     { day: 0, name: { he: "הודעת חסר לנו", en: "We Miss You" }, channel: "whatsapp" as const, emoji: "😢",
-      template: { he: `היי {שם}, חסר לנו! 😢\nשמתי לב שלא היית פעיל/ה בזמן האחרון.\nמה קרה? אני כאן אם צריך עזרה.`, en: `Hey {name}, we miss you! 😢\nNoticed you haven't been active recently.\nWhat happened? I'm here if you need help.` },
+      template: { he: day0HeBase, en: day0EnBase },
       goal: { he: "פתח שיחה, אל תמכור", en: "Open conversation, don't sell" } },
     { day: 3, name: { he: "הצעת ערך", en: "Value Offer" }, channel: "email" as const, emoji: "🎁",
-      template: { he: `היי {שם}, הכנו לך משהו:\n{newFeature}\nזה בדיוק מה שביקשת. חוזר/ת?`, en: `Hey {name}, we made something for you:\n{newFeature}\nExactly what you asked for. Coming back?` },
+      template: { he: day3He, en: day3En },
       goal: { he: "הראה ערך חדש שלא הכירו", en: "Show new value they didn't know" } },
     { day: 7, name: { he: "הצעה מיוחדת", en: "Special Offer" }, channel: "whatsapp" as const, emoji: "💰",
       template: { he: `{שם}, הצעה אחרונה:\n50% הנחה לחודש — רק ${price} במקום ${price}×2.\nנגמר ביום שישי.`, en: `{name}, final offer:\n50% off for a month — just ${price} instead of ${price}×2.\nExpires Friday.` },
       goal: { he: "scarcity + discount = last chance", en: "scarcity + discount = last chance" } },
   ];
 
+  // When Hormozi score is too low, prepend an "offer repair" advisory
+  const offerFixSignal = ctx?.offerFixNeeded
+    ? [{
+        signal: { he: "ציון ערך Hormozi < 4 — הבעיה בהצעה, לא בשימור", en: "Hormozi value score < 4 — the problem is the offer, not retention" },
+        risk: "critical" as const,
+        intervention: {
+          he: "תקן את ציר הערך לפני שתשקיע בשימור: הגדל Dream Outcome או הפחת Effort/Time",
+          en: "Fix the value axis before investing in retention: increase Dream Outcome or reduce Effort/Time",
+        },
+        channel: "internal",
+      }]
+    : [];
+
   return {
-    signals: CHURN_SIGNALS,
+    signals: [...offerFixSignal, ...CHURN_SIGNALS],
     winbackSequence,
     saveOffers: [
       { he: "הקפאת מנוי (חודש חינם בלי לבטל)", en: "Subscription pause (free month without canceling)" },
@@ -231,10 +317,19 @@ function designLoyaltyProgram(formData: FormData, graph: UserKnowledgeGraph): Lo
 
 // ═══ RETENTION IMPACT ═══
 
-function calculateRetentionImpact(formData: FormData, graph: UserKnowledgeGraph): RetentionImpact {
+function calculateRetentionImpact(
+  formData: FormData,
+  graph: UserKnowledgeGraph,
+  ctx?: RetentionPersonalizationContext,
+): RetentionImpact {
   const price = formData.averagePrice || 100;
   const isSubscription = formData.salesModel === "subscription";
-  const baseChurn = isSubscription ? 8 : 30; // monthly churn estimate
+
+  // Base churn boosted by effort-level risk (high effort → higher base churn)
+  const riskBoost = ctx ? ctx.churnRiskFactor : 0.15; // default medium
+  const baseChurnRaw = isSubscription ? 8 : 30;
+  const baseChurn = Math.round(baseChurnRaw * (1 + riskBoost));
+
   const reduction = isSubscription ? 35 : 20; // from implementing retention strategy
   const newChurn = Math.round(baseChurn * (1 - reduction / 100));
   const ltvMultiplier = isSubscription ? 1 / (newChurn / 100) / (1 / (baseChurn / 100)) : 1 + (reduction / 100);

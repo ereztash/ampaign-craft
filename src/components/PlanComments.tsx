@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { tx } from "@/i18n/tx";
 import { MessageSquare, Send } from "lucide-react";
 
 const COMMENTS_KEY = "funnelforge-plan-comments";
@@ -73,13 +74,13 @@ const PlanComments = ({ planId }: PlanCommentsProps) => {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium flex items-center gap-2" dir="auto">
           <MessageSquare className="h-4 w-4" />
-          {isHe ? "הערות" : "Comments"} ({comments.length})
+          {tx({ he: "הערות", en: "Comments" }, language)} ({comments.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {comments.length === 0 && (
           <p className="text-xs text-muted-foreground" dir="auto">
-            {isHe ? "אין הערות עדיין" : "No comments yet"}
+            {tx({ he: "אין הערות עדיין", en: "No comments yet" }, language)}
           </p>
         )}
 
@@ -102,7 +103,7 @@ const PlanComments = ({ planId }: PlanCommentsProps) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              placeholder={isHe ? "כתוב הערה..." : "Write a comment..."}
+              placeholder={tx({ he: "כתוב הערה...", en: "Write a comment..." }, language)}
               className="flex-1 rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               dir="auto"
             />

@@ -2,6 +2,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getHealthScoreColor } from "@/engine/healthScoreEngine";
+import { tx } from "@/i18n/tx";
 import { Flame, Database, AlertTriangle, FileText, Layers } from "lucide-react";
 
 interface BusinessPulseBarProps {
@@ -55,9 +56,9 @@ const BusinessPulseBar = ({
             <span className="absolute text-lg font-bold text-foreground">{hasScore ? score : "—"}</span>
           </div>
           <div>
-            <p className="text-xs font-medium text-muted-foreground">{isHe ? "בריאות שיווק" : "Marketing health"}</p>
+            <p className="text-xs font-medium text-muted-foreground">{tx({ he: "בריאות שיווק", en: "Marketing health" }, language)}</p>
             <p className="text-sm font-semibold text-foreground" dir="auto">
-              {hasScore ? (isHe ? "ציון פעיל" : "Active score") : (isHe ? "צור תוכנית לציון" : "Create a plan for score")}
+              {hasScore ? (tx({ he: "ציון פעיל", en: "Active score" }, language)) : (tx({ he: "צור תוכנית לציון", en: "Create a plan for score" }, language))}
             </p>
           </div>
         </CardContent>
@@ -86,12 +87,12 @@ const BusinessPulseBar = ({
             <AlertTriangle className="h-5 w-5 text-destructive" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">{isHe ? "צווארי בקבוק" : "Bottlenecks"}</p>
+            <p className="text-xs text-muted-foreground">{tx({ he: "צווארי בקבוק", en: "Bottlenecks" }, language)}</p>
             <div className="flex items-center gap-2">
               <p className="text-lg font-bold">{bottleneckCount}</p>
               {bottleneckCount > 0 && (
                 <Badge variant="destructive" className="text-xs">
-                  {isHe ? "לטיפול" : "Action"}
+                  {tx({ he: "לטיפול", en: "Action" }, language)}
                 </Badge>
               )}
             </div>
@@ -104,14 +105,14 @@ const BusinessPulseBar = ({
           <div className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-1 text-muted-foreground">
               <FileText className="h-3.5 w-3.5" />
-              {isHe ? "תוכניות" : "Plans"}
+              {tx({ he: "תוכניות", en: "Plans" }, language)}
             </span>
             <span className="font-bold">{planCount}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-1 text-muted-foreground">
               <Layers className="h-3.5 w-3.5" />
-              {isHe ? "מודולים" : "Modules"}
+              {tx({ he: "מודולים", en: "Modules" }, language)}
             </span>
             <span className="font-bold">
               {completedModules}/{totalModules}
@@ -120,7 +121,7 @@ const BusinessPulseBar = ({
           {streakWeeks > 0 && (
             <div className="flex items-center gap-1 text-xs text-amber-600">
               <Flame className="h-3 w-3" />
-              {streakWeeks} {isHe ? "שבועות רצף" : "week streak"}
+              {streakWeeks} {tx({ he: "שבועות רצף", en: "week streak" }, language)}
             </div>
           )}
         </CardContent>

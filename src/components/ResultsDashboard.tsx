@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import AdaptiveTabNav from "@/components/AdaptiveTabNav";
+import { tx } from "@/i18n/tx";
 
 const BrandDiagnosticTab = lazy(() => import("@/components/BrandDiagnosticTab"));
 const PlanningTab = lazy(() => import("@/components/PlanningTab"));
@@ -194,7 +195,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
       navigator.share({ title: result.funnelName[language], text });
     } else {
       navigator.clipboard.writeText(text);
-      toast.success(isHe ? "הועתק ללוח" : "Copied to clipboard");
+      toast.success(tx({ he: "הועתק ללוח", en: "Copied to clipboard" }, language));
     }
   };
 
@@ -210,7 +211,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
     <div className={cn("min-h-screen px-4 pb-12", embeddedInShell ? "pt-4" : "pt-24")}>
       <div className="mx-auto max-w-5xl" id="results-content">
         {/* Back to Hub */}
-        <BackToHub currentPage={isHe ? "תוצאות שיווק" : "Marketing Results"} />
+        <BackToHub currentPage={tx({ he: "תוצאות שיווק", en: "Marketing Results" }, language)} />
 
         {/* Reflective Action Card (feature-flagged, strictly additive) */}
         {(import.meta.env.VITE_REFLECTIVE_ENABLED === "true" || (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("reflective") === "1")) && (
@@ -234,12 +235,12 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         {graph.derived.coldStartMode && (
           <motion.div {...motionProps} className="mb-6 rounded-xl border border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-700/40 dark:bg-emerald-900/20 p-4 text-start space-y-2">
             <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200" dir="auto">
-              {isHe ? "נקודת התחלה — כך תשפרו את התוכנית:" : "Starting point — here's how to improve your plan:"}
+              {tx({ he: "נקודת התחלה — כך תשפרו את התוכנית:", en: "Starting point — here's how to improve your plan:" }, language)}
             </p>
             <ul className="text-xs text-emerald-800 dark:text-emerald-300 space-y-1 list-disc list-inside" dir="auto">
-              <li>{isHe ? "חברו מקור נתונים (Meta Ads, CSV) לקבלת תובנות מבוססות מספרים אמיתיים" : "Connect a data source (Meta Ads, CSV) for insights based on real numbers"}</li>
-              <li>{isHe ? "הריצו ניתוח סגנון כתיבה כדי שהקופי יתאים לקול שלכם" : "Run a writing style analysis so copy matches your voice"}</li>
-              <li>{isHe ? "נסו את המאמן השיווקי — כל שיחה מחדדת את האסטרטגיה" : "Try the AI Coach — every conversation sharpens the strategy"}</li>
+              <li>{tx({ he: "חברו מקור נתונים (Meta Ads, CSV) לקבלת תובנות מבוססות מספרים אמיתיים", en: "Connect a data source (Meta Ads, CSV) for insights based on real numbers" }, language)}</li>
+              <li>{tx({ he: "הריצו ניתוח סגנון כתיבה כדי שהקופי יתאים לקול שלכם", en: "Run a writing style analysis so copy matches your voice" }, language)}</li>
+              <li>{tx({ he: "נסו את המאמן השיווקי — כל שיחה מחדדת את האסטרטגיה", en: "Try the AI Coach — every conversation sharpens the strategy" }, language)}</li>
             </ul>
           </motion.div>
         )}
@@ -291,15 +292,15 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
             <div className="grid grid-cols-3 gap-2 pt-1">
               <div className="rounded-lg border border-destructive/10 p-2 text-center">
                 <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.threeMonth.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">{isHe ? "3 חודשים" : "3 months"}</div>
+                <div className="text-xs text-muted-foreground">{tx({ he: "3 חודשים", en: "3 months" }, language)}</div>
               </div>
               <div className="rounded-lg border border-destructive/10 p-2 text-center">
                 <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.sixMonth.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">{isHe ? "6 חודשים" : "6 months"}</div>
+                <div className="text-xs text-muted-foreground">{tx({ he: "6 חודשים", en: "6 months" }, language)}</div>
               </div>
               <div className="rounded-lg border border-destructive/10 p-2 text-center">
                 <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.twelveMonth.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">{isHe ? "12 חודשים" : "12 months"}</div>
+                <div className="text-xs text-muted-foreground">{tx({ he: "12 חודשים", en: "12 months" }, language)}</div>
               </div>
             </div>
             <p className="text-xs text-muted-foreground" dir="auto">{costOfInaction.competitorGapMessage[language]}</p>
@@ -324,15 +325,15 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
               <span className="text-2xl" role="img" aria-hidden="true">🎯</span>
               <div className="flex-1 text-center sm:text-start">
                 <p className="text-sm font-medium text-foreground" dir="auto">
-                  {isHe ? "רוצה סקריפטים עם שמות המתחרים שלך והבידול האמיתי?" : "Want scripts with your competitor names and real differentiation?"}
+                  {tx({ he: "רוצה סקריפטים עם שמות המתחרים שלך והבידול האמיתי?", en: "Want scripts with your competitor names and real differentiation?" }, language)}
                 </p>
                 <p className="text-xs text-muted-foreground" dir="auto">
-                  {isHe ? "10 דקות שישדרגו את כל התוצאות — hooks, קופי, סקריפטי מכירה" : "10 minutes that will upgrade all results — hooks, copy, sales scripts"}
+                  {tx({ he: "10 דקות שישדרגו את כל התוצאות — hooks, קופי, סקריפטי מכירה", en: "10 minutes that will upgrade all results — hooks, copy, sales scripts" }, language)}
                 </p>
               </div>
               <a href="/differentiate" className="shrink-0">
                 <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white">
-                  {isHe ? "השלם בידול" : "Complete Differentiation"}
+                  {tx({ he: "השלם בידול", en: "Complete Differentiation" }, language)}
                   <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
                 </Button>
               </a>
@@ -491,7 +492,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           <div className="w-[calc(100vw-2rem)] sm:w-[380px] max-h-[70vh] sm:max-h-[550px] animate-in slide-in-from-bottom-4">
             <div className="flex justify-end mb-1">
               <Button size="sm" variant="ghost" onClick={() => setCoachOpen(false)} className="text-xs">
-                {isHe ? "סגור" : "Close"} ✕
+                {tx({ he: "סגור", en: "Close" }, language)} ✕
               </Button>
             </div>
             <AiCoachChat result={result} healthScore={healthScore.total} />
@@ -500,7 +501,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           <Button
             onClick={() => setCoachOpen(true)}
             className="h-14 w-14 rounded-full shadow-lg funnel-gradient border-0 text-accent-foreground hover:opacity-90 transition-opacity"
-            title={isHe ? "מאמן שיווק AI" : "AI Marketing Coach"}
+            title={tx({ he: "מאמן שיווק AI", en: "AI Marketing Coach" }, language)}
           >
             <Bot className="h-6 w-6" />
           </Button>

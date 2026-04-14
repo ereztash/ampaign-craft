@@ -733,8 +733,8 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 
 | Metric | Value |
 |--------|-------|
-| Lines of code | ~41,500 |
-| TypeScript files | ~240 |
+| Lines of code | ~69,500 |
+| TypeScript files | ~392 |
 | Engines | 49 (`src/engine/*.ts`, excl. knowledge / subdirs) |
 | Optimization overlay engines (GRAOS) | 6 (M1–M6, `src/engine/optimization/`) |
 | Live engines (ENGINE_MANIFEST.isLive) | 30 |

@@ -4,6 +4,7 @@ import { ConsentRecord, DEFAULT_CONSENT } from "@/types/governance";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { tx } from "@/i18n/tx";
 
 const CONSENT_KEY = "funnelforge-consent";
 
@@ -84,7 +85,7 @@ const ConsentBanner = ({ onAccept }: ConsentBannerProps) => {
       <Card className="w-full max-w-lg animate-in slide-in-from-bottom-4">
         <CardContent className="p-6 space-y-4" dir="auto">
           <h3 className="text-lg font-semibold">
-            {isHe ? "הגנת פרטיות ותנאי שימוש" : "Privacy & Terms of Service"}
+            {tx({ he: "הגנת פרטיות ותנאי שימוש", en: "Privacy & Terms of Service" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground">
             {isHe
@@ -113,7 +114,7 @@ const ConsentBanner = ({ onAccept }: ConsentBannerProps) => {
           </div>
 
           <Button onClick={handleAccept} disabled={!dataProcessing} className="w-full">
-            {isHe ? "אישור והמשך" : "Accept & Continue"}
+            {tx({ he: "אישור והמשך", en: "Accept & Continue" }, language)}
           </Button>
         </CardContent>
       </Card>

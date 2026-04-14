@@ -27,6 +27,7 @@ import { ProgressMomentum } from "@/components/ProgressMomentum";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SavedPlan } from "@/types/funnel";
+import { tx } from "@/i18n/tx";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Database, Wand2, Compass, Map, Users } from "lucide-react";
@@ -215,14 +216,14 @@ const CommandCenter = () => {
               </h1>
               <p className="text-sm text-muted-foreground" dir="auto">
                 {hasArchetype
-                  ? `${ctaVerbs.primary[language]} · ${isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot"}`
-                  : isHe ? "סקירת עסק ותובנות בזמן אמת" : "Live business snapshot and intelligence"}
+                  ? `${ctaVerbs.primary[language]} · ${tx({ he: "סקירת עסק ותובנות בזמן אמת", en: "Live business snapshot" }, language)}`
+                  : tx({ he: "סקירת עסק ותובנות בזמן אמת", en: "Live business snapshot and intelligence" }, language)}
               </p>
             </>
           ) : showExpressWizard ? (
             <>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground md:text-4xl" dir="auto">
-                {isHe ? "בוא נתחיל — 2 לחיצות ויש לך תוכנית" : "Let's start — 2 clicks and you have a plan"}
+                {tx({ he: "בוא נתחיל — 2 לחיצות ויש לך תוכנית", en: "Let's start — 2 clicks and you have a plan" }, language)}
               </h1>
               <p className="text-muted-foreground max-w-xl mx-auto" dir="auto">
                 {isHe
@@ -233,7 +234,7 @@ const CommandCenter = () => {
           ) : (
             <>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground md:text-4xl" dir="auto">
-                {isHe ? "הפוך נתונים לאסטרטגיה" : "Turn data into strategy"}
+                {tx({ he: "הפוך נתונים לאסטרטגיה", en: "Turn data into strategy" }, language)}
               </h1>
               <p className="text-muted-foreground max-w-xl mx-auto" dir="auto">
                 {isHe
@@ -263,7 +264,7 @@ const CommandCenter = () => {
             }} />
             <p className="text-center text-xs text-muted-foreground" dir="auto">
               <button className="underline hover:text-foreground" onClick={() => { setShowExpressWizard(false); navigate("/wizard"); }}>
-                {isHe ? "מעדיף שליטה מלאה? עבור לאשף המלא" : "Prefer full control? Switch to full wizard"}
+                {tx({ he: "מעדיף שליטה מלאה? עבור לאשף המלא", en: "Prefer full control? Switch to full wizard" }, language)}
               </button>
             </p>
           </div>
@@ -277,14 +278,14 @@ const CommandCenter = () => {
           <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 dark:border-blue-700/40 dark:bg-blue-900/20 p-4 text-start space-y-1">
             {guidanceItems.length > 0 && (
               <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
-                {isHe ? "הדרכה" : "Guidance"}: {guidanceItems.length} {isHe ? "פעולות מומלצות" : "recommended actions"}
+                {tx({ he: "הדרכה", en: "Guidance" }, language)}: {guidanceItems.length} {tx({ he: "פעולות מומלצות", en: "recommended actions" }, language)}
               </p>
             )}
             {successForecast && (
               <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
-                {isHe ? "הסתברות הצלחה חזויה" : "Predicted success"}:{" "}
+                {tx({ he: "הסתברות הצלחה חזויה", en: "Predicted success" }, language)}:{" "}
                 <strong>{successForecast.successProbability}%</strong>
-                {" "}· {successForecast.riskFactors.length} {isHe ? "סיכונים" : "risks"}
+                {" "}· {successForecast.riskFactors.length} {tx({ he: "סיכונים", en: "risks" }, language)}
               </p>
             )}
           </div>
@@ -311,21 +312,21 @@ const CommandCenter = () => {
               // Cold-start fallback: static quick actions
               <>
                 <h2 className="text-lg font-bold text-foreground px-1" dir="auto">
-                  {isHe ? "פעולות מהירות" : "Quick actions"}
+                  {tx({ he: "פעולות מהירות", en: "Quick actions" }, language)}
                 </h2>
                 <Card>
                   <CardContent className="p-4 grid gap-2">
                     <Button className="w-full justify-start gap-2" variant={ctaVariant.id.endsWith("_treatment") ? "default" : "outline"} onClick={() => navigate("/data")}>
                       <Database className="h-4 w-4" />
-                      {isHe ? "חבר מקור נתונים" : "Connect data source"}
+                      {tx({ he: "חבר מקור נתונים", en: "Connect data source" }, language)}
                     </Button>
                     <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/wizard")}>
                       <Wand2 className="h-4 w-4" />
-                      {isHe ? "תוכנית חדשה" : "New plan"}
+                      {tx({ he: "תוכנית חדשה", en: "New plan" }, language)}
                     </Button>
                     <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/differentiate")}>
                       <Compass className="h-4 w-4" />
-                      {isHe ? "בידול" : "Differentiation"}
+                      {tx({ he: "בידול", en: "Differentiation" }, language)}
                     </Button>
                     <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate(plans.length ? `/strategy/${latestPlan?.id}` : "/strategy")}>
                       <Map className="h-4 w-4" />
@@ -333,7 +334,7 @@ const CommandCenter = () => {
                     </Button>
                     <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/crm")}>
                       <Users className="h-4 w-4" />
-                      {isHe ? "ניהול לידים (CRM)" : "Lead Management (CRM)"}
+                      {tx({ he: "ניהול לידים (CRM)", en: "Lead Management (CRM)" }, language)}
                     </Button>
                   </CardContent>
                 </Card>
@@ -349,7 +350,7 @@ const CommandCenter = () => {
             />
             {connectedCount === 0 && plans.length === 0 && (
               <p className="text-xs text-muted-foreground px-1 text-center" dir="auto">
-                {isHe ? "חבר את המקור הראשון כדי לפתוח תובנות מותאמות." : "Connect your first source to unlock tailored insights."}
+                {tx({ he: "חבר את המקור הראשון כדי לפתוח תובנות מותאמות.", en: "Connect your first source to unlock tailored insights." }, language)}
               </p>
             )}
           </div>

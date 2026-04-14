@@ -5,6 +5,7 @@ import { SavedPlan } from "@/types/funnel";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Share2, Copy, Check, TrendingUp, Award, Fingerprint, Target } from "lucide-react";
 import { toast } from "sonner";
 
@@ -74,7 +75,7 @@ const MarketingWrapped = ({ plans }: MarketingWrappedProps) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(wrappedText);
     setCopied(true);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -83,7 +84,7 @@ const MarketingWrapped = ({ plans }: MarketingWrappedProps) => {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <Award className="h-4 w-4 text-accent" />
-          {isHe ? "Marketing Wrapped שלך" : "Your Marketing Wrapped"}
+          {tx({ he: "Marketing Wrapped שלך", en: "Your Marketing Wrapped" }, language)}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -91,28 +92,28 @@ const MarketingWrapped = ({ plans }: MarketingWrappedProps) => {
           <div className="rounded-xl bg-primary/10 p-3 text-center">
             <Target className="h-5 w-5 mx-auto text-primary mb-1" />
             <div className="text-2xl font-bold text-foreground">{plans.length}</div>
-            <div className="text-xs text-muted-foreground">{isHe ? "משפכים" : "Funnels"}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "משפכים", en: "Funnels" }, language)}</div>
           </div>
           <div className="rounded-xl bg-accent/10 p-3 text-center">
             <TrendingUp className="h-5 w-5 mx-auto text-accent mb-1" />
             <div className="text-2xl font-bold text-foreground">{healthScore.total}</div>
-            <div className="text-xs text-muted-foreground">{isHe ? "ציון בריאות" : "Health Score"}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "ציון בריאות", en: "Health Score" }, language)}</div>
           </div>
           <div className="rounded-xl bg-destructive/10 p-3 text-center">
             <div className="text-xl mb-1" role="img" aria-hidden="true">🔥</div>
             <div className="text-2xl font-bold text-foreground">{streak.currentStreak}</div>
-            <div className="text-xs text-muted-foreground">{isHe ? "שבועות streak" : "Week streak"}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "שבועות streak", en: "Week streak" }, language)}</div>
           </div>
           <div className="rounded-xl bg-primary/10 p-3 text-center">
             <Fingerprint className="h-5 w-5 mx-auto text-primary mb-1" />
             <div className="text-2xl font-bold text-foreground">{unlockedCount}/{totalCount}</div>
-            <div className="text-xs text-muted-foreground">{isHe ? "הישגים" : "Achievements"}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "הישגים", en: "Achievements" }, language)}</div>
           </div>
         </div>
 
         {topHook && (
           <div className="mt-3 rounded-lg bg-muted/50 p-2 text-center">
-            <span className="text-xs text-muted-foreground">{isHe ? "ההוק ההתנהגותי המוביל שלך:" : "Your top behavioral hook:"}</span>
+            <span className="text-xs text-muted-foreground">{tx({ he: "ההוק ההתנהגותי המוביל שלך:", en: "Your top behavioral hook:" }, language)}</span>
             <div className="text-sm font-semibold text-foreground">{topHook}</div>
           </div>
         )}
@@ -120,11 +121,11 @@ const MarketingWrapped = ({ plans }: MarketingWrappedProps) => {
         <div className="mt-4 flex gap-2">
           <Button size="sm" onClick={handleShare} className="flex-1 gap-1.5 funnel-gradient border-0 text-accent-foreground">
             <Share2 className="h-3.5 w-3.5" />
-            {isHe ? "שתף" : "Share"}
+            {tx({ he: "שתף", en: "Share" }, language)}
           </Button>
           <Button size="sm" variant="outline" onClick={handleCopy} className="gap-1.5">
             {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            {copied ? (isHe ? "הועתק" : "Copied") : (isHe ? "העתק" : "Copy")}
+            {copied ? (tx({ he: "הועתק", en: "Copied" }, language)) : (tx({ he: "העתק", en: "Copy" }, language))}
           </Button>
         </div>
       </CardContent>

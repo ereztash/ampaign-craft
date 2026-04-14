@@ -7,6 +7,7 @@ import { synthesizeUVP } from "@/engine/uvpSynthesisEngine";
 import { UVPFormatCard } from "@/components/UVPFormatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { AlertTriangle, Lightbulb, TrendingUp } from "lucide-react";
 
 interface UVPSynthesisTabProps {
@@ -68,10 +69,10 @@ const UVPSynthesisTab = ({ result, diffResult }: UVPSynthesisTabProps) => {
       {/* Score + Tone header */}
       <div className="flex flex-wrap items-center gap-3">
         <div className={`rounded-lg border px-3 py-1.5 text-sm font-bold ${SCORE_COLOR(uvp.differentiationScore)}`}>
-          {isHe ? "ציון דיפרנציאציה" : "Differentiation Score"}: {uvp.differentiationScore}/100
+          {tx({ he: "ציון דיפרנציאציה", en: "Differentiation Score" }, language)}: {uvp.differentiationScore}/100
         </div>
         <Badge variant="outline" className="text-xs">
-          {isHe ? "טון" : "Tone"}: {DISC_TONE_LABELS[uvp.appliedTone][language]}
+          {tx({ he: "טון", en: "Tone" }, language)}: {DISC_TONE_LABELS[uvp.appliedTone][language]}
         </Badge>
         {uvp.mechanismAnchor && (
           <Badge variant="secondary" className="text-xs gap-1">
@@ -94,7 +95,7 @@ const UVPSynthesisTab = ({ result, diffResult }: UVPSynthesisTabProps) => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
               <Lightbulb className="h-4 w-4 text-primary" />
-              {isHe ? "טיפים לשיפור ה-UVP" : "UVP Improvement Tips"}
+              {tx({ he: "טיפים לשיפור ה-UVP", en: "UVP Improvement Tips" }, language)}
             </CardTitle>
           </CardHeader>
           <CardContent>

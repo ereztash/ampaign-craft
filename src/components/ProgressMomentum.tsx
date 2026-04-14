@@ -1,6 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -44,12 +45,12 @@ export function ProgressMomentum({ modules, streakWeeks, investmentMinutes, plan
         {/* Progress header */}
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">
-            {isHe ? "התקדמות" : "Progress"}
+            {tx({ he: "התקדמות", en: "Progress" }, language)}
           </h3>
           {streakWeeks > 0 && (
             <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
               <Flame className="h-3.5 w-3.5" />
-              {streakWeeks} {isHe ? "שבועות רצופים" : "week streak"}
+              {streakWeeks} {tx({ he: "שבועות רצופים", en: "week streak" }, language)}
             </div>
           )}
         </div>
@@ -57,7 +58,7 @@ export function ProgressMomentum({ modules, streakWeeks, investmentMinutes, plan
         {/* Goal-gradient progress bar with acceleration */}
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>{completed}/{total} {isHe ? "מודולים" : "modules"}</span>
+            <span>{completed}/{total} {tx({ he: "מודולים", en: "modules" }, language)}</span>
             <span>{pct}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-muted overflow-hidden">
@@ -73,9 +74,9 @@ export function ProgressMomentum({ modules, streakWeeks, investmentMinutes, plan
         {/* Investment IKEA meter */}
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
           {plansCreated > 0 && (
-            <span>📋 {plansCreated} {isHe ? "אסטרטגיות" : "strategies"}</span>
+            <span>📋 {plansCreated} {tx({ he: "אסטרטגיות", en: "strategies" }, language)}</span>
           )}
-          <span>⏱️ {hours} {isHe ? "שעות השקעה" : "hours invested"}</span>
+          <span>⏱️ {hours} {tx({ he: "שעות השקעה", en: "hours invested" }, language)}</span>
         </div>
 
         {/* Zeigarnik tension — next incomplete module */}

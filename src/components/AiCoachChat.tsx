@@ -9,6 +9,7 @@ import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { tx } from "@/i18n/tx";
 import { Bot, Send, Loader2, Sparkles, Lock } from "lucide-react";
 
 interface AiCoachChatProps {
@@ -24,7 +25,7 @@ interface ChatMessage {
 
 function getSmartPrompts(graph: UserKnowledgeGraph, isHe: boolean): string[] {
   const field = isHe ? graph.derived.identityStatement.he.slice(0, 30) : graph.business.field;
-  const pain = isHe ? graph.derived.topPainPoint.he : graph.derived.topPainPoint.en;
+  const pain = tx(graph.derived.topPainPoint, language);
   const channels = graph.business.channels.slice(0, 2).join(" + ");
   const hasDiff = !!graph.differentiation;
 
@@ -141,10 +142,10 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
       const fnError = _resp.ok ? null : (data?.error || _resp.statusText);
 
       if (fnError) throw new Error(fnError);
-      const reply = data?.reply || (isHe ? "לא הצלחתי לענות. נסה שוב." : "Couldn't respond. Try again.");
+      const reply = data?.reply || (tx({ he: "לא הצלחתי לענות. נסה שוב.", en: "Couldn't respond. Try again." }, language));
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
-      setError(isHe ? "שגיאה בחיבור למאמן AI. ודא שה-Edge Function מוגדר." : "Error connecting to AI coach. Ensure Edge Function is configured.");
+      setError(tx({ he: "שגיאה בחיבור למאמן AI. ודא שה-Edge Function מוגדר.", en: "Error connecting to AI coach. Ensure Edge Function is configured." }, language));
     } finally {
       setLoading(false);
     }
@@ -156,7 +157,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
       <CardHeader className="pb-3 shrink-0">
         <CardTitle className="flex items-center gap-2 text-base">
           <Bot className="h-5 w-5 text-primary" />
-          {isHe ? "מאמן שיווק AI" : "AI Marketing Coach"}
+          {tx({ he: "מאמן שיווק AI", en: "AI Marketing Coach" }, language)}
         </CardTitle>
         <p className="text-xs text-muted-foreground">
           {isHe
@@ -171,7 +172,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
           {messages.length === 0 && (
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground text-center mb-4">
-                {isHe ? "שאל אותי כל שאלה על השיווק שלך:" : "Ask me anything about your marketing:"}
+                {tx({ he: "שאל אותי כל שאלה על השיווק שלך:", en: "Ask me anything about your marketing:" }, language)}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {quickPrompts.map((prompt, i) => (
@@ -224,7 +225,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
                 sendMessage(input);
               }
             }}
-            placeholder={isHe ? "שאל את המאמן שלך..." : "Ask your coach..."}
+            placeholder={tx({ he: "שאל את המאמן שלך...", en: "Ask your coach..." }, language)}
             className="min-h-[40px] max-h-[80px] text-sm resize-none"
             dir="auto"
           />

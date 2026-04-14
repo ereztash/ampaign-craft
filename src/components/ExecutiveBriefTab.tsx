@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { tx } from "@/i18n/tx";
 import { AlertTriangle, CheckCircle2, AlertCircle, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 interface ExecutiveBriefTabProps {
@@ -71,7 +72,7 @@ function HealthGauge({ score, light, language }: { score: number; light: Traffic
         </div>
       </div>
       <span className={`text-sm font-semibold ${LIGHT_TEXT[light]}`}>
-        {isHe ? "ציון בריאות" : "Health Score"}
+        {tx({ he: "ציון בריאות", en: "Health Score" }, language)}
       </span>
     </div>
   );
@@ -94,7 +95,7 @@ function RiskCard({ risk, language }: { risk: BriefRisk; language: string }) {
           </div>
           <p className="text-xs text-muted-foreground mb-1.5" dir="auto">{risk.description[language]}</p>
           <div className="text-xs font-medium text-primary" dir="auto">
-            {isHe ? "פעולה: " : "Action: "}
+            {tx({ he: "פעולה: ", en: "Action: " }, language)}
             {risk.mitigationAction[language]}
           </div>
         </div>
@@ -143,7 +144,7 @@ function NRRScenarioBar({ scenarios, language }: { scenarios: [NRRScenario, NRRS
         </div>
       ))}
       <p className="text-xs text-muted-foreground">
-        {isHe ? "NRR = Net Revenue Retention. מעל 100% = צמיחה מהלקוחות הקיימים." : "NRR = Net Revenue Retention. Above 100% = growth from existing customers."}
+        {tx({ he: "NRR = Net Revenue Retention. מעל 100% = צמיחה מהלקוחות הקיימים.", en: "NRR = Net Revenue Retention. Above 100% = growth from existing customers." }, language)}
       </p>
     </div>
   );
@@ -162,7 +163,7 @@ function ActionChecklist({ items, language }: { items: ActionItem[]; language: s
       return next;
     });
 
-  const PRIORITY_LABEL: Record<number, string> = { 1: isHe ? "דחוף" : "Urgent", 2: isHe ? "חשוב" : "Important", 3: isHe ? "תכנן" : "Plan" };
+  const PRIORITY_LABEL: Record<number, string> = { 1: tx({ he: "דחוף", en: "Urgent" }, language), 2: tx({ he: "חשוב", en: "Important" }, language), 3: tx({ he: "תכנן", en: "Plan" }, language) };
   const PRIORITY_COLOR: Record<number, string> = { 1: "text-red-600", 2: "text-amber-600", 3: "text-blue-600" };
 
   return (
@@ -183,8 +184,8 @@ function ActionChecklist({ items, language }: { items: ActionItem[]; language: s
             </div>
             <p className="text-sm" dir="auto">{item.action[language]}</p>
             <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
-              <span>{isHe ? "אחראי:" : "Owner:"} {item.owner[language]}</span>
-              <span className="text-green-600">{isHe ? "השפעה:" : "Impact:"} {item.expectedImpact[language]}</span>
+              <span>{tx({ he: "אחראי:", en: "Owner:" }, language)} {item.owner[language]}</span>
+              <span className="text-green-600">{tx({ he: "השפעה:", en: "Impact:" }, language)} {item.expectedImpact[language]}</span>
             </div>
           </div>
         </div>
@@ -212,7 +213,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
-              {isHe ? "סיכום מנהלים" : "Executive Summary"}
+              {tx({ he: "סיכום מנהלים", en: "Executive Summary" }, language)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -222,12 +223,12 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
             <div className="flex flex-wrap gap-1.5 mt-3">
               <Badge className={`text-xs border ${LIGHT_BADGE[brief.healthLight]}`} variant="outline">
                 {LIGHT_ICON(brief.healthLight)}
-                <span className="ml-1">
-                  {isHe ? "בריאות" : "Health"}: {brief.healthTier}
+                <span className="ms-1">
+                  {tx({ he: "בריאות", en: "Health" }, language)}: {brief.healthTier}
                 </span>
               </Badge>
               <Badge variant="outline" className="text-xs">
-                {new Date(brief.generatedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
+                {new Date(brief.generatedAt).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
               </Badge>
             </div>
           </CardContent>
@@ -238,7 +239,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {isHe ? "3 הסיכונים המרכזיים" : "Top 3 Risks"}
+            {tx({ he: "3 הסיכונים המרכזיים", en: "Top 3 Risks" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -252,7 +253,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {isHe ? "תרחישי NRR (Net Revenue Retention)" : "NRR Scenarios (Net Revenue Retention)"}
+            {tx({ he: "תרחישי NRR (Net Revenue Retention)", en: "NRR Scenarios (Net Revenue Retention)" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -264,9 +265,9 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            {isHe ? "רשימת פעולות לביצוע" : "Action Checklist"}
+            {tx({ he: "רשימת פעולות לביצוע", en: "Action Checklist" }, language)}
             <Badge variant="secondary" className="text-xs">
-              {brief.actionChecklist.length} {isHe ? "פעולות" : "actions"}
+              {brief.actionChecklist.length} {tx({ he: "פעולות", en: "actions" }, language)}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -278,7 +279,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
       {/* Share placeholder */}
       <div className="text-center">
         <Button variant="outline" size="sm" disabled className="text-xs gap-1.5">
-          {isHe ? "שתף בריף עם הצוות (בקרוב)" : "Share Brief with Team (coming soon)"}
+          {tx({ he: "שתף בריף עם הצוות (בקרוב)", en: "Share Brief with Team (coming soon)" }, language)}
         </Button>
       </div>
     </div>

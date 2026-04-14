@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useModuleStatus, ModuleStatus } from "@/hooks/useModuleStatus";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Crosshair, BarChart3, TrendingUp, DollarSign, Heart, Check, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -47,7 +48,7 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
         <Card
           role="button"
           tabIndex={0}
-          aria-label={`${mod.label[language]} — ${mod.completed ? (isHe ? "הושלם" : "completed") : (isHe ? "התחל" : "start")}`}
+          aria-label={`${mod.label[language]} — ${mod.completed ? (tx({ he: "הושלם", en: "completed" }, language)) : (tx({ he: "התחל", en: "start" }, language))}`}
           className={`cursor-pointer transition-all hover:shadow-lg hover:translate-y-[-2px] border-2 focus:outline-none focus:ring-2 focus:ring-primary ${
             mod.completed ? "border-accent/40 bg-accent/5" : "border-border hover:border-primary/50"
           }`}
@@ -70,7 +71,7 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
               </p>
             )}
             <Badge variant={mod.completed ? "default" : "outline"} className="text-xs mt-2">
-              {mod.completed ? (isHe ? "הושלם" : "Complete") : (isHe ? "התחל" : "Start")}
+              {mod.completed ? (tx({ he: "הושלם", en: "Complete" }, language)) : (tx({ he: "התחל", en: "Start" }, language))}
             </Badge>
           </CardContent>
         </Card>

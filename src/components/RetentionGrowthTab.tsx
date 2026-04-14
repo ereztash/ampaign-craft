@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { tx } from "@/i18n/tx";
 import { Copy, Check, ChevronDown, UserPlus, AlertTriangle, Gift, TrendingUp, Heart, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,7 +31,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -38,11 +39,11 @@ const RetentionGrowthTab = ({ result }: Props) => {
     <Tabs defaultValue="retention">
       <TabsList className="h-9 w-max min-w-full justify-start gap-1 bg-muted/50 mb-5">
         <TabsTrigger value="retention" className="text-xs px-3">
-          {isHe ? "שימור לקוחות" : "Retention"}
+          {tx({ he: "שימור לקוחות", en: "Retention" }, language)}
         </TabsTrigger>
         <TabsTrigger value="playbook" className="text-xs px-3 gap-1">
           <ShieldAlert className="h-3 w-3" />
-          {isHe ? "ספר הנטישה" : "Churn Playbook"}
+          {tx({ he: "ספר הנטישה", en: "Churn Playbook" }, language)}
         </TabsTrigger>
       </TabsList>
 
@@ -60,7 +61,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
           <div className="flex gap-6 text-center">
             <div>
               <div className="text-2xl font-bold text-accent">{retention.projectedImpact.projectedChurnReduction}%</div>
-              <div className="text-xs text-muted-foreground">{isHe ? "צמצום נטישה" : "Churn Reduction"}</div>
+              <div className="text-xs text-muted-foreground">{tx({ he: "צמצום נטישה", en: "Churn Reduction" }, language)}</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-primary">{retention.projectedImpact.ltvMultiplier}×</div>
@@ -78,7 +79,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            🚀 {isHe ? `Onboarding (${retention.onboarding.type})` : `Onboarding (${retention.onboarding.type})`}
+            🚀 {tx({ he: `Onboarding (${retention.onboarding.type})`, en: `Onboarding (${retention.onboarding.type})` }, language)}
             <Badge variant="outline" className="text-xs">Time to Value: {retention.onboarding.timeToValue}</Badge>
           </CardTitle>
         </CardHeader>
@@ -87,7 +88,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
             <div key={i} className="flex items-start gap-3 rounded-lg border p-3">
               <div className="flex flex-col items-center shrink-0">
                 <span className="text-lg">{step.emoji}</span>
-                <Badge variant="outline" className="text-xs mt-1">{isHe ? `יום ${step.day}` : `Day ${step.day}`}</Badge>
+                <Badge variant="outline" className="text-xs mt-1">{tx({ he: `יום ${step.day}`, en: `Day ${step.day}` }, language)}</Badge>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
@@ -100,11 +101,11 @@ const RetentionGrowthTab = ({ result }: Props) => {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground whitespace-pre-line" dir="auto">{step.template[language]}</p>
-                <p className="text-xs text-primary mt-1">{isHe ? "מטרה:" : "Goal:"} {step.goal[language]}</p>
+                <p className="text-xs text-primary mt-1">{tx({ he: "מטרה:", en: "Goal:" }, language)} {step.goal[language]}</p>
               </div>
             </div>
           ))}
-          <p className="text-xs text-accent" dir="auto">{isHe ? "מדד aha:" : "Aha metric:"} {retention.onboarding.ahaMetric[language]}</p>
+          <p className="text-xs text-accent" dir="auto">{tx({ he: "מדד aha:", en: "Aha metric:" }, language)} {retention.onboarding.ahaMetric[language]}</p>
         </CardContent>
       </Card>
 
@@ -114,7 +115,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
               <CardTitle className="text-sm flex items-center justify-between">
-                <span className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-destructive" /> {isHe ? "מניעת נטישה" : "Churn Prevention"}</span>
+                <span className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-destructive" /> {tx({ he: "מניעת נטישה", en: "Churn Prevention" }, language)}</span>
                 <ChevronDown className="h-4 w-4" />
               </CardTitle>
             </CardHeader>
@@ -131,7 +132,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
                 </div>
               ))}
               <div className="mt-3 pt-3 border-t">
-                <div className="text-xs font-medium mb-2">{isHe ? "הצעות שימור (Save Offers):" : "Save Offers:"}</div>
+                <div className="text-xs font-medium mb-2">{tx({ he: "הצעות שימור (Save Offers):", en: "Save Offers:" }, language)}</div>
                 {retention.churnPlaybook.saveOffers.map((offer, i) => (
                   <div key={i} className="text-xs text-muted-foreground">• {offer[language]}</div>
                 ))}
@@ -152,12 +153,12 @@ const RetentionGrowthTab = ({ result }: Props) => {
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground" dir="auto">{retention.referralBlueprint.mechanics[language]}</p>
           <div className="flex items-center gap-2">
-            <Badge>{isHe ? "תגמול:" : "Reward:"} {retention.referralBlueprint.reward[language]}</Badge>
+            <Badge>{tx({ he: "תגמול:", en: "Reward:" }, language)} {retention.referralBlueprint.reward[language]}</Badge>
             <Badge variant="outline">{retention.referralBlueprint.bestTiming[language]}</Badge>
           </div>
           <div className="bg-muted/30 rounded-lg p-3">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-muted-foreground">{isHe ? "תבנית WhatsApp:" : "WhatsApp Template:"}</span>
+              <span className="text-xs text-muted-foreground">{tx({ he: "תבנית WhatsApp:", en: "WhatsApp Template:" }, language)}</span>
               <Button size="sm" variant="ghost" onClick={() => copyText(retention.referralBlueprint.template[language], 50)} className="h-6 min-h-[44px] min-w-[44px]">
                 {copiedIdx === 50 ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
               </Button>
@@ -216,7 +217,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
               <CardTitle className="text-sm flex items-center justify-between">
-                <span className="flex items-center gap-2"><Gift className="h-4 w-4" /> {isHe ? "נקודות מגע" : "Retention Triggers"}</span>
+                <span className="flex items-center gap-2"><Gift className="h-4 w-4" /> {tx({ he: "נקודות מגע", en: "Retention Triggers" }, language)}</span>
                 <ChevronDown className="h-4 w-4" />
               </CardTitle>
             </CardHeader>

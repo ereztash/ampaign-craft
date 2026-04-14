@@ -10,6 +10,7 @@ import DataImportModal from "@/components/DataImportModal";
 import { Button } from "@/components/ui/button";
 import type { ImportedDataset } from "@/types/importedData";
 import { detectSchema, analyzeTrends } from "@/engine/dataImportEngine";
+import { tx } from "@/i18n/tx";
 import { toast } from "sonner";
 
 const DataHub = () => {
@@ -70,7 +71,7 @@ const DataHub = () => {
       });
     }
     toast.success(
-      (isHe ? "הייבוא הושלם" : "Import complete") +
+      (tx({ he: "הייבוא הושלם", en: "Import complete" }, language)) +
         ` · ${schema.columns.length} cols · ${schema.detectedType}${trendSummary}`,
     );
     setImportOpen(false);
@@ -98,10 +99,10 @@ const DataHub = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground" dir="auto">
-            {isHe ? "מקורות הנתונים שלך" : "Your data sources"}
+            {tx({ he: "מקורות הנתונים שלך", en: "Your data sources" }, language)}
           </h1>
           <p className="text-sm text-muted-foreground mt-1" dir="auto">
-            {isHe ? "חבר נתונים כדי להעשיר אסטרטגיה ותובנות." : "Connect data to enrich strategy and insights."}
+            {tx({ he: "חבר נתונים כדי להעשיר אסטרטגיה ותובנות.", en: "Connect data to enrich strategy and insights." }, language)}
           </p>
         </div>
         <Button
@@ -111,7 +112,7 @@ const DataHub = () => {
           }}
           className="shrink-0"
         >
-          {isHe ? "+ חבר חדש" : "+ Connect new"}
+          {tx({ he: "+ חבר חדש", en: "+ Connect new" }, language)}
         </Button>
       </div>
 

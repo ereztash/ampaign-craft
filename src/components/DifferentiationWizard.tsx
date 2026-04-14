@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { tx } from "@/i18n/tx";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Loader2, Sparkles, AlertCircle, CheckCircle2 } from "lucide-react";
 
@@ -84,18 +85,18 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
         const verified = (result.verifiedClaims || []).filter((c: { verified: boolean }) => c.verified).length;
         const total = (result.verifiedClaims || []).length;
         setAiInsights([
-          isHe ? `${verified} מתוך ${total} טענות אומתו` : `${verified} of ${total} claims verified`,
+          tx({ he: `${verified} מתוך ${total} טענות אומתו`, en: `${verified} of ${total} claims verified` }, language),
         ]);
       } else if (phaseName === "hidden") {
         setAiResults((prev) => ({ ...prev, phase3: result as AiPhase3Result }));
         const insights = (result.ashamedPainInsights || []).length;
         setAiInsights([
-          isHe ? `${insights} הזדמנויות בידול זוהו מתוך הכאבים הנסתרים` : `${insights} differentiation opportunities identified from hidden pains`,
+          tx({ he: `${insights} הזדמנויות בידול זוהו מתוך הכאבים הנסתרים`, en: `${insights} differentiation opportunities identified from hidden pains` }, language),
         ]);
       } else if (phaseName === "mapping") {
         setAiResults((prev) => ({ ...prev, phase4: result as AiPhase4Result }));
         setAiInsights([
-          isHe ? "אסטרטגיות נגד ונרטיבים מותאמים נוצרו" : "Counter-strategies and tailored narratives generated",
+          tx({ he: "אסטרטגיות נגד ונרטיבים מותאמים נוצרו", en: "Counter-strategies and tailored narratives generated" }, language),
         ]);
       } else if (phaseName === "synthesis") {
         setAiResults((prev) => ({ ...prev, phase5: result as AiPhase5Result }));
@@ -195,7 +196,7 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
                     <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
                     <p className="text-lg font-medium">{t("diffLoading")}</p>
                     <p className="text-sm text-muted-foreground">
-                      {isHe ? "מסנתז 5 שלבים של ניתוח..." : "Synthesizing 5 phases of analysis..."}
+                      {tx({ he: "מסנתז 5 שלבים של ניתוח...", en: "Synthesizing 5 phases of analysis..." }, language)}
                     </p>
                   </>
                 ) : aiError ? (
@@ -204,10 +205,10 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
                     <p className="text-sm text-destructive">{aiError}</p>
                     <div className="flex items-center justify-center gap-2 mt-2">
                       <Button onClick={() => { setAiError(null); callAi("synthesis"); }}>
-                        {isHe ? "🔄 נסה שוב" : "🔄 Try Again"}
+                        {tx({ he: "🔄 נסה שוב", en: "🔄 Try Again" }, language)}
                       </Button>
                       <Button variant="outline" onClick={handleSkipAi}>
-                        {isHe ? "צור דוח בלי AI" : "Generate without AI"}
+                        {tx({ he: "צור דוח בלי AI", en: "Generate without AI" }, language)}
                       </Button>
                     </div>
                   </>
@@ -215,11 +216,11 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
                   <>
                     <Sparkles className="h-12 w-12 text-amber-600 mx-auto" />
                     <p className="text-lg font-medium" dir="auto">
-                      {isHe ? "הכל מוכן. לחץ לסינתזה סופית" : "Everything ready. Click for final synthesis"}
+                      {tx({ he: "הכל מוכן. לחץ לסינתזה סופית", en: "Everything ready. Click for final synthesis" }, language)}
                     </p>
                     <Button size="lg" onClick={() => callAi("synthesis")} className="gap-2">
                       <Sparkles className="h-4 w-4" />
-                      {isHe ? "צור דוח בידול" : "Generate Differentiation Report"}
+                      {tx({ he: "צור דוח בידול", en: "Generate Differentiation Report" }, language)}
                     </Button>
                   </>
                 )}
@@ -267,10 +268,10 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
             </div>
             <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" onClick={() => { setAiError(null); handleNext(); }}>
-                {isHe ? "🔄 נסה שוב" : "🔄 Try again"}
+                {tx({ he: "🔄 נסה שוב", en: "🔄 Try again" }, language)}
               </Button>
               <Button size="sm" variant="ghost" onClick={handleSkipAi} className="text-muted-foreground">
-                {isHe ? "המשך בלי AI →" : "Continue without AI →"}
+                {tx({ he: "המשך בלי AI →", en: "Continue without AI →" }, language)}
               </Button>
             </div>
           </CardContent>

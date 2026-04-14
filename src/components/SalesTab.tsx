@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { tx } from "@/i18n/tx";
 import {
   TrendingUp, DollarSign, Clock, Target, ChevronDown, Copy, Check,
   Zap, MessageSquare, ArrowRight, Lightbulb, Brain, Users, FileText,
@@ -62,14 +63,14 @@ const SalesTab = ({ result }: SalesTabProps) => {
       });
     } catch { /* localStorage fallback */ }
     try { localStorage.setItem("funnelforge-last-quote", JSON.stringify(quote)); } catch { /* ignore */ }
-    toast.success(isHe ? "הצעת המחיר נשמרה!" : "Quote saved!");
+    toast.success(tx({ he: "הצעת המחיר נשמרה!", en: "Quote saved!" }, language));
     setQuoteView(false);
-  }, [isHe]);
+  }, [language]);
 
   const copyScript = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -99,7 +100,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
               ? "💡 השלם את שאלון הבידול כדי לקבל סקריפטים עם שמות מתחרים, מנגנון הבידול שלך, וויתורים מודעים"
               : "💡 Complete the differentiation questionnaire for scripts with competitor names, your mechanism, and tradeoffs"}
             {" → "}
-            <a href="/differentiate" className="text-primary font-medium underline">{isHe ? "התחל" : "Start"}</a>
+            <a href="/differentiate" className="text-primary font-medium underline">{tx({ he: "התחל", en: "Start" }, language)}</a>
           </p>
         </div>
       )}
@@ -113,7 +114,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
           {getSalesTypeLabel(pipeline.salesType)[language]}
         </Badge>
         <span className="text-xs text-muted-foreground">
-          {isHe ? "זוהה אוטומטית מנתוני המשפך שלך" : "Auto-detected from your funnel data"}
+          {tx({ he: "זוהה אוטומטית מנתוני המשפך שלך", en: "Auto-detected from your funnel data" }, language)}
         </span>
       </div>
 
@@ -177,7 +178,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
             <div>
               <h3 className="text-sm font-semibold flex items-center gap-2" dir="auto">
                 <FileText className="h-4 w-4 text-primary" />
-                {isHe ? "הצעת מחיר מובנית" : "Structured Price Quote"}
+                {tx({ he: "הצעת מחיר מובנית", en: "Structured Price Quote" }, language)}
               </h3>
               <p className="text-xs text-muted-foreground mt-1" dir="auto">
                 {isHe
@@ -187,7 +188,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
             </div>
             <Button onClick={() => setQuoteView(true)} className="gap-2">
               <FileText className="h-4 w-4" />
-              {isHe ? "צור הצעה" : "Create Quote"}
+              {tx({ he: "צור הצעה", en: "Create Quote" }, language)}
             </Button>
           </div>
         </CardContent>
@@ -227,7 +228,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
               <CardTitle className="text-sm flex items-center justify-between">
-                <span>🎯 {isHe ? "ארגז כלי מכירה" : "Selling Toolkit"}</span>
+                <span>🎯 {tx({ he: "ארגז כלי מכירה", en: "Selling Toolkit" }, language)}</span>
                 <ChevronDown className="h-4 w-4" />
               </CardTitle>
             </CardHeader>
@@ -258,7 +259,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
                   className="h-7 min-h-[44px] text-xs gap-1"
                 >
                   {copiedIdx === i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                  {copiedIdx === i ? (isHe ? "הועתק" : "Copied") : (isHe ? "העתק" : "Copy")}
+                  {copiedIdx === i ? (tx({ he: "הועתק", en: "Copied" }, language)) : (tx({ he: "העתק", en: "Copy" }, language))}
                 </Button>
               </div>
               <p className="text-sm text-foreground bg-accent/5 rounded-lg p-2.5" dir="auto">
@@ -288,7 +289,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
               <span className="text-lg">{auto.emoji}</span>
               <div className="flex-1 min-w-0">
                 <div className="text-xs text-muted-foreground mb-0.5">
-                  {isHe ? "טריגר:" : "Trigger:"} {auto.trigger[language]}
+                  {tx({ he: "טריגר:", en: "Trigger:" }, language)} {auto.trigger[language]}
                 </div>
                 <div className="text-sm font-medium text-foreground">{auto.action[language]}</div>
                 <Badge variant="outline" className="mt-1 text-xs">{auto.tool}</Badge>
@@ -308,7 +309,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
               <CardTitle className="text-sm flex items-center justify-between">
-                <span>🧠 {isHe ? "פסיכולוגיית מכירה" : "Sales Psychology"}</span>
+                <span>🧠 {tx({ he: "פסיכולוגיית מכירה", en: "Sales Psychology" }, language)}</span>
                 <ChevronDown className="h-4 w-4" />
               </CardTitle>
             </CardHeader>
@@ -320,18 +321,18 @@ const SalesTab = ({ result }: SalesTabProps) => {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
-            {isHe ? "פרופיל קונה" : "Buyer Personality"}: {personalityProfile.emoji} {personalityProfile.name[language]}
+            {tx({ he: "פרופיל קונה", en: "Buyer Personality" }, language)}: {personalityProfile.emoji} {personalityProfile.name[language]}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <p className="text-xs text-muted-foreground">{personalityProfile.traits[language]}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="rounded-lg bg-accent/5 border border-accent/20 p-2.5">
-              <div className="text-xs text-accent font-medium mb-1">{isHe ? "✅ איך למכור:" : "✅ How to sell:"}</div>
+              <div className="text-xs text-accent font-medium mb-1">{tx({ he: "✅ איך למכור:", en: "✅ How to sell:" }, language)}</div>
               <p className="text-xs text-foreground">{personalityProfile.sellTo[language]}</p>
             </div>
             <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-2.5">
-              <div className="text-xs text-destructive font-medium mb-1">{isHe ? "❌ מה להימנע:" : "❌ What to avoid:"}</div>
+              <div className="text-xs text-destructive font-medium mb-1">{tx({ he: "❌ מה להימנע:", en: "❌ What to avoid:" }, language)}</div>
               <p className="text-xs text-foreground">{personalityProfile.avoid[language]}</p>
             </div>
           </div>
@@ -343,7 +344,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Brain className="h-4 w-4 text-purple-500" />
-            {isHe ? "טכניקות סגירה נוירו-פסיכולוגיות" : "Neuro-Psychological Closing Techniques"}
+            {tx({ he: "טכניקות סגירה נוירו-פסיכולוגיות", en: "Neuro-Psychological Closing Techniques" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -358,14 +359,14 @@ const SalesTab = ({ result }: SalesTabProps) => {
               <p className="text-xs text-muted-foreground mb-2">{fw.psychology[language]}</p>
               <div className="bg-accent/5 rounded-lg p-2.5 mb-1.5">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-accent font-medium">{isHe ? "סקריפט:" : "Script:"}</span>
+                  <span className="text-xs text-accent font-medium">{tx({ he: "סקריפט:", en: "Script:" }, language)}</span>
                   <Button size="sm" variant="ghost" onClick={() => copyScript(fw.script[language], 100 + i)} className="h-6 min-h-[44px] text-xs gap-1">
                     {copiedIdx === 100 + i ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                   </Button>
                 </div>
                 <p className="text-xs text-foreground" dir="auto">{fw.script[language]}</p>
               </div>
-              <p className="text-xs text-muted-foreground">{isHe ? "מתאים ל:" : "Best for:"} {fw.bestFor[language]}</p>
+              <p className="text-xs text-muted-foreground">{tx({ he: "מתאים ל:", en: "Best for:" }, language)} {fw.bestFor[language]}</p>
             </div>
           ))}
         </CardContent>

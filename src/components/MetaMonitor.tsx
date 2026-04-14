@@ -10,6 +10,7 @@ import { computeGaps } from "@/engine/gapEngine";
 import { generateGuidance, getOverallHealth } from "@/engine/guidanceEngine";
 import { getKpiStatusColor } from "@/lib/colorSemantics";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { tx } from "@/i18n/tx";
 
 interface MetaMonitorProps {
   result: FunnelResult;
@@ -42,11 +43,11 @@ const GapRow = ({ gap, isHe }: { gap: KpiGap; isHe: boolean }) => {
     <div className="flex items-center justify-between py-2 border-b last:border-0">
       <div className="flex items-center gap-2">
         <StatusIcon status={gap.status} />
-        <span className="text-sm font-medium">{isHe ? gap.kpiName.he : gap.kpiName.en}</span>
+        <span className="text-sm font-medium">{tx(gap.kpiName, language)}</span>
       </div>
       <div className="flex items-center gap-3 text-sm">
         <span className="text-muted-foreground">
-          {isHe ? "יעד" : "Target"}: {gap.targetMin}-{gap.targetMax}{gap.unit}
+          {tx({ he: "יעד", en: "Target" }, language)}: {gap.targetMin}-{gap.targetMax}{gap.unit}
         </span>
         <span className={`font-semibold ${color} flex items-center gap-1`}>
           <TrendIcon className="h-3 w-3" />
@@ -79,11 +80,11 @@ const GuidanceCard = ({ item, isHe }: { item: GuidanceItem; isHe: boolean }) => 
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeClass}`}>
-                {item.priority === "high" ? (isHe ? "דחוף" : "Urgent") : item.priority === "medium" ? (isHe ? "חשוב" : "Important") : (isHe ? "שפר" : "Improve")}
+                {item.priority === "high" ? (tx({ he: "דחוף", en: "Urgent" }, language)) : item.priority === "medium" ? (tx({ he: "חשוב", en: "Important" }, language)) : (tx({ he: "שפר", en: "Improve" }, language))}
               </span>
-              <span className="text-sm font-medium">{isHe ? item.area.he : item.area.en}</span>
+              <span className="text-sm font-medium">{tx(item.area, language)}</span>
             </div>
-            <p className="text-sm text-muted-foreground">{isHe ? item.issue.he : item.issue.en}</p>
+            <p className="text-sm text-muted-foreground">{tx(item.issue, language)}</p>
           </div>
           {expanded ? <ChevronUp className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
         </div>
@@ -91,13 +92,13 @@ const GuidanceCard = ({ item, isHe }: { item: GuidanceItem; isHe: boolean }) => 
       {expanded && (
         <CardContent className="pt-0">
           <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-            {isHe ? "פעולות לשבוע הקרוב" : "Actions for this week"}
+            {tx({ he: "פעולות לשבוע הקרוב", en: "Actions for this week" }, language)}
           </p>
           <ol className="space-y-2">
             {item.actions.map((action, i) => (
               <li key={i} className="flex gap-2 text-sm">
                 <span className="font-bold text-primary shrink-0">{i + 1}.</span>
-                <span>{isHe ? action.he : action.en}</span>
+                <span>{tx(action, language)}</span>
               </li>
             ))}
           </ol>
@@ -124,20 +125,20 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
     try {
       const data = await getCampaignInsights(accountId, accessToken, datePreset);
       if (!data) {
-        setError(isHe ? "אין נתונים לתקופה זו. בדוק שהקמפיינים פעילים." : "No data for this period. Check that campaigns are active.");
+        setError(tx({ he: "אין נתונים לתקופה זו. בדוק שהקמפיינים פעילים.", en: "No data for this period. Check that campaigns are active." }, language));
         return;
       }
       setInsights(data);
       const computedGaps = computeGaps(result, data);
       setGaps(computedGaps);
       setGuidance(generateGuidance(computedGaps, result));
-      setLastSync(new Date().toLocaleTimeString(isHe ? "he-IL" : "en-US"));
+      setLastSync(new Date().toLocaleTimeString(tx({ he: "he-IL", en: "en-US" }, language)));
     } catch (err) {
-      setError(isHe ? "שגיאה בטעינת נתונים מ-Meta. בדוק שהחשבון פעיל." : "Error loading data from Meta.");
+      setError(tx({ he: "שגיאה בטעינת נתונים מ-Meta. בדוק שהחשבון פעיל.", en: "Error loading data from Meta." }, language));
     } finally {
       setLoading(false);
     }
-  }, [accountId, accessToken, datePreset, result, isHe]);
+  }, [accountId, accessToken, datePreset, result, language]);
 
   useEffect(() => {
     sync();
@@ -151,11 +152,11 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h3 className="text-lg font-semibold">
-            {isHe ? "ניטור ביצועים" : "Performance Monitor"}
+            {tx({ he: "ניטור ביצועים", en: "Performance Monitor" }, language)}
           </h3>
           {lastSync && (
             <p className="text-xs text-muted-foreground">
-              {isHe ? `עדכון אחרון: ${lastSync}` : `Last sync: ${lastSync}`}
+              {tx({ he: `עדכון אחרון: ${lastSync}`, en: `Last sync: ${lastSync}` }, language)}
             </p>
           )}
         </div>
@@ -169,13 +170,13 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
                   datePreset === key ? "bg-primary text-primary-foreground" : "hover:bg-muted"
                 }`}
               >
-                {isHe ? label.he : label.en}
+                {tx(label, language)}
               </button>
             ))}
           </div>
           <Button size="sm" variant="outline" onClick={sync} disabled={loading} className="gap-1.5">
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-            {isHe ? "רענן" : "Refresh"}
+            {tx({ he: "רענן", en: "Refresh" }, language)}
           </Button>
         </div>
       </div>
@@ -195,7 +196,7 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
           <CardContent className="py-4 flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">
-                {isHe ? "בריאות הקמפיין" : "Campaign Health"}
+                {tx({ he: "בריאות הקמפיין", en: "Campaign Health" }, language)}
               </p>
               <p className="text-2xl font-bold">{health.score}%</p>
             </div>
@@ -209,7 +210,7 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
               }`}
               variant="outline"
             >
-              {isHe ? health.label.he : health.label.en}
+              {tx(health.label, language)}
             </Badge>
           </CardContent>
         </Card>
@@ -220,10 +221,10 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {isHe ? "KPIs מול יעדים" : "KPIs vs Targets"}
+              {tx({ he: "KPIs מול יעדים", en: "KPIs vs Targets" }, language)}
             </CardTitle>
             <CardDescription>
-              {isHe ? "השוואה בין ביצועי הקמפיין לתוכנית שנוצרה" : "Comparing campaign performance to your funnel plan"}
+              {tx({ he: "השוואה בין ביצועי הקמפיין לתוכנית שנוצרה", en: "Comparing campaign performance to your funnel plan" }, language)}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -238,7 +239,7 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
       {guidance.length > 0 && (
         <div>
           <h4 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
-            {isHe ? "פעולות מומלצות לשבוע הקרוב" : "Recommended actions this week"}
+            {tx({ he: "פעולות מומלצות לשבוע הקרוב", en: "Recommended actions this week" }, language)}
           </h4>
           <div className="space-y-3">
             {guidance.map((item, i) => (
@@ -252,18 +253,18 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
       {insights && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{isHe ? "נתוני גלם" : "Raw Metrics"}</CardTitle>
+            <CardTitle className="text-base">{tx({ he: "נתוני גלם", en: "Raw Metrics" }, language)}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
               {[
-                { label: isHe ? "הוצאה" : "Spend", value: `₪${parseFloat(insights.spend).toLocaleString()}` },
-                { label: isHe ? "חשיפות" : "Impressions", value: parseInt(insights.impressions).toLocaleString() },
-                { label: isHe ? "קליקים" : "Clicks", value: parseInt(insights.clicks).toLocaleString() },
+                { label: tx({ he: "הוצאה", en: "Spend" }, language), value: `₪${parseFloat(insights.spend).toLocaleString()}` },
+                { label: tx({ he: "חשיפות", en: "Impressions" }, language), value: parseInt(insights.impressions).toLocaleString() },
+                { label: tx({ he: "קליקים", en: "Clicks" }, language), value: parseInt(insights.clicks).toLocaleString() },
                 { label: "CTR", value: `${parseFloat(insights.ctr).toFixed(2)}%` },
                 { label: "CPC", value: `₪${parseFloat(insights.cpc).toFixed(2)}` },
                 { label: "CPM", value: `₪${parseFloat(insights.cpm).toFixed(2)}` },
-                { label: isHe ? "טווח" : "Reach", value: parseInt(insights.reach).toLocaleString() },
+                { label: tx({ he: "טווח", en: "Reach" }, language), value: parseInt(insights.reach).toLocaleString() },
               ].map((m) => (
                 <div key={m.label} className="rounded-lg bg-muted/50 p-3">
                   <p className="text-xs text-muted-foreground">{m.label}</p>

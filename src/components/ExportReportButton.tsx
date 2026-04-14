@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { FileDown, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { FunnelResult } from "@/types/funnel";
@@ -96,15 +97,15 @@ export function ExportReportButton({
       doc.setTextColor(30, 30, 30);
 
       // ── Business Details ──────────────────────────────────────
-      addSection(isHe ? "פרטי העסק" : "Business Details");
+      addSection(tx({ he: "פרטי העסק", en: "Business Details" }, language));
       const details = [
-        fd.businessField ? [isHe ? "תחום" : "Field", fd.businessField] : null,
-        fd.productDescription ? [isHe ? "מוצר/שירות" : "Product", fd.productDescription] : null,
-        fd.averagePrice ? [isHe ? "מחיר ממוצע" : "Avg Price", `₪${fd.averagePrice}`] : null,
-        fd.audienceType ? [isHe ? "קהל יעד" : "Audience", fd.audienceType] : null,
-        fd.salesModel ? [isHe ? "מודל מכירות" : "Sales Model", fd.salesModel] : null,
-        fd.budgetRange ? [isHe ? "תקציב" : "Budget", fd.budgetRange] : null,
-        fd.mainGoal ? [isHe ? "מטרה" : "Goal", fd.mainGoal] : null,
+        fd.businessField ? [tx({ he: "תחום", en: "Field" }, language), fd.businessField] : null,
+        fd.productDescription ? [tx({ he: "מוצר/שירות", en: "Product" }, language), fd.productDescription] : null,
+        fd.averagePrice ? [tx({ he: "מחיר ממוצע", en: "Avg Price" }, language), `₪${fd.averagePrice}`] : null,
+        fd.audienceType ? [tx({ he: "קהל יעד", en: "Audience" }, language), fd.audienceType] : null,
+        fd.salesModel ? [tx({ he: "מודל מכירות", en: "Sales Model" }, language), fd.salesModel] : null,
+        fd.budgetRange ? [tx({ he: "תקציב", en: "Budget" }, language), fd.budgetRange] : null,
+        fd.mainGoal ? [tx({ he: "מטרה", en: "Goal" }, language), fd.mainGoal] : null,
       ].filter(Boolean) as [string, string][];
 
       for (const [label, value] of details) {
@@ -116,7 +117,7 @@ export function ExportReportButton({
       const summary = (result as unknown as Record<string, unknown>).executiveSummary || ((result as unknown as Record<string, unknown>).funnelResult as Record<string, unknown>)?.executiveSummary;
       if (summary) {
         newPageIfNeeded(40);
-        addSection(isHe ? "תמצית אסטרטגית" : "Executive Summary");
+        addSection(tx({ he: "תמצית אסטרטגית", en: "Executive Summary" }, language));
         addLine(String(summary), { size: 9, indent: 2 });
         addSeparator();
       }
@@ -125,7 +126,7 @@ export function ExportReportButton({
       const stages = result.stages ?? [];
       if (stages.length > 0) {
         newPageIfNeeded(30);
-        addSection(isHe ? "שלבי המשפך" : "Funnel Stages");
+        addSection(tx({ he: "שלבי המשפך", en: "Funnel Stages" }, language));
         for (const stage of stages) {
           newPageIfNeeded(15);
           const stageName = typeof stage.name === "object" ? (stage.name as Record<string, string>)[language] ?? stage.name : stage.name;
@@ -143,7 +144,7 @@ export function ExportReportButton({
       const channels = (result as unknown as Record<string, unknown[]>).recommendedChannels ?? [];
       if (channels.length > 0) {
         newPageIfNeeded(20);
-        addSection(isHe ? "ערוצים מומלצים" : "Recommended Channels");
+        addSection(tx({ he: "ערוצים מומלצים", en: "Recommended Channels" }, language));
         channels.slice(0, 6).forEach((ch, i) => {
           const name = typeof ch === "string" ? ch : (ch as Record<string, unknown>).name?.[language as keyof object] ?? (ch as Record<string, unknown>).name ?? String(ch);
           addLine(`${i + 1}. ${name}`, { size: 9, indent: 2 });
@@ -178,11 +179,11 @@ export function ExportReportButton({
 
       const filename = `${planName.replace(/[^a-z0-9\u0590-\u05FF]/gi, "-").toLowerCase()}-report.pdf`;
       doc.save(filename);
-      toast({ title: isHe ? "הדוח יוצא בהצלחה" : "Report exported successfully" });
+      toast({ title: tx({ he: "הדוח יוצא בהצלחה", en: "Report exported successfully" }, language) });
     } catch (err) {
       console.error("PDF export error:", err);
       toast({
-        title: isHe ? "שגיאה בייצוא" : "Export failed",
+        title: tx({ he: "שגיאה בייצוא", en: "Export failed" }, language),
         description: String(err),
         variant: "destructive",
       });
@@ -204,7 +205,7 @@ export function ExportReportButton({
       ) : (
         <FileDown className="h-3.5 w-3.5" />
       )}
-      {isHe ? "יצוא PDF" : "Export PDF"}
+      {tx({ he: "יצוא PDF", en: "Export PDF" }, language)}
     </Button>
   );
 }

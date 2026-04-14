@@ -5,6 +5,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FunnelResult, SavedPlan, ExperienceLevel } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { tx } from "@/i18n/tx";
 import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database, Zap, Flame, Crosshair, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { getTotalUsers } from "@/lib/socialProofData";
@@ -115,15 +116,15 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
 
               {/* Mini stats + Streak */}
               <div className="mb-4 flex justify-center gap-6 text-sm text-muted-foreground">
-                <span>{isHe ? `${profile.savedPlanCount} תוכניות` : `${profile.savedPlanCount} plans`}</span>
+                <span>{tx({ he: `${profile.savedPlanCount} תוכניות`, en: `${profile.savedPlanCount} plans` }, language)}</span>
                 <span>•</span>
-                <span>{isHe ? `ביקור #${profile.visitCount}` : `Visit #${profile.visitCount}`}</span>
+                <span>{tx({ he: `ביקור #${profile.visitCount}`, en: `Visit #${profile.visitCount}` }, language)}</span>
                 {streak.currentStreak > 0 && (
                   <>
                     <span>•</span>
                     <span className="flex items-center gap-1 text-accent font-semibold">
                       <Flame className="h-3.5 w-3.5" />
-                      {streak.currentStreak} {isHe ? "שבועות רצופים" : "week streak"}
+                      {streak.currentStreak} {tx({ he: "שבועות רצופים", en: "week streak" }, language)}
                     </span>
                   </>
                 )}
@@ -133,7 +134,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
               {mastery.percentage > 0 && (
                 <div className="mx-auto mb-6 max-w-xs">
                   <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                    <span>{isHe ? "שליטה בכלי" : "Tool Mastery"}</span>
+                    <span>{tx({ he: "שליטה בכלי", en: "Tool Mastery" }, language)}</span>
                     <span className="font-medium text-foreground">{mastery.percentage}%</span>
                   </div>
                   <div className="h-2 rounded-full bg-muted/30">
@@ -242,10 +243,10 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
       <section className="container mx-auto px-4 pb-12 text-center">
         <Button size="lg" onClick={onStart} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
           <Sparkles className="h-5 w-5" />
-          {isHe ? "בנה את התוכנית שלי — בחינם" : "Build My Plan — Free"}
+          {tx({ he: "בנה את התוכנית שלי — בחינם", en: "Build My Plan — Free" }, language)}
         </Button>
         <p className="text-xs text-muted-foreground mt-2">
-          {isHe ? "ללא כרטיס אשראי · 2 דקות · שאלון הבידול זמין בפנים" : "No credit card · 2 min · Differentiation available inside"}
+          {tx({ he: "ללא כרטיס אשראי · 2 דקות · שאלון הבידול זמין בפנים", en: "No credit card · 2 min · Differentiation available inside" }, language)}
         </p>
       </section>
 

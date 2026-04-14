@@ -5,6 +5,7 @@ import { TIERS, PricingTier, Feature } from "@/lib/pricingTiers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Check, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +28,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
     if (import.meta.env.DEV && isLocalAuth) {
       // Dev-only: instant tier change for testing
       setTier(requiredTier);
-      toast.success(isHe ? `שודרגת ל-${tier.name.he}!` : `Upgraded to ${tier.name.en}!`);
+      toast.success(tx({ he: `שודרגת ל-${tier.name.he}!`, en: `Upgraded to ${tier.name.en}!` }, language));
       onOpenChange(false);
       return;
     }
@@ -46,7 +47,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
         window.location.href = checkoutUrl;
         return;
       }
-      toast.error(isHe ? "שגיאה בפתיחת תשלום" : "Could not open checkout");
+      toast.error(tx({ he: "שגיאה בפתיחת תשלום", en: "Could not open checkout" }, language));
     } catch (err) {
       toast.error(
         isHe
@@ -78,7 +79,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 justify-center">
             <Lock className="h-5 w-5 text-primary" />
-            {isHe ? "שדרג את החשבון שלך" : "Upgrade Your Account"}
+            {tx({ he: "שדרג את החשבון שלך", en: "Upgrade Your Account" }, language)}
           </DialogTitle>
         </DialogHeader>
 
@@ -109,11 +110,11 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
             disabled={checkoutLoading}
           >
             {checkoutLoading && <Loader2 className="h-4 w-4 animate-spin me-2" />}
-            {isHe ? `שדרג ל-${tier.name.he}` : `Upgrade to ${tier.name.en}`}
+            {tx({ he: `שדרג ל-${tier.name.he}`, en: `Upgrade to ${tier.name.en}` }, language)}
           </Button>
 
           <p className="text-xs text-muted-foreground">
-            {isHe ? "ניתן לבטל בכל עת" : "Cancel anytime"}
+            {tx({ he: "ניתן לבטל בכל עת", en: "Cancel anytime" }, language)}
           </p>
         </div>
       </DialogContent>

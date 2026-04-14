@@ -25,6 +25,7 @@ import { PeerBenchmark } from "@/components/PeerBenchmark";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Crosshair, Rocket, FileText, Flame, Clock, Plus, BarChart3, TrendingUp, DollarSign, Heart, ArrowRight, Sparkles } from "lucide-react";
 
 const Dashboard = () => {
@@ -134,7 +135,7 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen bg-background">
         <main className="container mx-auto px-4 pt-4 pb-16 max-w-4xl">
-          <BackToHub currentPage={isHe ? "תוכנית שיווק" : "Marketing Plan"} />
+          <BackToHub currentPage={tx({ he: "תוכנית שיווק", en: "Marketing Plan" }, language)} />
           <Card className="mt-8 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-accent/5">
             <CardContent className="p-8 text-center space-y-6">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
@@ -142,7 +143,7 @@ const Dashboard = () => {
               </div>
               <div className="space-y-2">
                 <h1 className="text-2xl font-bold text-foreground" dir="auto">
-                  {isHe ? "ברוך הבא ל-FunnelForge" : "Welcome to FunnelForge"}
+                  {tx({ he: "ברוך הבא ל-FunnelForge", en: "Welcome to FunnelForge" }, language)}
                 </h1>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto" dir="auto">
                   {isHe
@@ -157,7 +158,7 @@ const Dashboard = () => {
                   onClick={() => navigate("/wizard")}
                 >
                   <Rocket className="h-5 w-5" aria-hidden="true" />
-                  {isHe ? "התחל תוכנית שיווק" : "Start marketing plan"}
+                  {tx({ he: "התחל תוכנית שיווק", en: "Start marketing plan" }, language)}
                   <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
                 </Button>
                 <Button
@@ -167,7 +168,7 @@ const Dashboard = () => {
                   onClick={() => navigate("/differentiate")}
                 >
                   <Crosshair className="h-5 w-5 text-amber-500" aria-hidden="true" />
-                  {isHe ? "גלה בידול עמוק" : "Discover differentiation"}
+                  {tx({ he: "גלה בידול עמוק", en: "Discover differentiation" }, language)}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground pt-4">
@@ -191,16 +192,16 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-foreground" dir="auto">
-              {graph?.derived.identityStatement?.[language] || (isHe ? "ברוך שובך!" : "Welcome Back!")}
+              {graph?.derived.identityStatement?.[language] || (tx({ he: "ברוך שובך!", en: "Welcome Back!" }, language))}
             </h1>
             <p className="text-sm text-muted-foreground" dir="auto">
               {healthScore
-                ? `${confidenceTier !== "none" ? `${ctaVerbs.primary[language]} · ` : ""}${isHe ? "ציון בריאות שיווקית:" : "Marketing Health Score:"} ${healthScore.total}/100 (${healthScore.tier})`
-                : (isHe ? "הנה מה שחדש מאז הביקור האחרון שלך" : "Here's what's new since your last visit")}
+                ? `${confidenceTier !== "none" ? `${ctaVerbs.primary[language]} · ` : ""}${tx({ he: "ציון בריאות שיווקית:", en: "Marketing Health Score:" }, language)} ${healthScore.total}/100 (${healthScore.tier})`
+                : (tx({ he: "הנה מה שחדש מאז הביקור האחרון שלך", en: "Here's what's new since your last visit" }, language))}
             </p>
           </div>
           {streak.currentStreak > 0 && (
-            <Badge className="gap-1 text-sm"><Flame className="h-4 w-4" /> {streak.currentStreak} {isHe ? "שבועות" : "weeks"}</Badge>
+            <Badge className="gap-1 text-sm"><Flame className="h-4 w-4" /> {streak.currentStreak} {tx({ he: "שבועות", en: "weeks" }, language)}</Badge>
           )}
         </div>
 
@@ -219,22 +220,22 @@ const Dashboard = () => {
               )}
               {cohortAssignment && (
                 <p className="text-xs text-muted-foreground mt-2" dir="auto">
-                  {isHe ? "קוהורט התנהגותי" : "Behavioral cohort"}:{" "}
+                  {tx({ he: "קוהורט התנהגותי", en: "Behavioral cohort" }, language)}:{" "}
                   <strong>{cohortAssignment.primaryCohort.name[language]}</strong>
-                  {" "}· {cohortAssignment.matchConfidence}% {isHe ? "התאמה" : "match"}
+                  {" "}· {cohortAssignment.matchConfidence}% {tx({ he: "התאמה", en: "match" }, language)}
                 </p>
               )}
               {topIndustryInsight && (
                 <p className="text-xs text-muted-foreground mt-1" dir="auto">
-                  {isHe ? "בנצ'מרק תעשייה" : "Industry benchmark"}:{" "}
+                  {tx({ he: "בנצ'מרק תעשייה", en: "Industry benchmark" }, language)}:{" "}
                   <strong>{topIndustryInsight.industry}</strong>
-                  {" "}· {isHe ? "מדגם" : "n"}={topIndustryInsight.sampleSize}
-                  {" "}· {analytics.benchmarks.length} {isHe ? "מדדים" : "metrics"}
+                  {" "}· {tx({ he: "מדגם", en: "n" }, language)}={topIndustryInsight.sampleSize}
+                  {" "}· {analytics.benchmarks.length} {tx({ he: "מדדים", en: "metrics" }, language)}
                 </p>
               )}
               {socialPreview && socialPreview.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-1" dir="auto">
-                  {isHe ? "גרסאות לרשתות" : "Social variants"}: {socialPreview.length} {isHe ? "פלטפורמות" : "platforms"}
+                  {tx({ he: "גרסאות לרשתות", en: "Social variants" }, language)}: {socialPreview.length} {tx({ he: "פלטפורמות", en: "platforms" }, language)}
                 </p>
               )}
             </CardContent>
@@ -253,7 +254,7 @@ const Dashboard = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-bold text-foreground text-lg" dir="auto">{nextStep.title[language]}</h3>
-                <Badge className="text-xs bg-amber-500 text-white">{isHe ? "מומלץ" : "Recommended"}</Badge>
+                <Badge className="text-xs bg-amber-500 text-white">{tx({ he: "מומלץ", en: "Recommended" }, language)}</Badge>
               </div>
               <p className="text-sm text-muted-foreground" dir="auto">{nextStep.description[language]}</p>
             </div>
@@ -267,8 +268,8 @@ const Dashboard = () => {
             <CardContent className="p-3 flex items-center gap-3">
               <Rocket className="h-5 w-5 text-primary shrink-0" />
               <div>
-                <p className="text-sm font-medium">{isHe ? "תוכנית חדשה" : "New Plan"}</p>
-                <p className="text-xs text-muted-foreground">~2 {isHe ? "דקות" : "min"}</p>
+                <p className="text-sm font-medium">{tx({ he: "תוכנית חדשה", en: "New Plan" }, language)}</p>
+                <p className="text-xs text-muted-foreground">~2 {tx({ he: "דקות", en: "min" }, language)}</p>
               </div>
             </CardContent>
           </Card>
@@ -277,7 +278,7 @@ const Dashboard = () => {
               <Crosshair className="h-5 w-5 text-amber-500 shrink-0" />
               <div>
                 <p className="text-sm font-medium">{isHe ? (hasDiff ? "עדכן בידול" : "גלה בידול") : (hasDiff ? "Update Diff" : "Discover Diff")}</p>
-                <p className="text-xs text-muted-foreground">~10 {isHe ? "דקות" : "min"}</p>
+                <p className="text-xs text-muted-foreground">~10 {tx({ he: "דקות", en: "min" }, language)}</p>
               </div>
             </CardContent>
           </Card>
@@ -289,7 +290,7 @@ const Dashboard = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <FileText className="h-4 w-4 text-primary" />
-                {isHe ? "התוכנית האחרונה שלך" : "Your Last Plan"}
+                {tx({ he: "התוכנית האחרונה שלך", en: "Your Last Plan" }, language)}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
@@ -297,11 +298,11 @@ const Dashboard = () => {
                 <p className="text-sm font-medium">{lastPlan.name}</p>
                 <p className="text-xs text-muted-foreground">
                   <Clock className="h-3 w-3 inline me-1" />
-                  {new Date(lastPlan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
+                  {new Date(lastPlan.savedAt).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
                 </p>
               </div>
               <Button size="sm" onClick={() => navigate(`/strategy/${lastPlan.id}`)} className="gap-2">
-                {isHe ? "המשך" : "Continue"}
+                {tx({ he: "המשך", en: "Continue" }, language)}
                 <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
               </Button>
             </CardContent>
@@ -311,16 +312,16 @@ const Dashboard = () => {
         {/* Module Progress */}
         <Card className="mb-6">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">{isHe ? "מודולים" : "Modules"}</CardTitle>
+            <CardTitle className="text-sm">{tx({ he: "מודולים", en: "Modules" }, language)}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between gap-1" role="list" aria-label={isHe ? "התקדמות מודולים" : "Module progress"}>
+            <div className="flex items-center justify-between gap-1" role="list" aria-label={tx({ he: "התקדמות מודולים", en: "Module progress" }, language)}>
               {[
-                { icon: Crosshair, label: isHe ? "בידול" : "Diff", done: hasDiff, color: "text-amber-500" },
-                { icon: BarChart3, label: isHe ? "שיווק" : "Mktg", done: savedPlans.length > 0, color: "text-primary" },
-                { icon: TrendingUp, label: isHe ? "מכירות" : "Sales", done: savedPlans.length > 0, color: "text-accent" },
-                { icon: DollarSign, label: isHe ? "תמחור" : "Price", done: savedPlans.length > 0, color: "text-emerald-500" },
-                { icon: Heart, label: isHe ? "שימור" : "Retain", done: false, color: "text-pink-500" },
+                { icon: Crosshair, label: tx({ he: "בידול", en: "Diff" }, language), done: hasDiff, color: "text-amber-500" },
+                { icon: BarChart3, label: tx({ he: "שיווק", en: "Mktg" }, language), done: savedPlans.length > 0, color: "text-primary" },
+                { icon: TrendingUp, label: tx({ he: "מכירות", en: "Sales" }, language), done: savedPlans.length > 0, color: "text-accent" },
+                { icon: DollarSign, label: tx({ he: "תמחור", en: "Price" }, language), done: savedPlans.length > 0, color: "text-emerald-500" },
+                { icon: Heart, label: tx({ he: "שימור", en: "Retain" }, language), done: false, color: "text-pink-500" },
               ].map((mod, i, arr) => (
                 <div key={i} className="flex items-center gap-1" role="listitem">
                   <div className="flex flex-col items-center gap-1">
@@ -356,8 +357,8 @@ const Dashboard = () => {
         {/* Saved Plans */}
         {savedPlans.length > 0 && (
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-foreground">{isHe ? "תוכניות שמורות" : "Saved Plans"} ({savedPlans.length})</h2>
-            <Button size="sm" variant="ghost" onClick={() => navigate("/plans")}>{isHe ? "הצג הכל" : "View All"}</Button>
+            <h2 className="text-sm font-bold text-foreground">{tx({ he: "תוכניות שמורות", en: "Saved Plans" }, language)} ({savedPlans.length})</h2>
+            <Button size="sm" variant="ghost" onClick={() => navigate("/plans")}>{tx({ he: "הצג הכל", en: "View All" }, language)}</Button>
           </div>
         )}
         <div className="grid gap-3 sm:grid-cols-2">
@@ -365,7 +366,7 @@ const Dashboard = () => {
             <Card key={plan.id} className="cursor-pointer hover:shadow transition-shadow" role="button" tabIndex={0} onClick={() => navigate(`/strategy/${plan.id}`)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(`/strategy/${plan.id}`); } }}>
               <CardContent className="p-3">
                 <p className="text-sm font-medium truncate">{plan.name}</p>
-                <p className="text-xs text-muted-foreground">{new Date(plan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}</p>
+                <p className="text-xs text-muted-foreground">{new Date(plan.savedAt).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}</p>
               </CardContent>
             </Card>
           ))}

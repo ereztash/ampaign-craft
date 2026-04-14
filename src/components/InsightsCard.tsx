@@ -6,6 +6,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { generateInsights, type BusinessInsight } from "@/engine/insightsEngine";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Lightbulb, TrendingUp, AlertTriangle, Trophy } from "lucide-react";
 
 const typeConfig: Record<
@@ -30,7 +31,7 @@ export function InsightsCard() {
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold flex items-center gap-2" dir="auto">
           <Lightbulb className="h-4 w-4 text-primary" />
-          {isHe ? "תובנות מהתוכניות שלך" : "Insights from your plans"}
+          {tx({ he: "תובנות מהתוכניות שלך", en: "Insights from your plans" }, language)}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 pt-0">

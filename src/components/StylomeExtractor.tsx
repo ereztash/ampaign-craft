@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { tx } from "@/i18n/tx";
 import { Copy, Plus, Trash2, Fingerprint, Sparkles, ChevronRight, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -49,7 +50,7 @@ const StylomeExtractor = () => {
 
   const addSample = useCallback(() => {
     if (!currentText.trim() || currentText.trim().split(/\s+/).length < 10) {
-      toast.error(isHe ? "נדרשות לפחות 10 מילים לדגימה" : "At least 10 words required per sample");
+      toast.error(tx({ he: "נדרשות לפחות 10 מילים לדגימה", en: "At least 10 words required per sample" }, language));
       return;
     }
     const words = currentText.trim().split(/\s+/);
@@ -63,8 +64,8 @@ const StylomeExtractor = () => {
       },
     ]);
     setCurrentText("");
-    toast.success(isHe ? "דגימה נוספה!" : "Sample added!");
-  }, [currentText, currentContext, isHe]);
+    toast.success(tx({ he: "דגימה נוספה!", en: "Sample added!" }, language));
+  }, [currentText, currentContext, language]);
 
   const removeSample = (id: string) => {
     setSamples((prev) => prev.filter((s) => s.id !== id));
@@ -72,7 +73,7 @@ const StylomeExtractor = () => {
 
   const runAnalysis = () => {
     if (samples.length < 1) {
-      toast.error(isHe ? "נדרשת לפחות דגימה אחת" : "At least 1 sample required");
+      toast.error(tx({ he: "נדרשת לפחות דגימה אחת", en: "At least 1 sample required" }, language));
       return;
     }
     const result = analyzeSamples(samples);
@@ -94,7 +95,7 @@ const StylomeExtractor = () => {
     if (!profile) return;
     navigator.clipboard.writeText(profile.systemPrompt);
     setCopied(true);
-    toast.success(isHe ? "הפרומפט הועתק!" : "Prompt copied!");
+    toast.success(tx({ he: "הפרומפט הועתק!", en: "Prompt copied!" }, language));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -109,7 +110,7 @@ const StylomeExtractor = () => {
         </div>
         <div>
           <h3 className="text-lg font-semibold text-foreground">
-            {isHe ? "מחלץ טביעת סגנון" : "Stylome Extractor"}
+            {tx({ he: "מחלץ טביעת סגנון", en: "Stylome Extractor" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground">
             {isHe
@@ -122,9 +123,9 @@ const StylomeExtractor = () => {
       {/* Progress Steps */}
       <div className="flex items-center gap-2 text-sm">
         {[
-          { key: "collect" as WizardStep, label: isHe ? "איסוף דגימות" : "Collect Samples" },
-          { key: "analyze" as WizardStep, label: isHe ? "ניתוח" : "Analyze" },
-          { key: "profile" as WizardStep, label: isHe ? "פרופיל סגנוני" : "Style Profile" },
+          { key: "collect" as WizardStep, label: tx({ he: "איסוף דגימות", en: "Collect Samples" }, language) },
+          { key: "analyze" as WizardStep, label: tx({ he: "ניתוח", en: "Analyze" }, language) },
+          { key: "profile" as WizardStep, label: tx({ he: "פרופיל סגנוני", en: "Style Profile" }, language) },
         ].map((s, i) => (
           <div key={s.key} className="flex items-center gap-2">
             {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
@@ -152,7 +153,7 @@ const StylomeExtractor = () => {
           <Card className="border-primary/10 bg-primary/5">
             <CardContent className="p-4">
               <div className="mb-2 text-sm font-medium text-foreground">
-                {isHe ? "שאלות מנחות (אופציונלי):" : "Guiding questions (optional):"}
+                {tx({ he: "שאלות מנחות (אופציונלי):", en: "Guiding questions (optional):" }, language)}
               </div>
               <div className="space-y-1.5">
                 {INTERVIEW_QUESTIONS.slice(0, 3).map((q, i) => (
@@ -194,7 +195,7 @@ const StylomeExtractor = () => {
                 </Select>
                 <Button onClick={addSample} size="sm" className="gap-1.5">
                   <Plus className="h-3.5 w-3.5" />
-                  {isHe ? "הוסף דגימה" : "Add Sample"}
+                  {tx({ he: "הוסף דגימה", en: "Add Sample" }, language)}
                 </Button>
               </div>
             </CardContent>
@@ -205,12 +206,12 @@ const StylomeExtractor = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {samples.length} {isHe ? "דגימות" : "samples"} · {totalWords} {isHe ? "מילים" : "words"}
+                  {samples.length} {tx({ he: "דגימות", en: "samples" }, language)} · {totalWords} {tx({ he: "מילים", en: "words" }, language)}
                 </span>
                 <Badge variant={totalWords >= 200 ? "default" : "outline"} className="text-xs">
                   {totalWords >= 200
-                    ? (isHe ? "מספיק לניתוח מעמיק" : "Enough for deep analysis")
-                    : (isHe ? `נדרשות עוד ${200 - totalWords} מילים` : `Need ${200 - totalWords} more words`)}
+                    ? (tx({ he: "מספיק לניתוח מעמיק", en: "Enough for deep analysis" }, language))
+                    : (tx({ he: `נדרשות עוד ${200 - totalWords} מילים`, en: `Need ${200 - totalWords} more words` }, language))}
                 </Badge>
               </div>
               {samples.map((sample) => (
@@ -222,7 +223,7 @@ const StylomeExtractor = () => {
                           {CONTEXT_LABELS[sample.context][language]}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {sample.wordCount} {isHe ? "מילים" : "words"}
+                          {sample.wordCount} {tx({ he: "מילים", en: "words" }, language)}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-2" dir="auto">
@@ -246,7 +247,7 @@ const StylomeExtractor = () => {
                 disabled={samples.length < 1}
               >
                 <Sparkles className="h-4 w-4" />
-                {isHe ? "נתח את הסגנון שלי" : "Analyze My Style"}
+                {tx({ he: "נתח את הסגנון שלי", en: "Analyze My Style" }, language)}
               </Button>
             </div>
           )}
@@ -260,34 +261,34 @@ const StylomeExtractor = () => {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
-                {isHe ? "מדדים כמותיים" : "Quantitative Metrics"}
+                {tx({ he: "מדדים כמותיים", en: "Quantitative Metrics" }, language)}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{profile.metrics.avgSentenceLength}</div>
-                  <div className="text-xs text-muted-foreground">{isHe ? "אורך משפט ממוצע" : "Avg sentence length"}</div>
+                  <div className="text-xs text-muted-foreground">{tx({ he: "אורך משפט ממוצע", en: "Avg sentence length" }, language)}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{Math.round(profile.metrics.dugriScore * 100)}%</div>
-                  <div className="text-xs text-muted-foreground">{isHe ? "ציון דוגרי" : "Dugri Score"}</div>
+                  <div className="text-xs text-muted-foreground">{tx({ he: "ציון דוגרי", en: "Dugri Score" }, language)}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{profile.metrics.codeMixingIndex}%</div>
-                  <div className="text-xs text-muted-foreground">{isHe ? "ערבוב שפות" : "Code-Mixing"}</div>
+                  <div className="text-xs text-muted-foreground">{tx({ he: "ערבוב שפות", en: "Code-Mixing" }, language)}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{profile.metrics.lexicalDiversity}</div>
-                  <div className="text-xs text-muted-foreground">{isHe ? "מגוון מילוני" : "Lexical Diversity"}</div>
+                  <div className="text-xs text-muted-foreground">{tx({ he: "מגוון מילוני", en: "Lexical Diversity" }, language)}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{Math.round(profile.metrics.shortSentenceRatio * 100)}%</div>
-                  <div className="text-xs text-muted-foreground">{isHe ? "משפטים קצרים" : "Short sentences"}</div>
+                  <div className="text-xs text-muted-foreground">{tx({ he: "משפטים קצרים", en: "Short sentences" }, language)}</div>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="text-lg font-bold text-primary">{Math.round(profile.metrics.longSentenceRatio * 100)}%</div>
-                  <div className="text-xs text-muted-foreground">{isHe ? "משפטים ארוכים" : "Long sentences"}</div>
+                  <div className="text-xs text-muted-foreground">{tx({ he: "משפטים ארוכים", en: "Long sentences" }, language)}</div>
                 </div>
               </div>
             </CardContent>
@@ -297,34 +298,34 @@ const StylomeExtractor = () => {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
-                {isHe ? "פרופיל איכותני" : "Qualitative Profile"}
+                {tx({ he: "פרופיל איכותני", en: "Qualitative Profile" }, language)}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl bg-muted/50 p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "רגיסטר" : "Register"}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">{tx({ he: "רגיסטר", en: "Register" }, language)}</div>
                   <Badge>{REGISTER_LABELS[profile.style.register][language]}</Badge>
                 </div>
                 <div className="rounded-xl bg-muted/50 p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "סגנון קוגניטיבי" : "Cognitive Style"}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">{tx({ he: "סגנון קוגניטיבי", en: "Cognitive Style" }, language)}</div>
                   <Badge>{COGNITIVE_LABELS[profile.style.cognitiveStyle][language]}</Badge>
                 </div>
                 <div className="rounded-xl bg-muted/50 p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "עוצמה רגשית" : "Emotional Intensity"}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">{tx({ he: "עוצמה רגשית", en: "Emotional Intensity" }, language)}</div>
                   <Badge>{EMOTION_LABELS[profile.style.emotionalIntensity][language]}</Badge>
                 </div>
                 <div className="rounded-xl bg-muted/50 p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "הומור" : "Humor"}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">{tx({ he: "הומור", en: "Humor" }, language)}</div>
                   <Badge variant={profile.style.humor ? "default" : "outline"}>
-                    {profile.style.humor ? (isHe ? "כן" : "Yes") : (isHe ? "לא" : "No")}
+                    {profile.style.humor ? (tx({ he: "כן", en: "Yes" }, language)) : (tx({ he: "לא", en: "No" }, language))}
                   </Badge>
                 </div>
               </div>
 
               {profile.style.metaphorDomains.length > 0 && (
                 <div className="mt-3 rounded-xl bg-muted/50 p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "עולמות מטאפוריים" : "Metaphor Domains"}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">{tx({ he: "עולמות מטאפוריים", en: "Metaphor Domains" }, language)}</div>
                   <div className="flex flex-wrap gap-1.5">
                     {profile.style.metaphorDomains.map((d) => (
                       <Badge key={d} variant="outline" className="text-xs">{d}</Badge>
@@ -335,7 +336,7 @@ const StylomeExtractor = () => {
 
               {profile.patterns.pragmaticMarkers.length > 0 && (
                 <div className="mt-3 rounded-xl bg-muted/50 p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "סמנים פרגמטיים" : "Pragmatic Markers"}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">{tx({ he: "סמנים פרגמטיים", en: "Pragmatic Markers" }, language)}</div>
                   <div className="flex flex-wrap gap-1.5">
                     {profile.patterns.pragmaticMarkers.map((m) => (
                       <Badge key={m} variant="outline" className="text-xs">"{m}"</Badge>
@@ -346,7 +347,7 @@ const StylomeExtractor = () => {
 
               {profile.patterns.topPhrases.length > 0 && (
                 <div className="mt-3 rounded-xl bg-muted/50 p-3">
-                  <div className="text-xs font-medium text-muted-foreground mb-1">{isHe ? "ביטויים שכיחים" : "Top Phrases"}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1">{tx({ he: "ביטויים שכיחים", en: "Top Phrases" }, language)}</div>
                   <div className="flex flex-wrap gap-1.5">
                     {profile.patterns.topPhrases.map((p) => (
                       <Badge key={p} variant="outline" className="text-xs">"{p}"</Badge>
@@ -362,7 +363,7 @@ const StylomeExtractor = () => {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Sparkles className="h-4 w-4 text-primary" />
-                {isHe ? "System Prompt לשכפול הקול שלך" : "System Prompt to Clone Your Voice"}
+                {tx({ he: "System Prompt לשכפול הקול שלך", en: "System Prompt to Clone Your Voice" }, language)}
               </CardTitle>
               <p className="text-xs text-muted-foreground">
                 {isHe
@@ -385,7 +386,7 @@ const StylomeExtractor = () => {
                   className="absolute top-2 start-2 gap-1.5 text-xs"
                 >
                   {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                  {copied ? (isHe ? "הועתק!" : "Copied!") : (isHe ? "העתק" : "Copy")}
+                  {copied ? (tx({ he: "הועתק!", en: "Copied!" }, language)) : (tx({ he: "העתק", en: "Copy" }, language))}
                 </Button>
               </div>
             </CardContent>
@@ -393,15 +394,15 @@ const StylomeExtractor = () => {
 
           {/* Stats */}
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <span>{profile.sampleCount} {isHe ? "דגימות" : "samples"}</span>
+            <span>{profile.sampleCount} {tx({ he: "דגימות", en: "samples" }, language)}</span>
             <span>·</span>
-            <span>{profile.sampleWordCount} {isHe ? "מילים" : "words"}</span>
+            <span>{profile.sampleWordCount} {tx({ he: "מילים", en: "words" }, language)}</span>
           </div>
 
           {/* Actions */}
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setStep("collect")} className="flex-1">
-              {isHe ? "הוסף עוד דגימות" : "Add More Samples"}
+              {tx({ he: "הוסף עוד דגימות", en: "Add More Samples" }, language)}
             </Button>
             <Button
               variant="outline"
@@ -412,7 +413,7 @@ const StylomeExtractor = () => {
               }}
               className="flex-1"
             >
-              {isHe ? "התחל מחדש" : "Start Over"}
+              {tx({ he: "התחל מחדש", en: "Start Over" }, language)}
             </Button>
           </div>
         </div>

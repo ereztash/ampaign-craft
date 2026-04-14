@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import {
   Popover,
   PopoverContent,
@@ -67,14 +68,14 @@ export function WhatsAppSendButton({
           className="gap-1.5 text-green-700 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-700 dark:hover:bg-green-900/20"
         >
           <MessageCircle className="h-3.5 w-3.5 fill-green-500 text-green-500" />
-          {label ?? (isHe ? "שלח ב-WhatsApp" : "Send via WhatsApp")}
+          {label ?? (tx({ he: "שלח ב-WhatsApp", en: "Send via WhatsApp" }, language))}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72" dir={isHe ? "rtl" : "ltr"} align="start">
+      <PopoverContent className="w-72" dir={tx({ he: "rtl", en: "ltr" }, language)} align="start">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-semibold" dir="auto">
-              {isHe ? "שלח ב-WhatsApp" : "Send via WhatsApp"}
+              {tx({ he: "שלח ב-WhatsApp", en: "Send via WhatsApp" }, language)}
             </h4>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setOpen(false)}>
               <X className="h-3.5 w-3.5" />
@@ -83,7 +84,7 @@ export function WhatsAppSendButton({
 
           <div className="space-y-1.5">
             <Label htmlFor="wa-phone" className="text-xs" dir="auto">
-              {isHe ? "מספר טלפון (אופציונלי)" : "Phone number (optional)"}
+              {tx({ he: "מספר טלפון (אופציונלי)", en: "Phone number (optional)" }, language)}
             </Label>
             <Input
               id="wa-phone"
@@ -106,12 +107,12 @@ export function WhatsAppSendButton({
             {phone ? (
               <Button size="sm" className="flex-1 gap-1.5 bg-green-600 hover:bg-green-700 text-white" onClick={handleSend}>
                 <Send className="h-3.5 w-3.5" />
-                {isHe ? "שלח" : "Send"}
+                {tx({ he: "שלח", en: "Send" }, language)}
               </Button>
             ) : (
               <Button size="sm" className="flex-1 gap-1.5 bg-green-600 hover:bg-green-700 text-white" onClick={handleSendNoPhone}>
                 <MessageCircle className="h-3.5 w-3.5" />
-                {isHe ? "פתח WhatsApp" : "Open WhatsApp"}
+                {tx({ he: "פתח WhatsApp", en: "Open WhatsApp" }, language)}
               </Button>
             )}
           </div>

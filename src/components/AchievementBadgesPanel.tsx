@@ -2,6 +2,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Flame } from "lucide-react";
 
 interface AchievementBadgesPanelProps {
@@ -19,7 +20,7 @@ const AchievementBadgesPanel = ({ open, onOpenChange }: AchievementBadgesPanelPr
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">
-            {isHe ? "ההישגים שלך" : "Your Achievements"}
+            {tx({ he: "ההישגים שלך", en: "Your Achievements" }, language)}
           </DialogTitle>
         </DialogHeader>
 
@@ -27,15 +28,15 @@ const AchievementBadgesPanel = ({ open, onOpenChange }: AchievementBadgesPanelPr
         <div className="flex items-center justify-center gap-6 text-sm mb-4">
           <div className="flex items-center gap-1.5 text-accent font-semibold">
             <Flame className="h-4 w-4" />
-            {streak.currentStreak} {isHe ? "שבועות" : "weeks"}
+            {streak.currentStreak} {tx({ he: "שבועות", en: "weeks" }, language)}
           </div>
           <span className="text-muted-foreground">|</span>
           <span className="text-muted-foreground">
-            {unlockedCount}/{totalCount} {isHe ? "הישגים" : "badges"}
+            {unlockedCount}/{totalCount} {tx({ he: "הישגים", en: "badges" }, language)}
           </span>
           <span className="text-muted-foreground">|</span>
           <span className="text-muted-foreground">
-            {mastery.percentage}% {isHe ? "שליטה" : "mastery"}
+            {mastery.percentage}% {tx({ he: "שליטה", en: "mastery" }, language)}
           </span>
         </div>
 
@@ -65,7 +66,7 @@ const AchievementBadgesPanel = ({ open, onOpenChange }: AchievementBadgesPanelPr
               <div className="text-xs text-muted-foreground mt-0.5">{a.description[language]}</div>
               {a.unlockedAt && (
                 <Badge variant="outline" className="mt-1.5 text-[9px]">
-                  {new Date(a.unlockedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
+                  {new Date(a.unlockedAt).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
                 </Badge>
               )}
             </div>

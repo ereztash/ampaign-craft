@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SavedPlan } from "@/types/funnel";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { tx } from "@/i18n/tx";
 import { Bot } from "lucide-react";
 
 const AiCoachPage = () => {
@@ -40,12 +41,12 @@ const AiCoachPage = () => {
           <CardContent className="p-8 space-y-4">
             <Bot className="h-12 w-12 text-primary mx-auto" />
             <p className="font-medium" dir="auto">
-              {isHe ? "נדרשת תוכנית או שאלון עסק" : "Need a plan or business profile"}
+              {tx({ he: "נדרשת תוכנית או שאלון עסק", en: "Need a plan or business profile" }, language)}
             </p>
             <p className="text-sm text-muted-foreground" dir="auto">
-              {isHe ? "צור תוכנית או מלא את האשף כדי שהמאמן יכיר את העסק שלך." : "Create a plan or run the wizard so the coach knows your business."}
+              {tx({ he: "צור תוכנית או מלא את האשף כדי שהמאמן יכיר את העסק שלך.", en: "Create a plan or run the wizard so the coach knows your business." }, language)}
             </p>
-            <Button onClick={() => navigate("/wizard")}>{isHe ? "לאשף" : "Open wizard"}</Button>
+            <Button onClick={() => navigate("/wizard")}>{tx({ he: "לאשף", en: "Open wizard" }, language)}</Button>
           </CardContent>
         </Card>
       </main>

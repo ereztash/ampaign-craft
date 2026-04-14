@@ -5,6 +5,7 @@ import { SavedPlan } from "@/types/funnel";
 import BackToHub from "@/components/BackToHub";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Plus, FileText, Clock, Trash2 } from "lucide-react";
 
 const Plans = () => {
@@ -30,10 +31,10 @@ const Plans = () => {
         <BackToHub currentPage={language === "he" ? "תוכניות שמורות" : "Saved Plans"} />
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-foreground" dir="auto">
-            {isHe ? "התוכניות שלי" : "My Plans"} ({plans.length})
+            {tx({ he: "התוכניות שלי", en: "My Plans" }, language)} ({plans.length})
           </h1>
           <Button onClick={() => navigate("/wizard")} className="gap-2">
-            <Plus className="h-4 w-4" /> {isHe ? "תוכנית חדשה" : "New Plan"}
+            <Plus className="h-4 w-4" /> {tx({ he: "תוכנית חדשה", en: "New Plan" }, language)}
           </Button>
         </div>
 
@@ -42,13 +43,13 @@ const Plans = () => {
             <CardContent className="p-8 text-center">
               <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-lg font-medium text-foreground mb-2" dir="auto">
-                {isHe ? "אין תוכניות עדיין" : "No plans yet"}
+                {tx({ he: "אין תוכניות עדיין", en: "No plans yet" }, language)}
               </p>
               <p className="text-sm text-muted-foreground mb-4" dir="auto">
-                {isHe ? "צור את התוכנית הראשונה שלך תוך 2 דקות" : "Create your first plan in 2 minutes"}
+                {tx({ he: "צור את התוכנית הראשונה שלך תוך 2 דקות", en: "Create your first plan in 2 minutes" }, language)}
               </p>
               <Button onClick={() => navigate("/wizard")} className="gap-2">
-                <Plus className="h-4 w-4" /> {isHe ? "התחל" : "Start"}
+                <Plus className="h-4 w-4" /> {tx({ he: "התחל", en: "Start" }, language)}
               </Button>
             </CardContent>
           </Card>
@@ -65,7 +66,7 @@ const Plans = () => {
                       <p className="text-sm font-medium text-foreground">{plan.name}</p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {new Date(plan.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
+                        {new Date(plan.savedAt).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
                       </p>
                     </div>
                   </div>

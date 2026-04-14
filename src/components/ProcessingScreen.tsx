@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FormData } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { motion } from "framer-motion";
 
 interface ProcessingScreenProps {
@@ -59,14 +60,14 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-4">
         <div className="flex flex-col items-center text-center">
-          <div className="text-6xl mb-4" role="img" aria-label={isHe ? "חגיגה" : "Celebration"}>🎉</div>
+          <div className="text-6xl mb-4" role="img" aria-label={tx({ he: "חגיגה", en: "Celebration" }, language)}>🎉</div>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
-            {isHe ? "התוכנית שלך מוכנה!" : "Your plan is ready!"}
+            {tx({ he: "התוכנית שלך מוכנה!", en: "Your plan is ready!" }, language)}
           </h2>
           <p className="text-lg text-muted-foreground" dir="auto">
             {fieldName
-              ? (isHe ? `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות` : `Personalized ${fieldName} marketing plan — let's see the results`)
-              : (isHe ? "בוא נראה מה בנינו" : "Let's see what we built")}
+              ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan — let's see the results` }, language))
+              : (tx({ he: "בוא נראה מה בנינו", en: "Let's see what we built" }, language))}
           </p>
           <div className="mt-4 flex gap-2">
             {["🚀", "📊", "💡", "🎯", "✨"].map((e, i) => (
@@ -76,7 +77,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           {showContinue && (
             <div className="mt-6">
               <Button size="lg" onClick={onComplete} className="funnel-gradient text-accent-foreground font-semibold px-8">
-                {isHe ? "בוא נראה את התוצאות →" : "See your results →"}
+                {tx({ he: "בוא נראה את התוצאות →", en: "See your results →" }, language)}
               </Button>
             </div>
           )}
@@ -98,14 +99,14 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           transition={{ type: "spring", stiffness: 200, damping: 15 }}
           className="flex flex-col items-center text-center"
         >
-          <div className="text-6xl mb-4" role="img" aria-label={isHe ? "חגיגה" : "Celebration"}>🎉</div>
+          <div className="text-6xl mb-4" role="img" aria-label={tx({ he: "חגיגה", en: "Celebration" }, language)}>🎉</div>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
-            {isHe ? "התוכנית שלך מוכנה!" : "Your plan is ready!"}
+            {tx({ he: "התוכנית שלך מוכנה!", en: "Your plan is ready!" }, language)}
           </h2>
           <p className="text-lg text-muted-foreground" dir="auto">
             {fieldName
-              ? (isHe ? `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות` : `Personalized ${fieldName} marketing plan — let's see the results`)
-              : (isHe ? "בוא נראה מה בנינו" : "Let's see what we built")}
+              ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan — let's see the results` }, language))
+              : (tx({ he: "בוא נראה מה בנינו", en: "Let's see what we built" }, language))}
           </p>
           <div className="mt-4 flex gap-2">
             {["🚀", "📊", "💡", "🎯", "✨"].map((e, i) => (
@@ -127,7 +128,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
               className="mt-6"
             >
               <Button size="lg" onClick={onComplete} className="funnel-gradient text-accent-foreground font-semibold px-8">
-                {isHe ? "בוא נראה את התוצאות →" : "See your results →"}
+                {tx({ he: "בוא נראה את התוצאות →", en: "See your results →" }, language)}
               </Button>
             </motion.div>
           )}
@@ -147,10 +148,17 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
             </svg>
           </div>
           <h2 className="mb-4 text-2xl font-bold text-foreground">{t("processingTitle")}</h2>
-          <div className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted">
-            <div className="h-full funnel-gradient" style={{ width: `${progress}%` }} />
+          <div
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={tx({ he: `עיבוד — ${progress}%`, en: `Processing — ${progress}%` }, language)}
+            className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted"
+          >
+            <div className="h-full funnel-gradient" style={{ width: `${progress}%` }} aria-hidden="true" />
           </div>
-          <p className="text-muted-foreground" aria-live="polite">{messages[msgIndex]}</p>
+          <p className="text-muted-foreground" aria-live="polite" aria-atomic="true">{messages[msgIndex]}</p>
         </div>
       </div>
     );
@@ -165,7 +173,8 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
       >
         {/* Animated Funnel with neuro-spectrum gradient */}
         <div className="relative mb-8 h-32 w-32">
-          <svg viewBox="0 0 100 100" className="h-full w-full">
+          <svg viewBox="0 0 100 100" className="h-full w-full" role="img" aria-label={tx({ he: `התקדמות — ${progress}%`, en: `Progress — ${progress}%` }, language)}>
+            <title>{tx({ he: `התקדמות — ${progress}%`, en: `Progress — ${progress}%` }, language)}</title>
             <defs>
               <clipPath id="funnelClip">
                 <path d="M15 10 L85 10 L65 45 L65 80 L35 90 L35 45 Z" />
@@ -199,8 +208,16 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
         <h2 className="mb-4 text-2xl font-bold text-foreground">{t("processingTitle")}</h2>
 
         {/* Progress bar with neuro-spectrum */}
-        <div className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted">
+        <div
+          role="progressbar"
+          aria-valuenow={progress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={tx({ he: `עיבוד — ${progress}%`, en: `Processing — ${progress}%` }, language)}
+          className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted"
+        >
           <motion.div
+            aria-hidden="true"
             className="h-full rounded-full"
             style={{
               width: `${progress}%`,
@@ -215,6 +232,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           animate={{ opacity: 1, y: 0 }}
           className="text-muted-foreground"
           aria-live="polite"
+          aria-atomic="true"
         >
           {messages[msgIndex]}
         </motion.p>

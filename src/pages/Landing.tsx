@@ -9,6 +9,7 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Crosshair, BarChart3, TrendingUp, DollarSign, Heart, Sparkles, ArrowDown, Check } from "lucide-react";
@@ -29,11 +30,11 @@ const PageComponent = () => {
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true } };
 
   const modules = [
-    { icon: Crosshair, color: "text-amber-500", title: isHe ? "בידול" : "Differentiation", desc: isHe ? "גלה מה באמת מבדל אותך — לא תיאורים, מנגנונים" : "Discover what truly differentiates you — mechanisms, not adjectives" },
-    { icon: BarChart3, color: "text-primary", title: isHe ? "שיווק" : "Marketing", desc: isHe ? "משפך 5 שלבים + ערוצים + תקציב + hooks מותאמים" : "5-stage funnel + channels + budget + personalized hooks" },
-    { icon: TrendingUp, color: "text-accent", title: isHe ? "מכירות" : "Sales", desc: isHe ? "סקריפטים, התנגדויות, neuro-closing — מוכנים להעתקה" : "Scripts, objections, neuro-closing — ready to copy" },
-    { icon: DollarSign, color: "text-emerald-500", title: isHe ? "תמחור" : "Pricing", desc: isHe ? "מבנה tiers, offer stack, אחריות, מסגור מחיר" : "Tier structure, offer stack, guarantee, price framing" },
-    { icon: Heart, color: "text-pink-500", title: isHe ? "שימור" : "Retention", desc: isHe ? "Onboarding, churn prevention, referral, loyalty" : "Onboarding, churn prevention, referral, loyalty" },
+    { icon: Crosshair, color: "text-amber-500", title: tx({ he: "בידול", en: "Differentiation" }, language), desc: tx({ he: "גלה מה באמת מבדל אותך — לא תיאורים, מנגנונים", en: "Discover what truly differentiates you — mechanisms, not adjectives" }, language) },
+    { icon: BarChart3, color: "text-primary", title: tx({ he: "שיווק", en: "Marketing" }, language), desc: tx({ he: "משפך 5 שלבים + ערוצים + תקציב + hooks מותאמים", en: "5-stage funnel + channels + budget + personalized hooks" }, language) },
+    { icon: TrendingUp, color: "text-accent", title: tx({ he: "מכירות", en: "Sales" }, language), desc: tx({ he: "סקריפטים, התנגדויות, neuro-closing — מוכנים להעתקה", en: "Scripts, objections, neuro-closing — ready to copy" }, language) },
+    { icon: DollarSign, color: "text-emerald-500", title: tx({ he: "תמחור", en: "Pricing" }, language), desc: tx({ he: "מבנה tiers, offer stack, אחריות, מסגור מחיר", en: "Tier structure, offer stack, guarantee, price framing" }, language) },
+    { icon: Heart, color: "text-pink-500", title: tx({ he: "שימור", en: "Retention" }, language), desc: tx({ he: "Onboarding, churn prevention, referral, loyalty", en: "Onboarding, churn prevention, referral, loyalty" }, language) },
   ];
 
   return (
@@ -56,7 +57,7 @@ const PageComponent = () => {
 
           {/* Cortisol — pain/scroll-stop */}
           <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl" dir="auto">
-            {isHe ? "משקיע בשיווק ולא רואה תוצאות?" : "Investing in marketing with no results?"}
+            {tx({ he: "משקיע בשיווק ולא רואה תוצאות?", en: "Investing in marketing with no results?" }, language)}
           </h1>
 
           {/* Oxytocin — trust/empathy */}
@@ -70,7 +71,7 @@ const PageComponent = () => {
           <div className="flex flex-col items-center gap-2">
             <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
               <Sparkles className="h-5 w-5" />
-              {isHe ? "בנה את התוכנית שלי — בחינם" : "Build My Plan — Free"}
+              {tx({ he: "בנה את התוכנית שלי — בחינם", en: "Build My Plan — Free" }, language)}
             </Button>
             <p className="text-xs text-muted-foreground" dir="auto">
               {isHe
@@ -88,7 +89,7 @@ const PageComponent = () => {
       {/* 5 Modules */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-10" dir="auto">
-          {isHe ? "5 מודולים. מחזור שלם." : "5 Modules. Complete Cycle."}
+          {tx({ he: "5 מודולים. מחזור שלם.", en: "5 Modules. Complete Cycle." }, language)}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {modules.map((mod, i) => (
@@ -124,12 +125,12 @@ const PageComponent = () => {
                 : "Join our Early Adopters and get full access free for 2 months"}
             </p>
             <Button onClick={() => navigate("/wizard")} className="gap-2 cta-warm">
-              {isHe ? "התחל עכשיו בחינם" : "Start Free Now"}
+              {tx({ he: "התחל עכשיו בחינם", en: "Start Free Now" }, language)}
             </Button>
             <div className="flex flex-wrap justify-center gap-4 pt-4 text-xs text-muted-foreground">
-              <span>21 {isHe ? "מנועי אינטליגנציה" : "intelligence engines"}</span>
-              <span>31 {isHe ? "דומיינים מוטמעים" : "embedded domains"}</span>
-              <span>40 {isHe ? "שדות ידע ישראלי" : "Israeli knowledge fields"}</span>
+              <span>21 {tx({ he: "מנועי אינטליגנציה", en: "intelligence engines" }, language)}</span>
+              <span>31 {tx({ he: "דומיינים מוטמעים", en: "embedded domains" }, language)}</span>
+              <span>40 {tx({ he: "שדות ידע ישראלי", en: "Israeli knowledge fields" }, language)}</span>
             </div>
           </CardContent>
         </Card>
@@ -140,23 +141,23 @@ const PageComponent = () => {
         <div className="max-w-2xl mx-auto grid gap-4 sm:grid-cols-2">
           <Card className="border-destructive/20 bg-destructive/5">
             <CardContent className="p-5">
-              <div className="text-sm font-bold text-destructive mb-2" dir="auto">🔴 {isHe ? "לפני" : "Before"}</div>
+              <div className="text-sm font-bold text-destructive mb-2" dir="auto">🔴 {tx({ he: "לפני", en: "Before" }, language)}</div>
               <ul className="space-y-2 text-sm text-muted-foreground" dir="auto">
-                <li>{isHe ? "מבזבז שעות על פוסטים שאף אחד לא רואה" : "Wasting hours on posts nobody sees"}</li>
-                <li>{isHe ? "לא יודע כמה לגבות" : "Don't know how much to charge"}</li>
-                <li>{isHe ? "מאבד לקוחות למתחרים" : "Losing customers to competitors"}</li>
-                <li>{isHe ? "לא יודע מה עושים קודם" : "Don't know what to do first"}</li>
+                <li>{tx({ he: "מבזבז שעות על פוסטים שאף אחד לא רואה", en: "Wasting hours on posts nobody sees" }, language)}</li>
+                <li>{tx({ he: "לא יודע כמה לגבות", en: "Don't know how much to charge" }, language)}</li>
+                <li>{tx({ he: "מאבד לקוחות למתחרים", en: "Losing customers to competitors" }, language)}</li>
+                <li>{tx({ he: "לא יודע מה עושים קודם", en: "Don't know what to do first" }, language)}</li>
               </ul>
             </CardContent>
           </Card>
           <Card className="border-accent/20 bg-accent/5">
             <CardContent className="p-5">
-              <div className="text-sm font-bold text-accent mb-2" dir="auto">🟢 {isHe ? "אחרי" : "After"}</div>
+              <div className="text-sm font-bold text-accent mb-2" dir="auto">🟢 {tx({ he: "אחרי", en: "After" }, language)}</div>
               <ul className="space-y-2 text-sm text-foreground" dir="auto">
-                <li>{isHe ? "תוכנית שיווק מותאמת לתעשייה שלך" : "Marketing plan tailored to your industry"}</li>
-                <li>{isHe ? "סקריפטי מכירה מוכנים להעתקה" : "Copy-paste sales scripts"}</li>
-                <li>{isHe ? "תמחור מבוסס על דאטה ישראלי" : "Pricing based on Israeli market data"}</li>
-                <li>{isHe ? "לקוחות שחוזרים — עם תוכנית שימור" : "Returning customers — with retention plan"}</li>
+                <li>{tx({ he: "תוכנית שיווק מותאמת לתעשייה שלך", en: "Marketing plan tailored to your industry" }, language)}</li>
+                <li>{tx({ he: "סקריפטי מכירה מוכנים להעתקה", en: "Copy-paste sales scripts" }, language)}</li>
+                <li>{tx({ he: "תמחור מבוסס על דאטה ישראלי", en: "Pricing based on Israeli market data" }, language)}</li>
+                <li>{tx({ he: "לקוחות שחוזרים — עם תוכנית שימור", en: "Returning customers — with retention plan" }, language)}</li>
               </ul>
             </CardContent>
           </Card>
@@ -166,13 +167,13 @@ const PageComponent = () => {
       {/* How It Works */}
       <section className="container mx-auto px-4 py-16 bg-muted/30">
         <h2 className="text-2xl font-bold text-center text-foreground mb-10" dir="auto">
-          {isHe ? "איך זה עובד?" : "How It Works"}
+          {tx({ he: "איך זה עובד?", en: "How It Works" }, language)}
         </h2>
         <div className="grid gap-8 sm:grid-cols-3 max-w-3xl mx-auto">
           {[
-            { step: "1", title: isHe ? "ענה על שאלות" : "Answer Questions", desc: isHe ? "2-12 דקות. המערכת לומדת את העסק שלך" : "2-12 minutes. The system learns your business" },
-            { step: "2", title: isHe ? "קבל אסטרטגיה" : "Get Your Strategy", desc: isHe ? "תוכנית מותאמת אישית עם סקריפטים מוכנים" : "Personalized plan with ready-to-use scripts" },
-            { step: "3", title: isHe ? "בצע ותצמח" : "Execute & Grow", desc: isHe ? "העתק, הדבק, ותצא לדרך" : "Copy, paste, and go" },
+            { step: "1", title: tx({ he: "ענה על שאלות", en: "Answer Questions" }, language), desc: tx({ he: "2-12 דקות. המערכת לומדת את העסק שלך", en: "2-12 minutes. The system learns your business" }, language) },
+            { step: "2", title: tx({ he: "קבל אסטרטגיה", en: "Get Your Strategy" }, language), desc: tx({ he: "תוכנית מותאמת אישית עם סקריפטים מוכנים", en: "Personalized plan with ready-to-use scripts" }, language) },
+            { step: "3", title: tx({ he: "בצע ותצמח", en: "Execute & Grow" }, language), desc: tx({ he: "העתק, הדבק, ותצא לדרך", en: "Copy, paste, and go" }, language) },
           ].map((s, i) => (
             <div key={i} className="text-center">
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">{s.step}</div>
@@ -186,12 +187,12 @@ const PageComponent = () => {
       {/* Pricing Preview */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-2xl font-bold text-center text-foreground mb-10" dir="auto">
-          {isHe ? "תוכניות" : "Plans"}
+          {tx({ he: "תוכניות", en: "Plans" }, language)}
         </h2>
         <div className="grid gap-4 sm:grid-cols-3 max-w-3xl mx-auto">
           {TIERS.map((tier, i) => (
             <Card key={tier.id} className={`${i === 1 ? "border-primary border-2 relative" : ""}`}>
-              {i === 1 && <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs">{isHe ? "הכי פופולרי" : "Most Popular"}</Badge>}
+              {i === 1 && <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs">{tx({ he: "הכי פופולרי", en: "Most Popular" }, language)}</Badge>}
               <CardContent className="p-5 text-center">
                 <h3 className="font-bold text-lg">{tier.name[language]}</h3>
                 <div className="text-2xl font-bold text-primary my-2">{tier.price[language]}</div>
@@ -212,11 +213,11 @@ const PageComponent = () => {
       {/* Final CTA */}
       <section className="container mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold text-foreground mb-4" dir="auto">
-          {isHe ? "מוכן להתחיל?" : "Ready to Start?"}
+          {tx({ he: "מוכן להתחיל?", en: "Ready to Start?" }, language)}
         </h2>
         <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
           <Sparkles className="h-5 w-5" />
-          {isHe ? "בנה את התוכנית שלי — בחינם" : "Build My Plan — Free"}
+          {tx({ he: "בנה את התוכנית שלי — בחינם", en: "Build My Plan — Free" }, language)}
         </Button>
       </section>
     </main>

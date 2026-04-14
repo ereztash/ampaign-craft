@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { tx } from "@/i18n/tx";
 import { ShieldCheck, Languages, Sparkles, Target } from "lucide-react";
 import { AICopyGenerator } from "@/components/AICopyGenerator";
 
@@ -62,15 +63,15 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
         )}
         <TabsTrigger value="copyqa" className="text-xs px-3 gap-1">
           <ShieldCheck className="h-3 w-3" />
-          {isHe ? "בדיקת קופי" : "Copy QA"}
+          {tx({ he: "בדיקת קופי", en: "Copy QA" }, language)}
         </TabsTrigger>
         <TabsTrigger value="aicopy" className="text-xs px-3 gap-1">
           <Sparkles className="h-3 w-3" />
-          {isHe ? "AI קופי" : "AI Copy"}
+          {tx({ he: "AI קופי", en: "AI Copy" }, language)}
         </TabsTrigger>
         <TabsTrigger value="uvp" className="text-xs px-3 gap-1">
           <Target className="h-3 w-3" />
-          {isHe ? "הצעת ערך" : "UVP"}
+          {tx({ he: "הצעת ערך", en: "UVP" }, language)}
         </TabsTrigger>
       </TabsList>
       </div>
@@ -178,22 +179,22 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-primary" />
-              {isHe ? "בדיקת איכות קופי + אופטימיזציה לעברית" : "Copy Quality Audit + Hebrew Optimization"}
+              {tx({ he: "בדיקת איכות קופי + אופטימיזציה לעברית", en: "Copy Quality Audit + Hebrew Optimization" }, language)}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              {isHe ? "הדבק את הטקסט השיווקי שלך — נבדוק אותו מול 6 מדדים נוירו-פסיכולוגיים + 8 כללי עברית" : "Paste your marketing copy — we'll audit it against 6 neuro-psychological metrics + 8 Hebrew rules"}
+              {tx({ he: "הדבק את הטקסט השיווקי שלך — נבדוק אותו מול 6 מדדים נוירו-פסיכולוגיים + 8 כללי עברית", en: "Paste your marketing copy — we'll audit it against 6 neuro-psychological metrics + 8 Hebrew rules" }, language)}
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
               value={copyText}
               onChange={(e) => setCopyText(e.target.value)}
-              placeholder={isHe ? "הדבק כאן את הטקסט השיווקי שלך..." : "Paste your marketing copy here..."}
+              placeholder={tx({ he: "הדבק כאן את הטקסט השיווקי שלך...", en: "Paste your marketing copy here..." }, language)}
               className="min-h-[120px]"
               dir="auto"
             />
             <Button onClick={runCopyAudit} disabled={!copyText.trim()}>
-              {isHe ? "בדוק עכשיו" : "Audit Now"}
+              {tx({ he: "בדוק עכשיו", en: "Audit Now" }, language)}
             </Button>
 
             {copyQA && (
@@ -203,7 +204,7 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
                   <div className={`text-3xl font-bold ${copyQA.score >= 60 ? "text-accent" : copyQA.score >= 40 ? "text-amber-500" : "text-destructive"}`}>
                     {copyQA.score}/100
                   </div>
-                  <span className="text-sm text-muted-foreground">{isHe ? "ציון קופי" : "Copy Score"}</span>
+                  <span className="text-sm text-muted-foreground">{tx({ he: "ציון קופי", en: "Copy Score" }, language)}</span>
                   {hebrewScore && (
                     <>
                       <div className={`text-3xl font-bold ${hebrewScore.total >= 60 ? "text-accent" : hebrewScore.total >= 40 ? "text-amber-500" : "text-destructive"}`}>
@@ -211,7 +212,7 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
                       </div>
                       <span className="text-sm text-muted-foreground flex items-center gap-1">
                         <Languages className="h-3 w-3" />
-                        {isHe ? "ציון עברית" : "Hebrew Score"}
+                        {tx({ he: "ציון עברית", en: "Hebrew Score" }, language)}
                       </span>
                     </>
                   )}
@@ -220,11 +221,11 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
                 {/* Risks */}
                 {copyQA.risks.length > 0 && (
                   <div className="space-y-2">
-                    <h4 className="text-xs font-semibold text-destructive">{isHe ? "סיכונים שזוהו:" : "Risks detected:"}</h4>
+                    <h4 className="text-xs font-semibold text-destructive">{tx({ he: "סיכונים שזוהו:", en: "Risks detected:" }, language)}</h4>
                     {copyQA.risks.map((risk, i) => (
                       <div key={i} className={`rounded-lg border p-2.5 ${risk.severity === "high" ? "border-destructive/30 bg-destructive/5" : "border-amber-500/20"}`}>
                         <div className="text-xs font-medium text-foreground">{risk.message[language]}</div>
-                        <div className="text-xs text-accent mt-1">{isHe ? "תיקון:" : "Fix:"} {risk.fix[language]}</div>
+                        <div className="text-xs text-accent mt-1">{tx({ he: "תיקון:", en: "Fix:" }, language)} {risk.fix[language]}</div>
                       </div>
                     ))}
                   </div>
@@ -235,27 +236,27 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
                   <div className="rounded-lg border p-3 bg-muted/30">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-xs font-semibold text-muted-foreground">
-                        {isHe ? "ניתוח AI (Perplexity & Burstiness):" : "AI Detection (Perplexity & Burstiness):"}
+                        {tx({ he: "ניתוח AI (Perplexity & Burstiness):", en: "AI Detection (Perplexity & Burstiness):" }, language)}
                       </h4>
                       <Badge className={`text-xs text-white ${
                         copyQA.aiDetection.humanScore >= 70 ? "bg-green-500" :
                         copyQA.aiDetection.humanScore >= 50 ? "bg-yellow-500" :
                         copyQA.aiDetection.humanScore >= 30 ? "bg-orange-500" : "bg-red-500"
                       }`}>
-                        {copyQA.aiDetection.humanScore}/100 {copyQA.aiDetection.verdict === "human" ? (isHe ? "אנושי" : "Human") :
-                          copyQA.aiDetection.verdict === "likely-human" ? (isHe ? "סביר אנושי" : "Likely Human") :
-                          copyQA.aiDetection.verdict === "uncertain" ? (isHe ? "לא ברור" : "Uncertain") :
-                          copyQA.aiDetection.verdict === "likely-ai" ? (isHe ? "סביר AI" : "Likely AI") :
+                        {copyQA.aiDetection.humanScore}/100 {copyQA.aiDetection.verdict === "human" ? (tx({ he: "אנושי", en: "Human" }, language)) :
+                          copyQA.aiDetection.verdict === "likely-human" ? (tx({ he: "סביר אנושי", en: "Likely Human" }, language)) :
+                          copyQA.aiDetection.verdict === "uncertain" ? (tx({ he: "לא ברור", en: "Uncertain" }, language)) :
+                          copyQA.aiDetection.verdict === "likely-ai" ? (tx({ he: "סביר AI", en: "Likely AI" }, language)) :
                           "AI"}
                       </Badge>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{isHe ? "תנודתיות משפטים:" : "Burstiness:"}</span>
+                        <span className="text-muted-foreground">{tx({ he: "תנודתיות משפטים:", en: "Burstiness:" }, language)}</span>
                         <span className="font-medium">{Number(copyQA.aiDetection.burstiness).toFixed(1)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{isHe ? "הפתעה לקסיקלית:" : "Perplexity:"}</span>
+                        <span className="text-muted-foreground">{tx({ he: "הפתעה לקסיקלית:", en: "Perplexity:" }, language)}</span>
                         <span className="font-medium">{Number(copyQA.aiDetection.perplexity).toFixed(1)}</span>
                       </div>
                     </div>
@@ -265,7 +266,7 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
                 {/* Hebrew breakdown */}
                 {hebrewScore && (
                   <div className="space-y-1.5">
-                    <h4 className="text-xs font-semibold text-muted-foreground">{isHe ? "פירוט עברית:" : "Hebrew breakdown:"}</h4>
+                    <h4 className="text-xs font-semibold text-muted-foreground">{tx({ he: "פירוט עברית:", en: "Hebrew breakdown:" }, language)}</h4>
                     {hebrewScore.breakdown.map((item, i) => (
                       <div key={i} className="flex items-center justify-between text-xs border-b pb-1">
                         <span className="text-muted-foreground">{item.rule}</span>
