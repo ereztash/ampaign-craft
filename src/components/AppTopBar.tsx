@@ -51,12 +51,13 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-9 w-9 rounded-full p-0 text-muted-foreground hover:text-foreground"
+              className="gap-1.5 h-9 px-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300"
               onClick={() => setDebugOpen(true)}
               aria-label={isHe ? "פאנל ארכיטיפ" : "Archetype debug panel"}
               title={isHe ? "פאנל ניפוי ארכיטיפ (בעלים בלבד)" : "Archetype debug panel (owner only)"}
             >
               <Brain className="h-4 w-4" />
+              <span className="hidden md:inline text-xs font-medium">Admin</span>
             </Button>
           )}
           <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-9 min-w-[44px]" aria-label={isHe ? "Switch to English" : "עבור לעברית"}>
