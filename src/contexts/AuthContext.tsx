@@ -200,6 +200,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const { flushTrainingBuffer } = await import("@/engine/trainingDataEngine");
                 void flushTrainingBuffer(sess.user.id).catch(() => {});
               } catch { /* ignore */ }
+              // Flush buffered outcome-loop events
+              try {
+                const { flushOutcomeBuffer } = await import("@/engine/outcomeLoopEngine");
+                void flushOutcomeBuffer(sess.user.id).catch(() => {});
+              } catch { /* ignore */ }
             } else {
               setUser(null);
               setTierState("free");

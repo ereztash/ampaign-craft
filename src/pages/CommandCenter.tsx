@@ -265,6 +265,8 @@ const CommandCenter = () => {
               hasDiff={hasDiff}
               planCount={plans.length}
               masteryFeatures={masteryFeatures}
+              healthScore={healthTotal}
+              connectedSources={connectedCount}
             />
           </div>
           <div className="lg:col-span-2 space-y-3">

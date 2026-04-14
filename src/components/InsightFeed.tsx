@@ -1,11 +1,20 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 import InsightCard, { InsightVariant } from "@/components/InsightCard";
 import type { Bottleneck } from "@/engine/bottleneckEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import type { WeeklyPulse } from "@/engine/pulseEngine";
 import type { UserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import {
+  captureRecommendationShown,
+  captureVariantPick,
+  captureOutcome,
+  buildContextSnapshot,
+} from "@/engine/outcomeLoopEngine";
+import { ThumbsUp, RefreshCw, X } from "lucide-react";
 
 interface FeedItem {
   id: string;
@@ -22,6 +31,8 @@ interface InsightFeedProps {
   hasDiff: boolean;
   planCount: number;
   masteryFeatures: Set<string>;
+  healthScore?: number | null;
+  connectedSources?: number;
 }
 
 const moduleRoute: Record<Bottleneck["module"], string> = {
@@ -32,9 +43,138 @@ const moduleRoute: Record<Bottleneck["module"], string> = {
   retention: "/retention",
 };
 
-const InsightFeed = ({ bottlenecks, pulse, graph, hasDiff, planCount, masteryFeatures }: InsightFeedProps) => {
+// ── Tracked card with Midjourney-style variant-pick micro-buttons ─────
+
+interface TrackedInsightCardProps {
+  item: FeedItem;
+  position: number;
+  language: string;
+  userId: string | null;
+  archetypeId: string;
+  confidenceTier: string;
+  contextSnapshot: Record<string, unknown>;
+  onNavigate: (route: string) => void;
+  onSkip: (itemId: string) => void;
+}
+
+function TrackedInsightCard({
+  item,
+  position,
+  language,
+  userId,
+  archetypeId,
+  confidenceTier,
+  contextSnapshot,
+  onNavigate,
+  onSkip,
+}: TrackedInsightCardProps) {
+  const isHe = language === "he";
+  const recIdRef = useRef<string | null>(null);
+
+  // Log recommendation shown once on mount
+  useEffect(() => {
+    recIdRef.current = captureRecommendationShown({
+      user_id: userId,
+      archetype_id: archetypeId,
+      confidence_tier: confidenceTier,
+      source: "insight_feed",
+      action_id: item.id,
+      action_label_en: item.title,
+      context_snapshot: contextSnapshot,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.id]);
+
+  const recId = () => recIdRef.current ?? item.id;
+
+  const handlePrimary = () => {
+    captureVariantPick(recId(), "primary", position, userId);
+    captureOutcome(recId(), userId, "navigated");
+    onNavigate(item.route);
+  };
+
+  const handleVariation = () => {
+    captureVariantPick(recId(), "variation", position, userId);
+    onNavigate(item.route);
+  };
+
+  const handleSkip = () => {
+    captureVariantPick(recId(), "skip", position, userId);
+    captureOutcome(recId(), userId, "dismissed");
+    onSkip(item.id);
+  };
+
+  return (
+    <div className="group relative">
+      <InsightCard
+        language={language as "he" | "en"}
+        variant={item.variant}
+        title={item.title}
+        description={item.description}
+        onClick={handlePrimary}
+      />
+      {/* Variant-pick micro-buttons — appear on hover / focus-within */}
+      <div
+        className="absolute bottom-2 end-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
+        aria-label={isHe ? "פעולות כרטיס" : "Card actions"}
+      >
+        <button
+          onClick={(e) => { e.stopPropagation(); handlePrimary(); }}
+          className="flex items-center gap-1 rounded-md bg-background/95 border border-border px-2 py-1 text-xs text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+          title={isHe ? "קח פעולה זו" : "Use this"}
+        >
+          <ThumbsUp className="h-3 w-3" />
+          {isHe ? "פעל" : "Use"}
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleVariation(); }}
+          className="flex items-center gap-1 rounded-md bg-background/95 border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted transition-colors"
+          title={isHe ? "נסה גישה אחרת" : "Try a variation"}
+        >
+          <RefreshCw className="h-3 w-3" />
+          {isHe ? "חלופה" : "Alt"}
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleSkip(); }}
+          className="flex items-center gap-1 rounded-md bg-background/95 border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+          title={isHe ? "לא רלוונטי כרגע" : "Not relevant now"}
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Main feed ─────────────────────────────────────────────────────────
+
+const InsightFeed = ({
+  bottlenecks,
+  pulse,
+  graph,
+  hasDiff,
+  planCount,
+  masteryFeatures,
+  healthScore = null,
+  connectedSources = 0,
+}: InsightFeedProps) => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { effectiveArchetypeId, confidenceTier, profile } = useArchetype();
+  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
+
+  const contextSnapshot = useMemo(
+    () =>
+      buildContextSnapshot({
+        planCount,
+        healthScore,
+        connectedSources,
+        archetypeConfidence: profile.confidence,
+        language,
+      }),
+    [planCount, healthScore, connectedSources, profile.confidence, language],
+  );
 
   const items = useMemo(() => {
     const list: FeedItem[] = [];
@@ -80,9 +220,12 @@ const InsightFeed = ({ bottlenecks, pulse, graph, hasDiff, planCount, masteryFea
     return list;
   }, [bottlenecks, pulse, graph, hasDiff, planCount, masteryFeatures, language]);
 
-  if (items.length === 0) {
-    return null;
-  }
+  const handleSkip = (id: string) =>
+    setSkippedIds((prev) => new Set([...prev, id]));
+
+  const visibleItems = items.filter((it) => !skippedIds.has(it.id));
+
+  if (items.length === 0) return null;
 
   return (
     <div className="space-y-3">
@@ -90,16 +233,27 @@ const InsightFeed = ({ bottlenecks, pulse, graph, hasDiff, planCount, masteryFea
         {language === "he" ? "זרם תובנות" : "Intelligence feed"}
       </h2>
       <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pe-1">
-        {items.map((item) => (
-          <InsightCard
+        {visibleItems.map((item, idx) => (
+          <TrackedInsightCard
             key={item.id}
+            item={item}
+            position={idx}
             language={language}
-            variant={item.variant}
-            title={item.title}
-            description={item.description}
-            onClick={() => navigate(item.route)}
+            userId={user?.id ?? null}
+            archetypeId={effectiveArchetypeId}
+            confidenceTier={confidenceTier}
+            contextSnapshot={contextSnapshot}
+            onNavigate={(route) => navigate(route)}
+            onSkip={handleSkip}
           />
         ))}
+        {visibleItems.length === 0 && (
+          <p className="text-xs text-muted-foreground text-center py-4" dir="auto">
+            {language === "he"
+              ? "כל התובנות טופלו — כל הכבוד!"
+              : "All insights addressed — great work!"}
+          </p>
+        )}
       </div>
     </div>
   );
