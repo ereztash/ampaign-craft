@@ -11,6 +11,7 @@ import DifferentiationResultView from "@/components/DifferentiationResult";
 import PaywallModal from "@/components/PaywallModal";
 import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Crosshair, Sparkles, Shield, Brain, Map, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -93,10 +94,10 @@ const PageComponent = () => {
   }, [profile.unifiedProfile, result]);
 
   const features = [
-    { icon: Shield, title: isHe ? "מבחן סתירה" : "Contradiction Test", desc: isHe ? "בודק אם הבידול שלך עומד בפני ראיות" : "Tests if your differentiation survives evidence" },
-    { icon: Brain, title: isHe ? "שכבה נסתרת" : "Hidden Layer", desc: isHe ? "מגלה בידול נסתר בתוך הכאבים שלך" : "Discovers hidden differentiation in your pains" },
-    { icon: Map, title: isHe ? "מיפוי קרב" : "Battle Map", desc: isHe ? "מסווג מתחרים ובונה אסטרטגיות נגד" : "Classifies competitors and builds counter-strategies" },
-    { icon: Zap, title: isHe ? "7 נרטיבים" : "7 Narratives", desc: isHe ? "מסר מותאם לכל תפקיד בוועדת קנייה" : "Tailored message for each buying committee role" },
+    { icon: Shield, title: tx({ he: "מבחן סתירה", en: "Contradiction Test" }, language), desc: tx({ he: "בודק אם הבידול שלך עומד בפני ראיות", en: "Tests if your differentiation survives evidence" }, language) },
+    { icon: Brain, title: tx({ he: "שכבה נסתרת", en: "Hidden Layer" }, language), desc: tx({ he: "מגלה בידול נסתר בתוך הכאבים שלך", en: "Discovers hidden differentiation in your pains" }, language) },
+    { icon: Map, title: tx({ he: "מיפוי קרב", en: "Battle Map" }, language), desc: tx({ he: "מסווג מתחרים ובונה אסטרטגיות נגד", en: "Classifies competitors and builds counter-strategies" }, language) },
+    { icon: Zap, title: tx({ he: "7 נרטיבים", en: "7 Narratives" }, language), desc: tx({ he: "מסר מותאם לכל תפקיד בוועדת קנייה", en: "Tailored message for each buying committee role" }, language) },
   ];
 
   return (
@@ -131,19 +132,19 @@ const PageComponent = () => {
               <div className="rounded-xl border border-amber-200/50 bg-amber-50/50 dark:bg-amber-900/20 p-4 text-start">
                 {strengthPreview !== null && (
                   <div className="text-xs text-amber-800">
-                    {isHe ? "אומדן בידול ראשוני" : "Initial differentiation estimate"}: <strong>{strengthPreview}/100</strong>
+                    {tx({ he: "אומדן בידול ראשוני", en: "Initial differentiation estimate" }, language)}: <strong>{strengthPreview}/100</strong>
                     {phase1Questions.length > 0 && (
                       <span className="ms-2 text-muted-foreground">
-                        · {phase1Questions.length} {isHe ? "שאלות מוכנות" : "questions ready"}
+                        · {phase1Questions.length} {tx({ he: "שאלות מוכנות", en: "questions ready" }, language)}
                       </span>
                     )}
                   </div>
                 )}
                 {crossDomainIntro.topLift && (
                   <div className="text-xs text-amber-800 mt-1" dir="auto">
-                    {isHe ? "לקחי תעשייה צולבים" : "Cross-industry lesson"}:{" "}
+                    {tx({ he: "לקחי תעשייה צולבים", en: "Cross-industry lesson" }, language)}:{" "}
                     <strong>{crossDomainIntro.topLift.expectedLift}</strong> —{" "}
-                    {isHe ? crossDomainIntro.topLift.transferableStrategy.he : crossDomainIntro.topLift.transferableStrategy.en}
+                    {tx(crossDomainIntro.topLift.transferableStrategy, language)}
                   </div>
                 )}
               </div>
@@ -155,7 +156,7 @@ const PageComponent = () => {
             </Button>
 
             <p className="text-xs text-muted-foreground">
-              {isHe ? "5 שלבים · ~10 דקות · מופעל ב-AI" : "5 phases · ~10 minutes · AI-powered"}
+              {tx({ he: "5 שלבים · ~10 דקות · מופעל ב-AI", en: "5 phases · ~10 minutes · AI-powered" }, language)}
             </p>
           </motion.div>
         )}

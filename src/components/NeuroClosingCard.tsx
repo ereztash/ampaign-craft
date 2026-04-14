@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { tx } from "@/i18n/tx";
 import { ChevronDown, Copy, Check, Shield, Zap } from "lucide-react";
 import { toast } from "sonner";
 import type { NeuroClosingStrategy } from "@/engine/neuroClosingEngine";
@@ -21,7 +22,7 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -31,7 +32,7 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Zap className="h-5 w-5 text-amber-500" />
-            {isHe ? "אסטרטגיית סגירה נוירו" : "Neuro-Closing Strategy"}
+            {tx({ he: "אסטרטגיית סגירה נוירו", en: "Neuro-Closing Strategy" }, language)}
           </CardTitle>
           <Badge variant="outline" dir="auto">{strategy.closingStyle[language]}</Badge>
         </div>
@@ -43,7 +44,7 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
             <div className="flex items-center justify-between cursor-pointer hover:bg-muted/50 rounded-md p-2 -mx-2 transition-colors">
               <span className="text-sm font-medium flex items-center gap-2">
                 <Shield className="h-4 w-4 text-primary" />
-                {isHe ? "טיפול בהתנגדויות" : "Objection Handlers"}
+                {tx({ he: "טיפול בהתנגדויות", en: "Objection Handlers" }, language)}
                 <Badge variant="outline" className="text-xs">{strategy.objectionHandlers.length}</Badge>
               </span>
               <ChevronDown className={`h-4 w-4 transition-transform ${objectionsOpen ? "rotate-180" : ""}`} />
@@ -69,19 +70,19 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
         {/* Price Presentation */}
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
           <p className="text-sm font-medium mb-2" dir="auto">
-            {isHe ? "הצגת מחיר" : "Price Presentation"}
+            {tx({ he: "הצגת מחיר", en: "Price Presentation" }, language)}
           </p>
           <div className="space-y-1.5">
             <p className="text-xs" dir="auto">
-              <span className="font-medium">{isHe ? "אסטרטגיה: " : "Strategy: "}</span>
+              <span className="font-medium">{tx({ he: "אסטרטגיה: ", en: "Strategy: " }, language)}</span>
               <span className="text-muted-foreground">{strategy.pricePresentation.strategy[language]}</span>
             </p>
             <p className="text-xs" dir="auto">
-              <span className="font-medium">{isHe ? "עוגן: " : "Anchor: "}</span>
+              <span className="font-medium">{tx({ he: "עוגן: ", en: "Anchor: " }, language)}</span>
               <span className="text-muted-foreground">{strategy.pricePresentation.anchor[language]}</span>
             </p>
             <p className="text-xs" dir="auto">
-              <span className="font-medium">{isHe ? "מסגור: " : "Framing: "}</span>
+              <span className="font-medium">{tx({ he: "מסגור: ", en: "Framing: " }, language)}</span>
               <span className="text-muted-foreground">{strategy.pricePresentation.framing[language]}</span>
             </p>
           </div>
@@ -90,14 +91,14 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
         {/* Follow-Up Sequence */}
         <div>
           <p className="text-sm font-medium mb-2" dir="auto">
-            {isHe ? "רצף מעקב" : "Follow-Up Sequence"}
+            {tx({ he: "רצף מעקב", en: "Follow-Up Sequence" }, language)}
           </p>
           <div className="space-y-2">
             {strategy.followUpSequence.map((step, i) => (
               <div key={i} className="flex items-start gap-3 rounded-lg border p-2.5">
                 <div className="flex flex-col items-center shrink-0">
                   <Badge variant="outline" className="text-xs">
-                    {isHe ? `יום ${step.day}` : `Day ${step.day}`}
+                    {tx({ he: `יום ${step.day}`, en: `Day ${step.day}` }, language)}
                   </Badge>
                   <Badge variant="outline" className="text-xs mt-1">{step.channel}</Badge>
                 </div>
@@ -119,7 +120,7 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="rounded-lg border p-3">
             <p className="text-sm font-medium mb-1.5" dir="auto">
-              {isHe ? "טקטיקות דחיפות" : "Urgency Tactics"}
+              {tx({ he: "טקטיקות דחיפות", en: "Urgency Tactics" }, language)}
             </p>
             <ul className="space-y-1">
               {strategy.urgencyTactics.map((tactic, i) => (
@@ -129,7 +130,7 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
           </div>
           <div className="rounded-lg border p-3">
             <p className="text-sm font-medium mb-1.5" dir="auto">
-              {isHe ? "אותות אמון" : "Trust Signals"}
+              {tx({ he: "אותות אמון", en: "Trust Signals" }, language)}
             </p>
             <ul className="space-y-1">
               {strategy.trustSignals.map((signal, i) => (

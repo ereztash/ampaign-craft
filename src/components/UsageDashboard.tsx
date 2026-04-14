@@ -5,6 +5,7 @@ import { getMonthlyUsage, getMonthlyCap, getUsageHistory, type PricingTier } fro
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { useNavigate } from "react-router-dom";
 import { Zap } from "lucide-react";
 
@@ -31,7 +32,7 @@ const UsageDashboard = ({ compact = false }: UsageDashboardProps) => {
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Zap className="h-3 w-3" />
         <span>
-          {isHe ? `AI: ₪${monthly.totalCostNIS.toFixed(1)}/${cap}` : `AI: ₪${monthly.totalCostNIS.toFixed(1)}/${cap}`}
+          {tx({ he: `AI: ₪${monthly.totalCostNIS.toFixed(1)}/${cap}`, en: `AI: ₪${monthly.totalCostNIS.toFixed(1)}/${cap}` }, language)}
         </span>
         <Progress value={usedPercent} className="h-1.5 w-16" />
       </div>
@@ -43,7 +44,7 @@ const UsageDashboard = ({ compact = false }: UsageDashboardProps) => {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium flex items-center gap-2" dir="auto">
           <Zap className="h-4 w-4" />
-          {isHe ? "שימוש AI החודש" : "AI Usage This Month"}
+          {tx({ he: "שימוש AI החודש", en: "AI Usage This Month" }, language)}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -57,18 +58,18 @@ const UsageDashboard = ({ compact = false }: UsageDashboardProps) => {
 
         <div className="grid grid-cols-2 gap-2 text-xs" dir="auto">
           <div>
-            <span className="text-muted-foreground">{isHe ? "קריאות היום" : "Calls today"}</span>
+            <span className="text-muted-foreground">{tx({ he: "קריאות היום", en: "Calls today" }, language)}</span>
             <p className="font-semibold">{todayCalls}</p>
           </div>
           <div>
-            <span className="text-muted-foreground">{isHe ? "טוקנים החודש" : "Tokens this month"}</span>
+            <span className="text-muted-foreground">{tx({ he: "טוקנים החודש", en: "Tokens this month" }, language)}</span>
             <p className="font-semibold">{monthly.totalTokens.toLocaleString()}</p>
           </div>
         </div>
 
         {isNearLimit && (
           <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => navigate("/pricing")}>
-            {isHe ? "שדרג לקבלת יותר AI" : "Upgrade for more AI"}
+            {tx({ he: "שדרג לקבלת יותר AI", en: "Upgrade for more AI" }, language)}
           </Button>
         )}
       </CardContent>

@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import {
   Dialog,
   DialogContent,
@@ -70,9 +71,9 @@ export function EmailComposer({
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`);
-      toast({ title: isHe ? "הועתק ללוח" : "Copied to clipboard" });
+      toast({ title: tx({ he: "הועתק ללוח", en: "Copied to clipboard" }, language) });
     } catch {
-      toast({ title: isHe ? "שגיאה בהעתקה" : "Copy failed", variant: "destructive" });
+      toast({ title: tx({ he: "שגיאה בהעתקה", en: "Copy failed" }, language), variant: "destructive" });
     }
   };
 
@@ -85,21 +86,21 @@ export function EmailComposer({
           className="gap-1.5 text-blue-700 border-blue-300 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-700 dark:hover:bg-blue-900/20"
         >
           <Mail className="h-3.5 w-3.5" />
-          {label ?? (isHe ? "שלח באימייל" : "Send via Email")}
+          {label ?? (tx({ he: "שלח באימייל", en: "Send via Email" }, language))}
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-lg" dir={isHe ? "rtl" : "ltr"}>
+      <DialogContent className="max-w-lg" dir={tx({ he: "rtl", en: "ltr" }, language)}>
         <DialogHeader>
           <DialogTitle dir="auto">
-            {isHe ? "חיבור אימייל" : "Compose Email"}
+            {tx({ he: "חיבור אימייל", en: "Compose Email" }, language)}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
           <div className="space-y-1">
             <Label htmlFor="email-to" className="text-xs" dir="auto">
-              {isHe ? "נמען" : "To"}
+              {tx({ he: "נמען", en: "To" }, language)}
             </Label>
             <Input
               id="email-to"
@@ -113,20 +114,20 @@ export function EmailComposer({
 
           <div className="space-y-1">
             <Label htmlFor="email-subject" className="text-xs" dir="auto">
-              {isHe ? "נושא" : "Subject"}
+              {tx({ he: "נושא", en: "Subject" }, language)}
             </Label>
             <Input
               id="email-subject"
               dir="auto"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder={isHe ? "נושא האימייל" : "Email subject"}
+              placeholder={tx({ he: "נושא האימייל", en: "Email subject" }, language)}
             />
           </div>
 
           <div className="space-y-1">
             <Label htmlFor="email-body" className="text-xs" dir="auto">
-              {isHe ? "תוכן" : "Body"}
+              {tx({ he: "תוכן", en: "Body" }, language)}
             </Label>
             <Textarea
               id="email-body"
@@ -145,7 +146,7 @@ export function EmailComposer({
               onClick={handleMailto}
             >
               <Send className="h-3.5 w-3.5" />
-              {isHe ? "פתח בתוכנת המייל" : "Open in Mail App"}
+              {tx({ he: "פתח בתוכנת המייל", en: "Open in Mail App" }, language)}
             </Button>
             <Button
               size="sm"
@@ -162,7 +163,7 @@ export function EmailComposer({
               className="gap-1.5 text-muted-foreground"
               onClick={handleCopy}
             >
-              {isHe ? "העתק" : "Copy"}
+              {tx({ he: "העתק", en: "Copy" }, language)}
             </Button>
           </div>
         </div>

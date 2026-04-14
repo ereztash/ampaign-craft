@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { tx } from "@/i18n/tx";
 import { ChevronDown, Copy, Check, AlertTriangle, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import type { ChurnRiskAssessment } from "@/engine/churnPredictionEngine";
@@ -42,7 +43,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -60,7 +61,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-amber-500" />
-            {isHe ? "תחזית נטישה" : "Churn Prediction"}
+            {tx({ he: "תחזית נטישה", en: "Churn Prediction" }, language)}
           </CardTitle>
           <Badge className={`${tier.color} text-white`}>
             {tier.label[language]}
@@ -95,23 +96,23 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
           {/* NRR Projection */}
           <div className="flex-1">
             <h4 className="text-sm font-medium mb-2">
-              {isHe ? "תחזית NRR" : "NRR Projection"}
+              {tx({ he: "תחזית NRR", en: "NRR Projection" }, language)}
             </h4>
             <div className="flex gap-4">
               <div className="text-center">
                 <div className="text-lg font-bold text-muted-foreground">{assessment.nrrProjection.current}%</div>
-                <div className="text-xs text-muted-foreground">{isHe ? "נוכחי" : "Current"}</div>
+                <div className="text-xs text-muted-foreground">{tx({ he: "נוכחי", en: "Current" }, language)}</div>
               </div>
               <div className="flex items-center">
                 <TrendingUp className="h-4 w-4 text-accent" />
               </div>
               <div className="text-center">
                 <div className="text-lg font-bold text-accent">{assessment.nrrProjection.withIntervention}%</div>
-                <div className="text-xs text-muted-foreground">{isHe ? "עם התערבות" : "With Intervention"}</div>
+                <div className="text-xs text-muted-foreground">{tx({ he: "עם התערבות", en: "With Intervention" }, language)}</div>
               </div>
               <div className="text-center">
                 <div className="text-lg font-bold text-green-500">+{assessment.nrrProjection.improvement}%</div>
-                <div className="text-xs text-muted-foreground">{isHe ? "שיפור" : "Improvement"}</div>
+                <div className="text-xs text-muted-foreground">{tx({ he: "שיפור", en: "Improvement" }, language)}</div>
               </div>
             </div>
           </div>
@@ -121,7 +122,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
         {assessment.signals.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm font-medium" dir="auto">
-              {isHe ? "אותות סיכון" : "Risk Signals"}
+              {tx({ he: "אותות סיכון", en: "Risk Signals" }, language)}
             </p>
             {assessment.signals.map((signal, i) => (
               <div key={i} className={`rounded-lg border p-2.5 ${signal.severity === "high" ? "border-destructive/30 bg-destructive/5" : signal.severity === "medium" ? "border-amber-500/20" : ""}`}>
@@ -140,7 +141,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
           <CollapsibleTrigger asChild>
             <div className="flex items-center justify-between cursor-pointer hover:bg-muted/50 rounded-md p-2 -mx-2 transition-colors">
               <span className="text-sm font-medium" dir="auto">
-                {isHe ? "תוכנית התערבות (3 שלבים)" : "Intervention Plan (3 Stages)"}
+                {tx({ he: "תוכנית התערבות (3 שלבים)", en: "Intervention Plan (3 Stages)" }, language)}
               </span>
               <ChevronDown className={`h-4 w-4 transition-transform ${interventionsOpen ? "rotate-180" : ""}`} />
             </div>
@@ -153,7 +154,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
                 return (
                   <div key={stage}>
                     <p className="text-xs font-medium mb-1.5 text-primary" dir="auto">
-                      {isHe ? `שלב ${stage}: ` : `Stage ${stage}: `}{stageNames[stage][language]}
+                      {tx({ he: `שלב ${stage}: `, en: `Stage ${stage}: ` }, language)}{stageNames[stage][language]}
                     </p>
                     <div className="space-y-1.5">
                       {stageInterventions.map((int, i) => (
@@ -185,7 +186,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
         {assessment.retentionPlaybook.length > 0 && (
           <div className="rounded-md border p-3 bg-primary/5">
             <p className="text-sm font-medium mb-1.5" dir="auto">
-              {isHe ? "Playbook שימור" : "Retention Playbook"}
+              {tx({ he: "Playbook שימור", en: "Retention Playbook" }, language)}
             </p>
             <ul className="space-y-1">
               {assessment.retentionPlaybook.map((tip, i) => (

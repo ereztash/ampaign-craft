@@ -13,6 +13,7 @@ import ModulePipeline from "@/components/ModulePipeline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Sparkles, ArrowDown, Flame, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -61,17 +62,17 @@ const PageComponent = () => {
                 {graph.derived.identityStatement[language]}
               </h1>
               <p className="mb-4 text-sm text-muted-foreground" dir="auto">
-                {isHe ? "בחר מודול להתחיל או להמשיך:" : "Choose a module to start or continue:"}
+                {tx({ he: "בחר מודול להתחיל או להמשיך:", en: "Choose a module to start or continue:" }, language)}
               </p>
               {streak.currentStreak > 0 && (
-                <Badge className="mb-4 gap-1"><Flame className="h-3 w-3" /> {streak.currentStreak} {isHe ? "שבועות" : "weeks"}</Badge>
+                <Badge className="mb-4 gap-1"><Flame className="h-3 w-3" /> {streak.currentStreak} {tx({ he: "שבועות", en: "weeks" }, language)}</Badge>
               )}
             </>
           ) : (
             <>
               {/* New user: neuro-storytelling headline */}
               <h1 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl md:text-5xl" dir="auto">
-                {isHe ? "משקיע בשיווק ולא רואה תוצאות?" : "Investing in marketing with no results?"}
+                {tx({ he: "משקיע בשיווק ולא רואה תוצאות?", en: "Investing in marketing with no results?" }, language)}
               </h1>
               <p className="mb-6 text-lg text-muted-foreground max-w-xl mx-auto" dir="auto">
                 {isHe
@@ -90,7 +91,7 @@ const PageComponent = () => {
       {/* Module Pipeline — THE core of the page */}
       <section className="container mx-auto px-4 py-8 max-w-4xl">
         <h2 className="text-xl font-bold text-center text-foreground mb-6" dir="auto">
-          {isHe ? "בחר מאיפה להתחיל" : "Choose Where to Start"}
+          {tx({ he: "בחר מאיפה להתחיל", en: "Choose Where to Start" }, language)}
         </h2>
         <ModulePipeline showLabels />
       </section>
@@ -106,7 +107,7 @@ const PageComponent = () => {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold text-foreground" dir="auto">{nextStep.title[language]}</h3>
-                  <Badge className="text-xs bg-amber-500 text-white">{isHe ? "מומלץ" : "Recommended"}</Badge>
+                  <Badge className="text-xs bg-amber-500 text-white">{tx({ he: "מומלץ", en: "Recommended" }, language)}</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground" dir="auto">{nextStep.description[language]}</p>
               </div>
@@ -121,17 +122,17 @@ const PageComponent = () => {
         <div className="flex flex-wrap justify-center gap-3">
           {planCount > 0 && (
             <Button variant="outline" size="sm" onClick={() => navigate("/plans")}>
-              {isHe ? `תוכניות שמורות (${planCount})` : `Saved Plans (${planCount})`}
+              {tx({ he: `תוכניות שמורות (${planCount})`, en: `Saved Plans (${planCount})` }, language)}
             </Button>
           )}
           {user && (
             <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>
-              {isHe ? "דשבורד" : "Dashboard"}
+              {tx({ he: "דשבורד", en: "Dashboard" }, language)}
             </Button>
           )}
           {!user && (
             <p className="text-xs text-muted-foreground w-full mt-2">
-              {isHe ? "ללא כרטיס אשראי · חינם לגמרי · 2 דקות להתחלה" : "No credit card · Completely free · 2 minutes to start"}
+              {tx({ he: "ללא כרטיס אשראי · חינם לגמרי · 2 דקות להתחלה", en: "No credit card · Completely free · 2 minutes to start" }, language)}
             </p>
           )}
         </div>

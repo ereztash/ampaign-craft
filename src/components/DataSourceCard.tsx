@@ -3,6 +3,7 @@ import type { DataSource, DataSourceStatus } from "@/contexts/DataSourceContext"
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { tx } from "@/i18n/tx";
 import { Database, RefreshCw } from "lucide-react";
 
 const statusDot: Record<DataSourceStatus, string> = {
@@ -35,21 +36,21 @@ const DataSourceCard = ({ source, onOpen, onConnect }: DataSourceCardProps) => {
           </div>
           <p className="text-xs text-muted-foreground" dir="auto">
             {source.lastSync
-              ? `${isHe ? "סנכרון אחרון" : "Last sync"}: ${new Date(source.lastSync).toLocaleString(isHe ? "he-IL" : "en-US")}`
+              ? `${tx({ he: "סנכרון אחרון", en: "Last sync" }, language)}: ${new Date(source.lastSync).toLocaleString(tx({ he: "he-IL", en: "en-US" }, language))}`
               : isHe
                 ? "לא חובר"
                 : "Not connected"}
           </p>
           <p className="text-xs text-muted-foreground">
-            {source.recordCount.toLocaleString()} {isHe ? "רשומות" : "records"}
+            {source.recordCount.toLocaleString()} {tx({ he: "רשומות", en: "records" }, language)}
           </p>
         </button>
         <div className="flex gap-2 pt-2 border-t border-border">
           <Button size="sm" variant="outline" className="flex-1" onClick={() => onConnect()}>
-            {source.status === "connected" ? (isHe ? "הגדרות" : "Configure") : isHe ? "חבר" : "Connect"}
+            {source.status === "connected" ? (tx({ he: "הגדרות", en: "Configure" }, language)) : tx({ he: "חבר", en: "Connect" }, language)}
           </Button>
           {source.status === "connected" && (
-            <Button size="sm" variant="ghost" className="px-2" aria-label={isHe ? "סנכרון" : "Sync"}>
+            <Button size="sm" variant="ghost" className="px-2" aria-label={tx({ he: "סנכרון", en: "Sync" }, language)}>
               <RefreshCw className="h-4 w-4" />
             </Button>
           )}

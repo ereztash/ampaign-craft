@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { radioCard, radioGroup, checkboxCard } from "@/lib/a11y";
 import { SalesModel } from "@/types/funnel";
+import { tx } from "@/i18n/tx";
 import {
   DIFFERENTIATOR_OPTIONS,
   type PricingWizardInput,
@@ -187,7 +188,7 @@ const PricingWizard = ({
     <div key="value" className="space-y-5">
       <StepHeader
         icon={Zap}
-        title={isHe ? "מה הלקוח מרוויח?" : "What does your customer gain?"}
+        title={tx({ he: "מה הלקוח מרוויח?", en: "What does your customer gain?" }, language)}
         subtitle={isHe
           ? "לא שואלים את המחיר — גוזרים אותו מהערך"
           : "We don't ask your price — we derive it from value"}
@@ -195,7 +196,7 @@ const PricingWizard = ({
 
       <div className="space-y-3">
         <p id="dream-outcome-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
-          {isHe ? "תוצאה חלומית (Dream Outcome):" : "Dream Outcome:"}
+          {tx({ he: "תוצאה חלומית (Dream Outcome):", en: "Dream Outcome:" }, language)}
         </p>
         <div {...radioGroup("dream-outcome-label")}>
         {(
@@ -234,9 +235,9 @@ const PricingWizard = ({
             key={opt.id}
             selected={dreamOutcome === opt.id}
             onClick={() => setDreamOutcome(opt.id)}
-            label={isHe ? opt.he : opt.en}
+            label={tx(opt, language)}
           >
-            <div className="font-medium text-sm" dir="auto">{isHe ? opt.he : opt.en}</div>
+            <div className="font-medium text-sm" dir="auto">{tx(opt, language)}</div>
             <div className="text-xs text-muted-foreground" dir="auto">{isHe ? opt.subHe : opt.subEn}</div>
           </OptionCard>
         ))}
@@ -245,7 +246,7 @@ const PricingWizard = ({
 
       <div className="space-y-3">
         <p id="time-to-value-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
-          {isHe ? "מהירות לתוצאה (Time to Value):" : "Time to Value:"}
+          {tx({ he: "מהירות לתוצאה (Time to Value):", en: "Time to Value:" }, language)}
         </p>
         <div {...radioGroup("time-to-value-label")} className="grid grid-cols-2 gap-2">
           {(
@@ -259,7 +260,7 @@ const PricingWizard = ({
             <button
               key={opt.id}
               onClick={() => setTimeToValue(opt.id)}
-              {...radioCard(timeToValue === opt.id, isHe ? opt.he : opt.en)}
+              {...radioCard(timeToValue === opt.id, tx(opt, language))}
               className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
                 timeToValue === opt.id
                   ? "border-primary bg-primary/5 font-medium"
@@ -267,7 +268,7 @@ const PricingWizard = ({
               }`}
               dir="auto"
             >
-              {isHe ? opt.he : opt.en}
+              {tx(opt, language)}
             </button>
           ))}
         </div>
@@ -278,7 +279,7 @@ const PricingWizard = ({
     <div key="psm" className="space-y-5">
       <StepHeader
         icon={BarChart2}
-        title={isHe ? "מה הרגישות של הלקוח למחיר?" : "What is your customer's price sensitivity?"}
+        title={tx({ he: "מה הרגישות של הלקוח למחיר?", en: "What is your customer's price sensitivity?" }, language)}
         subtitle={isHe
           ? "שתי שאלות — מגדירות את טווח ה-WTP (Van Westendorp PSM)"
           : "Two questions — define the WTP range (Van Westendorp PSM)"}
@@ -308,7 +309,7 @@ const PricingWizard = ({
             min={0}
             placeholder="0"
             value={tooChcapInput}
-            aria-label={isHe ? "מחיר זול מדי (בשקלים)" : "Too-cheap price threshold (ILS)"}
+            aria-label={tx({ he: "מחיר זול מדי (בשקלים)", en: "Too-cheap price threshold (ILS)" }, language)}
             onChange={(e) => {
               setTooChcapInput(e.target.value);
               const n = parseFloat(e.target.value);
@@ -345,7 +346,7 @@ const PricingWizard = ({
         </div>
         {stretchPrice > 0 && stretchPrice <= tooChcapPrice && (
           <p className="text-xs text-destructive" dir="auto">
-            {isHe ? "המחיר היקר חייב להיות גבוה מהמחיר הזול" : "Stretch price must be higher than the floor"}
+            {tx({ he: "המחיר היקר חייב להיות גבוה מהמחיר הזול", en: "Stretch price must be higher than the floor" }, language)}
           </p>
         )}
       </div>
@@ -355,7 +356,7 @@ const PricingWizard = ({
         <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4 space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground" dir="auto">
-              {isHe ? "טווח מחיר מקובל:" : "Acceptable price range:"}
+              {tx({ he: "טווח מחיר מקובל:", en: "Acceptable price range:" }, language)}
             </span>
             <Badge>
               {formatNIS(tooChcapPrice)} — {formatNIS(stretchPrice)}
@@ -363,7 +364,7 @@ const PricingWizard = ({
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground" dir="auto">
-              {isHe ? "נקודת מחיר אופטימלית (PSM):" : "Optimal Price Point (PSM):"}
+              {tx({ he: "נקודת מחיר אופטימלית (PSM):", en: "Optimal Price Point (PSM):" }, language)}
             </span>
             <Badge variant="default" className="font-bold">
               ~ {formatNIS(psmMidpoint)}
@@ -382,7 +383,7 @@ const PricingWizard = ({
     <div key="offer" className="space-y-5">
       <StepHeader
         icon={Layers}
-        title={isHe ? "עוצמת ההצעה שלך" : "Your offer strength"}
+        title={tx({ he: "עוצמת ההצעה שלך", en: "Your offer strength" }, language)}
         subtitle={isHe
           ? "קובע את כפולת המחיר (Hormozi E×P + בידול)"
           : "Determines your price multiplier (Hormozi E×P + differentiation)"}
@@ -391,7 +392,7 @@ const PricingWizard = ({
       {/* Effort level */}
       <div className="space-y-2">
         <p id="effort-level-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
-          {isHe ? "כמה מאמץ מצד הלקוח?" : "How much effort does the customer need?"}
+          {tx({ he: "כמה מאמץ מצד הלקוח?", en: "How much effort does the customer need?" }, language)}
         </p>
         <div {...radioGroup("effort-level-label")} className="grid grid-cols-2 gap-2">
           {(
@@ -405,7 +406,7 @@ const PricingWizard = ({
             <button
               key={opt.id}
               onClick={() => setEffortLevel(opt.id)}
-              {...radioCard(effortLevel === opt.id, isHe ? opt.he : opt.en)}
+              {...radioCard(effortLevel === opt.id, tx(opt, language))}
               className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
                 effortLevel === opt.id
                   ? "border-primary bg-primary/5 font-medium"
@@ -413,7 +414,7 @@ const PricingWizard = ({
               }`}
               dir="auto"
             >
-              {isHe ? opt.he : opt.en}
+              {tx(opt, language)}
             </button>
           ))}
         </div>
@@ -422,7 +423,7 @@ const PricingWizard = ({
       {/* Social proof */}
       <div className="space-y-2">
         <p id="social-proof-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
-          {isHe ? "כמה הוכחה חברתית יש לך?" : "How much social proof do you have?"}
+          {tx({ he: "כמה הוכחה חברתית יש לך?", en: "How much social proof do you have?" }, language)}
         </p>
         <div {...radioGroup("social-proof-label")} className="grid grid-cols-2 gap-2">
           {(
@@ -436,7 +437,7 @@ const PricingWizard = ({
             <button
               key={opt.id}
               onClick={() => setSocialProof(opt.id)}
-              {...radioCard(socialProof === opt.id, isHe ? opt.he : opt.en)}
+              {...radioCard(socialProof === opt.id, tx(opt, language))}
               className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
                 socialProof === opt.id
                   ? "border-primary bg-primary/5 font-medium"
@@ -444,7 +445,7 @@ const PricingWizard = ({
               }`}
               dir="auto"
             >
-              {isHe ? opt.he : opt.en}
+              {tx(opt, language)}
             </button>
           ))}
         </div>
@@ -453,14 +454,14 @@ const PricingWizard = ({
       {/* Differentiators (multi-select) */}
       <div className="space-y-2">
         <p id="differentiators-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
-          {isHe ? "מה מבדל אותך? (בחר הכל שרלוונטי)" : "What differentiates you? (select all that apply)"}
+          {tx({ he: "מה מבדל אותך? (בחר הכל שרלוונטי)", en: "What differentiates you? (select all that apply)" }, language)}
         </p>
         <div role="group" aria-labelledby="differentiators-label" className="space-y-1.5">
           {DIFFERENTIATOR_OPTIONS.map((opt) => (
             <button
               key={opt.key}
               onClick={() => toggleDiff(opt.key)}
-              {...checkboxCard(differentiators.includes(opt.key), isHe ? opt.he : opt.en)}
+              {...checkboxCard(differentiators.includes(opt.key), tx(opt, language))}
               className={`w-full flex items-center gap-2.5 rounded-lg border-2 px-3 py-2 text-start transition-colors ${
                 differentiators.includes(opt.key)
                   ? "border-accent bg-accent/5"
@@ -480,7 +481,7 @@ const PricingWizard = ({
                 )}
               </div>
               <div className="flex items-center justify-between flex-1 min-w-0">
-                <span className="text-sm" dir="auto">{isHe ? opt.he : opt.en}</span>
+                <span className="text-sm" dir="auto">{tx(opt, language)}</span>
                 <Badge variant="outline" className="text-xs shrink-0 ms-2">+{opt.premiumPct}%</Badge>
               </div>
             </button>
@@ -500,7 +501,7 @@ const PricingWizard = ({
     <div key="revenue" className="space-y-5">
       <StepHeader
         icon={Target}
-        title={isHe ? "ארכיטקטורת הכנסות" : "Revenue architecture"}
+        title={tx({ he: "ארכיטקטורת הכנסות", en: "Revenue architecture" }, language)}
         subtitle={isHe
           ? "מודל המכירה ויעד הכנסה → LTV + CAC מומלץ"
           : "Sales model + revenue goal → LTV + recommended CAC"}
@@ -537,9 +538,9 @@ const PricingWizard = ({
             key={opt.id}
             selected={salesModel === opt.id}
             onClick={() => setSalesModel(opt.id)}
-            label={isHe ? opt.he : opt.en}
+            label={tx(opt, language)}
           >
-            <div className="font-medium text-sm" dir="auto">{isHe ? opt.he : opt.en}</div>
+            <div className="font-medium text-sm" dir="auto">{tx(opt, language)}</div>
             <div className="text-xs text-muted-foreground" dir="auto">{isHe ? opt.subHe : opt.subEn}</div>
           </OptionCard>
         ))}
@@ -548,9 +549,9 @@ const PricingWizard = ({
       {salesModel === "subscription" && (
         <div className="space-y-2 rounded-xl border p-3 bg-muted/30">
           <div className="flex items-center justify-between text-sm">
-            <span dir="auto">{isHe ? "תקופת שימור ממוצעת:" : "Avg retention:"}</span>
+            <span dir="auto">{tx({ he: "תקופת שימור ממוצעת:", en: "Avg retention:" }, language)}</span>
             <Badge variant="outline">
-              {retention} {isHe ? "חודשים" : "months"}
+              {retention} {tx({ he: "חודשים", en: "months" }, language)}
             </Badge>
           </div>
           <Slider
@@ -559,7 +560,7 @@ const PricingWizard = ({
             min={1}
             max={36}
             step={1}
-            aria-label={isHe ? "תקופת שימור ממוצעת בחודשים" : "Average retention in months"}
+            aria-label={tx({ he: "תקופת שימור ממוצעת בחודשים", en: "Average retention in months" }, language)}
             aria-valuenow={retention}
             aria-valuemin={1}
             aria-valuemax={36}
@@ -570,7 +571,7 @@ const PricingWizard = ({
       {/* Revenue goal */}
       <div className="space-y-2">
         <label className="text-sm font-medium" dir="auto">
-          {isHe ? "יעד הכנסה חודשי (אופציונלי):" : "Monthly revenue goal (optional):"}
+          {tx({ he: "יעד הכנסה חודשי (אופציונלי):", en: "Monthly revenue goal (optional):" }, language)}
         </label>
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold text-muted-foreground">₪</span>
@@ -588,7 +589,7 @@ const PricingWizard = ({
             dir="ltr"
           />
           <span className="text-sm text-muted-foreground" dir="auto">
-            {isHe ? "/חודש" : "/month"}
+            {tx({ he: "/חודש", en: "/month" }, language)}
           </span>
         </div>
       </div>
@@ -597,12 +598,12 @@ const PricingWizard = ({
       {psmMidpoint !== null && (
         <div className="rounded-xl border bg-muted/30 p-3 text-sm space-y-1" dir="auto">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">{isHe ? "OPP (PSM):" : "OPP (PSM):"}</span>
+            <span className="text-muted-foreground">{tx({ he: "OPP (PSM):", en: "OPP (PSM):" }, language)}</span>
             <span className="font-medium">~ {formatNIS(psmMidpoint)}</span>
           </div>
           {revenueGoal > 0 && psmMidpoint > 0 && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{isHe ? "לקוחות נדרשים:" : "Customers needed:"}</span>
+              <span className="text-muted-foreground">{tx({ he: "לקוחות נדרשים:", en: "Customers needed:" }, language)}</span>
               <span className="font-bold text-primary">
                 {Math.ceil(revenueGoal / psmMidpoint)}
               </span>
@@ -621,7 +622,7 @@ const PricingWizard = ({
       <div className="space-y-2">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span dir="auto">
-            {isHe ? `שלב ${step + 1} מתוך ${STEPS}` : `Step ${step + 1} of ${STEPS}`}
+            {tx({ he: `שלב ${step + 1} מתוך ${STEPS}`, en: `Step ${step + 1} of ${STEPS}` }, language)}
           </span>
           <span>{Math.round(((step + 1) / STEPS) * 100)}%</span>
         </div>
@@ -633,10 +634,10 @@ const PricingWizard = ({
         </div>
         <div className="flex justify-between text-[10px] text-muted-foreground/60" dir="auto">
           {[
-            isHe ? "ערך" : "Value",
-            isHe ? "PSM" : "PSM",
-            isHe ? "הצעה" : "Offer",
-            isHe ? "הכנסות" : "Revenue",
+            tx({ he: "ערך", en: "Value" }, language),
+            tx({ he: "PSM", en: "PSM" }, language),
+            tx({ he: "הצעה", en: "Offer" }, language),
+            tx({ he: "הכנסות", en: "Revenue" }, language),
           ].map((label, i) => (
             <span key={i} className={i === step ? "text-primary font-medium" : ""}>{label}</span>
           ))}
@@ -657,7 +658,7 @@ const PricingWizard = ({
           className="gap-1"
         >
           {isHe ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
-          {isHe ? "חזור" : "Back"}
+          {tx({ he: "חזור", en: "Back" }, language)}
         </Button>
 
         {step < STEPS - 1 ? (
@@ -666,7 +667,7 @@ const PricingWizard = ({
             disabled={!canAdvance()}
             className="gap-1 flex-1 cta-warm"
           >
-            {isHe ? "המשך" : "Next"}
+            {tx({ he: "המשך", en: "Next" }, language)}
             {isHe ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
           </Button>
         ) : (
@@ -674,7 +675,7 @@ const PricingWizard = ({
             onClick={finish}
             className="gap-1 flex-1 cta-warm"
           >
-            {isHe ? "ייצר אסטרטגיית תמחור" : "Generate Pricing Strategy"}
+            {tx({ he: "ייצר אסטרטגיית תמחור", en: "Generate Pricing Strategy" }, language)}
             {isHe ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
           </Button>
         )}

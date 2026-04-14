@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook } from "lucide-react";
 import { McpIntegrationPanel } from "@/components/McpIntegrationPanel";
 import { useToast } from "@/hooks/use-toast";
@@ -46,10 +47,10 @@ const PageComponent = () => {
         },
       });
       if (error) throw error;
-      toast({ title: isHe ? "נשלח webhook לדוגמה" : "Test webhook dispatched" });
+      toast({ title: tx({ he: "נשלח webhook לדוגמה", en: "Test webhook dispatched" }, language) });
     } catch {
       toast({
-        title: isHe ? "שליחת webhook נכשלה" : "Webhook dispatch failed",
+        title: tx({ he: "שליחת webhook נכשלה", en: "Webhook dispatch failed" }, language),
         variant: "destructive",
       });
     } finally {
@@ -68,10 +69,10 @@ const PageComponent = () => {
         body: { event: "webhook.verify", source: "profile-ui" },
       });
       if (error) throw error;
-      toast({ title: isHe ? "אימות webhook נכנס הושלם" : "Inbound webhook verified" });
+      toast({ title: tx({ he: "אימות webhook נכנס הושלם", en: "Inbound webhook verified" }, language) });
     } catch {
       toast({
-        title: isHe ? "אימות webhook נכשל" : "Webhook verification failed",
+        title: tx({ he: "אימות webhook נכשל", en: "Webhook verification failed" }, language),
         variant: "destructive",
       });
     } finally {
@@ -128,7 +129,7 @@ const PageComponent = () => {
         localStorage.setItem("funnelforge-users", JSON.stringify(updated));
       }
       setSaving(false);
-      toast({ title: isHe ? "הפרופיל עודכן בהצלחה" : "Profile updated successfully" });
+      toast({ title: tx({ he: "הפרופיל עודכן בהצלחה", en: "Profile updated successfully" }, language) });
       return;
     }
 
@@ -142,13 +143,13 @@ const PageComponent = () => {
       setSaving(false);
 
       if (error) {
-        toast({ title: isHe ? "שגיאה בשמירה" : "Error saving", variant: "destructive" });
+        toast({ title: tx({ he: "שגיאה בשמירה", en: "Error saving" }, language), variant: "destructive" });
       } else {
-        toast({ title: isHe ? "הפרופיל עודכן בהצלחה" : "Profile updated successfully" });
+        toast({ title: tx({ he: "הפרופיל עודכן בהצלחה", en: "Profile updated successfully" }, language) });
       }
     } catch {
       setSaving(false);
-      toast({ title: isHe ? "שגיאה בחיבור" : "Connection error", variant: "destructive" });
+      toast({ title: tx({ he: "שגיאה בחיבור", en: "Connection error" }, language), variant: "destructive" });
     }
   };
 
@@ -164,11 +165,11 @@ const PageComponent = () => {
   const tierLabels = { free: "Free", pro: "Pro", business: "Business" };
 
   return (
-    <div className="min-h-screen bg-background" dir={isHe ? "rtl" : "ltr"}>
+    <div className="min-h-screen bg-background" dir={tx({ he: "rtl", en: "ltr" }, language)}>
       <div className="container mx-auto max-w-lg px-4 py-20">
         <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="mb-6 gap-2">
-          <ArrowRight className={`h-4 w-4 ${isHe ? "" : "rotate-180"}`} />
-          {isHe ? "חזרה לדף הראשי" : "Back to home"}
+          <ArrowRight className={`h-4 w-4 ${tx({ he: "", en: "rotate-180" }, language)}`} />
+          {tx({ he: "חזרה לדף הראשי", en: "Back to home" }, language)}
         </Button>
 
         <Card>
@@ -176,32 +177,32 @@ const PageComponent = () => {
             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <User className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle>{isHe ? "הפרופיל שלי" : "My Profile"}</CardTitle>
-            <CardDescription>{isHe ? "ערוך את הפרטים האישיים שלך" : "Edit your personal details"}</CardDescription>
+            <CardTitle>{tx({ he: "הפרופיל שלי", en: "My Profile" }, language)}</CardTitle>
+            <CardDescription>{tx({ he: "ערוך את הפרטים האישיים שלך", en: "Edit your personal details" }, language)}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             {/* Email (read-only) */}
             <div className="space-y-2">
-              <Label htmlFor="profile-email">{isHe ? "אימייל" : "Email"}</Label>
+              <Label htmlFor="profile-email">{tx({ he: "אימייל", en: "Email" }, language)}</Label>
               <Input id="profile-email" value={user?.email ?? ""} disabled className="bg-muted" dir="ltr" />
             </div>
 
             {/* Display name */}
             <div className="space-y-2">
-              <Label htmlFor="displayName">{isHe ? "שם תצוגה" : "Display Name"}</Label>
+              <Label htmlFor="displayName">{tx({ he: "שם תצוגה", en: "Display Name" }, language)}</Label>
               <Input
                 id="displayName"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={isHe ? "הכנס שם תצוגה" : "Enter display name"}
+                placeholder={tx({ he: "הכנס שם תצוגה", en: "Enter display name" }, language)}
               />
             </div>
 
             {/* Integrations summary */}
             <div className="space-y-2">
-              <Label>{isHe ? "אינטגרציות" : "Integrations"}</Label>
+              <Label>{tx({ he: "אינטגרציות", en: "Integrations" }, language)}</Label>
               <p className="text-xs text-muted-foreground" dir="auto">
-                {getConnectedPlatforms(integrationState).length} {isHe ? "מחוברות" : "connected"}
+                {getConnectedPlatforms(integrationState).length} {tx({ he: "מחוברות", en: "connected" }, language)}
                 {isConnected(integrationState, "slack") && " · Slack"}
                 {isConnected(integrationState, "whatsapp") && " · WhatsApp"}
               </p>
@@ -211,7 +212,7 @@ const PageComponent = () => {
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Webhook className="h-4 w-4" />
-                {isHe ? "Webhooks" : "Webhooks"}
+                {tx({ he: "Webhooks", en: "Webhooks" }, language)}
               </Label>
               <p className="text-xs text-muted-foreground" dir="auto">
                 {isHe
@@ -229,7 +230,7 @@ const PageComponent = () => {
                   {webhookBusy === "dispatch" ? (
                     <Loader2 className="h-3 w-3 animate-spin me-1" />
                   ) : null}
-                  {isHe ? "שלח בדיקת יוצא" : "Send test dispatch"}
+                  {tx({ he: "שלח בדיקת יוצא", en: "Send test dispatch" }, language)}
                 </Button>
                 <Button
                   variant="outline"
@@ -241,14 +242,14 @@ const PageComponent = () => {
                   {webhookBusy === "receive" ? (
                     <Loader2 className="h-3 w-3 animate-spin me-1" />
                   ) : null}
-                  {isHe ? "אמת נקודת קצה נכנסת" : "Verify inbound endpoint"}
+                  {tx({ he: "אמת נקודת קצה נכנסת", en: "Verify inbound endpoint" }, language)}
                 </Button>
               </div>
             </div>
 
             {/* Tier */}
             <div className="space-y-2">
-              <Label>{isHe ? "מנוי" : "Subscription Tier"}</Label>
+              <Label>{tx({ he: "מנוי", en: "Subscription Tier" }, language)}</Label>
               <div className="flex items-center gap-2">
                 <Badge className={`${tierColors[tier]} text-white`}>
                   {tier === "pro" ? <Shield className="h-3 w-3 me-1" /> : tier === "business" ? <Crown className="h-3 w-3 me-1" /> : null}
@@ -256,12 +257,12 @@ const PageComponent = () => {
                 </Badge>
                 {import.meta.env.DEV && isLocalAuth && tier === "free" && (
                   <Button variant="outline" size="sm" onClick={() => setTier("pro")} className="text-xs">
-                    {isHe ? "שדרג ל-Pro (dev)" : "Upgrade to Pro (dev)"}
+                    {tx({ he: "שדרג ל-Pro (dev)", en: "Upgrade to Pro (dev)" }, language)}
                   </Button>
                 )}
                 {import.meta.env.DEV && isLocalAuth && tier === "pro" && (
                   <Button variant="outline" size="sm" onClick={() => setTier("business")} className="text-xs">
-                    {isHe ? "שדרג ל-Business (dev)" : "Upgrade to Business (dev)"}
+                    {tx({ he: "שדרג ל-Business (dev)", en: "Upgrade to Business (dev)" }, language)}
                   </Button>
                 )}
               </div>
@@ -269,7 +270,7 @@ const PageComponent = () => {
 
             <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {isHe ? "שמור שינויים" : "Save Changes"}
+              {tx({ he: "שמור שינויים", en: "Save Changes" }, language)}
             </Button>
           </CardContent>
         </Card>

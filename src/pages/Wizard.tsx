@@ -17,6 +17,7 @@ import { useArchetype } from "@/contexts/ArchetypeContext";
 import BackToHub from "@/components/BackToHub";
 import SmartOnboarding from "@/components/SmartOnboarding";
 import ProcessingScreen from "@/components/ProcessingScreen";
+import { tx } from "@/i18n/tx";
 
 type WizardState = "onboarding" | "processing";
 
@@ -69,7 +70,7 @@ const Wizard = () => {
           const res = await aiCopyServiceGenerate({
             task: "headline",
             prompt,
-            language: isHe ? "he" : "en",
+            language: tx({ he: "he", en: "en" }, language),
           });
           copy = res.text;
         } catch {
@@ -78,7 +79,7 @@ const Wizard = () => {
       }
       return copy;
     },
-    [isHe, user?.id, formDataCache?.mainGoal, formDataCache?.businessField],
+    [user?.id, formDataCache?.mainGoal, formDataCache?.businessField, language],
   );
 
   const handleProfileComplete = useCallback((up: UnifiedProfile) => {
@@ -100,7 +101,7 @@ const Wizard = () => {
         ?? fd.productDescription
         ?? "";
       if (heroCopy) {
-        predictContentScore(heroCopy, isHe ? "he" : "en");
+        predictContentScore(heroCopy, tx({ he: "he", en: "en" }, language));
       }
       calculateEPS();
     } catch {
@@ -112,7 +113,7 @@ const Wizard = () => {
 
     // Update archetype profile with available signals from this pipeline run
     updateFromBlackboard({ formData: fd, knowledgeGraph: graph });
-  }, [persistFormData, persistUnifiedProfile, isHe, updateFromBlackboard]);
+  }, [persistFormData, persistUnifiedProfile, updateFromBlackboard, language]);
 
   const handleProcessingComplete = useCallback(() => {
     if (!result) return;

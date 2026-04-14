@@ -1,6 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { getSocialProof, getTotalUsers } from "@/lib/socialProofData";
+import { tx } from "@/i18n/tx";
 import { Users, BarChart3, ArrowUpRight } from "lucide-react";
 
 interface PeerBenchmarkProps {
@@ -42,7 +43,7 @@ export function PeerBenchmark({ businessField, healthScore, modulesCompleted, mo
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <h3 className="text-sm font-semibold text-foreground">
-            {isHe ? "השוואת עמיתים" : "Peer Benchmark"}
+            {tx({ he: "השוואת עמיתים", en: "Peer Benchmark" }, language)}
           </h3>
         </div>
 
@@ -60,12 +61,12 @@ export function PeerBenchmark({ businessField, healthScore, modulesCompleted, mo
               <BarChart3 className="h-3.5 w-3.5 mx-auto text-muted-foreground" />
               <div className="text-lg font-bold text-foreground">{healthScore}</div>
               <div className="text-[10px] text-muted-foreground">
-                {isHe ? "ציון בריאות שלך" : "Your health score"}
+                {tx({ he: "ציון בריאות שלך", en: "Your health score" }, language)}
               </div>
               <div className={`text-[10px] font-medium flex items-center justify-center gap-0.5 ${(healthDelta ?? 0) >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}`}>
                 {(healthDelta ?? 0) >= 0 && <ArrowUpRight className="h-3 w-3" />}
                 {(healthDelta ?? 0) >= 0 ? "+" : ""}{healthDelta}
-                {isHe ? " מהממוצע" : " vs avg"}
+                {tx({ he: " מהממוצע", en: " vs avg" }, language)}
               </div>
             </div>
           )}
@@ -76,7 +77,7 @@ export function PeerBenchmark({ businessField, healthScore, modulesCompleted, mo
               {modulesCompleted}/{modulesTotal}
             </div>
             <div className="text-[10px] text-muted-foreground">
-              {isHe ? "מודולים שהושלמו" : "Modules completed"}
+              {tx({ he: "מודולים שהושלמו", en: "Modules completed" }, language)}
             </div>
             <div className="text-[10px] text-muted-foreground">
               {isHe

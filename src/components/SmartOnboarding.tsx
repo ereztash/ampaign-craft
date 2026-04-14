@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AdaptiveSlider } from "@/components/ui/adaptive-slider";
 import BusinessDNACard from "@/components/BusinessDNACard";
+import { tx } from "@/i18n/tx";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles, Check, GripVertical } from "lucide-react";
 import {
@@ -129,11 +130,11 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-muted-foreground">
-              {isHe ? `שלב ${step} מתוך 4` : `Step ${step} of 4`}
+              {tx({ he: `שלב ${step} מתוך 4`, en: `Step ${step} of 4` }, language)}
             </span>
             <Badge variant="outline" className="text-xs gap-1">
               <Sparkles className="h-3 w-3" />
-              {isHe ? `התאמה ${personalizationPercent}%` : `${personalizationPercent}% personalized`}
+              {tx({ he: `התאמה ${personalizationPercent}%`, en: `${personalizationPercent}% personalized` }, language)}
             </Badge>
           </div>
           <Progress value={step * 25} className="h-2" />
@@ -143,10 +144,10 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
           {step === 1 && (
             <motion.div key="step1" {...mp}>
               <h1 className="text-2xl font-bold text-foreground mb-2 text-center" dir="auto">
-                {isHe ? "מה התחום שלך?" : "What's your industry?"}
+                {tx({ he: "מה התחום שלך?", en: "What's your industry?" }, language)}
               </h1>
               <p className="text-muted-foreground text-center mb-6" dir="auto">
-                {isHe ? "בחר את התחום שהכי מתאים" : "Select the best fit"}
+                {tx({ he: "בחר את התחום שהכי מתאים", en: "Select the best fit" }, language)}
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {INDUSTRY_OPTIONS.map((opt) => {
@@ -179,16 +180,16 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
           {step === 2 && (
             <motion.div key="step2" {...mp}>
               <h1 className="text-2xl font-bold text-foreground mb-2 text-center" dir="auto">
-                {isHe ? "למי ומה?" : "Who & What?"}
+                {tx({ he: "למי ומה?", en: "Who & What?" }, language)}
               </h1>
               <p className="text-muted-foreground text-center mb-6" dir="auto">
-                {isHe ? "קהל יעד ומטרה עיקרית" : "Target audience & primary goal"}
+                {tx({ he: "קהל יעד ומטרה עיקרית", en: "Target audience & primary goal" }, language)}
               </p>
 
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-3" dir="auto">
-                    {isHe ? "קהל יעד" : "Target Audience"}
+                    {tx({ he: "קהל יעד", en: "Target Audience" }, language)}
                   </h3>
                   <div className="grid grid-cols-3 gap-3">
                     {AUDIENCE_OPTIONS.map((opt) => {
@@ -218,7 +219,7 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
 
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-3" dir="auto">
-                    {isHe ? "מטרה עיקרית" : "Primary Goal"}
+                    {tx({ he: "מטרה עיקרית", en: "Primary Goal" }, language)}
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {GOAL_OPTIONS.map((opt) => {
@@ -252,10 +253,10 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
           {step === 3 && (
             <motion.div key="step3" {...mp}>
               <h1 className="text-2xl font-bold text-foreground mb-2 text-center" dir="auto">
-                {isHe ? "ה-DNA העסקי שלך" : "Your Business DNA"}
+                {tx({ he: "ה-DNA העסקי שלך", en: "Your Business DNA" }, language)}
               </h1>
               <p className="text-muted-foreground text-center mb-6" dir="auto">
-                {isHe ? "כוונן את הסליידרים — הם כבר מכוילים לפי התחום שלך" : "Fine-tune the sliders — they're pre-calibrated to your industry"}
+                {tx({ he: "כוונן את הסליידרים — הם כבר מכוילים לפי התחום שלך", en: "Fine-tune the sliders — they're pre-calibrated to your industry" }, language)}
               </p>
 
               <div className="space-y-5">
@@ -297,7 +298,7 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
 
                 <div className="pt-4 border-t">
                   <h3 className="text-sm font-medium text-foreground mb-3" dir="auto">
-                    {isHe ? "סדר עדיפויות (גרור לסידור)" : "Value Priorities (tap arrows to reorder)"}
+                    {tx({ he: "סדר עדיפויות (גרור לסידור)", en: "Value Priorities (tap arrows to reorder)" }, language)}
                   </h3>
                   <div className="space-y-2">
                     {profile.valuePriorities.map((vId, idx) => {
@@ -345,10 +346,10 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
           {step === 4 && (
             <motion.div key="step4" {...mp}>
               <h1 className="text-2xl font-bold text-foreground mb-2 text-center" dir="auto">
-                {isHe ? "הפרופיל שלך מוכן" : "Your Profile is Ready"}
+                {tx({ he: "הפרופיל שלך מוכן", en: "Your Profile is Ready" }, language)}
               </h1>
               <p className="text-muted-foreground text-center mb-6" dir="auto">
-                {isHe ? "ככה המערכת רואה את העסק שלך — נכון?" : "This is how the system sees your business — look right?"}
+                {tx({ he: "ככה המערכת רואה את העסק שלך — נכון?", en: "This is how the system sees your business — look right?" }, language)}
               </p>
 
               <BusinessDNACard fingerprint={fingerprint} />
@@ -372,7 +373,7 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
               className="gap-1"
             >
               {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-              {isHe ? "חזור" : "Back"}
+              {tx({ he: "חזור", en: "Back" }, language)}
             </Button>
           ) : (
             <div />
@@ -384,7 +385,7 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
               disabled={!canProceed}
               className="gap-1"
             >
-              {isHe ? "הבא" : "Next"}
+              {tx({ he: "הבא", en: "Next" }, language)}
               {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Button>
           ) : (
@@ -393,7 +394,7 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
               className="gap-2 cta-warm"
             >
               <Sparkles className="h-4 w-4" />
-              {isHe ? "בנה את התוכנית שלי" : "Build My Plan"}
+              {tx({ he: "בנה את התוכנית שלי", en: "Build My Plan" }, language)}
             </Button>
           )}
         </div>

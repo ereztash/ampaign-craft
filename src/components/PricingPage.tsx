@@ -4,6 +4,7 @@ import { TIERS, PricingTier, BillingCycle, getEffectivePrice, getAnnualSavings }
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Check } from "lucide-react";
 
 interface PricingPageProps {
@@ -20,10 +21,10 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
     <div className="space-y-8 py-8">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-foreground">
-          {isHe ? "בחר את התוכנית שלך" : "Choose Your Plan"}
+          {tx({ he: "בחר את התוכנית שלך", en: "Choose Your Plan" }, language)}
         </h2>
         <p className="mt-2 text-muted-foreground">
-          {isHe ? "התחל בחינם, שדרג כשאתה מוכן" : "Start free, upgrade when you're ready"}
+          {tx({ he: "התחל בחינם, שדרג כשאתה מוכן", en: "Start free, upgrade when you're ready" }, language)}
         </p>
       </div>
 
@@ -38,7 +39,7 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
             }`}
             onClick={() => setCycle("monthly")}
           >
-            {isHe ? "חודשי" : "Monthly"}
+            {tx({ he: "חודשי", en: "Monthly" }, language)}
           </button>
           <button
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
@@ -48,9 +49,9 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
             }`}
             onClick={() => setCycle("annual")}
           >
-            {isHe ? "שנתי" : "Annual"}
+            {tx({ he: "שנתי", en: "Annual" }, language)}
             <Badge variant="secondary" className="text-xs px-1.5 py-0 bg-accent/20 text-accent border-0">
-              {isHe ? "חסכו 20%" : "Save 20%"}
+              {tx({ he: "חסכו 20%", en: "Save 20%" }, language)}
             </Badge>
           </button>
         </div>
@@ -71,7 +72,7 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
             >
               {isPopular && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 funnel-gradient border-0 text-accent-foreground">
-                  {isHe ? "הכי פופולרי" : "Most Popular"}
+                  {tx({ he: "הכי פופולרי", en: "Most Popular" }, language)}
                 </Badge>
               )}
               <CardHeader className="text-center pb-2">
@@ -85,7 +86,7 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
                       <div className="text-3xl font-bold">
                         ₪{effectivePrice}
                         <span className="text-base font-normal text-muted-foreground">
-                          {isHe ? "/חודש" : "/mo"}
+                          {tx({ he: "/חודש", en: "/mo" }, language)}
                         </span>
                       </div>
                       {cycle === "annual" && (
@@ -108,7 +109,7 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
 
                 {showTrialBadge && (
                   <Badge variant="outline" className="mx-auto mt-1 text-xs">
-                    {isHe ? `${tier.trialDays} ימי ניסיון חינם` : `${tier.trialDays}-day free trial`}
+                    {tx({ he: `${tier.trialDays} ימי ניסיון חינם`, en: `${tier.trialDays}-day free trial` }, language)}
                   </Badge>
                 )}
               </CardHeader>
@@ -129,12 +130,12 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
                   onClick={() => onSelectTier?.(tier.id, cycle)}
                 >
                   {isCurrent
-                    ? (isHe ? "התוכנית הנוכחית" : "Current Plan")
+                    ? (tx({ he: "התוכנית הנוכחית", en: "Current Plan" }, language))
                     : tier.priceMonthly === 0
-                      ? (isHe ? "התחל בחינם" : "Start Free")
+                      ? (tx({ he: "התחל בחינם", en: "Start Free" }, language))
                       : showTrialBadge
-                        ? (isHe ? "התחל ניסיון חינם" : "Start Free Trial")
-                        : (isHe ? "שדרג עכשיו" : "Upgrade Now")}
+                        ? (tx({ he: "התחל ניסיון חינם", en: "Start Free Trial" }, language))
+                        : (tx({ he: "שדרג עכשיו", en: "Upgrade Now" }, language))}
                 </Button>
               </CardContent>
             </Card>
@@ -143,7 +144,7 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
       </div>
 
       <p className="text-center text-xs text-muted-foreground">
-        {isHe ? "ניתן לבטל בכל עת · ללא כרטיס אשראי לגרסה החינמית" : "Cancel anytime · No credit card for free plan"}
+        {tx({ he: "ניתן לבטל בכל עת · ללא כרטיס אשראי לגרסה החינמית", en: "Cancel anytime · No credit card for free plan" }, language)}
       </p>
     </div>
   );

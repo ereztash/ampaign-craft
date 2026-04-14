@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { tx } from "@/i18n/tx";
 import {
   Dialog,
   DialogContent,
@@ -153,37 +154,37 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-md" dir={isHe ? "rtl" : "ltr"}>
+      <DialogContent className="max-w-md" dir={tx({ he: "rtl", en: "ltr" }, language)}>
         <DialogHeader>
           <DialogTitle dir="auto">
-            {initial ? (isHe ? "עריכת ליד" : "Edit Lead") : (isHe ? "ליד חדש" : "New Lead")}
+            {initial ? (tx({ he: "עריכת ליד", en: "Edit Lead" }, language)) : (tx({ he: "ליד חדש", en: "New Lead" }, language))}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-3 max-h-[70vh] overflow-y-auto pe-1">
           {/* Name */}
           <div className="space-y-1">
-            <Label htmlFor="lead-name" className="text-xs" dir="auto">{isHe ? "שם *" : "Name *"}</Label>
-            <Input id="lead-name" dir="auto" value={form.name} onChange={(e) => set("name", e.target.value)} placeholder={isHe ? "שם מלא" : "Full name"} />
+            <Label htmlFor="lead-name" className="text-xs" dir="auto">{tx({ he: "שם *", en: "Name *" }, language)}</Label>
+            <Input id="lead-name" dir="auto" value={form.name} onChange={(e) => set("name", e.target.value)} placeholder={tx({ he: "שם מלא", en: "Full name" }, language)} />
           </div>
           {/* Phone */}
           <div className="space-y-1">
-            <Label htmlFor="lead-phone" className="text-xs" dir="auto">{isHe ? "טלפון" : "Phone"}</Label>
+            <Label htmlFor="lead-phone" className="text-xs" dir="auto">{tx({ he: "טלפון", en: "Phone" }, language)}</Label>
             <Input id="lead-phone" dir="ltr" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="050-000-0000" />
           </div>
           {/* Email */}
           <div className="space-y-1">
-            <Label htmlFor="lead-email" className="text-xs" dir="auto">{isHe ? "אימייל" : "Email"}</Label>
+            <Label htmlFor="lead-email" className="text-xs" dir="auto">{tx({ he: "אימייל", en: "Email" }, language)}</Label>
             <Input id="lead-email" dir="ltr" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="name@company.com" />
           </div>
           {/* Business */}
           <div className="space-y-1">
-            <Label htmlFor="lead-biz" className="text-xs" dir="auto">{isHe ? "שם עסק" : "Business"}</Label>
-            <Input id="lead-biz" dir="auto" value={form.business} onChange={(e) => set("business", e.target.value)} placeholder={isHe ? "שם החברה" : "Company name"} />
+            <Label htmlFor="lead-biz" className="text-xs" dir="auto">{tx({ he: "שם עסק", en: "Business" }, language)}</Label>
+            <Input id="lead-biz" dir="auto" value={form.business} onChange={(e) => set("business", e.target.value)} placeholder={tx({ he: "שם החברה", en: "Company name" }, language)} />
           </div>
           {/* Value + Status row */}
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <Label className="text-xs" dir="auto">{isHe ? "ערך עסקה (₪)" : "Deal Value (₪)"}</Label>
+              <Label className="text-xs" dir="auto">{tx({ he: "ערך עסקה (₪)", en: "Deal Value (₪)" }, language)}</Label>
               <Input
                 dir="ltr"
                 type="number"
@@ -194,7 +195,7 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs" dir="auto">{isHe ? "סטטוס" : "Status"}</Label>
+              <Label className="text-xs" dir="auto">{tx({ he: "סטטוס", en: "Status" }, language)}</Label>
               <Select value={form.status} onValueChange={(v) => set("status", v as LeadStatus)}>
                 <SelectTrigger className="text-xs">
                   <SelectValue />
@@ -202,7 +203,7 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
                 <SelectContent>
                   {COLUMNS.map((col) => (
                     <SelectItem key={col.id} value={col.id} className="text-xs">
-                      {isHe ? col.he : col.en}
+                      {tx(col, language)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -211,7 +212,7 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
           </div>
           {/* Follow-up date */}
           <div className="space-y-1">
-            <Label htmlFor="lead-followup" className="text-xs" dir="auto">{isHe ? "פולואפ הבא" : "Next Follow-up"}</Label>
+            <Label htmlFor="lead-followup" className="text-xs" dir="auto">{tx({ he: "פולואפ הבא", en: "Next Follow-up" }, language)}</Label>
             <Input
               id="lead-followup"
               dir="ltr"
@@ -222,16 +223,16 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
           </div>
           {/* Source */}
           <div className="space-y-1">
-            <Label htmlFor="lead-source" className="text-xs" dir="auto">{isHe ? "מקור" : "Source"}</Label>
-            <Input id="lead-source" dir="auto" value={form.source} onChange={(e) => set("source", e.target.value)} placeholder={isHe ? "פייסבוק, הפניה, אתר..." : "Facebook, referral, website..." } />
+            <Label htmlFor="lead-source" className="text-xs" dir="auto">{tx({ he: "מקור", en: "Source" }, language)}</Label>
+            <Input id="lead-source" dir="auto" value={form.source} onChange={(e) => set("source", e.target.value)} placeholder={tx({ he: "פייסבוק, הפניה, אתר...", en: "Facebook, referral, website..." }, language) } />
           </div>
           {/* Notes */}
           <div className="space-y-1">
-            <Label htmlFor="lead-notes" className="text-xs" dir="auto">{isHe ? "הערות" : "Notes"}</Label>
-            <Textarea id="lead-notes" dir="auto" rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder={isHe ? "הערות חופשיות..." : "Free notes..."} className="resize-none text-xs" />
+            <Label htmlFor="lead-notes" className="text-xs" dir="auto">{tx({ he: "הערות", en: "Notes" }, language)}</Label>
+            <Textarea id="lead-notes" dir="auto" rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder={tx({ he: "הערות חופשיות...", en: "Free notes..." }, language)} className="resize-none text-xs" />
           </div>
           <Button className="w-full" onClick={handleSubmit} disabled={!form.name.trim()}>
-            {isHe ? "שמור" : "Save"}
+            {tx({ he: "שמור", en: "Save" }, language)}
           </Button>
         </div>
       </DialogContent>
@@ -286,7 +287,7 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, isHe, language }: LeadC
               trigger={
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="gap-2 cursor-pointer">
                   <Pencil className="h-3.5 w-3.5" />
-                  {isHe ? "עריכה" : "Edit"}
+                  {tx({ he: "עריכה", en: "Edit" }, language)}
                 </DropdownMenuItem>
               }
               initial={lead}
@@ -295,7 +296,7 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, isHe, language }: LeadC
             {COLUMNS.filter((c) => c.id !== lead.status).map((c) => (
               <DropdownMenuItem key={c.id} className="gap-2 cursor-pointer" onSelect={() => onMove(lead.id, c.id)}>
                 <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-                {isHe ? c.he : c.en}
+                {tx(c, language)}
               </DropdownMenuItem>
             ))}
             <DropdownMenuItem
@@ -303,7 +304,7 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, isHe, language }: LeadC
               onSelect={() => onDelete(lead.id)}
             >
               <Trash2 className="h-3.5 w-3.5" />
-              {isHe ? "מחק" : "Delete"}
+              {tx({ he: "מחק", en: "Delete" }, language)}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -332,8 +333,8 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, isHe, language }: LeadC
         {lead.nextFollowup && (
           <p className={`flex items-center gap-1.5 text-[11px] ${isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
             <Calendar className="h-2.5 w-2.5 shrink-0" />
-            {new Date(lead.nextFollowup).toLocaleDateString(isHe ? "he-IL" : "en-US")}
-            {isOverdue && (isHe ? " — פגה!" : " — overdue!")}
+            {new Date(lead.nextFollowup).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
+            {isOverdue && (tx({ he: " — פגה!", en: " — overdue!" }, language))}
           </p>
         )}
       </div>
@@ -353,15 +354,15 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, isHe, language }: LeadC
               message={waMessage}
               defaultPhone={lead.phone}
               size="sm"
-              label={isHe ? "WhatsApp" : "WhatsApp"}
+              label={tx({ he: "WhatsApp", en: "WhatsApp" }, language)}
             />
           )}
           {lead.email && (
             <EmailComposer
               body={`שלום ${lead.name},\n\nרציתי לעקוב אחרי שיחתנו...\n\nבברכה`}
-              subject={isHe ? "המשך שיחתנו" : "Following up"}
+              subject={tx({ he: "המשך שיחתנו", en: "Following up" }, language)}
               size="sm"
-              label={isHe ? "אימייל" : "Email"}
+              label={tx({ he: "אימייל", en: "Email" }, language)}
             />
           )}
         </div>
@@ -390,21 +391,21 @@ const CrmPage = () => {
       const existing = leads.find((l) => l.id === lead.id);
       if (existing) {
         persist(leads.map((l) => (l.id === lead.id ? lead : l)));
-        toast({ title: isHe ? "הליד עודכן" : "Lead updated" });
+        toast({ title: tx({ he: "הליד עודכן", en: "Lead updated" }, language) });
       } else {
         persist([lead, ...leads]);
-        toast({ title: isHe ? "ליד חדש נוסף" : "Lead added" });
+        toast({ title: tx({ he: "ליד חדש נוסף", en: "Lead added" }, language) });
       }
     },
-    [leads, persist, isHe, toast]
+    [leads, persist, toast, language]
   );
 
   const handleDelete = useCallback(
     (id: string) => {
       persist(leads.filter((l) => l.id !== id));
-      toast({ title: isHe ? "הליד נמחק" : "Lead deleted" });
+      toast({ title: tx({ he: "הליד נמחק", en: "Lead deleted" }, language) });
     },
-    [leads, persist, isHe, toast]
+    [leads, persist, toast, language]
   );
 
   const handleMove = useCallback(
@@ -434,24 +435,24 @@ const CrmPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-7xl">
-        <BackToHub currentPage={isHe ? "CRM" : "CRM"} />
+        <BackToHub currentPage={tx({ he: "CRM", en: "CRM" }, language)} />
 
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2" dir="auto">
               <Users className="h-5 w-5 text-primary" />
-              {isHe ? "ניהול לידים" : "Lead Management"}
+              {tx({ he: "ניהול לידים", en: "Lead Management" }, language)}
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5" dir="auto">
-              {leads.length} {isHe ? "לידים סה״כ" : "leads total"}
+              {leads.length} {tx({ he: "לידים סה״כ", en: "leads total" }, language)}
             </p>
           </div>
           <LeadFormDialog
             trigger={
               <Button className="gap-2" size="sm">
                 <Plus className="h-4 w-4" />
-                {isHe ? "ליד חדש" : "New Lead"}
+                {tx({ he: "ליד חדש", en: "New Lead" }, language)}
               </Button>
             }
             onSave={handleSave}
@@ -462,16 +463,16 @@ const CrmPage = () => {
         {leads.length > 0 && (
           <div className="flex flex-wrap gap-3 mb-5">
             <div className="rounded-lg border bg-green-50 dark:bg-green-900/20 px-3 py-2 text-center min-w-[100px]">
-              <p className="text-xs text-muted-foreground" dir="auto">{isHe ? "סגור" : "Closed"}</p>
+              <p className="text-xs text-muted-foreground" dir="auto">{tx({ he: "סגור", en: "Closed" }, language)}</p>
               <p className="font-bold text-green-600 text-sm">₪{totalValue.toLocaleString()}</p>
             </div>
             <div className="rounded-lg border bg-blue-50 dark:bg-blue-900/20 px-3 py-2 text-center min-w-[100px]">
-              <p className="text-xs text-muted-foreground" dir="auto">{isHe ? "צינור פתוח" : "Open pipeline"}</p>
+              <p className="text-xs text-muted-foreground" dir="auto">{tx({ he: "צינור פתוח", en: "Open pipeline" }, language)}</p>
               <p className="font-bold text-blue-600 text-sm">₪{openValue.toLocaleString()}</p>
             </div>
             {overdueCount > 0 && (
               <div className="rounded-lg border bg-red-50 dark:bg-red-900/20 px-3 py-2 text-center min-w-[100px]">
-                <p className="text-xs text-muted-foreground" dir="auto">{isHe ? "פולואפ פגה" : "Overdue"}</p>
+                <p className="text-xs text-muted-foreground" dir="auto">{tx({ he: "פולואפ פגה", en: "Overdue" }, language)}</p>
                 <p className="font-bold text-red-500 text-sm">{overdueCount}</p>
               </div>
             )}
@@ -482,7 +483,7 @@ const CrmPage = () => {
         <div className="mb-4">
           <Input
             dir="auto"
-            placeholder={isHe ? "חיפוש לפי שם, עסק, טלפון..." : "Search by name, business, phone..."}
+            placeholder={tx({ he: "חיפוש לפי שם, עסק, טלפון...", en: "Search by name, business, phone..." }, language)}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-sm"
@@ -495,17 +496,17 @@ const CrmPage = () => {
             <Users className="h-16 w-16 text-muted-foreground/30 mx-auto" />
             <div>
               <p className="font-medium text-foreground" dir="auto">
-                {isHe ? "עדיין אין לידים" : "No leads yet"}
+                {tx({ he: "עדיין אין לידים", en: "No leads yet" }, language)}
               </p>
               <p className="text-sm text-muted-foreground" dir="auto">
-                {isHe ? "הוסף ליד ראשון כדי להתחיל לנהל את הצינור שלך" : "Add your first lead to start managing your pipeline"}
+                {tx({ he: "הוסף ליד ראשון כדי להתחיל לנהל את הצינור שלך", en: "Add your first lead to start managing your pipeline" }, language)}
               </p>
             </div>
             <LeadFormDialog
               trigger={
                 <Button className="gap-2">
                   <Plus className="h-4 w-4" />
-                  {isHe ? "הוסף ליד ראשון" : "Add first lead"}
+                  {tx({ he: "הוסף ליד ראשון", en: "Add first lead" }, language)}
                 </Button>
               }
               onSave={handleSave}
@@ -525,7 +526,7 @@ const CrmPage = () => {
                   <div className={`rounded-lg px-3 py-2 ${col.bg} border ${col.border}`}>
                     <div className="flex items-center justify-between">
                       <span className={`text-xs font-semibold ${col.color}`} dir="auto">
-                        {isHe ? col.he : col.en}
+                        {tx(col, language)}
                       </span>
                       <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-4 ${col.color} border-current`}>
                         {colLeads.length}
@@ -563,7 +564,7 @@ const CrmPage = () => {
                         className={`w-full justify-start gap-1.5 text-[11px] ${col.color} hover:${col.bg} opacity-60 hover:opacity-100`}
                       >
                         <Plus className="h-3 w-3" />
-                        {isHe ? "הוסף ליד" : "Add lead"}
+                        {tx({ he: "הוסף ליד", en: "Add lead" }, language)}
                       </Button>
                     }
                     defaultStatus={col.id}

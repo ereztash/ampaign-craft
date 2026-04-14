@@ -7,6 +7,7 @@ import BackToHub from "@/components/BackToHub";
 import SalesTab from "@/components/SalesTab";
 import { ModuleNextStep } from "@/components/ModuleNextStep";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { TrendingUp } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
 
@@ -28,11 +29,11 @@ const PageComponent = () => {
         ) : (
           <div className="text-center py-16 space-y-4">
             <Illustration type="sales" size={96} className="text-accent mx-auto" />
-            <h2 className="text-2xl font-bold" dir="auto">{isHe ? "סקריפטי מכירה מותאמים" : "Personalized Sales Scripts"}</h2>
+            <h2 className="text-2xl font-bold" dir="auto">{tx({ he: "סקריפטי מכירה מותאמים", en: "Personalized Sales Scripts" }, language)}</h2>
             <p className="text-muted-foreground max-w-md mx-auto" dir="auto">
-              {isHe ? "כדי לייצר סקריפטים מותאמים, צריך קודם לבנות תוכנית שיווק" : "To generate personalized scripts, first build a marketing plan"}
+              {tx({ he: "כדי לייצר סקריפטים מותאמים, צריך קודם לבנות תוכנית שיווק", en: "To generate personalized scripts, first build a marketing plan" }, language)}
             </p>
-            <Button onClick={() => navigate("/wizard")} className="cta-warm">{isHe ? "בנה תוכנית (2 דק')" : "Build Plan (2 min)"}</Button>
+            <Button onClick={() => navigate("/wizard")} className="cta-warm">{tx({ he: "בנה תוכנית (2 דק')", en: "Build Plan (2 min)" }, language)}</Button>
           </div>
         )}
       </main>

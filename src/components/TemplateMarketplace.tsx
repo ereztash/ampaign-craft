@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { tx } from "@/i18n/tx";
 import { ThumbsUp, Download, Store, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -49,7 +50,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
     const planData = await applyTemplate(template.id);
     if (planData && onUseTemplate) {
       onUseTemplate(planData);
-      toast.success(isHe ? "התבנית נטענה!" : "Template loaded!");
+      toast.success(tx({ he: "התבנית נטענה!", en: "Template loaded!" }, language));
     }
   };
 
@@ -59,10 +60,10 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
         <Store className="h-5 w-5 text-primary" />
         <div>
           <h3 className="text-lg font-semibold text-foreground">
-            {isHe ? "שוק תבניות" : "Template Marketplace"}
+            {tx({ he: "שוק תבניות", en: "Template Marketplace" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {isHe ? "משפכים מוכנים לשימוש — פרסם או השתמש בתבנית של אחרים" : "Ready-to-use funnels — publish or use others' templates"}
+            {tx({ he: "משפכים מוכנים לשימוש — פרסם או השתמש בתבנית של אחרים", en: "Ready-to-use funnels — publish or use others' templates" }, language)}
           </p>
         </div>
       </div>
@@ -71,10 +72,10 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
       <div className="grid grid-cols-2 sm:flex gap-3">
         <Select value={fieldFilter} onValueChange={setFieldFilter}>
           <SelectTrigger className="w-full sm:w-[150px]">
-            <SelectValue placeholder={isHe ? "תחום" : "Industry"} />
+            <SelectValue placeholder={tx({ he: "תחום", en: "Industry" }, language)} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{isHe ? "כל התחומים" : "All Industries"}</SelectItem>
+            <SelectItem value="all">{tx({ he: "כל התחומים", en: "All Industries" }, language)}</SelectItem>
             {Object.entries(FIELD_LABELS).map(([key, label]) => (
               <SelectItem key={key} value={key}>{label[language]}</SelectItem>
             ))}
@@ -82,10 +83,10 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
         </Select>
         <Select value={goalFilter} onValueChange={setGoalFilter}>
           <SelectTrigger className="w-full sm:w-[140px]">
-            <SelectValue placeholder={isHe ? "מטרה" : "Goal"} />
+            <SelectValue placeholder={tx({ he: "מטרה", en: "Goal" }, language)} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{isHe ? "כל המטרות" : "All Goals"}</SelectItem>
+            <SelectItem value="all">{tx({ he: "כל המטרות", en: "All Goals" }, language)}</SelectItem>
             {Object.entries(GOAL_LABELS).map(([key, label]) => (
               <SelectItem key={key} value={key}>{label[language]}</SelectItem>
             ))}
@@ -103,7 +104,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
           <CardContent className="text-center py-12">
             <Store className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
-              {isHe ? "אין תבניות עדיין — היה הראשון לפרסם!" : "No templates yet — be the first to publish!"}
+              {tx({ he: "אין תבניות עדיין — היה הראשון לפרסם!", en: "No templates yet — be the first to publish!" }, language)}
             </p>
           </CardContent>
         </Card>
@@ -140,7 +141,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
                     </Button>
                     <Button size="sm" onClick={() => handleUse(tmpl)} className="h-7 text-xs gap-1">
                       <Download className="h-3 w-3" />
-                      {isHe ? "השתמש" : "Use"}
+                      {tx({ he: "השתמש", en: "Use" }, language)}
                     </Button>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ import { ImportedDataset, TrendAnalysis } from "@/types/importedData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Upload, Trash2, TrendingUp, TrendingDown, Minus, FileSpreadsheet, Link } from "lucide-react";
 import { toast } from "sonner";
@@ -51,15 +52,15 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-foreground">
-            {isHe ? "ניתוח נתונים" : "Data Analysis"}
+            {tx({ he: "ניתוח נתונים", en: "Data Analysis" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {isHe ? "ייבא נתונים מקבצי Excel וקבל ניתוח מגמות" : "Import Excel data and get trend analysis"}
+            {tx({ he: "ייבא נתונים מקבצי Excel וקבל ניתוח מגמות", en: "Import Excel data and get trend analysis" }, language)}
           </p>
         </div>
         <Button onClick={() => setImportOpen(true)} className="gap-2">
           <Upload className="h-4 w-4" />
-          {isHe ? "ייבוא" : "Import"}
+          {tx({ he: "ייבוא", en: "Import" }, language)}
         </Button>
       </div>
 
@@ -70,15 +71,15 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
             <FileSpreadsheet className="h-12 w-12 text-muted-foreground" />
             <div>
               <p className="font-medium text-foreground">
-                {isHe ? "אין נתונים מיובאים" : "No imported data"}
+                {tx({ he: "אין נתונים מיובאים", en: "No imported data" }, language)}
               </p>
               <p className="text-sm text-muted-foreground">
-                {isHe ? "ייבא קובץ Excel כדי להתחיל" : "Import an Excel file to get started"}
+                {tx({ he: "ייבא קובץ Excel כדי להתחיל", en: "Import an Excel file to get started" }, language)}
               </p>
             </div>
             <Button variant="outline" onClick={() => setImportOpen(true)} className="gap-2">
               <Upload className="h-4 w-4" />
-              {isHe ? "ייבא קובץ" : "Import File"}
+              {tx({ he: "ייבא קובץ", en: "Import File" }, language)}
             </Button>
           </CardContent>
         </Card>
@@ -103,19 +104,19 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
                     <Badge variant="outline" className="text-xs">
                       {typeLabels[ds.schema.detectedType]?.[language]}
                     </Badge>
-                    <span>{ds.rows.length} {isHe ? "שורות" : "rows"}</span>
+                    <span>{ds.rows.length} {tx({ he: "שורות", en: "rows" }, language)}</span>
                     {ds.linkedPlanId && <Link className="h-3 w-3" />}
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  aria-label={isHe ? `מחק את מערך הנתונים ${ds.name}` : `Delete dataset ${ds.name}`}
+                  aria-label={tx({ he: `מחק את מערך הנתונים ${ds.name}`, en: `Delete dataset ${ds.name}` }, language)}
                   onClick={(e) => {
                     e.stopPropagation();
                     deleteDataset(ds.id);
                     if (selectedDatasetId === ds.id) setSelectedDatasetId(null);
-                    toast.success(isHe ? "נמחק" : "Deleted");
+                    toast.success(tx({ he: "נמחק", en: "Deleted" }, language));
                   }}
                 >
                   <Trash2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -133,7 +134,7 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                {isHe ? "סיכום מגמות" : "Trend Summary"}
+                {tx({ he: "סיכום מגמות", en: "Trend Summary" }, language)}
                 <Badge
                   className={`${
                     analysis.summary.direction === "improving"
@@ -176,11 +177,11 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {isHe ? "מגמות לאורך זמן" : "Trends Over Time"}
+                  {tx({ he: "מגמות לאורך זמן", en: "Trends Over Time" }, language)}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <figure aria-label={isHe ? `גרף מגמות: ${selectedDataset.name}` : `Trends chart: ${selectedDataset.name}`}>
+                <figure aria-label={tx({ he: `גרף מגמות: ${selectedDataset.name}`, en: `Trends chart: ${selectedDataset.name}` }, language)}>
                   <figcaption className="sr-only">
                     {isHe
                       ? `גרף קווים המציג מגמות לאורך זמן עבור ${selectedDataset.name}. ${analysis!.summary.direction === "improving" ? "מגמה חיובית כוללת." : analysis!.summary.direction === "declining" ? "מגמה שלילית כוללת." : "מגמה יציבה כוללת."}`
@@ -219,12 +220,12 @@ const DataAnalysisTab = ({ savedPlanIds = [] }: DataAnalysisTabProps) => {
                   </div>
                   {/* Screen-reader text alternative for the line chart */}
                   <table className="sr-only">
-                    <caption>{isHe ? "נתוני מגמות" : "Trend data"}</caption>
+                    <caption>{tx({ he: "נתוני מגמות", en: "Trend data" }, language)}</caption>
                     <thead>
                       <tr>
-                        <th scope="col">{isHe ? "מדד" : "Metric"}</th>
-                        <th scope="col">{isHe ? "שינוי" : "Change"}</th>
-                        <th scope="col">{isHe ? "תובנה" : "Insight"}</th>
+                        <th scope="col">{tx({ he: "מדד", en: "Metric" }, language)}</th>
+                        <th scope="col">{tx({ he: "שינוי", en: "Change" }, language)}</th>
+                        <th scope="col">{tx({ he: "תובנה", en: "Insight" }, language)}</th>
                       </tr>
                     </thead>
                     <tbody>

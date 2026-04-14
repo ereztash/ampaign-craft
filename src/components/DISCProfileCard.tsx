@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import type { DISCProfile } from "@/engine/discProfileEngine";
+import { tx } from "@/i18n/tx";
 
 interface DISCProfileCardProps {
   profile: DISCProfile;
@@ -28,7 +29,7 @@ export function DISCProfileCard({ profile }: DISCProfileCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            {primaryConfig.emoji} {isHe ? "פרופיל DISC" : "DISC Profile"}
+            {primaryConfig.emoji} {tx({ he: "פרופיל DISC", en: "DISC Profile" }, language)}
           </CardTitle>
           <div className="flex items-center gap-1.5">
             <Badge className={`${primaryConfig.color} text-white`}>
@@ -67,7 +68,7 @@ export function DISCProfileCard({ profile }: DISCProfileCardProps) {
         <div className="space-y-3">
           <div>
             <p className="text-sm font-medium mb-1.5" dir="auto">
-              {isHe ? "מה להדגיש:" : "Emphasize:"}
+              {tx({ he: "מה להדגיש:", en: "Emphasize:" }, language)}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {profile.messagingStrategy.emphasize.map((item, i) => (
@@ -79,7 +80,7 @@ export function DISCProfileCard({ profile }: DISCProfileCardProps) {
           </div>
           <div>
             <p className="text-sm font-medium mb-1.5" dir="auto">
-              {isHe ? "מה להימנע:" : "Avoid:"}
+              {tx({ he: "מה להימנע:", en: "Avoid:" }, language)}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {profile.messagingStrategy.avoid.map((item, i) => (
@@ -95,10 +96,10 @@ export function DISCProfileCard({ profile }: DISCProfileCardProps) {
         <div className="rounded-md border p-3 bg-primary/5">
           <div className="flex items-center justify-between mb-1">
             <p className="text-sm font-medium" dir="auto">
-              {isHe ? "סגנון CTA:" : "CTA Style:"}
+              {tx({ he: "סגנון CTA:", en: "CTA Style:" }, language)}
             </p>
             <Badge variant="outline" className="text-xs">
-              {isHe ? "דגש משפך:" : "Funnel focus:"} {profile.funnelEmphasis}
+              {tx({ he: "דגש משפך:", en: "Funnel focus:" }, language)} {profile.funnelEmphasis}
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground" dir="auto">

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Sparkles, ShieldCheck, Map, Users, Scale, BarChart3, FileText, ArrowLeft } from "lucide-react";
 
 interface DifferentiationResultProps {
@@ -65,13 +66,13 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
               )}
               {result.mechanismStatement.mechanism && (
                 <div>
-                  <div className="text-xs font-semibold text-muted-foreground mb-1" dir="auto">{isHe ? "מנגנון:" : "Mechanism:"}</div>
+                  <div className="text-xs font-semibold text-muted-foreground mb-1" dir="auto">{tx({ he: "מנגנון:", en: "Mechanism:" }, language)}</div>
                   <p className="text-sm" dir="auto">{result.mechanismStatement.mechanism}</p>
                 </div>
               )}
               {result.mechanismStatement.proof && (
                 <div>
-                  <div className="text-xs font-semibold text-muted-foreground mb-1" dir="auto">{isHe ? "הוכחה:" : "Proof:"}</div>
+                  <div className="text-xs font-semibold text-muted-foreground mb-1" dir="auto">{tx({ he: "הוכחה:", en: "Proof:" }, language)}</div>
                   <p className="text-sm" dir="auto">{result.mechanismStatement.proof}</p>
                 </div>
               )}
@@ -88,7 +89,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
           {result.hybridCategory.name[language] && (
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">{isHe ? "קטגוריה היברידית" : "Hybrid Category"}</CardTitle>
+                <CardTitle className="text-sm">{tx({ he: "קטגוריה היברידית", en: "Hybrid Category" }, language)}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 mb-2">
@@ -96,7 +97,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
                 </div>
                 <p className="text-sm text-muted-foreground" dir="auto">{result.hybridCategory.description[language]}</p>
                 {result.hybridCategory.whitespace && (
-                  <p className="text-xs text-accent mt-1">{isHe ? "חלל לבן:" : "Whitespace:"} {result.hybridCategory.whitespace}</p>
+                  <p className="text-xs text-accent mt-1">{tx({ he: "חלל לבן:", en: "Whitespace:" }, language)} {result.hybridCategory.whitespace}</p>
                 )}
               </CardContent>
             </Card>
@@ -131,10 +132,10 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
                     {comp.threat_level}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mb-2">{isHe ? "ארכיטיפ:" : "Archetype:"} {comp.archetype}</p>
+                <p className="text-xs text-muted-foreground mb-2">{tx({ he: "ארכיטיפ:", en: "Archetype:" }, language)} {comp.archetype}</p>
                 {comp.counter_strategy && (
                   <div className="rounded-lg bg-accent/5 border border-accent/20 p-2.5">
-                    <div className="text-xs text-accent font-medium mb-1">{isHe ? "אסטרטגיית נגד:" : "Counter-strategy:"}</div>
+                    <div className="text-xs text-accent font-medium mb-1">{tx({ he: "אסטרטגיית נגד:", en: "Counter-strategy:" }, language)}</div>
                     <p className="text-xs" dir="auto">{comp.counter_strategy}</p>
                   </div>
                 )}
@@ -166,15 +167,15 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
             <Card key={i}>
               <CardContent className="p-4 space-y-2">
                 <div>
-                  <div className="text-xs text-destructive font-medium">{isHe ? "חולשה:" : "Weakness:"}</div>
+                  <div className="text-xs text-destructive font-medium">{tx({ he: "חולשה:", en: "Weakness:" }, language)}</div>
                   <p className="text-sm" dir="auto">{td.weakness}</p>
                 </div>
                 <div>
-                  <div className="text-xs text-accent font-medium">{isHe ? "מסגור מחדש:" : "Reframe:"}</div>
+                  <div className="text-xs text-accent font-medium">{tx({ he: "מסגור מחדש:", en: "Reframe:" }, language)}</div>
                   <p className="text-sm" dir="auto">{td.reframe}</p>
                 </div>
                 <div>
-                  <div className="text-xs text-primary font-medium">{isHe ? "מי נהנה:" : "Who benefits:"}</div>
+                  <div className="text-xs text-primary font-medium">{tx({ he: "מי נהנה:", en: "Who benefits:" }, language)}</div>
                   <p className="text-sm" dir="auto">{td.beneficiary}</p>
                 </div>
               </CardContent>
@@ -189,10 +190,10 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-bold" dir="auto">{metric.name[language]}</span>
-                  <Badge variant="outline" className="text-xs">{isHe ? "יעד:" : "Target:"} {metric.target}</Badge>
+                  <Badge variant="outline" className="text-xs">{tx({ he: "יעד:", en: "Target:" }, language)} {metric.target}</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground" dir="auto">{metric.description[language]}</p>
-                <p className="text-xs text-primary mt-1">{isHe ? "למה הפוך:" : "Why contrary:"} {metric.whyContrary}</p>
+                <p className="text-xs text-primary mt-1">{tx({ he: "למה הפוך:", en: "Why contrary:" }, language)} {metric.whyContrary}</p>
               </CardContent>
             </Card>
           ))}
@@ -202,7 +203,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
         <TabsContent value="report" className="mt-4 space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>{isHe ? "סיכום מנהלים" : "Executive Summary"}</CardTitle>
+              <CardTitle>{tx({ he: "סיכום מנהלים", en: "Executive Summary" }, language)}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm" dir="auto">{result.executiveSummary[language]}</p>
@@ -232,7 +233,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
       <Card className="border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-transparent">
         <CardContent className="p-6 text-center space-y-3">
           <h3 className="text-lg font-bold" dir="auto">
-            {isHe ? "הבידול שלך מוכן — בוא נבנה תוכנית שיווק מותאמת" : "Your differentiation is ready — let's build a tailored marketing plan"}
+            {tx({ he: "הבידול שלך מוכן — בוא נבנה תוכנית שיווק מותאמת", en: "Your differentiation is ready — let's build a tailored marketing plan" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground" dir="auto">
             {isHe
@@ -241,7 +242,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
           </p>
           <Button size="lg" onClick={() => { window.location.href = "/wizard"; }} className="gap-2 funnel-gradient border-0 text-accent-foreground">
             <Sparkles className="h-5 w-5" />
-            {isHe ? "המשך לתוכנית שיווק →" : "Continue to Marketing Plan →"}
+            {tx({ he: "המשך לתוכנית שיווק →", en: "Continue to Marketing Plan →" }, language)}
           </Button>
         </CardContent>
       </Card>
@@ -250,7 +251,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
       <div className="flex justify-center">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-2 text-muted-foreground">
           <ArrowLeft className="h-4 w-4" />
-          {isHe ? "חזור לתחילת התהליך" : "Back to Start"}
+          {tx({ he: "חזור לתחילת התהליך", en: "Back to Start" }, language)}
         </Button>
       </div>
     </div>

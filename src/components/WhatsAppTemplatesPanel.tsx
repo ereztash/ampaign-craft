@@ -6,6 +6,7 @@ import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { Copy, Check, MessageCircle, Calculator, Lock } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,7 +26,7 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
     if (!checkAccess("whatsappTemplates", "business")) return;
     navigator.clipboard.writeText(template.template[language]);
     setCopiedId(template.stage);
-    toast.success(isHe ? "התבנית הועתקה!" : "Template copied!");
+    toast.success(tx({ he: "התבנית הועתקה!", en: "Template copied!" }, language));
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -35,10 +36,10 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm">
           <MessageCircle className="h-4 w-4 text-green-500" />
-          {isHe ? "תבניות WhatsApp מוכנות לשימוש" : "Ready-to-Use WhatsApp Templates"}
+          {tx({ he: "תבניות WhatsApp מוכנות לשימוש", en: "Ready-to-Use WhatsApp Templates" }, language)}
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          {isHe ? "6 תבניות הודעות בעברית לכל שלב במשפך — העתק והדבק ב-WhatsApp Business" : "6 Hebrew message templates for every funnel stage — copy and paste to WhatsApp Business"}
+          {tx({ he: "6 תבניות הודעות בעברית לכל שלב במשפך — העתק והדבק ב-WhatsApp Business", en: "6 Hebrew message templates for every funnel stage — copy and paste to WhatsApp Business" }, language)}
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -56,7 +57,7 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
                 className="h-7 gap-1 text-xs"
               >
                 {copiedId === tmpl.stage ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                {copiedId === tmpl.stage ? (isHe ? "הועתק" : "Copied") : (isHe ? "העתק" : "Copy")}
+                {copiedId === tmpl.stage ? (tx({ he: "הועתק", en: "Copied" }, language)) : (tx({ he: "העתק", en: "Copy" }, language))}
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mb-1">{tmpl.purpose[language]}</p>
@@ -74,7 +75,7 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
           <div className="flex items-center gap-2 mb-1">
             <Calculator className="h-3.5 w-3.5 text-green-500" />
             <span className="text-xs font-medium text-foreground">
-              {isHe ? `הערכת עלות ל-${monthlyConversations} שיחות/חודש` : `Cost estimate for ${monthlyConversations} conversations/month`}
+              {tx({ he: `הערכת עלות ל-${monthlyConversations} שיחות/חודש`, en: `Cost estimate for ${monthlyConversations} conversations/month` }, language)}
             </span>
           </div>
           <div className="text-sm font-bold text-green-600">{costEstimate.total[language]}</div>

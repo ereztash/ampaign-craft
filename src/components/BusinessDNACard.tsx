@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import {
   BusinessFingerprint,
   FingerprintDimensions,
@@ -56,7 +57,7 @@ const RadarChart = ({ dimensions }: { dimensions: FingerprintDimensions }) => {
   );
   const topKey = sorted[0];
   const bottomKey = sorted[sorted.length - 1];
-  const chartLabel = isHe ? "טביעת אצבע עסקית — מפת מאפיינים" : "Business DNA — dimension radar chart";
+  const chartLabel = tx({ he: "טביעת אצבע עסקית — מפת מאפיינים", en: "Business DNA — dimension radar chart" }, language);
   const chartDesc = isHe
     ? `ממד חזק: ${DIMENSION_LABELS[topKey].he} (${Math.round(dimensions[topKey] * 100)}%). ממד חלש: ${DIMENSION_LABELS[bottomKey].he} (${Math.round(dimensions[bottomKey] * 100)}%).`
     : `Strongest: ${DIMENSION_LABELS[topKey].en} (${Math.round(dimensions[topKey] * 100)}%). Weakest: ${DIMENSION_LABELS[bottomKey].en} (${Math.round(dimensions[bottomKey] * 100)}%).`;
@@ -127,11 +128,11 @@ const RadarChart = ({ dimensions }: { dimensions: FingerprintDimensions }) => {
 
       {/* Screen-reader text alternative for the radar chart */}
       <table className="sr-only">
-        <caption>{isHe ? "ערכי מאפיינים עסקיים" : "Business dimension values"}</caption>
+        <caption>{tx({ he: "ערכי מאפיינים עסקיים", en: "Business dimension values" }, language)}</caption>
         <thead>
           <tr>
-            <th scope="col">{isHe ? "מאפיין" : "Dimension"}</th>
-            <th scope="col">{isHe ? "ערך" : "Value"}</th>
+            <th scope="col">{tx({ he: "מאפיין", en: "Dimension" }, language)}</th>
+            <th scope="col">{tx({ he: "ערך", en: "Value" }, language)}</th>
           </tr>
         </thead>
         <tbody>
@@ -173,7 +174,7 @@ const BusinessDNACard = ({ fingerprint, compact }: BusinessDNACardProps) => {
       <CardContent className={compact ? "p-3" : "p-5"}>
         <div className="text-center mb-3">
           <h3 className="font-bold text-foreground text-sm" dir="auto">
-            {isHe ? "טביעת האצבע העסקית שלך" : "Your Business DNA"}
+            {tx({ he: "טביעת האצבע העסקית שלך", en: "Your Business DNA" }, language)}
           </h3>
           <div className="flex items-center justify-center gap-2 mt-2 flex-wrap">
             <Badge variant="default" className="text-xs">

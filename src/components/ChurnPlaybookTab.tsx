@@ -6,6 +6,7 @@ import { buildChurnPlaybook, type WeeklyAction, type NudgeEvent, type LeadingInd
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Copy, Check, AlertTriangle, CheckCircle2, Clock, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
@@ -61,20 +62,20 @@ function RiskTierBanner({ tier, score, label, baseline, target, quickWin, langua
           <div className="flex items-center gap-2">
             {cfg.icon}
             <span className={`font-bold text-sm ${cfg.text}`}>
-              {isHe ? "רמת סיכון:" : "Risk Level:"} {label[language]}
+              {tx({ he: "רמת סיכון:", en: "Risk Level:" }, language)} {label[language]}
             </span>
             <Badge className={`text-xs ${cfg.text} border ${cfg.border} bg-transparent`} variant="outline">
               {score}/100
             </Badge>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span>NRR {isHe ? "נוכחי" : "current"}: <strong>{baseline}%</strong></span>
-            <span className="text-green-600">→ {isHe ? "יעד" : "target"}: <strong>{target}%</strong></span>
+            <span>NRR {tx({ he: "נוכחי", en: "current" }, language)}: <strong>{baseline}%</strong></span>
+            <span className="text-green-600">→ {tx({ he: "יעד", en: "target" }, language)}: <strong>{target}%</strong></span>
           </div>
         </div>
         <div className={`rounded-lg border ${cfg.border} p-3 ${cfg.bg}`}>
           <p className="text-xs font-semibold text-muted-foreground mb-1">
-            {isHe ? "פעולה מיידית (Quick Win):" : "Immediate Action (Quick Win):"}
+            {tx({ he: "פעולה מיידית (Quick Win):", en: "Immediate Action (Quick Win):" }, language)}
           </p>
           <p className="text-sm font-medium" dir="auto">{quickWin[language]}</p>
         </div>
@@ -92,7 +93,7 @@ function WeeklyActionTimeline({ actions, language }: { actions: WeeklyAction[]; 
   const copyTemplate = (idx: number, text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(idx);
-    toast.success(isHe ? "תבנית הועתקה!" : "Template copied!");
+    toast.success(tx({ he: "תבנית הועתקה!", en: "Template copied!" }, language));
     setTimeout(() => setCopied(null), 2000);
   };
 
@@ -117,7 +118,7 @@ function WeeklyActionTimeline({ actions, language }: { actions: WeeklyAction[]; 
                 <Badge variant="outline" className="text-xs py-0">{action.channel}</Badge>
               </div>
               <p className="text-xs text-muted-foreground mb-2" dir="auto">
-                {isHe ? "מיקוד:" : "Focus:"} {action.focus[language]}
+                {tx({ he: "מיקוד:", en: "Focus:" }, language)} {action.focus[language]}
               </p>
 
               {/* Actions list */}
@@ -133,7 +134,7 @@ function WeeklyActionTimeline({ actions, language }: { actions: WeeklyAction[]; 
               {/* KPI */}
               <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
                 <TrendingUp className="h-3 w-3" />
-                <span>{isHe ? "KPI:" : "KPI:"} {action.kpi[language]}</span>
+                <span>{tx({ he: "KPI:", en: "KPI:" }, language)} {action.kpi[language]}</span>
               </div>
 
               {/* Template */}
@@ -166,14 +167,14 @@ function NudgeSchedule({ nudges, language }: { nudges: NudgeEvent[]; language: s
         <div key={i} className="flex items-start gap-3 rounded-lg border p-3">
           <div className="shrink-0 text-center">
             <div className="text-lg font-bold text-primary">{n.triggerDays}</div>
-            <div className="text-xs text-muted-foreground">{isHe ? "ימים" : "days"}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "ימים", en: "days" }, language)}</div>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-0.5">
               <Badge variant="outline" className="text-xs py-0">{n.channel}</Badge>
             </div>
             <p className="text-sm" dir="auto">{n.message[language]}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{isHe ? "מטרה:" : "Goal:"} {n.goal[language]}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{tx({ he: "מטרה:", en: "Goal:" }, language)} {n.goal[language]}</p>
           </div>
         </div>
       ))}
@@ -186,9 +187,9 @@ function NudgeSchedule({ nudges, language }: { nudges: NudgeEvent[]; language: s
 function LeadingIndicatorList({ indicators, language }: { indicators: LeadingIndicator[]; language: string }) {
   const isHe = language === "he";
   const FREQ_LABEL: Record<string, string> = {
-    daily: isHe ? "יומי" : "Daily",
-    weekly: isHe ? "שבועי" : "Weekly",
-    monthly: isHe ? "חודשי" : "Monthly",
+    daily: tx({ he: "יומי", en: "Daily" }, language),
+    weekly: tx({ he: "שבועי", en: "Weekly" }, language),
+    monthly: tx({ he: "חודשי", en: "Monthly" }, language),
   };
 
   return (
@@ -266,7 +267,7 @@ const ChurnPlaybookTab = ({ result }: ChurnPlaybookTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {isHe ? "תוכנית 4 שבועות — Win-Back" : "4-Week Win-Back Plan"}
+            {tx({ he: "תוכנית 4 שבועות — Win-Back", en: "4-Week Win-Back Plan" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -278,7 +279,7 @@ const ChurnPlaybookTab = ({ result }: ChurnPlaybookTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {isHe ? "תוכנית 60/90 יום" : "60/90 Day Plan"}
+            {tx({ he: "תוכנית 60/90 יום", en: "60/90 Day Plan" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -290,7 +291,7 @@ const ChurnPlaybookTab = ({ result }: ChurnPlaybookTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {isHe ? "לוח Nudge אוטומטי" : "Automated Nudge Schedule"}
+            {tx({ he: "לוח Nudge אוטומטי", en: "Automated Nudge Schedule" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -302,7 +303,7 @@ const ChurnPlaybookTab = ({ result }: ChurnPlaybookTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {isHe ? "מדדים מובילים לצפייה" : "Leading Indicators to Watch"}
+            {tx({ he: "מדדים מובילים לצפייה", en: "Leading Indicators to Watch" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>

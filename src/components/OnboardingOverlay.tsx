@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Target, BarChart3, Rocket, ArrowRight, X } from "lucide-react";
 
 const STORAGE_KEY = "funnelforge-onboarding-done";
@@ -65,7 +66,7 @@ const OnboardingOverlay = () => {
         <button
           onClick={handleDismiss}
           className="absolute top-3 end-3 text-muted-foreground hover:text-foreground"
-          aria-label={isHe ? "סגור" : "Close"}
+          aria-label={tx({ he: "סגור", en: "Close" }, language)}
         >
           <X className="h-4 w-4" />
         </button>
@@ -97,17 +98,17 @@ const OnboardingOverlay = () => {
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={handleDismiss}>
-            {isHe ? "דלג" : "Skip"}
+            {tx({ he: "דלג", en: "Skip" }, language)}
           </Button>
 
           {step < steps.length - 1 ? (
             <Button onClick={() => setStep(step + 1)} className="gap-2">
-              {isHe ? "הבא" : "Next"}
+              {tx({ he: "הבא", en: "Next" }, language)}
               <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
             <Button onClick={handleDismiss} className="gap-2 funnel-gradient border-0 text-accent-foreground">
-              {isHe ? "בוא נתחיל!" : "Let's go!"}
+              {tx({ he: "בוא נתחיל!", en: "Let's go!" }, language)}
               <Rocket className="h-4 w-4" />
             </Button>
           )}

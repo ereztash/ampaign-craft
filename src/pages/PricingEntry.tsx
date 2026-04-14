@@ -5,6 +5,7 @@ import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { generatePricingIntelligence } from "@/engine/pricingIntelligenceEngine";
 import { generateCLGStrategy } from "@/engine/clgEngine";
+import { tx } from "@/i18n/tx";
 import {
   computePricingWizardRecommendation,
   type PricingWizardInput,
@@ -111,7 +112,7 @@ const PageComponent = () => {
           <div className="text-center py-16 space-y-4">
             <Illustration type="analytics" size={96} className="text-emerald-500 mx-auto" />
             <h2 className="text-2xl font-bold" dir="auto">
-              {isHe ? "אינטליגנציית תמחור" : "Pricing Intelligence"}
+              {tx({ he: "אינטליגנציית תמחור", en: "Pricing Intelligence" }, language)}
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto" dir="auto">
               {isHe
@@ -119,7 +120,7 @@ const PageComponent = () => {
                 : "To generate a pricing strategy, first build a marketing plan"}
             </p>
             <Button onClick={() => navigate("/wizard")} className="cta-warm">
-              {isHe ? "בנה תוכנית (2 דק')" : "Build Plan (2 min)"}
+              {tx({ he: "בנה תוכנית (2 דק')", en: "Build Plan (2 min)" }, language)}
             </Button>
           </div>
         ) : view === "wizard" ? (
@@ -131,7 +132,7 @@ const PageComponent = () => {
                 <DollarSign className="w-6 h-6 text-emerald-600" />
               </div>
               <h1 className="text-2xl font-bold" dir="auto">
-                {isHe ? "וויזארד תמחור" : "Pricing Wizard"}
+                {tx({ he: "וויזארד תמחור", en: "Pricing Wizard" }, language)}
               </h1>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto" dir="auto">
                 {isHe
@@ -153,7 +154,7 @@ const PageComponent = () => {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h1 className="text-xl font-bold" dir="auto">
-                  {isHe ? "אסטרטגיית התמחור שלך" : "Your Pricing Strategy"}
+                  {tx({ he: "אסטרטגיית התמחור שלך", en: "Your Pricing Strategy" }, language)}
                 </h1>
                 <p className="text-sm text-muted-foreground" dir="auto">
                   {wizardRec.methodology[language]}
@@ -166,7 +167,7 @@ const PageComponent = () => {
                 className="gap-1.5"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
-                {isHe ? "ערוך תשובות" : "Edit answers"}
+                {tx({ he: "ערוך תשובות", en: "Edit answers" }, language)}
               </Button>
             </div>
 
@@ -181,7 +182,7 @@ const PageComponent = () => {
                     : "Want to see the full analysis with scripts and Offer Stack?"}
                 </p>
                 <Button variant="outline" size="sm" onClick={() => setView("legacy")}>
-                  {isHe ? "הצג ניתוח מלא" : "Show full analysis"}
+                  {tx({ he: "הצג ניתוח מלא", en: "Show full analysis" }, language)}
                 </Button>
               </div>
             )}
@@ -198,15 +199,15 @@ const PageComponent = () => {
                 <div className="space-y-0.5">
                   {pricingAnalysis && (
                     <p className="text-xs text-emerald-900" dir="auto">
-                      {isHe ? "מודל תמחור" : "Pricing model"}:{" "}
+                      {tx({ he: "מודל תמחור", en: "Pricing model" }, language)}:{" "}
                       <strong>{pricingAnalysis.pricingModel.label[language]}</strong>
                       {" "}· {pricingAnalysis.tierStructure.tiers.length}{" "}
-                      {isHe ? "שכבות" : "tiers"}
+                      {tx({ he: "שכבות", en: "tiers" }, language)}
                     </p>
                   )}
                   {clgStrategy && (
                     <p className="text-xs text-emerald-900" dir="auto">
-                      {isHe ? "התאמת CLG" : "CLG suitability"}:{" "}
+                      {tx({ he: "התאמת CLG", en: "CLG suitability" }, language)}:{" "}
                       {clgStrategy.suitabilityScore}/100
                       {" "}· LTV ×{clgStrategy.ltvImpact.multiplier.toFixed(1)}
                     </p>
@@ -214,7 +215,7 @@ const PageComponent = () => {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <Badge variant="outline" className="text-xs">
-                    {isHe ? "מבוסס תוכנית קיימת" : "From existing plan"}
+                    {tx({ he: "מבוסס תוכנית קיימת", en: "From existing plan" }, language)}
                   </Badge>
                   <Button
                     variant="ghost"
@@ -223,7 +224,7 @@ const PageComponent = () => {
                     className="text-xs gap-1"
                   >
                     <RefreshCw className="h-3 w-3" />
-                    {isHe ? "וויזארד חדש" : "New wizard"}
+                    {tx({ he: "וויזארד חדש", en: "New wizard" }, language)}
                   </Button>
                 </div>
               </div>

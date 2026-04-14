@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useMetaAuth } from "@/hooks/useMetaAuth";
 import MetaConnect from "@/components/MetaConnect";
 import { useDataSources } from "@/contexts/DataSourceContext";
+import { tx } from "@/i18n/tx";
 
 interface DataSourceDetailProps {
   source: DataSource | null;
@@ -43,7 +44,7 @@ const DataSourceDetail = ({ source, open, onOpenChange }: DataSourceDetailProps)
         </SheetHeader>
         <div className="mt-6 space-y-4 text-sm">
           <div>
-            <p className="text-muted-foreground text-xs mb-1">{isHe ? "מזין את" : "Powers"}</p>
+            <p className="text-muted-foreground text-xs mb-1">{tx({ he: "מזין את", en: "Powers" }, language)}</p>
             <ul className="list-disc ps-4 space-y-1">
               {source.feeds.map((f, i) => (
                 <li key={i} dir="auto">
@@ -69,7 +70,7 @@ const DataSourceDetail = ({ source, open, onOpenChange }: DataSourceDetailProps)
           )}
           {source.id !== "meta" && (
             <p className="text-muted-foreground" dir="auto">
-              {isHe ? "השתמש בכפתור חבר במסך הראשי לזרימת ההגדרה." : "Use Connect on the main Data Hub to start setup."}
+              {tx({ he: "השתמש בכפתור חבר במסך הראשי לזרימת ההגדרה.", en: "Use Connect on the main Data Hub to start setup." }, language)}
             </p>
           )}
         </div>

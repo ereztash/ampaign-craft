@@ -5,6 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { SavedPlan } from "@/types/funnel";
 import ResultsDashboard from "@/components/ResultsDashboard";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { ArrowRight, AlertCircle } from "lucide-react";
 
 const PageComponent = () => {
@@ -28,11 +29,11 @@ const PageComponent = () => {
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 pt-8">
           <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
           <p className="text-lg font-medium text-foreground mb-2" dir="auto">
-            {isHe ? "התוכנית לא נמצאה" : "Plan not found"}
+            {tx({ he: "התוכנית לא נמצאה", en: "Plan not found" }, language)}
           </p>
           <Button onClick={() => navigate("/plans")} className="gap-2">
-            <ArrowRight className={`h-4 w-4 ${isHe ? "" : "rotate-180"}`} />
-            {isHe ? "חזור לתוכניות" : "Back to Plans"}
+            <ArrowRight className={`h-4 w-4 ${tx({ he: "", en: "rotate-180" }, language)}`} />
+            {tx({ he: "חזור לתוכניות", en: "Back to Plans" }, language)}
           </Button>
         </div>
       </div>

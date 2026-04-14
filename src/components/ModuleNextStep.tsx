@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { tx } from "@/i18n/tx";
 import {
   Crosshair,
   BarChart3,
@@ -132,7 +133,7 @@ function PipelineDots({
     <div
       className="flex items-center justify-center gap-1.5"
       dir="ltr"
-      aria-label={isHe ? `שלב ${current} מתוך 5` : `Step ${current} of 5`}
+      aria-label={tx({ he: `שלב ${current} מתוך 5`, en: `Step ${current} of 5` }, language)}
     >
       {[1, 2, 3, 4, 5].map((n) => {
         const meta = MODULES[n];
@@ -205,7 +206,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
             </div>
             <div className="space-y-1">
               <h3 className="text-lg font-bold" dir="auto">
-                {isHe ? "כל 5 המודולים הושלמו!" : "All 5 modules complete!"}
+                {tx({ he: "כל 5 המודולים הושלמו!", en: "All 5 modules complete!" }, language)}
               </h3>
               <p className="text-sm text-muted-foreground" dir="auto">
                 {isHe
@@ -220,7 +221,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
                 className="gap-2 funnel-gradient border-0 text-accent-foreground"
               >
                 <Sparkles className="h-4 w-4" />
-                {isHe ? "חזור למרכז הפקודה" : "Back to Command Center"}
+                {tx({ he: "חזור למרכז הפקודה", en: "Back to Command Center" }, language)}
               </Button>
               <Button
                 size="lg"
@@ -228,7 +229,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
                 onClick={() => navigate("/wizard")}
                 className="gap-2"
               >
-                {isHe ? "תוכנית חדשה" : "New Plan"}
+                {tx({ he: "תוכנית חדשה", en: "New Plan" }, language)}
               </Button>
             </div>
           </CardContent>
@@ -272,7 +273,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
             {/* Text */}
             <div className="flex-1 min-w-0 space-y-1">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide" dir="auto">
-                {isHe ? `מודול ${next} מתוך 5 — ${nextMeta.label.he}` : `Module ${next} of 5 — ${nextMeta.label.en}`}
+                {tx({ he: `מודול ${next} מתוך 5 — ${nextMeta.label.he}`, en: `Module ${next} of 5 — ${nextMeta.label.en}` }, language)}
               </p>
               <h3 className="font-bold text-foreground leading-snug" dir="auto">
                 {copy.heading[language]}

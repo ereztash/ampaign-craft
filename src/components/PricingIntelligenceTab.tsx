@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { tx } from "@/i18n/tx";
 import { Copy, Check, ChevronDown, DollarSign, Layers, Shield, MessageSquare, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -24,7 +25,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -41,9 +42,9 @@ const PricingIntelligenceTab = ({ result }: Props) => {
         <CardContent>
           <p className="text-sm text-muted-foreground mb-3" dir="auto">{pricing.pricingModel.rationale[language]}</p>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">{isHe ? "מדד ערך:" : "Value metric:"} {pricing.pricingModel.valueMetric[language]}</Badge>
+            <Badge variant="outline">{tx({ he: "מדד ערך:", en: "Value metric:" }, language)} {pricing.pricingModel.valueMetric[language]}</Badge>
             <Badge>₪{pricing.pricingModel.recommendedRange.low} — ₪{pricing.pricingModel.recommendedRange.high}</Badge>
-            <Badge variant="outline">{isHe ? "עיגון:" : "Anchor:"} ₪{pricing.pricingModel.anchorPrice}</Badge>
+            <Badge variant="outline">{tx({ he: "עיגון:", en: "Anchor:" }, language)} ₪{pricing.pricingModel.anchorPrice}</Badge>
           </div>
         </CardContent>
       </Card>
@@ -53,7 +54,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Layers className="h-4 w-4 text-primary" />
-            {isHe ? "מבנה Tiers מומלץ" : "Recommended Tier Structure"}
+            {tx({ he: "מבנה Tiers מומלץ", en: "Recommended Tier Structure" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -62,13 +63,13 @@ const PricingIntelligenceTab = ({ result }: Props) => {
               <div key={i} className={`rounded-xl border-2 p-4 text-center ${tier.isPrimary ? "border-primary bg-primary/5 relative" : tier.isDecoy ? "border-muted opacity-75" : "border-border"}`}>
                 {tier.isPrimary && (
                   <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs">
-                    {isHe ? "הכי פופולרי" : "Most Popular"}
+                    {tx({ he: "הכי פופולרי", en: "Most Popular" }, language)}
                   </Badge>
                 )}
                 <div className="text-sm font-medium mb-1">{tier.name[language]}</div>
                 <div className="text-2xl font-bold text-foreground">₪{tier.price}</div>
                 <div className="text-xs text-muted-foreground mb-2">
-                  {isHe ? "שנתי:" : "Annual:"} ₪{tier.annualPrice} ({tier.annualDiscount}% {isHe ? "הנחה" : "off"})
+                  {tx({ he: "שנתי:", en: "Annual:" }, language)} ₪{tier.annualPrice} ({tier.annualDiscount}% {tx({ he: "הנחה", en: "off" }, language)})
                 </div>
                 <div className="text-xs text-muted-foreground text-start space-y-1">
                   {tier.features.map((f, j) => (
@@ -88,7 +89,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
               <CardTitle className="text-sm flex items-center justify-between">
-                <span>🎁 {isHe ? "Offer Stack (Hormozi)" : "Offer Stack (Hormozi)"}</span>
+                <span>🎁 {tx({ he: "Offer Stack (Hormozi)", en: "Offer Stack (Hormozi)" }, language)}</span>
                 <ChevronDown className="h-4 w-4" />
               </CardTitle>
             </CardHeader>
@@ -96,8 +97,8 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           <CollapsibleContent>
             <CardContent className="space-y-3">
               <div className="rounded-lg bg-accent/5 border border-accent/20 p-3">
-                <div className="text-xs text-accent font-medium">{isHe ? "ערך נתפס" : "Perceived Value"}: ₪{pricing.offerStack.totalPerceivedValue.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">{isHe ? "מחיר בפועל" : "Actual Price"}: ₪{pricing.offerStack.actualPrice.toLocaleString()} ({pricing.offerStack.valueToPrice}×)</div>
+                <div className="text-xs text-accent font-medium">{tx({ he: "ערך נתפס", en: "Perceived Value" }, language)}: ₪{pricing.offerStack.totalPerceivedValue.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">{tx({ he: "מחיר בפועל", en: "Actual Price" }, language)}: ₪{pricing.offerStack.actualPrice.toLocaleString()} ({pricing.offerStack.valueToPrice}×)</div>
               </div>
               {pricing.offerStack.bonuses.map((bonus, i) => (
                 <div key={i} className="flex items-center justify-between rounded-lg border p-2.5">
@@ -109,14 +110,14 @@ const PricingIntelligenceTab = ({ result }: Props) => {
                 </div>
               ))}
               <div className="rounded-lg bg-muted/50 p-3 text-xs">
-                <div className="font-medium mb-1">{isHe ? "משוואת ערך (Hormozi)" : "Value Equation (Hormozi)"}</div>
+                <div className="font-medium mb-1">{tx({ he: "משוואת ערך (Hormozi)", en: "Value Equation (Hormozi)" }, language)}</div>
                 <div className="grid grid-cols-2 gap-1 text-muted-foreground">
                   <div>Dream Outcome: {pricing.offerStack.valueEquation.dreamOutcome}/10</div>
                   <div>Likelihood: {pricing.offerStack.valueEquation.perceivedLikelihood}/10</div>
                   <div>Time Delay: {pricing.offerStack.valueEquation.timeDelay}/10</div>
                   <div>Effort: {pricing.offerStack.valueEquation.effortSacrifice}/10</div>
                 </div>
-                <div className="font-bold mt-1">{isHe ? "ציון" : "Score"}: {pricing.offerStack.valueEquation.totalScore}</div>
+                <div className="font-bold mt-1">{tx({ he: "ציון", en: "Score" }, language)}: {pricing.offerStack.valueEquation.totalScore}</div>
               </div>
             </CardContent>
           </CollapsibleContent>
@@ -129,7 +130,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           <CardTitle className="text-sm flex items-center gap-2">
             <Shield className="h-4 w-4 text-accent" />
             {pricing.guarantee.label[language]}
-            <Badge variant="outline" className="text-xs">{isHe ? "אמון:" : "Trust:"} {pricing.guarantee.trustScore}/10</Badge>
+            <Badge variant="outline" className="text-xs">{tx({ he: "אמון:", en: "Trust:" }, language)} {pricing.guarantee.trustScore}/10</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -147,7 +148,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <MessageSquare className="h-4 w-4 text-primary" />
-            {isHe ? "סקריפטי מסגור מחיר" : "Price Framing Scripts"}
+            {tx({ he: "סקריפטי מסגור מחיר", en: "Price Framing Scripts" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -182,7 +183,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              {isHe ? "כלכלת מנוי" : "Subscription Economics"}
+              {tx({ he: "כלכלת מנוי", en: "Subscription Economics" }, language)}
               <Badge variant={pricing.subscriptionEconomics.health === "healthy" ? "default" : "destructive"} className="text-xs">
                 {pricing.subscriptionEconomics.health}
               </Badge>
@@ -196,7 +197,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
               </div>
               <div>
                 <div className="text-lg font-bold">₪{pricing.subscriptionEconomics.recommendedCAC.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">CAC {isHe ? "מומלץ" : "Target"}</div>
+                <div className="text-xs text-muted-foreground">CAC {tx({ he: "מומלץ", en: "Target" }, language)}</div>
               </div>
               <div>
                 <div className="text-lg font-bold">{pricing.subscriptionEconomics.ltvCacRatio}:1</div>

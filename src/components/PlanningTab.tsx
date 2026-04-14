@@ -3,6 +3,7 @@ import GlossaryTooltip from "@/components/GlossaryTooltip";
 import { IndustryBenchmark } from "@/lib/industryBenchmarks";
 import { chartColorPalette } from "@/lib/colorSemantics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { tx } from "@/i18n/tx";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface PlanningTabProps {
@@ -22,7 +23,7 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t("budgetAllocation")} ({isHe ? "לפי שלב" : "by stage"})</CardTitle>
+            <CardTitle>{t("budgetAllocation")} ({tx({ he: "לפי שלב", en: "by stage" }, language)})</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={260}>
@@ -41,7 +42,7 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{t("budgetAllocation")} ({isHe ? "לפי ערוץ" : "by channel"})</CardTitle>
+            <CardTitle>{t("budgetAllocation")} ({tx({ he: "לפי ערוץ", en: "by channel" }, language)})</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={260}>
@@ -81,9 +82,9 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
                           kpi.confidence === "medium" ? "bg-chart-3" :
                           "bg-destructive/50"
                         }`}
-                        title={kpi.confidence === "high" ? (isHe ? "ביטחון גבוה" : "High confidence") :
-                               kpi.confidence === "medium" ? (isHe ? "ביטחון בינוני" : "Medium confidence") :
-                               (isHe ? "ביטחון נמוך" : "Low confidence")}
+                        title={kpi.confidence === "high" ? (tx({ he: "ביטחון גבוה", en: "High confidence" }, language)) :
+                               kpi.confidence === "medium" ? (tx({ he: "ביטחון בינוני", en: "Medium confidence" }, language)) :
+                               (tx({ he: "ביטחון נמוך", en: "Low confidence" }, language))}
                       />
                     )}
                   </div>

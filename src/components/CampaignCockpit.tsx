@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { tx } from "@/i18n/tx";
 import { TrendingUp, TrendingDown, Minus, Plus, BarChart3, Lock } from "lucide-react";
 
 const METRICS = ["CPC", "CPL", "CPA", "CTR", "CVR", "Impressions", "Clicks", "Conversions"];
@@ -55,10 +56,10 @@ const CampaignCockpit = () => {
         <BarChart3 className="h-5 w-5 text-primary" />
         <div>
           <h3 className="text-lg font-semibold text-foreground">
-            {isHe ? "לוח בקרה — Campaign Cockpit" : "Campaign Cockpit"}
+            {tx({ he: "לוח בקרה — Campaign Cockpit", en: "Campaign Cockpit" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {isHe ? "עקוב אחרי ביצועים בפועל מול תחזיות FunnelForge" : "Track actual performance vs FunnelForge projections"}
+            {tx({ he: "עקוב אחרי ביצועים בפועל מול תחזיות FunnelForge", en: "Track actual performance vs FunnelForge projections" }, language)}
           </p>
         </div>
       </div>
@@ -68,10 +69,10 @@ const CampaignCockpit = () => {
           <CardContent className="text-center py-8">
             <Lock className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground mb-3">
-              {isHe ? "Campaign Cockpit זמין בתוכנית Business" : "Campaign Cockpit is available in the Business plan"}
+              {tx({ he: "Campaign Cockpit זמין בתוכנית Business", en: "Campaign Cockpit is available in the Business plan" }, language)}
             </p>
             <Button onClick={() => checkAccess("campaignCockpit", "business")} variant="outline">
-              {isHe ? "שדרג עכשיו" : "Upgrade Now"}
+              {tx({ he: "שדרג עכשיו", en: "Upgrade Now" }, language)}
             </Button>
           </CardContent>
         </Card>
@@ -81,7 +82,7 @@ const CampaignCockpit = () => {
       {/* Plan Selector */}
       <Select value={selectedPlanId || ""} onValueChange={setSelectedPlanId}>
         <SelectTrigger>
-          <SelectValue placeholder={isHe ? "בחר תוכנית לעקוב..." : "Select a plan to track..."} />
+          <SelectValue placeholder={tx({ he: "בחר תוכנית לעקוב...", en: "Select a plan to track..." }, language)} />
         </SelectTrigger>
         <SelectContent>
           {plans.map((p) => (
@@ -95,7 +96,7 @@ const CampaignCockpit = () => {
           {/* Input Form */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">{isHe ? "הוסף מדד בפועל" : "Add Actual Metric"}</CardTitle>
+              <CardTitle className="text-sm">{tx({ he: "הוסף מדד בפועל", en: "Add Actual Metric" }, language)}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
@@ -113,8 +114,8 @@ const CampaignCockpit = () => {
                   type="number"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder={isHe ? "ערך בפועל" : "Actual value"}
-                  aria-label={isHe ? "ערך בפועל" : "Actual value"}
+                  placeholder={tx({ he: "ערך בפועל", en: "Actual value" }, language)}
+                  aria-label={tx({ he: "ערך בפועל", en: "Actual value" }, language)}
                   className="w-full sm:w-[140px]"
                 />
                 <Select value={inputChannel} onValueChange={setInputChannel}>
@@ -129,7 +130,7 @@ const CampaignCockpit = () => {
                 </Select>
                 <Button onClick={handleAdd} size="default" className="gap-1 h-10 col-span-2 sm:col-span-1">
                   <Plus className="h-3.5 w-3.5" />
-                  {isHe ? "הוסף" : "Add"}
+                  {tx({ he: "הוסף", en: "Add" }, language)}
                 </Button>
               </div>
             </CardContent>
@@ -140,7 +141,7 @@ const CampaignCockpit = () => {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">
-                  {isHe ? "תחזית מול ביצוע" : "Projected vs Actual"}
+                  {tx({ he: "תחזית מול ביצוע", en: "Projected vs Actual" }, language)}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -156,7 +157,7 @@ const CampaignCockpit = () => {
                         {statusIcon(c.status)}
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xs text-muted-foreground">{isHe ? "תחזית:" : "Projected:"} {c.projected}</span>
+                        <span className="text-xs text-muted-foreground">{tx({ he: "תחזית:", en: "Projected:" }, language)} {c.projected}</span>
                         <span className="text-xs text-muted-foreground">→</span>
                         <span className="text-sm font-bold">{c.actual}</span>
                       </div>
@@ -174,7 +175,7 @@ const CampaignCockpit = () => {
           {metrics.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">{isHe ? "רשומות אחרונות" : "Recent Entries"}</CardTitle>
+                <CardTitle className="text-sm">{tx({ he: "רשומות אחרונות", en: "Recent Entries" }, language)}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">

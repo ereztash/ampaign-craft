@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { tx } from "@/i18n/tx";
 import { CheckCircle2, Circle, ChevronDown, ArrowRight } from "lucide-react";
 
 export default function ArchetypePipelineGuide() {
@@ -47,10 +48,10 @@ export default function ArchetypePipelineGuide() {
       <Card className="border-primary/30 bg-gradient-to-b from-primary/4 to-transparent">
         <CardHeader className="pb-2 pt-4 px-4">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center justify-between" dir="auto">
-            <span>{isHe ? "הנתיב המומלץ שלך" : "Your recommended path"}</span>
+            <span>{tx({ he: "הנתיב המומלץ שלך", en: "Your recommended path" }, language)}</span>
             {completedCount > 0 && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {completedCount}/{steps.length} {isHe ? "הושלמו" : "done"}
+                {completedCount}/{steps.length} {tx({ he: "הושלמו", en: "done" }, language)}
               </Badge>
             )}
           </CardTitle>
@@ -125,13 +126,13 @@ export default function ArchetypePipelineGuide() {
             <CollapsibleTrigger asChild>
               <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 pt-2 border-t border-border/40 w-full">
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform shrink-0 ${whyOpen ? "rotate-180" : ""}`} />
-                <span dir="auto">{isHe ? "למה הסדר הזה?" : "Why this order?"}</span>
+                <span dir="auto">{tx({ he: "למה הסדר הזה?", en: "Why this order?" }, language)}</span>
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-2">
                 <p className="text-xs text-muted-foreground italic" dir="auto">
-                  {coreMotivation[isHe ? "he" : "en"]}
+                  {coreMotivation[tx({ he: "he", en: "en" }, language)]}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {heuristics.map((h) => (

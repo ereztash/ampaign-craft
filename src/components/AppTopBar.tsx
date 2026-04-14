@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
+import { tx } from "@/i18n/tx";
 import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -53,60 +54,60 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
               size="sm"
               className="gap-1.5 h-9 px-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300"
               onClick={() => setDebugOpen(true)}
-              aria-label={isHe ? "פאנל ארכיטיפ" : "Archetype debug panel"}
-              title={isHe ? "פאנל ניפוי ארכיטיפ (בעלים בלבד)" : "Archetype debug panel (owner only)"}
+              aria-label={tx({ he: "פאנל ארכיטיפ", en: "Archetype debug panel" }, language)}
+              title={tx({ he: "פאנל ניפוי ארכיטיפ (בעלים בלבד)", en: "Archetype debug panel (owner only)" }, language)}
             >
               <Brain className="h-4 w-4" />
               <span className="hidden md:inline text-xs font-medium">Admin</span>
             </Button>
           )}
-          <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-9 min-w-[44px]" aria-label={isHe ? "Switch to English" : "עבור לעברית"}>
+          <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-9 min-w-[44px]" aria-label={tx({ he: "Switch to English", en: "עבור לעברית" }, language)}>
             <Globe className="h-4 w-4" />
             {language === "he" ? "EN" : "עב"}
           </Button>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full p-0" aria-label={isHe ? "תפריט משתמש" : "User menu"}>
+                <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full p-0" aria-label={tx({ he: "תפריט משתמש", en: "User menu" }, language)}>
                   <UserCircle className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align={isHe ? "start" : "end"} className="w-48">
+              <DropdownMenuContent align={tx({ he: "start", en: "end" }, language)} className="w-48">
                 <DropdownMenuItem onClick={() => navigate("/")}>
                   <Home className="h-4 w-4 me-2" />
                   {t("navCommandCenter")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                   <Settings className="h-4 w-4 me-2" />
-                  {isHe ? "דשבורד" : "Dashboard"}
+                  {tx({ he: "דשבורד", en: "Dashboard" }, language)}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/plans")}>
                   {t("navSavedPlans")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setBadgesOpen(true)}>
                   <Award className="h-4 w-4 me-2" />
-                  {isHe ? "הישגים" : "Achievements"}
+                  {tx({ he: "הישגים", en: "Achievements" }, language)}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={toggleDarkMode}>
                   {isDark ? <Sun className="h-4 w-4 me-2" /> : <Moon className="h-4 w-4 me-2" />}
-                  {isDark ? (isHe ? "מצב בהיר" : "Light Mode") : (isHe ? "מצב כהה" : "Dark Mode")}
+                  {isDark ? (tx({ he: "מצב בהיר", en: "Light Mode" }, language)) : (tx({ he: "מצב כהה", en: "Dark Mode" }, language))}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <UserCircle className="h-4 w-4 me-2" />
-                  {isHe ? "פרופיל" : "Profile"}
+                  {tx({ he: "פרופיל", en: "Profile" }, language)}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => signOut()} className="text-destructive">
                   <LogOut className="h-4 w-4 me-2" />
-                  {isHe ? "התנתק" : "Sign Out"}
+                  {tx({ he: "התנתק", en: "Sign Out" }, language)}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button variant="ghost" size="sm" onClick={() => setAuthOpen(true)} className="gap-1.5 h-9">
               <LogIn className="h-4 w-4" />
-              {isHe ? "התחבר" : "Sign In"}
+              {tx({ he: "התחבר", en: "Sign In" }, language)}
             </Button>
           )}
         </div>

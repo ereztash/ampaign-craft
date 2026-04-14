@@ -21,6 +21,7 @@ import { ModuleNextStep } from "@/components/ModuleNextStep";
 import { ExportReportButton } from "@/components/ExportReportButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { tx } from "@/i18n/tx";
 import { AlertCircle, FileText, Plus } from "lucide-react";
 
 const StrategyCanvas = () => {
@@ -77,14 +78,14 @@ const StrategyCanvas = () => {
             <CardContent className="p-8 space-y-4">
               <FileText className="h-12 w-12 text-muted-foreground mx-auto" />
               <p className="font-medium text-foreground" dir="auto">
-                {isHe ? "אין תוכנית ללוח האסטרטגיה" : "No plan for the strategy canvas yet"}
+                {tx({ he: "אין תוכנית ללוח האסטרטגיה", en: "No plan for the strategy canvas yet" }, language)}
               </p>
               <p className="text-sm text-muted-foreground" dir="auto">
-                {isHe ? "צור תוכנית ראשונה כדי לראות את המפה והטאבים." : "Create your first plan to see the map and tabs."}
+                {tx({ he: "צור תוכנית ראשונה כדי לראות את המפה והטאבים.", en: "Create your first plan to see the map and tabs." }, language)}
               </p>
               <Button onClick={() => navigate("/wizard")} className="gap-2">
                 <Plus className="h-4 w-4" />
-                {isHe ? "תוכנית חדשה" : "New plan"}
+                {tx({ he: "תוכנית חדשה", en: "New plan" }, language)}
               </Button>
             </CardContent>
           </Card>
@@ -95,7 +96,7 @@ const StrategyCanvas = () => {
     return (
       <main className="container mx-auto max-w-2xl px-4 py-8">
         <h1 className="text-xl font-bold mb-4" dir="auto">
-          {isHe ? "בחר תוכנית" : "Choose a plan"}
+          {tx({ he: "בחר תוכנית", en: "Choose a plan" }, language)}
         </h1>
         <div className="space-y-2">
           {plans
@@ -107,7 +108,7 @@ const StrategyCanvas = () => {
                   <CardContent className="p-4 flex justify-between items-center">
                     <span className="font-medium">{p.name}</span>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(p.savedAt).toLocaleDateString(isHe ? "he-IL" : "en-US")}
+                      {new Date(p.savedAt).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
                     </span>
                   </CardContent>
                 </Card>
@@ -123,10 +124,10 @@ const StrategyCanvas = () => {
       <main className="container mx-auto px-4 py-16 flex flex-col items-center">
         <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-lg font-medium mb-2" dir="auto">
-          {isHe ? "התוכנית לא נמצאה" : "Plan not found"}
+          {tx({ he: "התוכנית לא נמצאה", en: "Plan not found" }, language)}
         </p>
         <Button variant="outline" onClick={() => navigate("/plans")}>
-          {isHe ? "חזור לתוכניות" : "Back to plans"}
+          {tx({ he: "חזור לתוכניות", en: "Back to plans" }, language)}
         </Button>
       </main>
     );
@@ -197,13 +198,13 @@ const StrategyCanvas = () => {
         <StrategyMap result={plan.result} bottlenecks={bottlenecks} hasDifferentiation={hasDiff} />
         {kpiGaps.length > 0 && (
           <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/60 dark:border-amber-700/40 dark:bg-amber-900/20 p-3 text-xs text-amber-900 dark:text-amber-200" dir="auto">
-            {isHe ? "פערי KPI זוהו" : "KPI gaps detected"}: {kpiGaps.length}
+            {tx({ he: "פערי KPI זוהו", en: "KPI gaps detected" }, language)}: {kpiGaps.length}
           </div>
         )}
         <div className="mt-3 flex justify-end gap-2">
           <ExportReportButton result={plan.result} planName={plan.name} />
           <Button size="sm" variant="outline" onClick={handleLaunchResearch}>
-            {isHe ? "הרץ מחקר אסטרטגי" : "Launch strategic research"}
+            {tx({ he: "הרץ מחקר אסטרטגי", en: "Launch strategic research" }, language)}
           </Button>
         </div>
       </div>

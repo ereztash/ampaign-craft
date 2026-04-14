@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
+import { tx } from "@/i18n/tx";
 import { ChevronDown, MessageCircle } from "lucide-react";
 import type { FunnelResult } from "@/types/funnel";
 import type { calculateHealthScore } from "@/engine/healthScoreEngine";
@@ -143,7 +144,7 @@ const StrategyTab = ({
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-foreground">
-              {isHe ? "ציון בריאות שיווקית" : "Marketing Health Score"}
+              {tx({ he: "ציון בריאות שיווקית", en: "Marketing Health Score" }, language)}
             </h3>
             <div className="mt-2 grid gap-1.5">
               {healthScore.breakdown.map((b) => (
@@ -175,7 +176,7 @@ const StrategyTab = ({
                     />
                   </div>
                   <span className="text-xs text-muted-foreground w-24 text-end">
-                    {isHe ? "מוכנות שימור" : "Retention"}
+                    {tx({ he: "מוכנות שימור", en: "Retention" }, language)}
                   </span>
                   <span className="text-xs font-medium w-8">
                     {healthScore.retentionReadiness.score}%
@@ -206,9 +207,9 @@ const StrategyTab = ({
       {roiEstimate.monthlyImpact > 0 && (
         <div className="mb-6 rounded-xl border border-accent/20 bg-accent/5 p-4 text-center">
           <p className="text-sm text-muted-foreground">
-            {isHe ? "אם המשפך הזה ישפר המרות ב-" : "If this funnel improves conversions by "}
+            {tx({ he: "אם המשפך הזה ישפר המרות ב-", en: "If this funnel improves conversions by " }, language)}
             <span className="font-bold text-foreground">{roiEstimate.improvementPercent}%</span>
-            {isHe ? " בלבד:" : " alone:"}
+            {tx({ he: " בלבד:", en: " alone:" }, language)}
           </p>
           <p className="mt-1 text-lg font-bold text-accent">{roiEstimate.potentialSaving[language]}</p>
         </div>
@@ -306,7 +307,7 @@ const StrategyTab = ({
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
               <CardTitle className="flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
-                  {isHe ? "🛠️ ערכת כלים ישראלית + תובנות מתקדמות" : "🛠️ Israeli toolkit + advanced insights"}
+                  {tx({ he: "🛠️ ערכת כלים ישראלית + תובנות מתקדמות", en: "🛠️ Israeli toolkit + advanced insights" }, language)}
                 </span>
                 <ChevronDown
                   className={cn("h-4 w-4 transition-transform", advancedOpen && "rotate-180")}
@@ -349,7 +350,7 @@ const StrategyTab = ({
               {marketEvents.length > 0 && (
                 <div className="pt-2 border-t border-muted/30">
                   <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                    📅 {isHe ? "לוח שיווק ישראלי — אירועים קרובים" : "Israeli Marketing Calendar — Upcoming Events"}
+                    📅 {tx({ he: "לוח שיווק ישראלי — אירועים קרובים", en: "Israeli Marketing Calendar — Upcoming Events" }, language)}
                   </h4>
                   <div className="space-y-2">
                     {marketEvents.slice(0, 3).map((event) => (
@@ -367,7 +368,7 @@ const StrategyTab = ({
                               variant={event.budgetMultiplier > 1 ? "default" : "outline"}
                               className="mt-1 text-xs"
                             >
-                              {isHe ? "תקציב" : "Budget"} ×{event.budgetMultiplier}
+                              {tx({ he: "תקציב", en: "Budget" }, language)} ×{event.budgetMultiplier}
                             </Badge>
                           )}
                         </div>
@@ -382,7 +383,7 @@ const StrategyTab = ({
                 <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
                   🔄 {flywheel.typeLabel[language]}
                   <Badge variant="outline" className="text-xs">
-                    {isHe ? `צמצום נטישה ~${flywheel.churnReduction}%` : `~${flywheel.churnReduction}% churn reduction`}
+                    {tx({ he: `צמצום נטישה ~${flywheel.churnReduction}%`, en: `~${flywheel.churnReduction}% churn reduction` }, language)}
                   </Badge>
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -404,19 +405,19 @@ const StrategyTab = ({
               {clgStrategy.suitable && (
                 <div className="pt-2 border-t border-muted/30">
                   <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                    👥 {isHe ? "אסטרטגיית קהילה (CLG)" : "Community-Led Growth (CLG)"}
+                    👥 {tx({ he: "אסטרטגיית קהילה (CLG)", en: "Community-Led Growth (CLG)" }, language)}
                     <Badge className="text-xs">LTV ×{clgStrategy.ltvImpact.multiplier}</Badge>
                   </h4>
                   <p className="text-xs text-muted-foreground mb-2">{clgStrategy.reason[language]}</p>
                   <p className="text-xs text-muted-foreground mb-2">
-                    {isHe ? "פלטפורמה מומלצת:" : "Recommended platform:"}{" "}
+                    {tx({ he: "פלטפורמה מומלצת:", en: "Recommended platform:" }, language)}{" "}
                     <strong>{clgStrategy.platform[language]}</strong>
                   </p>
                   <div className="space-y-1.5">
                     {clgStrategy.roadmap.map((week) => (
                       <div key={week.week} className="flex items-start gap-2 text-xs">
                         <Badge variant="outline" className="text-xs shrink-0">
-                          {isHe ? `שבוע ${week.week}` : `Week ${week.week}`}
+                          {tx({ he: `שבוע ${week.week}`, en: `Week ${week.week}` }, language)}
                         </Badge>
                         <span className="text-muted-foreground">
                           {week.title[language]}: {week.milestone[language]}

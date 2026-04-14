@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { tx } from "@/i18n/tx";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -39,7 +40,7 @@ export function UVPFormatCard({ variant }: UVPFormatCardProps) {
   const copyText = () => {
     navigator.clipboard.writeText(variant.text[language]);
     setCopied(true);
-    toast.success(isHe ? "הועתק!" : "Copied!");
+    toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -91,7 +92,7 @@ export function UVPFormatCard({ variant }: UVPFormatCardProps) {
         {/* Char count */}
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
-            {charCount} {isHe ? "תווים" : "chars"}
+            {charCount} {tx({ he: "תווים", en: "chars" }, language)}
           </span>
           {variant.format === "linkedInBio" && (
             <span className={charCount > 150 ? "text-amber-500" : "text-green-500"}>

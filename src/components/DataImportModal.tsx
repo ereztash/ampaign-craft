@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { tx } from "@/i18n/tx";
 import { Upload, FileSpreadsheet, AlertTriangle, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -45,7 +46,7 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
     try {
       const sheets = await parseXlsxFile(file);
       if (sheets.length === 0 || sheets[0].rows.length === 0) {
-        toast.error(isHe ? "הקובץ ריק" : "File is empty");
+        toast.error(tx({ he: "הקובץ ריק", en: "File is empty" }, language));
         setLoading(false);
         return;
       }
@@ -77,7 +78,7 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
       );
     }
     setLoading(false);
-  }, [isHe]);
+  }, [isHe, language]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -110,7 +111,7 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
     };
 
     onImport(dataset);
-    toast.success(isHe ? "הנתונים יובאו בהצלחה" : "Data imported successfully");
+    toast.success(tx({ he: "הנתונים יובאו בהצלחה", en: "Data imported successfully" }, language));
     reset();
     onOpenChange(false);
   };
@@ -136,7 +137,7 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="h-5 w-5 text-primary" />
-            {isHe ? "ייבוא נתונים" : "Import Data"}
+            {tx({ he: "ייבוא נתונים", en: "Import Data" }, language)}
           </DialogTitle>
         </DialogHeader>
 
@@ -149,16 +150,16 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
             <Upload className="h-12 w-12 text-primary/50" />
             <div>
               <p className="font-semibold text-foreground">
-                {isHe ? "גרור קובץ לכאן או לחץ לבחירה" : "Drag a file here or click to browse"}
+                {tx({ he: "גרור קובץ לכאן או לחץ לבחירה", en: "Drag a file here or click to browse" }, language)}
               </p>
               <p className="text-sm text-muted-foreground">
-                {isHe ? "תומך ב-.xlsx ו-.csv" : "Supports .xlsx and .csv"}
+                {tx({ he: "תומך ב-.xlsx ו-.csv", en: "Supports .xlsx and .csv" }, language)}
               </p>
             </div>
             <Button onClick={() => fileInputRef.current?.click()} disabled={loading}>
               {loading
-                ? (isHe ? "מעבד..." : "Processing...")
-                : (isHe ? "בחר קובץ" : "Choose File")}
+                ? (tx({ he: "מעבד...", en: "Processing..." }, language))
+                : (tx({ he: "בחר קובץ", en: "Choose File" }, language))}
             </Button>
             <input
               ref={fileInputRef}
@@ -166,7 +167,7 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
               accept=".xlsx,.csv,.xls"
               onChange={handleFileInput}
               className="hidden"
-              aria-label={isHe ? "העלאת קובץ נתונים" : "Upload data file"}
+              aria-label={tx({ he: "העלאת קובץ נתונים", en: "Upload data file" }, language)}
             />
           </div>
         )}
@@ -177,19 +178,19 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 text-accent" />
               <span className="text-sm text-foreground">
-                {isHe ? "סוג שזוהה:" : "Detected type:"}
+                {tx({ he: "סוג שזוהה:", en: "Detected type:" }, language)}
               </span>
               <Badge variant="secondary">
                 {typeLabels[schema.detectedType]?.[language] || schema.detectedType}
               </Badge>
               <span className="text-sm text-muted-foreground">
-                ({rows.length} {isHe ? "שורות" : "rows"})
+                ({rows.length} {tx({ he: "שורות", en: "rows" }, language)})
               </span>
             </div>
 
             {/* Column schema */}
             <div className="text-sm font-medium text-foreground">
-              {isHe ? "עמודות שזוהו:" : "Detected columns:"}
+              {tx({ he: "עמודות שזוהו:", en: "Detected columns:" }, language)}
             </div>
             <div className="flex flex-wrap gap-2">
               {schema.columns.map((col) => (
@@ -232,11 +233,11 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
             {savedPlanIds.length > 0 && (
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">
-                  {isHe ? "קשר לתוכנית (אופציונלי):" : "Link to plan (optional):"}
+                  {tx({ he: "קשר לתוכנית (אופציונלי):", en: "Link to plan (optional):" }, language)}
                 </label>
                 <Select value={linkedPlanId} onValueChange={setLinkedPlanId}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={isHe ? "בחר תוכנית..." : "Select a plan..."} />
+                    <SelectValue placeholder={tx({ he: "בחר תוכנית...", en: "Select a plan..." }, language)} />
                   </SelectTrigger>
                   <SelectContent>
                     {savedPlanIds.map((p) => (
@@ -255,10 +256,10 @@ const DataImportModal = ({ open, onOpenChange, onImport, savedPlanIds = [] }: Da
           {step === "preview" && (
             <>
               <Button variant="outline" onClick={reset}>
-                {isHe ? "חזרה" : "Back"}
+                {tx({ he: "חזרה", en: "Back" }, language)}
               </Button>
               <Button onClick={handleImport}>
-                {isHe ? "ייבא נתונים" : "Import Data"}
+                {tx({ he: "ייבא נתונים", en: "Import Data" }, language)}
               </Button>
             </>
           )}

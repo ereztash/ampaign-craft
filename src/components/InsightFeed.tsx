@@ -8,6 +8,7 @@ import type { Bottleneck } from "@/engine/bottleneckEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import type { WeeklyPulse } from "@/engine/pulseEngine";
 import type { UserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { tx } from "@/i18n/tx";
 import {
   captureRecommendationShown,
   captureVariantPick,
@@ -124,28 +125,28 @@ function TrackedInsightCard({
       {/* Variant-pick micro-buttons — appear on hover / focus-within */}
       <div
         className="absolute bottom-2 end-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
-        aria-label={isHe ? "פעולות כרטיס" : "Card actions"}
+        aria-label={tx({ he: "פעולות כרטיס", en: "Card actions" }, language)}
       >
         <button
           onClick={(e) => { e.stopPropagation(); handlePrimary(); }}
           className="flex items-center gap-1 rounded-md bg-background/95 border border-border px-2 py-1 text-xs text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-          title={isHe ? "קח פעולה זו" : "Use this"}
+          title={tx({ he: "קח פעולה זו", en: "Use this" }, language)}
         >
           <ThumbsUp className="h-3 w-3" />
-          {isHe ? "פעל" : "Use"}
+          {tx({ he: "פעל", en: "Use" }, language)}
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); handleVariation(); }}
           className="flex items-center gap-1 rounded-md bg-background/95 border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted transition-colors"
-          title={isHe ? "נסה גישה אחרת" : "Try a variation"}
+          title={tx({ he: "נסה גישה אחרת", en: "Try a variation" }, language)}
         >
           <RefreshCw className="h-3 w-3" />
-          {isHe ? "חלופה" : "Alt"}
+          {tx({ he: "חלופה", en: "Alt" }, language)}
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); handleSkip(); }}
           className="flex items-center gap-1 rounded-md bg-background/95 border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-          title={isHe ? "לא רלוונטי כרגע" : "Not relevant now"}
+          title={tx({ he: "לא רלוונטי כרגע", en: "Not relevant now" }, language)}
         >
           <X className="h-3 w-3" />
         </button>

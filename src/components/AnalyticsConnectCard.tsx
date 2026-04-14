@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { tx } from "@/i18n/tx";
 import {
   BarChart3,
   TrendingUp,
@@ -64,11 +65,11 @@ function ConnectionRow({ connected, label, icon, badgeColor, children }: Connect
           <span className="text-sm font-medium" dir="auto">{label}</span>
           {connected ? (
             <Badge className={`text-[10px] px-1.5 py-0 h-4 ${badgeColor} text-white`}>
-              {isHe ? "מחובר" : "Connected"}
+              {tx({ he: "מחובר", en: "Connected" }, language)}
             </Badge>
           ) : (
             <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 text-muted-foreground">
-              {isHe ? "לא מחובר" : "Not connected"}
+              {tx({ he: "לא מחובר", en: "Not connected" }, language)}
             </Badge>
           )}
         </div>
@@ -103,7 +104,7 @@ export function AnalyticsConnectCard() {
     fieldName: string
   ) => {
     if (!value.trim()) {
-      toast({ title: isHe ? "הכנס מזהה תקין" : "Enter a valid ID", variant: "destructive" });
+      toast({ title: tx({ he: "הכנס מזהה תקין", en: "Enter a valid ID" }, language), variant: "destructive" });
       return;
     }
     const now = new Date().toISOString();
@@ -113,7 +114,7 @@ export function AnalyticsConnectCard() {
     if (type === "googleAds") updated.googleAds = { customerId: value.trim(), connectedAt: now };
     save(updated);
     setConnections(updated);
-    toast({ title: isHe ? `${fieldName} חובר בהצלחה` : `${fieldName} connected successfully` });
+    toast({ title: tx({ he: `${fieldName} חובר בהצלחה`, en: `${fieldName} connected successfully` }, language) });
   };
 
   const disconnect = (type: "ga4" | "metaPixel" | "googleAds") => {
@@ -124,7 +125,7 @@ export function AnalyticsConnectCard() {
     if (type === "ga4") setGa4Id("");
     if (type === "metaPixel") setPixelId("");
     if (type === "googleAds") setAdsId("");
-    toast({ title: isHe ? "הניתוק בוצע" : "Disconnected" });
+    toast({ title: tx({ he: "הניתוק בוצע", en: "Disconnected" }, language) });
   };
 
   const connectedCount = Object.keys(connections).length;
@@ -135,11 +136,11 @@ export function AnalyticsConnectCard() {
         <CardTitle className="text-sm font-semibold flex items-center justify-between" dir="auto">
           <span className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-primary" />
-            {isHe ? "חיבור נתוני ביצועים" : "Connect Analytics"}
+            {tx({ he: "חיבור נתוני ביצועים", en: "Connect Analytics" }, language)}
           </span>
           {connectedCount > 0 && (
             <Badge className="text-[10px] px-1.5 bg-green-500 text-white">
-              {connectedCount} {isHe ? "מחוברים" : "connected"}
+              {connectedCount} {tx({ he: "מחוברים", en: "connected" }, language)}
             </Badge>
           )}
         </CardTitle>
@@ -158,10 +159,10 @@ export function AnalyticsConnectCard() {
           icon={<TrendingUp className="h-4 w-4 text-orange-500" />}
           badgeColor="bg-orange-500"
         >
-          <div className="space-y-2" dir={isHe ? "rtl" : "ltr"}>
+          <div className="space-y-2" dir={tx({ he: "rtl", en: "ltr" }, language)}>
             <div className="space-y-1">
               <Label htmlFor="ga4-id" className="text-xs" dir="auto">
-                {isHe ? "Measurement ID (G-XXXXXXXX)" : "Measurement ID (G-XXXXXXXX)"}
+                {tx({ he: "Measurement ID (G-XXXXXXXX)", en: "Measurement ID (G-XXXXXXXX)" }, language)}
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -179,7 +180,7 @@ export function AnalyticsConnectCard() {
                     connections.ga4 ? disconnect("ga4") : connect("ga4", ga4Id, "Google Analytics")
                   }
                 >
-                  {connections.ga4 ? (isHe ? "נתק" : "Disconnect") : (isHe ? "חבר" : "Connect")}
+                  {connections.ga4 ? (tx({ he: "נתק", en: "Disconnect" }, language)) : (tx({ he: "חבר", en: "Connect" }, language))}
                 </Button>
               </div>
             </div>
@@ -198,7 +199,7 @@ export function AnalyticsConnectCard() {
               className="text-[10px] text-primary hover:underline flex items-center gap-1"
             >
               <ExternalLink className="h-2.5 w-2.5" />
-              {isHe ? "פתח Google Analytics" : "Open Google Analytics"}
+              {tx({ he: "פתח Google Analytics", en: "Open Google Analytics" }, language)}
             </a>
           </div>
         </ConnectionRow>
@@ -210,10 +211,10 @@ export function AnalyticsConnectCard() {
           icon={<Circle className="h-4 w-4 text-blue-600 fill-blue-600" />}
           badgeColor="bg-blue-600"
         >
-          <div className="space-y-2" dir={isHe ? "rtl" : "ltr"}>
+          <div className="space-y-2" dir={tx({ he: "rtl", en: "ltr" }, language)}>
             <div className="space-y-1">
               <Label htmlFor="pixel-id" className="text-xs" dir="auto">
-                {isHe ? "מזהה פיקסל (מספר)" : "Pixel ID (number)"}
+                {tx({ he: "מזהה פיקסל (מספר)", en: "Pixel ID (number)" }, language)}
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -233,7 +234,7 @@ export function AnalyticsConnectCard() {
                       : connect("metaPixel", pixelId, "Meta Pixel")
                   }
                 >
-                  {connections.metaPixel ? (isHe ? "נתק" : "Disconnect") : (isHe ? "חבר" : "Connect")}
+                  {connections.metaPixel ? (tx({ he: "נתק", en: "Disconnect" }, language)) : (tx({ he: "חבר", en: "Connect" }, language))}
                 </Button>
               </div>
             </div>
@@ -252,7 +253,7 @@ export function AnalyticsConnectCard() {
               className="text-[10px] text-primary hover:underline flex items-center gap-1"
             >
               <ExternalLink className="h-2.5 w-2.5" />
-              {isHe ? "פתח Events Manager" : "Open Events Manager"}
+              {tx({ he: "פתח Events Manager", en: "Open Events Manager" }, language)}
             </a>
           </div>
         </ConnectionRow>
@@ -264,10 +265,10 @@ export function AnalyticsConnectCard() {
           icon={<BarChart3 className="h-4 w-4 text-green-600" />}
           badgeColor="bg-green-600"
         >
-          <div className="space-y-2" dir={isHe ? "rtl" : "ltr"}>
+          <div className="space-y-2" dir={tx({ he: "rtl", en: "ltr" }, language)}>
             <div className="space-y-1">
               <Label htmlFor="ads-id" className="text-xs" dir="auto">
-                {isHe ? "Customer ID (XXX-XXX-XXXX)" : "Customer ID (XXX-XXX-XXXX)"}
+                {tx({ he: "Customer ID (XXX-XXX-XXXX)", en: "Customer ID (XXX-XXX-XXXX)" }, language)}
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -287,7 +288,7 @@ export function AnalyticsConnectCard() {
                       : connect("googleAds", adsId, "Google Ads")
                   }
                 >
-                  {connections.googleAds ? (isHe ? "נתק" : "Disconnect") : (isHe ? "חבר" : "Connect")}
+                  {connections.googleAds ? (tx({ he: "נתק", en: "Disconnect" }, language)) : (tx({ he: "חבר", en: "Connect" }, language))}
                 </Button>
               </div>
             </div>

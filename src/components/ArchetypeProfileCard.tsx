@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { tx } from "@/i18n/tx";
 import { ChevronDown, Sparkles, Loader2 } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -90,7 +91,7 @@ export default function ArchetypeProfileCard() {
       <Card className="mb-6 border-primary/20">
         <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
-          {isHe ? "טוען פרופיל..." : "Loading profile..."}
+          {tx({ he: "טוען פרופיל...", en: "Loading profile..." }, language)}
         </CardContent>
       </Card>
     );
@@ -104,7 +105,7 @@ export default function ArchetypeProfileCard() {
           <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-foreground" dir="auto">
-              {isHe ? "עדיין לומדים אותך" : "Still learning about you"}
+              {tx({ he: "עדיין לומדים אותך", en: "Still learning about you" }, language)}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5" dir="auto">
               {isHe
@@ -119,8 +120,8 @@ export default function ArchetypeProfileCard() {
 
   const archetype = effectiveArchetypeId;
   const icon = ARCHETYPE_ICONS[archetype];
-  const label = ARCHETYPE_LABELS[archetype][isHe ? "he" : "en"];
-  const description = ARCHETYPE_DESCRIPTIONS[archetype][isHe ? "he" : "en"];
+  const label = ARCHETYPE_LABELS[archetype][tx({ he: "he", en: "en" }, language)];
+  const description = ARCHETYPE_DESCRIPTIONS[archetype][tx({ he: "he", en: "en" }, language)];
   const confidencePercent = Math.round(profile.confidence * 100);
 
   // Top 5 signals by total delta
@@ -149,12 +150,12 @@ export default function ArchetypeProfileCard() {
                 </span>
                 {isTentative && (
                   <Badge variant="outline" className="text-xs py-0">
-                    {isHe ? "משערים" : "Tentative"}
+                    {tx({ he: "משערים", en: "Tentative" }, language)}
                   </Badge>
                 )}
                 {isOverridden && (
                   <Badge variant="outline" className="text-xs py-0 border-amber-500 text-amber-600">
-                    {isHe ? "ידני" : "Manual"}
+                    {tx({ he: "ידני", en: "Manual" }, language)}
                   </Badge>
                 )}
               </div>
@@ -169,7 +170,7 @@ export default function ArchetypeProfileCard() {
                 {confidencePercent}%
               </div>
               <div className="text-xs text-muted-foreground">
-                {isHe ? "ביטחון" : "confidence"}
+                {tx({ he: "ביטחון", en: "confidence" }, language)}
               </div>
             </div>
           )}
@@ -191,13 +192,13 @@ export default function ArchetypeProfileCard() {
             <CollapsibleTrigger asChild>
               <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform ${signalsOpen ? "rotate-180" : ""}`} />
-                {isHe ? "מה הגיע לכאן?" : "What drove this?"}
+                {tx({ he: "מה הגיע לכאן?", en: "What drove this?" }, language)}
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="mt-2 space-y-1.5">
                 {topSignals.map((sig, i) => {
-                  const sourceLabel = SIGNAL_SOURCE_LABELS[sig.source]?.[isHe ? "he" : "en"] ?? sig.source;
+                  const sourceLabel = SIGNAL_SOURCE_LABELS[sig.source]?.[tx({ he: "he", en: "en" }, language)] ?? sig.source;
                   const totalDelta = Object.values(sig.deltas).reduce((s, v) => s + (v ?? 0), 0);
                   return (
                     <div key={i} className="flex items-center justify-between text-xs gap-2">
@@ -221,7 +222,7 @@ export default function ArchetypeProfileCard() {
             <CollapsibleTrigger asChild>
               <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform ${whyOpen ? "rotate-180" : ""}`} />
-                {isHe ? "למה זה מותאם עבורך?" : "Why this adapts your experience?"}
+                {tx({ he: "למה זה מותאם עבורך?", en: "Why this adapts your experience?" }, language)}
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -234,18 +235,18 @@ export default function ArchetypeProfileCard() {
                     <div className="flex flex-wrap gap-1">
                       <Badge variant="outline" className="text-xs py-0 px-1.5">
                         {profile_.regulatoryFocus === "prevention"
-                          ? (isHe ? "מניעה" : "Prevention Focus")
-                          : (isHe ? "קידום" : "Promotion Focus")}
+                          ? (tx({ he: "מניעה", en: "Prevention Focus" }, language))
+                          : (tx({ he: "קידום", en: "Promotion Focus" }, language))}
                       </Badge>
                       <Badge variant="outline" className="text-xs py-0 px-1.5">
                         {profile_.processingStyle === "systematic"
-                          ? (isHe ? "שיטתי" : "Systematic")
-                          : (isHe ? "היוריסטי" : "Heuristic")}
+                          ? (tx({ he: "שיטתי", en: "Systematic" }, language))
+                          : (tx({ he: "היוריסטי", en: "Heuristic" }, language))}
                       </Badge>
                     </div>
                     {/* Core motivation */}
                     <p className="text-xs text-muted-foreground italic" dir="auto">
-                      {profile_.coreMotivation[isHe ? "he" : "en"]}
+                      {profile_.coreMotivation[tx({ he: "he", en: "en" }, language)]}
                     </p>
                     {/* Active heuristic badges */}
                     <div className="flex flex-wrap gap-1">
@@ -273,7 +274,7 @@ export default function ArchetypeProfileCard() {
             className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
             onClick={() => setEditingOverride(true)}
           >
-            {isHe ? "שנה ידנית" : "Change manually"}
+            {tx({ he: "שנה ידנית", en: "Change manually" }, language)}
           </button>
         ) : (
           <div className="flex items-center gap-2">
@@ -288,10 +289,10 @@ export default function ArchetypeProfileCard() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="auto">{isHe ? "אוטומטי" : "Automatic"}</SelectItem>
+                <SelectItem value="auto">{tx({ he: "אוטומטי", en: "Automatic" }, language)}</SelectItem>
                 {ARCHETYPE_IDS.map((id) => (
                   <SelectItem key={id} value={id}>
-                    {ARCHETYPE_ICONS[id]} {ARCHETYPE_LABELS[id][isHe ? "he" : "en"]}
+                    {ARCHETYPE_ICONS[id]} {ARCHETYPE_LABELS[id][tx({ he: "he", en: "en" }, language)]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -302,7 +303,7 @@ export default function ArchetypeProfileCard() {
               className="h-7 px-2 text-xs"
               onClick={() => setEditingOverride(false)}
             >
-              {isHe ? "ביטול" : "Cancel"}
+              {tx({ he: "ביטול", en: "Cancel" }, language)}
             </Button>
           </div>
         )}
