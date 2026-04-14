@@ -33,11 +33,11 @@ export async function saveBlackboardSnapshot(
   state: BlackboardState,
   executionResult?: PipelineExecutionResult
 ): Promise<string | null> {
-  const { data, error } = await supabase
-    .from("blackboard_snapshots" as unknown as string)
+  const { data, error } = await (supabase as unknown as { from: (t: string) => { insert: (v: Record<string, unknown>) => { select: (s: string) => { single: () => Promise<{ data: unknown; error: unknown }> } } } })
+    .from("blackboard_snapshots")
     .insert({
       plan_id: planId,
-      state: JSON.parse(JSON.stringify(state)), // deep clone to JSONB
+      state: JSON.parse(JSON.stringify(state)),
       completed_agents: state.completedAgents,
       errors: state.errors,
       execution_meta: executionResult ? JSON.parse(JSON.stringify(executionResult)) : null,

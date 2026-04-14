@@ -260,8 +260,8 @@ export function predictSuccess(
     if (ukg.derived.urgencySignal === "acute") {
       riskFactors.push({
         factor: { he: "מגמת ירידה חדה בנתונים מיובאים", en: "Sharp declining trend in imported data" },
-        impact: -8,
-        mitigation: { he: "בדוק ומטב קמפיינים פעילים", en: "Review and optimize active campaigns" },
+        impact: "high",
+        mitigable: true,
       });
     }
   }

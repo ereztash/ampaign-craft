@@ -325,11 +325,13 @@ export async function getCohortBenchmarks(
       };
     };
     const typed = db as unknown as BenchQuery;
-    const query = typed.from("cohort_benchmarks").select("*").eq("archetype_id", archetypeId);
-    const result = actionId
-      ? await query.eq("action_id", actionId).limit(20)
-      : await query.limit(20);
-    return (result as { data: CohortBenchmark[] | null; error: unknown }).data ?? [];
+    const queryBase = typed.from("cohort_benchmarks").select("*").eq("archetype_id", archetypeId);
+    const queryWithFilter = actionId
+      ? queryBase.eq("action_id", actionId)
+      : queryBase;
+    const result = await queryWithFilter;
+    const limited = ((result as { data: CohortBenchmark[] | null; error: unknown }).data ?? []).slice(0, 20);
+    return limited;
   } catch {
     return [];
   }
