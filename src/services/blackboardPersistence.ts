@@ -38,7 +38,7 @@ export async function saveBlackboardSnapshot(
   state: BlackboardState,
   executionResult?: PipelineExecutionResult
 ): Promise<string | null> {
-  const { data, error } = await (supabase as unknown as { from: (t: string) => { insert: (v: Record<string, unknown>) => { select: (s: string) => { single: () => Promise<{ data: unknown; error: unknown }> } } } })
+  const { data, error } = await supabase
     .from("blackboard_snapshots")
     .insert({
       plan_id: planId,
