@@ -155,6 +155,16 @@ export type BoardSection = keyof BlackboardState;
 
 type Listener = (section: BoardSection, state: BlackboardState) => void;
 
+/**
+ * Hard cap on concurrent listeners per Blackboard instance.
+ * Exceeding this almost certainly indicates a missing cleanup call
+ * (e.g., a React component that subscribed but never called the
+ * unsubscribe function returned by onUpdate on unmount).
+ * A warning is emitted; the new listener is still registered so the
+ * board remains functional, but the warning surfaces the leak early.
+ */
+const MAX_LISTENERS = 50;
+
 // ═══════════════════════════════════════════════
 // BLACKBOARD CLASS
 // ═══════════════════════════════════════════════
@@ -321,9 +331,27 @@ export class Blackboard {
   // ── Reactive pub/sub ─────────────────────────
 
   /**
-   * Subscribe to board changes.
+   * Subscribe to board changes. Returns an unsubscribe function.
+   *
+   * IMPORTANT: callers MUST invoke the returned function when done
+   * (e.g., in a React useEffect cleanup or component unmount handler).
+   * Failing to do so causes listeners to accumulate for the lifetime
+   * of the Blackboard instance (memory leak).
+   *
+   * @example
+   *   useEffect(() => {
+   *     const unsub = board.onUpdate((section) => { ... });
+   *     return unsub; // React calls this on unmount
+   *   }, [board]);
    */
   onUpdate(listener: Listener): () => void {
+    if (this.listeners.length >= MAX_LISTENERS) {
+      console.warn(
+        `[Blackboard] onUpdate: listener count (${this.listeners.length}) reached ` +
+        `MAX_LISTENERS (${MAX_LISTENERS}). A subscriber is likely missing its cleanup ` +
+        `call. Ensure the unsubscribe function returned by onUpdate() is called on unmount.`,
+      );
+    }
     this.listeners.push(listener);
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener);
@@ -331,7 +359,10 @@ export class Blackboard {
   }
 
   /**
-   * Reset the board to empty state (clears telemetry logs too).
+   * Reset the board to empty state. Clears telemetry logs AND listeners.
+   *
+   * Clears listeners so that stale subscriptions from a previous run
+   * don't receive notifications for the new cycle.
    */
   reset(): void {
     this.state = createEmptyBoard();
@@ -339,6 +370,7 @@ export class Blackboard {
     this.halfLifeLog = [];
     this.successLog = [];
     this.lastWrittenAt = {};
+    this.listeners = []; // prevent cross-cycle listener accumulation
   }
 
   private notify(section: BoardSection): void {
