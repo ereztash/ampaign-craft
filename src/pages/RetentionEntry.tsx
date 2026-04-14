@@ -5,6 +5,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";
+import { buildRetentionContext, PRICING_WIZARD_STORAGE_KEY, DIFF_RESULT_STORAGE_KEY } from "@/engine/retentionPersonalizationContext";
+import type { PricingWizardInput } from "@/engine/pricingWizardEngine";
+import type { DifferentiationResult } from "@/types/differentiation";
 import BackToHub from "@/components/BackToHub";
 import RetentionGrowthTab from "@/components/RetentionGrowthTab";
 import { ModuleNextStep } from "@/components/ModuleNextStep";
@@ -12,17 +15,24 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
 
+function safeParse<T>(key: string): T | null {
+  try { const r = localStorage.getItem(key); return r ? JSON.parse(r) as T : null; } catch { return null; }
+}
+
 const PageComponent = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const navigate = useNavigate();
   const result = useMemo(() => getLatestPlanResult(), []);
 
-  // Live retention strategy preview, driven by the engine.
+  // Live retention strategy preview, driven by the engine with data cascade.
   const retentionStrategy = useMemo(() => {
     if (!result?.formData) return null;
-    const graph = buildUserKnowledgeGraph(result.formData);
-    return generateRetentionStrategy(result.formData, graph);
+    const graph         = buildUserKnowledgeGraph(result.formData);
+    const pricingInput  = safeParse<PricingWizardInput>(PRICING_WIZARD_STORAGE_KEY);
+    const diffResult    = safeParse<DifferentiationResult>(DIFF_RESULT_STORAGE_KEY);
+    const retCtx        = buildRetentionContext(result.formData, graph.discProfile, pricingInput, diffResult);
+    return generateRetentionStrategy(result.formData, graph, undefined, retCtx);
   }, [result]);
 
   return (
@@ -31,16 +41,26 @@ const PageComponent = () => {
         <BackToHub currentPage={language === "he" ? "שימור" : "Retention"} />
         {result ? (
           <>
-            {retentionStrategy && (
-              <div className="mb-4 rounded-xl border border-pink-200/60 bg-pink-50/50 dark:bg-pink-900/20 p-4 text-start">
-                <p className="text-xs text-pink-900 dark:text-pink-200" dir="auto">
-                  {isHe ? "אסטרטגיית שימור" : "Retention strategy"}:{" "}
-                  <strong>{retentionStrategy.onboarding.type}</strong>
-                  {" "}· {retentionStrategy.onboarding.steps.length} {isHe ? "שלבי קליטה" : "onboarding steps"}
-                  {" "}· {retentionStrategy.triggerMap.length} {isHe ? "טריגרים" : "triggers"}
-                </p>
-              </div>
-            )}
+            {retentionStrategy && (() => {
+              const hasPricing = !!safeParse(PRICING_WIZARD_STORAGE_KEY);
+              const hasDiff    = !!safeParse(DIFF_RESULT_STORAGE_KEY);
+              const sources = [
+                isHe ? "תוכנית שיווק" : "Marketing plan",
+                hasPricing ? (isHe ? "תמחור" : "Pricing") : null,
+                hasDiff    ? (isHe ? "בידול" : "Differentiation") : null,
+              ].filter(Boolean).join(" · ");
+              return (
+                <div className="mb-4 rounded-xl border border-pink-200/60 bg-pink-50/50 dark:bg-pink-900/20 p-4 text-start">
+                  <p className="text-xs text-pink-900 dark:text-pink-200" dir="auto">
+                    {isHe ? "אסטרטגיית שימור" : "Retention strategy"}:{" "}
+                    <strong>{retentionStrategy.onboarding.type}</strong>
+                    {" "}· {retentionStrategy.onboarding.steps.length} {isHe ? "שלבי קליטה" : "onboarding steps"}
+                    {" "}· {retentionStrategy.triggerMap.length} {isHe ? "טריגרים" : "triggers"}
+                    {" "}· <span className="opacity-70">{isHe ? "מקורות:" : "Sources:"} {sources}</span>
+                  </p>
+                </div>
+              );
+            })()}
             <RetentionGrowthTab result={result} />
             <ModuleNextStep current={5} />
           </>

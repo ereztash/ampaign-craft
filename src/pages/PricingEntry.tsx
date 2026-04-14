@@ -9,6 +9,7 @@ import {
   computePricingWizardRecommendation,
   type PricingWizardInput,
 } from "@/engine/pricingWizardEngine";
+import { PRICING_WIZARD_STORAGE_KEY } from "@/engine/retentionPersonalizationContext";
 import PricingWizard from "@/components/PricingWizard";
 import PricingIntelligenceTab from "@/components/PricingIntelligenceTab";
 import PricingWizardResults from "@/components/PricingWizardResults";
@@ -81,6 +82,8 @@ const PageComponent = () => {
   // Wizard completion handler
   const handleWizardComplete = useCallback((input: PricingWizardInput) => {
     savePricingToLatestPlan(input);
+    // Persist full input so the retention engine can read Hormozi axes later
+    try { localStorage.setItem(PRICING_WIZARD_STORAGE_KEY, JSON.stringify(input)); } catch { /* non-critical */ }
     setWizardInput(input);
     setView("results");
   }, []);
