@@ -417,6 +417,22 @@ export const translations = {
   quoteStepClient: { he: "לקוח וחבילה", en: "Client & Package" },
   quoteStepCustomize: { he: "התאמה", en: "Customize" },
   quoteStepPreview: { he: "תצוגה", en: "Preview" },
+
+  // Archetype personalisation
+  navArchetype: { he: "הארכיטיפ שלי", en: "My Archetype" },
+  archetypePersonalisation: { he: "התאמה אישית", en: "Personalisation" },
+  archetypeAdaptationsOn: { he: "התאמות פעילות", en: "Adaptations on" },
+  archetypeAdaptationsOff: { he: "התאמות כבויות", en: "Adaptations off" },
+  archetypeToggleOn: { he: "הפעל התאמות", en: "Enable adaptations" },
+  archetypeToggleOff: { he: "כבה התאמות", en: "Disable adaptations" },
+  archetypeSeeWhy: { he: "ראה למה", en: "See why" },
+  archetypeChangeArchetype: { he: "שנה ארכיטיפ", en: "Change archetype" },
+  archetypeCurrentLabel: { he: "ארכיטיפ נוכחי", en: "Current archetype" },
+  archetypeConfidenceTier: { he: "רמת ביטחון", en: "Confidence tier" },
+  archetypePersonalisationDesc: {
+    he: "FunnelForge זיהה דפוסים בשימוש שלך ומתאים את הממשק בהתאם. אפשר לכבות בכל עת.",
+    en: "FunnelForge identified patterns in your usage and adapts the interface accordingly. You can turn this off at any time.",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

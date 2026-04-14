@@ -10,6 +10,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { ArchetypeProvider } from "@/contexts/ArchetypeContext";
+import { ArchetypeThemeProvider } from "@/providers/ArchetypeThemeProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
@@ -31,6 +32,7 @@ const RetentionEntry = lazy(() => import("./pages/RetentionEntry"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const SharedQuote = lazy(() => import("./pages/SharedQuote"));
 const CrmPage = lazy(() => import("./pages/CrmPage"));
+const ArchetypeRevealScreen = lazy(() => import("./components/ArchetypeRevealScreen"));
 
 const queryClient = new QueryClient();
 
@@ -75,6 +77,7 @@ const AnimatedRoutes = () => {
             <Route path="retention" element={<RetentionEntry />} />
             <Route path="crm" element={<CrmPage />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="archetype" element={<ArchetypeRevealScreen />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
@@ -89,6 +92,7 @@ const App = () => (
       <LanguageProvider>
         <UserProfileProvider>
           <ArchetypeProvider>
+          <ArchetypeThemeProvider>
           <DataSourceProvider>
             <TooltipProvider>
               <Toaster />
@@ -102,6 +106,7 @@ const App = () => (
               </ErrorBoundary>
             </TooltipProvider>
           </DataSourceProvider>
+          </ArchetypeThemeProvider>
           </ArchetypeProvider>
         </UserProfileProvider>
       </LanguageProvider>

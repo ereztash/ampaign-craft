@@ -468,6 +468,49 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   ADAPTIVE THEMING — Archetype Shape + Typography Tokens (Phase A)
+   Additive tokens alongside colour blocks. Components reference
+   --cta-shape-radius, --heading-font-family, --elevation-default.
+   Defaults on :root ensure a sane value when no archetype is active.
+   ────────────────────────────────────────────────────────────────── */
+
+:root {
+  --cta-shape-radius: 0.375rem;
+  --heading-font-family: 'Heebo', 'Inter', system-ui, sans-serif;
+  --elevation-default: 0 1px 3px 0 rgb(0 0 0 / 0.10), 0 1px 2px -1px rgb(0 0 0 / 0.10);
+}
+
+:root[data-archetype="strategist"] {
+  --cta-shape-radius: 0.25rem;
+  --heading-font-family: 'Heebo', 'Inter', system-ui, sans-serif;
+  --elevation-default: 0 4px 6px -1px rgb(0 0 0 / 0.12), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+}
+
+:root[data-archetype="optimizer"] {
+  --cta-shape-radius: 9999px;
+  --heading-font-family: 'Inter', 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+}
+
+:root[data-archetype="pioneer"] {
+  --cta-shape-radius: 9999px;
+  --heading-font-family: 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 10px 15px -3px rgb(0 0 0 / 0.12), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+}
+
+:root[data-archetype="connector"] {
+  --cta-shape-radius: 9999px;
+  --heading-font-family: 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+}
+
+:root[data-archetype="closer"] {
+  --cta-shape-radius: 0.25rem;
+  --heading-font-family: 'Inter', 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.10);
+}
+
+/* ──────────────────────────────────────────────────────────────────
    ADAPTIVE THEMING — Information Density Variants
    Set via data-density attribute at "strong" confidence tier.
    ────────────────────────────────────────────────────────────────── */
