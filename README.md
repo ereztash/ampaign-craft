@@ -32,7 +32,7 @@ Hebrew-first platform that combines 40+ cross-domain knowledge areas into a 5-mo
 Pipeline stages, forecast, 4-layer personalized objection scripts (product + industry + differentiation + voice). DISC personality profiling infers prospect type from form data and generates per-type messaging strategies, CTA styles, and funnel emphasis. Neuro-closing engine produces DISC-optimized objection handlers, price presentation strategies, and follow-up sequences.
 
 **Module 4 — Pricing** (`/plans/:id/pricing`)
-Recommended pricing model, 3-tier structure with decoy, Hormozi offer stack (value equation), guarantee design, price framing scripts for 5 contexts (landing/sales/proposal/WhatsApp/email), subscription economics (LTV:CAC).
+**Pricing Wizard (new):** 4-step behavioural-science flow that DERIVES the optimal price rather than asking for it. Step 1 — Value Quantification (Hormozi Dream Outcome × Time to Value); Step 2 — Van Westendorp PSM (too-cheap floor + stretch ceiling → geo-mean OPP); Step 3 — Offer Architecture (Effort × Social Proof + differentiator premium with Weber-Fechner diminishing returns); Step 4 — Revenue Architecture (LTV model + customer count). Outputs: charm price, acceptable range, psychological anchor, 3-tier structure (Ariely Decoy Effect), Kahneman Cost-of-Inaction frame, LTV:CAC budget. Existing intelligence tab: recommended pricing model, 3-tier structure, Hormozi offer stack, guarantee design, price framing scripts for 5 contexts (landing/sales/proposal/WhatsApp/email), subscription economics.
 
 **Module 5 — Retention** (`/plans/:id/retention`)
 Onboarding sequences by business type (ecommerce/SaaS/services/creator). Churn prediction engine with 3-stage model (Active → Disengaging → Silent), risk scoring across 10 industry verticals, NRR projections with/without intervention, and intervention playbooks. Referral program blueprint with WhatsApp templates, growth loop identification, loyalty program design.
@@ -155,6 +155,8 @@ src/
 │   ├── differentiationKnowledge.ts  # B2B + B2C knowledge (archetypes, values, metrics)
 │   ├── differentiationPhases.ts     # 5-phase config with mode-aware questions
 │   ├── userKnowledgeGraph.ts        # Central intelligence: cross-references all user data + DISC
+│   ├── pricingWizardEngine.ts       # Behavioural-science pricing derivation: Van Westendorp PSM, Hormozi V=D×P/T×E,
+│   │                                  Weber-Fechner differentiator premium, Ariely 3-tier decoy, Kahneman COI framing
 │   ├── pricingKnowledge.ts          # Israeli benchmarks + behavioral pricing constants
 │   ├── retentionKnowledge.ts        # Lifecycle templates + churn signals + referral
 │   ├── healthScoreEngine.ts         # Marketing readiness score (0-100) + retention readiness
@@ -198,20 +200,27 @@ src/
 │   │   ├── daplProfile.ts           # M5: 7-dim adaptive user preference vector + 12 principles
 │   │   └── ontologicalVerifier.ts   # M6: single write-gate for every shared_context write
 │   ├── blackboard/                  # Agent orchestration (MAS-CC Blackboard Architecture)
-│   │   ├── blackboardStore.ts       # Shared knowledge space with reactive updates
+│   │   ├── blackboardStore.ts       # Shared knowledge space: verifiedSet() gated writes, telemetry logs
+│   │   │                              (WriteRejectionEvent, HalfLifeEvent, WriteSuccessEvent),
+│   │   │                              MAX_LISTENERS=50 leak guard, reset() clears listeners
+│   │   ├── ontologicalVerifier.ts   # Pure write contract: 4 rejection rules (restricted_section,
+│   │   │                              null_payload, empty_object, identity_write), VerifyResult
 │   │   ├── agentRunner.ts           # Sync: topological sort + dependency-aware execution
 │   │   ├── asyncAgentRunner.ts      # Async: parallel execution + timeout + retry + cost caps
 │   │   ├── circuitBreaker.ts        # 3-state breaker (closed/open/half-open) for loop control
 │   │   ├── agentTypes.ts            # AsyncAgentDefinition, AgentExecutionMeta, CircuitBreakerConfig
-│   │   ├── llmAgent.ts              # LLM agent factory (createLLMAgent) + JSON parser
+│   │   ├── llmAgent.ts              # LLM agent factory: getModelForTier() (Haiku/Sonnet/Opus),
+│   │   │                              FAST_TIER_JSON_ENFORCEMENT preamble, verifiedSet() writes
 │   │   ├── index.ts                 # Public API: sync + async pipelines, QA agents, debug swarm
-│   │   └── agents/                  # 12 agents (8 core + 4 QA)
+│   │   └── agents/                  # 13 agents (8 core + 4 QA + Φ_META_AGENT)
 │   │       ├── knowledgeGraphAgent, funnelAgent, hormoziAgent, discAgent
 │   │       ├── closingAgent, coiAgent, retentionAgent, healthAgent
 │   │       ├── qaStaticAgent.ts     # Heuristic QA: budget, KPIs, completeness, consistency
 │   │       ├── qaContentAgent.ts    # LLM QA: cultural fit, Hebrew quality, CTA clarity
 │   │       ├── qaSecurityAgent.ts   # Security: PII detection, injection vectors, unsafe templates
 │   │       ├── qaOrchestratorAgent.ts # Aggregates QA scores + grade (A-F) + recommendations
+│   │       ├── metaAgent.ts         # Φ_META_AGENT: J=∂I/∂Ω gradient, semantic half-life,
+│   │       │                          per-agent rejection rates, threshold-triggered recommendations
 │   │       └── debugSwarm.ts        # Iterative fix loop: Analyzer → Proposer → Critique
 │   └── research/                    # Cross-domain research engine implementation
 │       ├── researchOrchestrator.ts  # Decomposes questions → dispatches sub-agents → synthesizes
@@ -227,8 +236,10 @@ src/
 │   └── eventQueue.ts               # PostgreSQL event bus (publish/query/convenience helpers)
 ├── lib/             # Data libraries & utilities
 │   ├── agentOrchestrator.ts         # Tier-4 pillar: wraps agent-executor with agent_tasks row,
-│   │                                  direct invoke, task-status update, and 30s event_queue poll
-│   │                                  for agent.completed. Falls back on direct invoke output.
+│   │                                  direct invoke, task-status update. Uses Supabase Realtime
+│   │                                  (single WebSocket channel) instead of polling — replaces
+│   │                                  ≤30 REST calls with one postgres_changes subscription on
+│   │                                  event_queue. Graceful fallback to direct invoke on timeout.
 │   ├── israeliMarketCalendar.ts     # 12 Israeli events with budget multipliers
 │   ├── hebrewCopyOptimizer.ts       # 12 Hebrew neurolinguistics rules + scoring + stylometry
 │   ├── textAdapter.ts               # Register shifting from Stylome voice profile
@@ -239,7 +250,11 @@ src/
 │   ├── toolRecommendations.ts       # Israeli SaaS ecosystem mapping
 │   ├── roiCalculator.ts             # Industry-specific ROI estimation
 │   ├── whatsappTemplates.ts         # Hebrew WhatsApp funnel templates
-│   ├── pricingTiers.ts              # Free/Pro/Business tier definitions
+│   ├── pricingTiers.ts              # Tier definitions with annual billing (20% discount),
+│   │                                  numeric limits (whatsappTemplates: 0/10/-1), seats,
+│   │                                  brandedReports, prioritySupport, trialDays, overage pricing.
+│   │                                  Helpers: getEffectivePrice, getLimitValue, isApproachingLimit,
+│   │                                  getAnnualSavings. PricingPage: monthly/annual toggle UI.
 │   ├── smartDefaults.ts             # Adaptive form defaults by business type
 │   ├── minimalFormDefaults.ts       # Minimal-mode form defaults
 │   └── ...                          # glossary, socialProofData, colorSemantics, utils
@@ -380,6 +395,17 @@ QA Agents (triggered separately):
 11. qaSecurity     (→ funnel)    → PII detection, injection vectors, unsafe templates
 12. qaOrchestrator (→ 9,10,11)   → aggregates scores → grade A-F + recommendations
 
+Φ_META_AGENT (always last — depends on all known agents):
+13. metaAgent      (→ all)       → J = ∂I/∂Ω gradient (1 − systemRejectionRate),
+                                    semantic half-life (avg ms a board value survives before
+                                    overwrite), per-agent rejection rates with threshold-triggered
+                                    (>15%) downgrade recommendations. Pure sync, no LLM, no I/O.
+
+Ontological Verifier (every agent write path):
+  verifyWrite() → 4 fail-fast rules: restricted_section, null_payload, empty_object,
+  identity_write. Rejected writes logged as WriteRejectionEvent; accepted writes logged as
+  WriteSuccessEvent + HalfLifeEvent on overwrite.
+
 Debug Swarm (on demand):
 Analyzer → Proposer → Critique loop with circuit breaker (max 5 iterations)
 
@@ -487,8 +513,8 @@ Multi-agent orchestration already had edge-function invocations, but the pillar 
 1. Insert a pending row into `agent_tasks`.
 2. `supabase.functions.invoke('agent-executor', ...)`.
 3. Update the task row to `completed` on success.
-4. Best-effort poll `event_queue` for an `agent.completed` event up to 30 seconds.
-5. Fall back to the direct invoke response on poll timeout.
+4. Best-effort wait for `agent.completed` event via **Supabase Realtime** (`postgres_changes` on `event_queue`). One WebSocket message replaces ≤30 REST polling calls. Gracefully degrades: CHANNEL_ERROR / 30s timeout → falls back to the direct invoke output. Channel is always cleaned up before resolution (settled-flag pattern prevents double cleanup).
+5. Fall back to the direct invoke response on timeout.
 
 The single required call site lives in `src/pages/Wizard.tsx`, where `regenerateHeroCopy` calls `runAgent(...)` first and falls back to `aiCopyService.generateCopy(...)` on error — satisfying `LIB_MIN_CONSUMERS = 1`.
 
@@ -519,8 +545,8 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | 21 | Wizard UX | Step indicators, validation timing, progress saving |
 | 22 | Cognitive Load Theory | Intrinsic/extraneous load, split-attention, expertise reversal |
 | 23 | Emotional Design | Visceral/behavioral/reflective, delight patterns, celebrations |
-| 24 | SaaS Pricing | Value metrics, tier ratios, freemium conversion, annual discount |
-| 25 | Behavioral Pricing | Charm pricing, Weber-Fechner JND, pain of paying |
+| 24 | SaaS Pricing | Value metrics, tier ratios, annual discount (20%), overage pricing, seats model |
+| 25 | Behavioral Pricing | Charm pricing, Weber-Fechner JND, Van Westendorp PSM (2-question WTP derivation), pain of paying |
 | 26 | Offer Architecture | Hormozi value equation, offer stacking, guarantee design |
 | 27 | Subscription Economics | LTV:CAC ratios, churn-price relationship, NRR |
 | 28 | Customer Success | Onboarding design, time-to-value, health scoring |
@@ -540,6 +566,8 @@ The single required call site lives in `src/pages/Wizard.tsx`, where `regenerate
 | 42 | Vector Search | pgvector embeddings, semantic similarity, codebase comprehension |
 | 43 | Regulatory Focus Theory | Higgins 1997 — Prevention vs. Promotion focus drives archetype pipeline order |
 | 44 | Adaptive UX Personalization | 5-archetype classifier, 8 heuristics (H1–H8), L1–L5 CSS resolution, Glass-Box traceability |
+| 45 | Information Theory × Pricing | Shannon 3-tier entropy theorem: 3 tiers maximise decision guidance (H=log₂3≈1.58 bits) — applied in PricingWizardEngine tier architecture |
+| 46 | Autopoietic Systems (J=∂I/∂Ω) | Φ_META_AGENT measures information gain gradient, semantic half-life, and per-agent rejection rates — first implementation of MAS ontological self-monitoring in the codebase |
 
 ## MOAT Data Flywheel
 
@@ -664,7 +692,7 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 | **ActiveCampaign** | $29–$149 | ❌ | ❌ | ❌ Email only | ❌ | ❌ |
 | **Funnelytics** | $79–$199 | ❌ | ❌ | ❌ Mapping only | ❌ | ❌ |
 | **Marketo Engage** | $1,000+ | ❌ | ❌ | ✅ Enterprise | ❌ | ❌ |
-| **FunnelForge** | ₪0–₪249 (~$0–$68) | ✅ | ✅ | ✅ 5 modules | ✅ Deep | ✅ Archetype |
+| **FunnelForge** | ₪0–₪249/mo (annual ₪79–₪199) | ✅ | ✅ | ✅ 5 modules | ✅ Deep | ✅ Archetype |
 
 #### Israeli / Regional Competitors
 
@@ -690,7 +718,7 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 | Adaptive persona UI | ✅ 5 archetypes, 8 heuristics, L1–L5, Glass-Box | ❌ Zero competitors |
 | Multi-agent QA | ✅ 12 agents, static + LLM + security QA | ❌ None |
 | Privacy / local-first | ✅ localStorage core, no data leaves device for main features | ❌ All cloud-mandatory |
-| Price (SMB) | ✅ ₪99/mo (~$27) | ❌ $97–$800+/mo |
+| Price (SMB) | ✅ ₪79/mo annual (~$22) | ❌ $97–$800+/mo |
 | Time to first value | ✅ 2 minutes (ExpressWizard) | ❌ 2–8 hours onboarding |
 
 ### Growth Levers
@@ -707,12 +735,12 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 |--------|-------|
 | Lines of code | ~41,500 |
 | TypeScript files | ~240 |
-| Engines | 47 (`src/engine/*.ts`, excl. knowledge / subdirs) |
+| Engines | 49 (`src/engine/*.ts`, excl. knowledge / subdirs) |
 | Optimization overlay engines (GRAOS) | 6 (M1–M6, `src/engine/optimization/`) |
 | Live engines (ENGINE_MANIFEST.isLive) | 30 |
 | Runtime reachability | 30 / 30 REACHABLE |
 | Tests | 651 passing (601 core + 50 GRAOS optimization; debugSwarm baseline excluded per plan) |
-| Components | 105 |
+| Components | 108 |
 | Pages | 17 |
 | Routes | 12 |
 | Tabs | 9 |
@@ -723,8 +751,8 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 | Translation keys | 290+ (he + en) |
 | Edge Functions | 12 |
 | SQL Migrations | 4 |
-| Knowledge domains | 44 |
-| Blackboard agents | 12 |
+| Knowledge domains | 46 |
+| Blackboard agents | 13 (8 core + 4 QA + Φ_META_AGENT) |
 | QA checks | 15+ (static + content + security) |
 | Research sub-agents | 3 (regulatory, market, marketing) |
 | Industry pain points | 40 (10 verticals × 4) |
@@ -754,11 +782,13 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 
 ## Monetization
 
-| Tier | Price | Features |
-|------|-------|----------|
-| Free | ₪0 | 3 funnels, Strategy + Planning + Content tabs, differentiation |
-| Pro | ₪99/month | Unlimited funnels, Sales + Pricing + Retention tabs, AI Coach (50 msgs) |
-| Business | ₪249/month | WhatsApp templates, Campaign Cockpit, Template Marketplace, unlimited AI, AI Copy Generation |
+| Tier | Monthly | Annual (save 20%) | Key Features |
+|------|---------|-------------------|-------------|
+| Free | ₪0 | ₪0 | 3 funnels, Strategy + Planning + Content + Differentiation, 1 seat |
+| Pro | ₪99/mo | ₪79/mo (₪948/yr) | Unlimited funnels, AI Coach 75 msgs + ₪2.50/overage, WhatsApp 10/mo, PDF, 14-day trial, 1 seat |
+| Business | ₪249/mo | ₪199/mo (₪2,388/yr) | Unlimited AI, unlimited WhatsApp, Campaign Cockpit, Template Marketplace, branded reports, priority support, 3 seats, 14-day trial |
+
+Pricing wizard (`/pricing`) derives optimal price for the user's own product using Van Westendorp PSM + Hormozi Value Equation — no price input required from the user.
 
 ## Financial Evaluation
 
@@ -769,14 +799,14 @@ src/contexts/AuthContext.tsx            # flushOutcomeBuffer() on sign-in (mirro
 | Layer | Scope | Size | Method |
 |-------|-------|------|--------|
 | **TAM** | All Israeli SMB marketing spend capturable as SaaS | ₪16B/yr | 560K SMBs × ₪2,400/mo avg spend (D&B IL 2023) × 12 |
-| **SAM** | Israeli SMBs with digital presence, willing to pay for a strategy tool | ₪540M/yr | 180K businesses × 20% SaaS-adoption probability × ₪125 blended ARPU × 12 |
+| **SAM** | Israeli SMBs with digital presence, willing to pay for a strategy tool | ₪587M/yr | 180K businesses × 20% SaaS-adoption probability × ₪136 blended ARPU × 12 |
 | **SOM** | Realistically acquirable within 5 years at current distribution channels | ₪54M/yr | SAM × 10% — WhatsApp-native funnel + consultant channel |
 
 ### Unit Economics
 
 | Metric | Value | Basis |
 |--------|-------|-------|
-| **Blended ARPU** | ₪125/mo (~$34) | 83% Pro (₪99) × 17% Business (₪249) among paying |
+| **Blended ARPU** | ₪136/mo (~$37) | Mix: 55% Pro monthly (₪99) + 15% Pro annual (₪79) + 20% Business monthly (₪249) + 10% Business annual (₪199) |
 | **Monthly churn target** | 2.5% | Below Israeli SMB SaaS avg (3–5%); archetype MOAT reduces switch intent |
 | **LTV** | ₪5,000 (~$1,370) | ARPU ÷ monthly churn |
 | **CAC target** | ₪200 (~$55) | Content + WhatsApp referral loop; no paid acquisition required at seed |
