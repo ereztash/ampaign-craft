@@ -61,11 +61,15 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
   const FEATURE_NAMES: Record<Feature, { he: string; en: string }> = {
     maxFunnels: { he: "משפכים ללא הגבלה", en: "Unlimited funnels" },
     aiCoachMessages: { he: "מאמן שיווק AI", en: "AI Marketing Coach" },
+    aiCoachOveragePriceNIS: { he: "מחיר הודעה נוסף", en: "Per-message overage price" },
     pdfExport: { he: "ייצוא PDF", en: "PDF Export" },
     whatsappTemplates: { he: "תבניות WhatsApp", en: "WhatsApp Templates" },
     campaignCockpit: { he: "Campaign Cockpit", en: "Campaign Cockpit" },
     templatePublishing: { he: "פרסום תבניות", en: "Template Publishing" },
     differentiationAgent: { he: "סוכן בידול", en: "Differentiation Agent" },
+    seats: { he: "מושבי צוות", en: "Team Seats" },
+    brandedReports: { he: "דוחות ממותגים", en: "Branded Reports" },
+    prioritySupport: { he: "תמיכה בעדיפות", en: "Priority Support" },
   };
 
   return (
