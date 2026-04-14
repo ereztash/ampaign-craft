@@ -7,11 +7,15 @@ import { getL5CSSVars } from "@/engine/behavioralHeuristicEngine";
  * Adaptive Theme Hook
  * Sets data-attributes on <html> based on user context.
  * CSS variable overrides in index.css respond to these attributes,
- * creating a personalized visual experience per user type.
+ * creating a personalised visual experience per user type.
+ *
+ * ALL personalisation effects are gated on adaptationsEnabled === true.
+ * The user must accept the ArchetypeRevealScreen before any theming fires.
+ * This is the IKEA-effect transparency mechanism (Norton, Mochon & Ariely 2011).
  */
 export function useAdaptiveTheme() {
   const { profile } = useUserProfile();
-  const { effectiveArchetypeId, confidenceTier, uiConfig } = useArchetype();
+  const { effectiveArchetypeId, confidenceTier, uiConfig, adaptationsEnabled } = useArchetype();
 
   useEffect(() => {
     const el = document.documentElement;
@@ -56,33 +60,33 @@ export function useAdaptiveTheme() {
     profile.lastFormData?.experienceLevel,
   ]);
 
-  // Archetype attribute: set at "confident" and "strong" tiers
+  // Archetype attribute: only when user has opted in AND tier is confident/strong
   useEffect(() => {
     const el = document.documentElement;
-    if (confidenceTier === "confident" || confidenceTier === "strong") {
+    if (adaptationsEnabled && (confidenceTier === "confident" || confidenceTier === "strong")) {
       el.setAttribute("data-archetype", effectiveArchetypeId);
     } else {
       el.removeAttribute("data-archetype");
     }
     return () => el.removeAttribute("data-archetype");
-  }, [effectiveArchetypeId, confidenceTier]);
+  }, [effectiveArchetypeId, confidenceTier, adaptationsEnabled]);
 
-  // Information density: only at "strong" tier
+  // Information density: only when opted in AND strong tier
   useEffect(() => {
     const el = document.documentElement;
-    if (confidenceTier === "strong") {
+    if (adaptationsEnabled && confidenceTier === "strong") {
       el.setAttribute("data-density", uiConfig.informationDensity);
     } else {
       el.removeAttribute("data-density");
     }
     return () => el.removeAttribute("data-density");
-  }, [uiConfig.informationDensity, confidenceTier]);
+  }, [uiConfig.informationDensity, confidenceTier, adaptationsEnabled]);
 
   // L5 CSS vars: micro-interaction tuning at "confident" and "strong" tiers.
   // Produces --motion-duration-multiplier, --motion-easing, --cta-font-weight.
   // Grounded in H1–H8 heuristics (see behavioralHeuristicEngine.ts).
   useEffect(() => {
-    if (confidenceTier !== "confident" && confidenceTier !== "strong") return;
+    if (!adaptationsEnabled || (confidenceTier !== "confident" && confidenceTier !== "strong")) return;
     const el = document.documentElement;
     const vars = getL5CSSVars(effectiveArchetypeId);
     Object.entries(vars).forEach(([prop, value]) => {
@@ -93,5 +97,5 @@ export function useAdaptiveTheme() {
         el.style.removeProperty(prop);
       });
     };
-  }, [effectiveArchetypeId, confidenceTier]);
+  }, [effectiveArchetypeId, confidenceTier, adaptationsEnabled]);
 }

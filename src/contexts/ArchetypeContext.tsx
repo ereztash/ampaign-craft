@@ -23,7 +23,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const COLD_START_ARCHETYPE: ArchetypeId = "optimizer";
 const SIGNAL_HISTORY_CAP = 50;
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 function storageKey(userId: string): string {
   return `funnelforge-archetype-${userId}`;
@@ -42,6 +42,18 @@ function makeColdStartProfile(): UserArchetypeProfile {
     signalHistory: [],
     lastComputedAt: new Date().toISOString(),
     sessionCount: 0,
+    adaptationsEnabled: false,
+    revealSeen: false,
+    version: SCHEMA_VERSION,
+  };
+}
+
+/** Migrate a v1 profile to v2 — preserves all existing fields, adds new flags. */
+function migrateV1ToV2(p: UserArchetypeProfile): UserArchetypeProfile {
+  return {
+    ...p,
+    adaptationsEnabled: false,
+    revealSeen: false,
     version: SCHEMA_VERSION,
   };
 }
@@ -73,6 +85,18 @@ interface ArchetypeContextValue {
   setOverride: (archetypeId: ArchetypeId | null) => void;
   /** GDPR: clear all archetype data for this user */
   clearProfile: () => void;
+  /**
+   * Whether the user has opted in to UI adaptations.
+   * Set via the ArchetypeRevealScreen or Profile page.
+   * All personalisation (colours, density, motion) is gated on this flag.
+   */
+  adaptationsEnabled: boolean;
+  /** Toggle UI adaptation on/off. One-click opt-out from Profile or AppSidebar. */
+  setAdaptationsEnabled: (enabled: boolean) => void;
+  /** True once the user has visited the ArchetypeRevealScreen at least once. */
+  revealSeen: boolean;
+  /** Mark the reveal as seen (called on first mount of ArchetypeRevealScreen). */
+  markRevealSeen: () => void;
 }
 
 const ArchetypeContext = createContext<ArchetypeContextValue | null>(null);
@@ -104,9 +128,14 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(storageKey(user.id));
       if (raw) {
         const parsed: UserArchetypeProfile = JSON.parse(raw);
-        // Version guard: reset if schema changed
         if (parsed.version === SCHEMA_VERSION) {
           setProfile(parsed);
+        } else if (parsed.version === 1) {
+          // Migrate v1 → v2: existing personalisation was silent/automatic,
+          // so we start with adaptationsEnabled=false — the user must accept
+          // the reveal to re-enable it (IKEA-effect transparency).
+          const migrated = migrateV1ToV2(parsed);
+          setProfile(migrated);
         } else {
           setProfile(makeColdStartProfile());
         }
@@ -117,6 +146,9 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
       setProfile(makeColdStartProfile());
     }
     setLoading(false);
+  // user object identity changes on login/logout; user.id alone is sufficient
+  // but ESLint requires the full object when it appears in the effect body.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   // ── Persist to localStorage whenever profile changes ──
@@ -215,6 +247,36 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
+  // ── setAdaptationsEnabled ──
+  const setAdaptationsEnabled = useCallback((enabled: boolean) => {
+    setProfile((prev) => {
+      const next: UserArchetypeProfile = {
+        ...prev,
+        adaptationsEnabled: enabled,
+        lastComputedAt: new Date().toISOString(),
+      };
+      persist(next);
+      return next;
+    });
+  }, [persist]);
+
+  // ── markRevealSeen ──
+  const markRevealSeen = useCallback(() => {
+    setProfile((prev) => {
+      if (prev.revealSeen) return prev; // idempotent
+      const next: UserArchetypeProfile = {
+        ...prev,
+        revealSeen: true,
+        lastComputedAt: new Date().toISOString(),
+      };
+      persist(next);
+      return next;
+    });
+  }, [persist]);
+
+  const adaptationsEnabled = profile.adaptationsEnabled === true;
+  const revealSeen = profile.revealSeen === true;
+
   return (
     <ArchetypeContext.Provider value={{
       profile,
@@ -225,6 +287,10 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
       updateFromBlackboard,
       setOverride,
       clearProfile,
+      adaptationsEnabled,
+      setAdaptationsEnabled,
+      revealSeen,
+      markRevealSeen,
     }}>
       {children}
     </ArchetypeContext.Provider>

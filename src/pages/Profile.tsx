@@ -9,7 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook } from "lucide-react";
+import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook, Sparkles, SparklesOff } from "lucide-react";
+import { useArchetype } from "@/contexts/ArchetypeContext";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { NavLink } from "react-router-dom";
 import { McpIntegrationPanel } from "@/components/McpIntegrationPanel";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -24,6 +28,14 @@ const PageComponent = () => {
   const { user, loading: authLoading, tier, setTier, isLocalAuth } = useAuth();
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const {
+    effectiveArchetypeId,
+    confidenceTier,
+    uiConfig,
+    adaptationsEnabled,
+    setAdaptationsEnabled,
+    setOverride,
+  } = useArchetype();
   const { toast } = useToast();
   const isHe = language === "he";
 
@@ -267,6 +279,95 @@ const PageComponent = () => {
                 )}
               </div>
             </div>
+
+            {/* Personalisation section — visible at confident/strong tier */}
+            {(confidenceTier === "confident" || confidenceTier === "strong") && (
+              <>
+                <Separator />
+                <section aria-labelledby="personalisation-heading" className="space-y-3">
+                  <h2
+                    id="personalisation-heading"
+                    className="flex items-center gap-2 text-sm font-semibold text-foreground"
+                  >
+                    {adaptationsEnabled
+                      ? <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+                      : <SparklesOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
+                    {tx({ he: "התאמה אישית", en: "Personalisation" }, language)}
+                  </h2>
+
+                  {/* Current archetype */}
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <p className="text-sm font-medium">
+                        {tx({ he: "ארכיטיפ נוכחי", en: "Current archetype" }, language)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{uiConfig.label[language]}</p>
+                    </div>
+                    <NavLink
+                      to="/archetype"
+                      className="text-xs text-primary underline-offset-4 hover:underline"
+                    >
+                      {tx({ he: "ראה למה", en: "See why" }, language)}
+                    </NavLink>
+                  </div>
+
+                  {/* Adaptations toggle */}
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label
+                        htmlFor="adaptations-toggle"
+                        className="text-sm font-medium cursor-pointer"
+                      >
+                        {adaptationsEnabled
+                          ? tx({ he: "התאמות פעילות", en: "Adaptations on" }, language)
+                          : tx({ he: "התאמות כבויות", en: "Adaptations off" }, language)}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        {tx({
+                          he: "צבעים, סדר ניווט ואנימציות מותאמים לפרופיל שלך",
+                          en: "Colours, navigation order and animations adapted to your profile",
+                        }, language)}
+                      </p>
+                    </div>
+                    <Switch
+                      id="adaptations-toggle"
+                      checked={adaptationsEnabled}
+                      onCheckedChange={setAdaptationsEnabled}
+                      aria-label={adaptationsEnabled
+                        ? tx({ he: "כבה התאמות", en: "Disable adaptations" }, language)
+                        : tx({ he: "הפעל התאמות", en: "Enable adaptations" }, language)}
+                    />
+                  </div>
+
+                  {/* Change archetype */}
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-muted-foreground">
+                      {tx({
+                        he: "הארכיטיפ מחושב אוטומטית. תוכל לשנות ידנית:",
+                        en: "The archetype is computed automatically. You can change it manually:",
+                      }, language)}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5" role="group" aria-label={tx({ he: "שנה ארכיטיפ", en: "Change archetype" }, language)}>
+                      {(["strategist", "optimizer", "pioneer", "connector", "closer"] as const).map((id) => (
+                        <button
+                          key={id}
+                          type="button"
+                          onClick={() => setOverride(effectiveArchetypeId === id ? null : id)}
+                          aria-pressed={effectiveArchetypeId === id}
+                          className={`rounded-md border px-2.5 py-1 text-xs transition-colors ${
+                            effectiveArchetypeId === id
+                              ? "border-primary bg-primary/10 font-semibold"
+                              : "border-border hover:border-primary/50"
+                          }`}
+                        >
+                          {id}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              </>
+            )}
 
             <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}

@@ -16,10 +16,11 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain, Sparkles, SparklesOff } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
+import { tx } from "@/i18n/tx";
 
 const AdminArchetypeDebugPanel = lazy(() => import("@/components/AdminArchetypeDebugPanel"));
 
@@ -58,9 +59,9 @@ const MODULE_ITEMS: NavItem[] = [
 // ═══════════════════════════════════════════════
 
 const AppSidebar = () => {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
   const { pathname } = useLocation();
-  const { uiConfig, confidenceTier } = useArchetype();
+  const { uiConfig, confidenceTier, adaptationsEnabled, setAdaptationsEnabled } = useArchetype();
   const { user } = useAuth();
   const side = isRTL ? "right" : "left";
   const isHe = isRTL;
@@ -210,6 +211,48 @@ const AppSidebar = () => {
 
         <SidebarFooter className="border-t border-sidebar-border">
           <SidebarMenu>
+            {/* Personalisation toggle — shown at confident/strong tier */}
+            {(confidenceTier === "confident" || confidenceTier === "strong") && (
+              <>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive("/archetype")}
+                    tooltip={tx({ he: "הארכיטיפ שלי", en: "My Archetype" }, language)}
+                  >
+                    <NavLink to="/archetype">
+                      {adaptationsEnabled
+                        ? <Sparkles className="text-primary" />
+                        : <SparklesOff className="text-muted-foreground" />}
+                      <span>
+                        {adaptationsEnabled
+                          ? tx({ he: "התאמות פעילות", en: "Adaptations on" }, language)
+                          : tx({ he: "התאם סביבה", en: "Personalise workspace" }, language)}
+                      </span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => setAdaptationsEnabled(!adaptationsEnabled)}
+                    tooltip={adaptationsEnabled
+                      ? tx({ he: "כבה התאמות", en: "Disable adaptations" }, language)
+                      : tx({ he: "הפעל התאמות", en: "Enable adaptations" }, language)}
+                    aria-pressed={adaptationsEnabled}
+                    className="cursor-pointer"
+                  >
+                    {adaptationsEnabled
+                      ? <SparklesOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                      : <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />}
+                    <span className="text-muted-foreground text-xs">
+                      {adaptationsEnabled
+                        ? tx({ he: "כבה", en: "Turn off" }, language)
+                        : tx({ he: "הפעל", en: "Turn on" }, language)}
+                    </span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </>
+            )}
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={isActive("/profile")} tooltip={t("navProfile")}>
                 <NavLink to="/profile">

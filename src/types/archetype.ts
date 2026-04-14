@@ -52,6 +52,31 @@ export interface UserArchetypeProfile {
   sessionCount: number;
   overrideByUser?: ArchetypeId;                // manual override (admin / user)
   version: number;                              // schema version
+  /** True once the user has accepted the reveal screen (IKEA-effect opt-in) */
+  adaptationsEnabled?: boolean;
+  /** True once the user has seen the ArchetypeRevealScreen at least once */
+  revealSeen?: boolean;
+}
+
+// ═══════════════════════════════════════════════
+// THEME PACK
+// ═══════════════════════════════════════════════
+
+export type CTAShapeVariant = "square-outlined" | "square-filled" | "pill-filled" | "pill-outlined" | "pill-gradient";
+export type ElevationPreset = "flat" | "low" | "medium" | "high";
+export type MotionPreset = "minimal" | "crisp" | "smooth" | "playful" | "sharp";
+
+export interface ArchetypeThemePack {
+  /** CSS font-family value for heading elements */
+  headingFontFamily: string;
+  /** CSS value for --cta-shape-radius */
+  ctaShapeRadius: string;
+  /** CSS class-level elevation preset identifier */
+  elevationPreset: ElevationPreset;
+  /** Motion preset identifier (consumed by ArchetypeThemeProvider) */
+  motionPreset: MotionPreset;
+  /** CTA shape variant */
+  ctaShapeVariant: CTAShapeVariant;
 }
 
 export interface ClassificationResult {

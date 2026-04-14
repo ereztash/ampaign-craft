@@ -315,6 +315,12 @@
   [dir="rtl"] {
     text-align: right;
   }
+
+  /* Archetype heading font — consumed by --heading-font-family per-archetype var.
+     --heading-font-family is set by the [data-archetype] blocks below */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font-family, 'Heebo', 'Inter', system-ui, sans-serif);
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -465,6 +471,49 @@
 :root[data-archetype="closer"].dark {
   --primary:   4 66% 60%;
   --accent:   22 74% 58%;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   ADAPTIVE THEMING — Archetype Shape + Typography Tokens (Phase A)
+   Additive tokens alongside colour blocks. Components reference
+   --cta-shape-radius, --heading-font-family, --elevation-default.
+   Defaults on :root ensure a sane value when no archetype is active.
+   ────────────────────────────────────────────────────────────────── */
+
+:root {
+  --cta-shape-radius: 0.375rem;
+  --heading-font-family: 'Heebo', 'Inter', system-ui, sans-serif;
+  --elevation-default: 0 1px 3px 0 rgb(0 0 0 / 0.10), 0 1px 2px -1px rgb(0 0 0 / 0.10);
+}
+
+:root[data-archetype="strategist"] {
+  --cta-shape-radius: 0.25rem;
+  --heading-font-family: 'Heebo', 'Inter', system-ui, sans-serif;
+  --elevation-default: 0 4px 6px -1px rgb(0 0 0 / 0.12), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+}
+
+:root[data-archetype="optimizer"] {
+  --cta-shape-radius: 9999px;
+  --heading-font-family: 'Inter', 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+}
+
+:root[data-archetype="pioneer"] {
+  --cta-shape-radius: 9999px;
+  --heading-font-family: 'Fraunces', 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 10px 15px -3px rgb(0 0 0 / 0.12), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+}
+
+:root[data-archetype="connector"] {
+  --cta-shape-radius: 9999px;
+  --heading-font-family: 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+}
+
+:root[data-archetype="closer"] {
+  --cta-shape-radius: 0.25rem;
+  --heading-font-family: 'Inter', 'Heebo', system-ui, sans-serif;
+  --elevation-default: 0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.10);
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -666,6 +715,44 @@
   }
   .btn-press:active {
     transform: scale(0.97);
+  }
+
+  /* ── Archetype CTA shape (Phase C) ──────────────────────────────
+     Applied via archetype-cta class on Button component.
+     --cta-shape-radius is set per-archetype via [data-archetype] tokens. */
+  .archetype-cta {
+    border-radius: var(--cta-shape-radius, 0.375rem);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   ARCHETYPE MOTION PRESETS (Phase C)
+   data-motion-preset is set by ArchetypeThemeProvider when opted in.
+   Only active when the user has not requested reduced motion.
+   These override MotionConfig transition in AppShell via CSS custom
+   properties consumed by framer-motion animations.
+   ────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion-preset="minimal"] {
+    --motion-duration-multiplier: 1.4;
+    --motion-easing: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  :root[data-motion-preset="crisp"] {
+    --motion-duration-multiplier: 0.85;
+    --motion-easing: cubic-bezier(0, 0, 0.2, 1);
+  }
+  :root[data-motion-preset="playful"] {
+    --motion-duration-multiplier: 1.0;
+    --motion-easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  :root[data-motion-preset="smooth"] {
+    --motion-duration-multiplier: 1.2;
+    --motion-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  :root[data-motion-preset="sharp"] {
+    --motion-duration-multiplier: 0.7;
+    --motion-easing: cubic-bezier(0.55, 0, 1, 0.45);
   }
 }
 
