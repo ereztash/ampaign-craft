@@ -137,7 +137,7 @@ function WeeklyActionTimeline({ actions, language }: { actions: WeeklyAction[]; 
               </div>
 
               {/* Template */}
-              <div className="relative rounded-md bg-muted/40 p-2.5 pr-10">
+              <div className="relative rounded-md bg-muted/40 p-2.5 pe-10">
                 <p className="text-xs text-muted-foreground" dir="auto">{action.template[language]}</p>
                 <Button
                   size="sm"

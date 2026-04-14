@@ -74,7 +74,7 @@ export function UVPFormatCard({ variant }: UVPFormatCardProps) {
 
       <CardContent className="space-y-3">
         {/* Text output */}
-        <div className="relative rounded-lg bg-muted/40 p-3 pr-10">
+        <div className="relative rounded-lg bg-muted/40 p-3 pe-10">
           <p className="text-sm leading-relaxed" dir="auto">
             {variant.text[language]}
           </p>

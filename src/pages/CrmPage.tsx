@@ -159,7 +159,7 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
             {initial ? (isHe ? "עריכת ליד" : "Edit Lead") : (isHe ? "ליד חדש" : "New Lead")}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+        <div className="space-y-3 max-h-[70vh] overflow-y-auto pe-1">
           {/* Name */}
           <div className="space-y-1">
             <Label htmlFor="lead-name" className="text-xs" dir="auto">{isHe ? "שם *" : "Name *"}</Label>

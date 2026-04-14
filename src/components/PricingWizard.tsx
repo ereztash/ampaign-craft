@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { radioCard, radioGroup, checkboxCard } from "@/lib/a11y";
 import { SalesModel } from "@/types/funnel";
 import {
   DIFFERENTIATOR_OPTIONS,
@@ -48,21 +49,25 @@ function formatNIS(n: number) {
 function OptionCard({
   selected,
   onClick,
+  label,
   children,
 }: {
   selected: boolean;
   onClick: () => void;
+  label?: string;
   children: React.ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
+      {...radioCard(selected, label)}
       className={`w-full text-start rounded-xl border-2 p-3.5 transition-colors ${
         selected ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
       }`}
     >
       <div className="flex items-start gap-3">
         <div
+          aria-hidden="true"
           className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
             selected ? "border-primary" : "border-muted-foreground"
           }`}
@@ -189,9 +194,10 @@ const PricingWizard = ({
       />
 
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+        <p id="dream-outcome-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
           {isHe ? "תוצאה חלומית (Dream Outcome):" : "Dream Outcome:"}
         </p>
+        <div {...radioGroup("dream-outcome-label")}>
         {(
           [
             {
@@ -228,18 +234,20 @@ const PricingWizard = ({
             key={opt.id}
             selected={dreamOutcome === opt.id}
             onClick={() => setDreamOutcome(opt.id)}
+            label={isHe ? opt.he : opt.en}
           >
             <div className="font-medium text-sm" dir="auto">{isHe ? opt.he : opt.en}</div>
             <div className="text-xs text-muted-foreground" dir="auto">{isHe ? opt.subHe : opt.subEn}</div>
           </OptionCard>
         ))}
+        </div>
       </div>
 
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+        <p id="time-to-value-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
           {isHe ? "מהירות לתוצאה (Time to Value):" : "Time to Value:"}
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div {...radioGroup("time-to-value-label")} className="grid grid-cols-2 gap-2">
           {(
             [
               { id: "immediate" as TimeToValue, he: "מיידי (< שבוע)",   en: "Immediate (< 1 week)" },
@@ -251,6 +259,7 @@ const PricingWizard = ({
             <button
               key={opt.id}
               onClick={() => setTimeToValue(opt.id)}
+              {...radioCard(timeToValue === opt.id, isHe ? opt.he : opt.en)}
               className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
                 timeToValue === opt.id
                   ? "border-primary bg-primary/5 font-medium"
@@ -286,18 +295,20 @@ const PricingWizard = ({
 
       {/* Too cheap */}
       <div className="space-y-2">
-        <label className="text-sm font-medium" dir="auto">
+        <label htmlFor="psm-too-cheap" className="text-sm font-medium" dir="auto">
           {isHe
             ? "🟡 מחיר שמרגיש זול מדי — לקוח יתחיל לפקפק באיכות:"
             : "🟡 Price that feels too cheap — customer starts doubting quality:"}
         </label>
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-muted-foreground">₪</span>
+          <span className="text-lg font-bold text-muted-foreground" aria-hidden="true">₪</span>
           <input
+            id="psm-too-cheap"
             type="number"
             min={0}
             placeholder="0"
             value={tooChcapInput}
+            aria-label={isHe ? "מחיר זול מדי (בשקלים)" : "Too-cheap price threshold (ILS)"}
             onChange={(e) => {
               setTooChcapInput(e.target.value);
               const n = parseFloat(e.target.value);
@@ -379,10 +390,10 @@ const PricingWizard = ({
 
       {/* Effort level */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+        <p id="effort-level-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
           {isHe ? "כמה מאמץ מצד הלקוח?" : "How much effort does the customer need?"}
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div {...radioGroup("effort-level-label")} className="grid grid-cols-2 gap-2">
           {(
             [
               { id: "zero"   as EffortLevel, he: "אפס — הכל מוכן",        en: "Zero — fully done-for-you" },
@@ -394,6 +405,7 @@ const PricingWizard = ({
             <button
               key={opt.id}
               onClick={() => setEffortLevel(opt.id)}
+              {...radioCard(effortLevel === opt.id, isHe ? opt.he : opt.en)}
               className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
                 effortLevel === opt.id
                   ? "border-primary bg-primary/5 font-medium"
@@ -409,10 +421,10 @@ const PricingWizard = ({
 
       {/* Social proof */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+        <p id="social-proof-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
           {isHe ? "כמה הוכחה חברתית יש לך?" : "How much social proof do you have?"}
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div {...radioGroup("social-proof-label")} className="grid grid-cols-2 gap-2">
           {(
             [
               { id: "none"        as SocialProofLevel, he: "אין עדיין",          en: "None yet" },
@@ -424,6 +436,7 @@ const PricingWizard = ({
             <button
               key={opt.id}
               onClick={() => setSocialProof(opt.id)}
+              {...radioCard(socialProof === opt.id, isHe ? opt.he : opt.en)}
               className={`rounded-lg border-2 px-3 py-2 text-sm text-center transition-colors ${
                 socialProof === opt.id
                   ? "border-primary bg-primary/5 font-medium"
@@ -439,14 +452,15 @@ const PricingWizard = ({
 
       {/* Differentiators (multi-select) */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
+        <p id="differentiators-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
           {isHe ? "מה מבדל אותך? (בחר הכל שרלוונטי)" : "What differentiates you? (select all that apply)"}
         </p>
-        <div className="space-y-1.5">
+        <div role="group" aria-labelledby="differentiators-label" className="space-y-1.5">
           {DIFFERENTIATOR_OPTIONS.map((opt) => (
             <button
               key={opt.key}
               onClick={() => toggleDiff(opt.key)}
+              {...checkboxCard(differentiators.includes(opt.key), isHe ? opt.he : opt.en)}
               className={`w-full flex items-center gap-2.5 rounded-lg border-2 px-3 py-2 text-start transition-colors ${
                 differentiators.includes(opt.key)
                   ? "border-accent bg-accent/5"
@@ -454,6 +468,7 @@ const PricingWizard = ({
               }`}
             >
               <div
+                aria-hidden="true"
                 className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${
                   differentiators.includes(opt.key)
                     ? "bg-accent border-accent"
@@ -492,7 +507,7 @@ const PricingWizard = ({
       />
 
       {/* Sales model */}
-      <div className="grid gap-2">
+      <div {...radioGroup()} className="grid gap-2">
         {(
           [
             {
@@ -522,6 +537,7 @@ const PricingWizard = ({
             key={opt.id}
             selected={salesModel === opt.id}
             onClick={() => setSalesModel(opt.id)}
+            label={isHe ? opt.he : opt.en}
           >
             <div className="font-medium text-sm" dir="auto">{isHe ? opt.he : opt.en}</div>
             <div className="text-xs text-muted-foreground" dir="auto">{isHe ? opt.subHe : opt.subEn}</div>
@@ -543,6 +559,10 @@ const PricingWizard = ({
             min={1}
             max={36}
             step={1}
+            aria-label={isHe ? "תקופת שימור ממוצעת בחודשים" : "Average retention in months"}
+            aria-valuenow={retention}
+            aria-valuemin={1}
+            aria-valuemax={36}
           />
         </div>
       )}

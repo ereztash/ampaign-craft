@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FormData } from "@/types/funnel";
@@ -147,10 +147,17 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
             </svg>
           </div>
           <h2 className="mb-4 text-2xl font-bold text-foreground">{t("processingTitle")}</h2>
-          <div className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted">
-            <div className="h-full funnel-gradient" style={{ width: `${progress}%` }} />
+          <div
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={isHe ? `עיבוד — ${progress}%` : `Processing — ${progress}%`}
+            className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted"
+          >
+            <div className="h-full funnel-gradient" style={{ width: `${progress}%` }} aria-hidden="true" />
           </div>
-          <p className="text-muted-foreground" aria-live="polite">{messages[msgIndex]}</p>
+          <p className="text-muted-foreground" aria-live="polite" aria-atomic="true">{messages[msgIndex]}</p>
         </div>
       </div>
     );
@@ -165,7 +172,8 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
       >
         {/* Animated Funnel with neuro-spectrum gradient */}
         <div className="relative mb-8 h-32 w-32">
-          <svg viewBox="0 0 100 100" className="h-full w-full">
+          <svg viewBox="0 0 100 100" className="h-full w-full" role="img" aria-label={isHe ? `התקדמות — ${progress}%` : `Progress — ${progress}%`}>
+            <title>{isHe ? `התקדמות — ${progress}%` : `Progress — ${progress}%`}</title>
             <defs>
               <clipPath id="funnelClip">
                 <path d="M15 10 L85 10 L65 45 L65 80 L35 90 L35 45 Z" />
@@ -199,8 +207,16 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
         <h2 className="mb-4 text-2xl font-bold text-foreground">{t("processingTitle")}</h2>
 
         {/* Progress bar with neuro-spectrum */}
-        <div className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted">
+        <div
+          role="progressbar"
+          aria-valuenow={progress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={isHe ? `עיבוד — ${progress}%` : `Processing — ${progress}%`}
+          className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted"
+        >
           <motion.div
+            aria-hidden="true"
             className="h-full rounded-full"
             style={{
               width: `${progress}%`,
@@ -215,6 +231,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           animate={{ opacity: 1, y: 0 }}
           className="text-muted-foreground"
           aria-live="polite"
+          aria-atomic="true"
         >
           {messages[msgIndex]}
         </motion.p>

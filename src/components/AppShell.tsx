@@ -30,14 +30,21 @@ const AppShell = () => {
         }
       >
         <div className="flex min-h-svh w-full" dir={isRTL ? "rtl" : "ltr"}>
+          {/* Skip-to-main — visible on focus for keyboard/screen-reader users */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:ring-2 focus:ring-primary"
+          >
+            {isRTL ? "דלג לתוכן הראשי" : "Skip to main content"}
+          </a>
           <AppSidebar />
           <SidebarInset>
             <AppTopBar />
-            <div className="flex flex-1 flex-col pb-20 md:pb-0">
+            <main id="main-content" className="flex flex-1 flex-col pb-20 md:pb-0">
               <Suspense fallback={<LoadingFallback />}>
                 <Outlet />
               </Suspense>
-            </div>
+            </main>
             <MobileTabBar />
           </SidebarInset>
         </div>

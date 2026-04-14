@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { radioCard, radioGroup, checkboxCard, progressBar } from "@/lib/a11y";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FormData, initialFormData, Channel } from "@/types/funnel";
@@ -152,6 +153,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
   }) => (
     <button
       onClick={onClick}
+      {...radioCard(selected, label)}
       className={`flex w-full items-center gap-4 rounded-xl border-2 p-4 text-start transition-all ${
         selected
           ? "border-primary bg-primary/5 shadow-sm"
@@ -160,7 +162,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
     >
       {icon && <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
         selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-      }`}>{icon}</div>}
+      }`} aria-hidden="true">{icon}</div>}
       <div>
         <div className="font-semibold text-foreground">{label}</div>
         {description && <div className="text-sm text-muted-foreground">{description}</div>}
@@ -191,7 +193,10 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
           realEstate: t("fieldRealEstate"), tourism: t("fieldTourism"), personalBrand: t("fieldPersonalBrand"), other: t("fieldOther"),
         };
         return (
-          <div className={`grid gap-3 ${isMobile ? "grid-cols-1" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
+          <div
+            {...radioGroup("step-title")}
+            className={`grid gap-3 ${isMobile ? "grid-cols-1" : "sm:grid-cols-2 lg:grid-cols-3"}`}
+          >
             {fields.map((f) => (
               <OptionCard
                 key={f.key}
@@ -207,7 +212,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
 
       case "experienceLevel":
         return (
-          <div className="grid gap-4">
+          <div {...radioGroup("step-title")} className="grid gap-4">
             {([
               { key: "beginner" as const, label: t("expBeginner"), desc: t("expBeginnerDesc") },
               { key: "intermediate" as const, label: t("expIntermediate"), desc: t("expIntermediateDesc") },
@@ -233,7 +238,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
         const showAge = shouldShowAgeRange(formData);
         return (
           <div className="space-y-6">
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div {...radioGroup("step-title")} className="grid gap-3 sm:grid-cols-3">
               {types.map((a) => (
                 <OptionCard
                   key={a.key}
@@ -286,8 +291,9 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">{t("productDescription")}</label>
+              <label htmlFor="product-description" className="text-sm font-medium text-foreground">{t("productDescription")}</label>
               <Textarea
+                id="product-description"
                 placeholder={t("productDescPlaceholder")}
                 value={formData.productDescription}
                 onChange={(e) => update({ productDescription: e.target.value })}
@@ -302,12 +308,13 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
                   value={formData.averagePrice || ""}
                   onChange={(e) => update({ averagePrice: Number(e.target.value) })}
                   placeholder="₪"
+                  aria-label={isRTL ? "מחיר ממוצע בשקלים" : "Average price in ILS (₪)"}
                 />
               </div>
             )}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-foreground">{t("salesModel")}</label>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <p id="sales-model-label" className="text-sm font-medium text-foreground">{t("salesModel")}</p>
+              <div {...radioGroup("sales-model-label")} className="grid gap-3 sm:grid-cols-3">
                 {([
                   { key: "oneTime" as const, label: t("oneTime") },
                   { key: "subscription" as const, label: t("subscription") },
@@ -328,7 +335,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
 
       case "budget":
         return (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div {...radioGroup("step-title")} className="grid gap-3 sm:grid-cols-2">
             {([
               { key: "low" as const, label: t("budgetLow") },
               { key: "medium" as const, label: t("budgetMedium") },
@@ -353,7 +360,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
           { key: "loyalty" as const, label: t("goalLoyalty"), icon: <Award className="h-5 w-5" /> },
         ];
         return (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div {...radioGroup("step-title")} className="grid gap-3 sm:grid-cols-2">
             {goals.map((g) => (
               <OptionCard
                 key={g.key}
@@ -388,18 +395,19 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
           });
         };
         return (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div role="group" aria-labelledby="step-title" className="grid gap-3 sm:grid-cols-2">
             {channelList.map((ch) => (
               <button
                 key={ch.key}
                 onClick={() => toggle(ch.key)}
+                {...checkboxCard(formData.existingChannels.includes(ch.key), ch.label)}
                 className={`flex items-center gap-3 rounded-xl border-2 p-4 transition-all ${
                   formData.existingChannels.includes(ch.key)
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/30"
                 }`}
               >
-                <Checkbox checked={formData.existingChannels.includes(ch.key)} />
+                <Checkbox checked={formData.existingChannels.includes(ch.key)} aria-hidden="true" tabIndex={-1} />
                 <span className="font-medium text-foreground">{ch.label}</span>
               </button>
             ))}
@@ -457,7 +465,9 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
 
         {/* Progress with neuro-spectrum color */}
         <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
-          <span>{t("step")} {stepIndex + 1} {t("of")} {totalSteps}</span>
+          <span aria-live="polite" aria-atomic="true">
+            {t("step")} {stepIndex + 1} {t("of")} {totalSteps}
+          </span>
           <span className="text-xs">
             {isLastStep
               ? (isRTL ? "סיימנו!" : "Done!")
@@ -466,10 +476,18 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
                 : (isRTL ? `~${remainingMinutes} דק׳ נותרו` : `~${remainingMinutes} min left`)}
           </span>
         </div>
-        <div className="mb-8 h-2 overflow-hidden rounded-full bg-muted">
+        <div
+          className="mb-8 h-2 overflow-hidden rounded-full bg-muted"
+          {...progressBar(Math.round(progressPercent), 0, 100,
+            isRTL
+              ? `שלב ${stepIndex + 1} מתוך ${totalSteps}`
+              : `Step ${stepIndex + 1} of ${totalSteps}`
+          )}
+        >
           <div
             className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
             style={{ width: `${progressPercent}%` }}
+            aria-hidden="true"
           />
         </div>
 
@@ -483,7 +501,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
             exit="exit"
             transition={reducedMotion ? { duration: 0 } : { duration: 0.3, ease: "easeInOut" }}
           >
-            <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
+            <h2 id="step-title" className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
               {currentStep ? stepTitles[currentStep.id]?.title : ""}
             </h2>
             <p className="mb-8 text-muted-foreground">

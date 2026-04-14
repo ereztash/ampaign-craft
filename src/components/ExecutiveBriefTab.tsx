@@ -222,7 +222,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
             <div className="flex flex-wrap gap-1.5 mt-3">
               <Badge className={`text-xs border ${LIGHT_BADGE[brief.healthLight]}`} variant="outline">
                 {LIGHT_ICON(brief.healthLight)}
-                <span className="ml-1">
+                <span className="ms-1">
                   {isHe ? "בריאות" : "Health"}: {brief.healthTier}
                 </span>
               </Badge>
