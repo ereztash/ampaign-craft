@@ -58,8 +58,8 @@ Return 1-3 most relevant findings.`;
       recommendation: f.recommendation_he
         ? { he: f.recommendation_he as string, en: (f.recommendation_en as string) || "" }
         : undefined,
-      regulationType: (f.regulationType as string) || "advertising",
-      complianceLevel: (f.complianceLevel as string) || "needs-review",
+      regulationType: ((f.regulationType as string) || "advertising") as RegulatoryFinding["regulationType"],
+      complianceLevel: ((f.complianceLevel as string) || "needs-review") as RegulatoryFinding["complianceLevel"],
     }));
   } catch {
     return [];

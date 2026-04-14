@@ -94,17 +94,17 @@ Respond in this exact JSON structure:
 
       const findings: QAFinding[] = ((parsed.findings as Record<string, unknown>[] | undefined) || []).map((f, i: number) => ({
         id: `content-${i + 1}`,
-        category: f.category || "cultural",
-        severity: f.severity || "info",
-        message: { he: f.message_he || "", en: f.message_en || "" },
-        suggestion: f.suggestion_he ? { he: f.suggestion_he, en: f.suggestion_en || "" } : undefined,
+        category: (f.category as QAFinding["category"]) || "cultural",
+        severity: (f.severity as QAFinding["severity"]) || "info",
+        message: { he: (f.message_he as string) || "", en: (f.message_en as string) || "" },
+        suggestion: f.suggestion_he ? { he: f.suggestion_he as string, en: (f.suggestion_en as string) || "" } : undefined,
         autoFixable: false,
       }));
 
-      const culturalScore = clamp(parsed.culturalScore ?? 75, 0, 100);
-      const brandConsistency = clamp(parsed.brandConsistency ?? 75, 0, 100);
-      const ctaClarity = clamp(parsed.ctaClarity ?? 75, 0, 100);
-      const hebrewQuality = clamp(parsed.hebrewQuality ?? 75, 0, 100);
+      const culturalScore = clamp((parsed.culturalScore as number) ?? 75, 0, 100);
+      const brandConsistency = clamp((parsed.brandConsistency as number) ?? 75, 0, 100);
+      const ctaClarity = clamp((parsed.ctaClarity as number) ?? 75, 0, 100);
+      const hebrewQuality = clamp((parsed.hebrewQuality as number) ?? 75, 0, 100);
 
       return {
         findings,

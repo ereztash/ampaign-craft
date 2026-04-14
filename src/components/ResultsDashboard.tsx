@@ -363,7 +363,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
               result={result}
               language={language}
               isHe={isHe}
-              t={t}
+              t={t as (key: string) => string}
               healthScore={healthScore}
               hormoziValue={hormoziValue}
               socialProof={socialProof}

@@ -89,7 +89,7 @@ export function assembleQuote(
   const { pricingResult, selectedTierIndex, recipient, currency = "ILS", validityDays = 14 } = input;
 
   const tier = pricingResult.tierStructure.tiers[selectedTierIndex] ?? pricingResult.tierStructure.tiers[0];
-  const isB2B = formData.targetAudience === "b2b" || formData.targetAudience === "both";
+  const isB2B = formData.audienceType === "b2b" || formData.audienceType === "both";
 
   const lineItems = tierToLineItems(tier);
   const mainItem: QuoteLineItem = {

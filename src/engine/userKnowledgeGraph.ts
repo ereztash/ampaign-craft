@@ -266,7 +266,7 @@ export function buildUserKnowledgeGraph(
 
   // Build derived insights (cross-domain inputs feed into the 7 new derived fields)
   const derived = buildDerivedInsights(
-    formData, differentiation, stylomeVoice, behavior,
+    formData, differentiation, stylomeVoice ?? null, behavior,
     crossDomain?.chatInsights, crossDomain?.importedData, crossDomain?.metaSignals,
   );
 
@@ -604,9 +604,9 @@ function deriveDiscFraming(
   // Without a DISC quiz we approximate from proxy signals in FormData.
   const goal = formData.mainGoal;
   const exp = formData.experienceLevel;
-  if (goal === "revenue" || exp === "advanced") return "roi";
-  if (goal === "awareness" || goal === "engagement") return "social";
-  if (goal === "retention") return "stability";
+  if ((goal as string) === "revenue" || exp === "advanced") return "roi";
+  if (goal === "awareness" || (goal as string) === "engagement") return "social";
+  if ((goal as string) === "retention") return "stability";
   if (goal === "leads" && formData.audienceType === "b2b") return "precision";
   return "social"; // safe default for b2c beginners
 }

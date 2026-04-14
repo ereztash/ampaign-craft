@@ -30,7 +30,7 @@ export function canProceedPhase(phaseId: PhaseId, formData: DifferentiationFormD
     case "mapping":
       return (
         formData.competitorArchetypes.length >= 1 &&
-        formData.buyingCommitteeMap.length >= 2 &&
+        (formData.buyingCommitteeMap?.length ?? 0) >= 2 &&
         !!formData.decisionLatency
       );
     case "synthesis":

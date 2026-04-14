@@ -113,6 +113,7 @@ const DifferentiationPhaseCard = ({ questions, formData, onUpdate }: PhaseCardPr
 // === SUB-COMPONENTS ===
 
 function CompetitorList({ formData, onUpdate, placeholder, maxItems }: { formData: DifferentiationFormData; onUpdate: (p: Partial<DifferentiationFormData>) => void; placeholder: string; maxItems: number }) {
+  const { language } = useLanguage();
   const competitors = formData.topCompetitors;
 
   const add = () => {
