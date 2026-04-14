@@ -9,18 +9,47 @@ import AppTopBar from "@/components/AppTopBar";
 import MobileTabBar from "@/components/MobileTabBar";
 import LoadingFallback from "@/components/LoadingFallback";
 import { useAdaptiveTheme } from "@/hooks/useAdaptiveTheme";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 import { BlindSpotNudge } from "@/components/BlindSpotNudge";
+
+// Motion transition configs per archetype preset.
+// Values mirror the CSS --motion-easing / --motion-duration-multiplier tokens
+// in index.css so framer-motion animations stay in sync with CSS transitions.
+const MOTION_TRANSITION: Record<string, object> = {
+  minimal: { duration: 0.35, ease: [0.4, 0, 0.6, 1] },
+  crisp:   { duration: 0.15, ease: [0, 0, 0.2, 1] },
+  playful: { duration: 0.25, ease: [0.175, 0.885, 0.32, 1.275] },
+  smooth:  { duration: 0.3,  ease: [0.25, 0.46, 0.45, 0.94] },
+  sharp:   { duration: 0.18, ease: [0.55, 0, 1, 0.45] },
+};
+
+const ARCHETYPE_MOTION_PRESET: Record<string, string> = {
+  strategist: "minimal",
+  optimizer:  "crisp",
+  pioneer:    "playful",
+  connector:  "smooth",
+  closer:     "sharp",
+};
 
 const AppShell = () => {
   const { isRTL } = useLanguage();
+  const { effectiveArchetypeId, adaptationsEnabled, confidenceTier } = useArchetype();
   // Activates all [data-archetype], [data-density], [data-field] CSS blocks in index.css
   useAdaptiveTheme();
+
+  const isAdapted =
+    adaptationsEnabled && (confidenceTier === "confident" || confidenceTier === "strong");
+  const motionPreset = isAdapted
+    ? (ARCHETYPE_MOTION_PRESET[effectiveArchetypeId] ?? "smooth")
+    : "smooth";
+  const motionTransition = MOTION_TRANSITION[motionPreset];
 
   return (
     // MotionConfig `reducedMotion="user"` respects the OS-level
     // prefers-reduced-motion setting for every framer-motion child
     // without each component having to call useReducedMotion() itself.
-    <MotionConfig reducedMotion="user">
+    // `transition` is overridden per archetype preset when adaptations are on.
+    <MotionConfig reducedMotion="user" transition={motionTransition}>
       <SidebarProvider
         defaultOpen
         style={

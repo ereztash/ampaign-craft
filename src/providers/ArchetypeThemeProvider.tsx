@@ -1,11 +1,15 @@
-// ArchetypeThemeProvider — Phase A scaffold
+// ArchetypeThemeProvider — Phase C
 //
 // Reads adaptationsEnabled + effectiveArchetypeId from ArchetypeContext
-// and publishes extra data-attributes on <html> for Phase B/C theming
+// and publishes extra data-attributes on <html> for theming
 // (data-shape, data-elevation, data-motion-preset).
 //
-// Phase C will also inject the Pioneer font <link> here. For now it only
-// wires the attributes so CSS token blocks in index.css can respond.
+// Also injects the Fraunces Google Fonts <link> when the active archetype
+// is "pioneer" and adaptations are enabled. The font is used via
+// --heading-font-family: 'Fraunces', ... in index.css.
+//
+// Font load is fire-and-forget; we rely on font-display:swap so the
+// page is immediately readable with the fallback stack.
 
 import { useEffect, type ReactNode } from "react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
@@ -61,6 +65,33 @@ export function ArchetypeThemeProvider({ children }: ArchetypeThemeProviderProps
       el.removeAttribute("data-shape");
       el.removeAttribute("data-elevation");
       el.removeAttribute("data-motion-preset");
+    };
+  }, [effectiveArchetypeId, confidenceTier, adaptationsEnabled]);
+
+  // Pioneer font — injected only for opted-in pioneer users at confident+ tier.
+  // Uses a stable id so React StrictMode double-invocation is idempotent.
+  useEffect(() => {
+    const FONT_LINK_ID = "archetype-pioneer-font";
+    const wantFont =
+      adaptationsEnabled &&
+      effectiveArchetypeId === "pioneer" &&
+      (confidenceTier === "confident" || confidenceTier === "strong");
+
+    if (wantFont) {
+      if (!document.getElementById(FONT_LINK_ID)) {
+        const link = document.createElement("link");
+        link.id = FONT_LINK_ID;
+        link.rel = "stylesheet";
+        link.href =
+          "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap";
+        document.head.appendChild(link);
+      }
+    } else {
+      document.getElementById(FONT_LINK_ID)?.remove();
+    }
+
+    return () => {
+      document.getElementById(FONT_LINK_ID)?.remove();
     };
   }, [effectiveArchetypeId, confidenceTier, adaptationsEnabled]);
 
