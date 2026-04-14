@@ -47,7 +47,7 @@ const defaultProfile: UserProfile = {
   prefersReducedMotion: false,
   achievements: [],
   unifiedProfile: null,
-  investment: { totalTimeSec: 0, sessionsCount: 0, engagementScore: 0 },
+  investment: { plansCreated: 0, modulesCompleted: 0, totalVisits: 0, firstSeenDate: null, totalSessionsMinutes: 0 },
   milestones: { formCompleted: false, firstPlanSaved: false, dataSourceConnected: false, stylomeAnalyzed: false, coachUsed: false },
 };
 

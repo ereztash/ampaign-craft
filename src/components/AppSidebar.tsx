@@ -78,7 +78,7 @@ const AppSidebar = () => {
       WORKSPACE_ITEMS.map((i) => i.id),
       uiConfig.workspaceOrder,
     );
-    const map = new Map(WORKSPACE_ITEMS.map((i) => [i.id, i]));
+    const map = new globalThis.Map<NavItemId, NavItem>(WORKSPACE_ITEMS.map((i) => [i.id, i] as [NavItemId, NavItem]));
     return ids.map((id) => map.get(id)!).filter(Boolean);
   }, [uiConfig.workspaceOrder, confidenceTier]);
 
@@ -91,7 +91,7 @@ const AppSidebar = () => {
       MODULE_ITEMS.map((i) => i.id),
       uiConfig.modulesOrder,
     );
-    const map = new Map(MODULE_ITEMS.map((i) => [i.id, i]));
+    const map = new globalThis.Map<NavItemId, NavItem>(MODULE_ITEMS.map((i) => [i.id, i] as [NavItemId, NavItem]));
     // Re-number icons after reordering
     return ids.map((id, idx) => {
       const item = map.get(id);

@@ -68,7 +68,7 @@ function makeMinimalDiffResult(): DifferentiationResult {
       perRole: {},
     },
     tradeoffDeclarations: [],
-    hybridCategory: { name: "AI Analytics", whitespace: "Simplicity + Power", rationale: "test", description: { he: "", en: "" }, existingCategories: [] } as DifferentiationResult["hybridCategory"],
+    hybridCategory: { name: { he: "AI Analytics", en: "AI Analytics" }, whitespace: "Simplicity + Power", rationale: "test", description: { he: "", en: "" }, existingCategories: [] } as unknown as DifferentiationResult["hybridCategory"],
     contraryMetrics: [],
     executiveSummary: { he: "סיכום", en: "Summary" },
     nextSteps: [],

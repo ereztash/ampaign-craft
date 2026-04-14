@@ -117,7 +117,7 @@ export function ExportReportButton({
       if (summary) {
         newPageIfNeeded(40);
         addSection(isHe ? "תמצית אסטרטגית" : "Executive Summary");
-        addLine(summary, { size: 9, indent: 2 });
+        addLine(String(summary), { size: 9, indent: 2 });
         addSeparator();
       }
 
