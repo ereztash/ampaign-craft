@@ -97,13 +97,13 @@ const App = () => (
             <TooltipProvider>
               <Toaster />
               <Sonner />
-              <ErrorBoundary>
-                <BrowserRouter>
+              <BrowserRouter>
+                <ErrorBoundary>
                   <Suspense fallback={<LoadingFallback />}>
                     <AnimatedRoutes />
                   </Suspense>
-                </BrowserRouter>
-              </ErrorBoundary>
+                </ErrorBoundary>
+              </BrowserRouter>
             </TooltipProvider>
           </DataSourceProvider>
           </ArchetypeThemeProvider>

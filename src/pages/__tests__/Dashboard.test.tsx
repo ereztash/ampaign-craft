@@ -54,6 +54,24 @@ vi.mock("@/hooks/useModuleStatus", () => ({
   useModuleStatus: () => [],
 }));
 
+// Stub archetype context — Dashboard destructures effectiveArchetypeId + confidenceTier.
+vi.mock("@/contexts/ArchetypeContext", () => ({
+  useArchetype: () => ({
+    effectiveArchetypeId: "optimizer",
+    confidenceTier: "none",
+    archetype: null,
+    isLoading: false,
+  }),
+}));
+
+// Stub archetype pipeline hook.
+vi.mock("@/hooks/useArchetypePipeline", () => ({
+  useArchetypePipeline: () => ({
+    nextStep: null,
+    isActive: false,
+  }),
+}));
+
 // Stub heavy child components so Dashboard renders without pulling
 // their dependency graphs.
 vi.mock("@/components/BackToHub", () => ({
@@ -64,6 +82,13 @@ vi.mock("@/components/NudgeBanner", () => ({
 }));
 vi.mock("@/components/PeerBenchmark", () => ({
   PeerBenchmark: () => null,
+}));
+vi.mock("@/components/ArchetypeProfileCard", () => ({
+  default: () => null,
+}));
+vi.mock("@/components/BlindSpotNudge", () => ({
+  BlindSpotNudge: () => null,
+  default: () => null,
 }));
 
 // Stub the heavy engine entry points so we can render the returning-user

@@ -63,6 +63,7 @@ function topologicalSort<T extends AgentNode>(agents: T[]): T[] {
  * have all dependencies satisfied by previous layers (can run in parallel).
  */
 function groupByExecutionLayer<T extends AgentNode>(sorted: T[]): T[][] {
+  const registeredNames = new Set(sorted.map((a) => a.name));
   const completed = new Set<string>();
   const layers: T[][] = [];
   const remaining = [...sorted];
@@ -72,7 +73,11 @@ function groupByExecutionLayer<T extends AgentNode>(sorted: T[]): T[][] {
     const notReady: T[] = [];
 
     for (const agent of remaining) {
-      const depsReady = agent.dependencies.every((d) => completed.has(d));
+      // Only check dependencies that are actually registered — silently skip
+      // deps declared against optional or future agents (mirrors sync behaviour).
+      const depsReady = agent.dependencies
+        .filter((d) => registeredNames.has(d))
+        .every((d) => completed.has(d));
       if (depsReady) {
         layer.push(agent);
       } else {

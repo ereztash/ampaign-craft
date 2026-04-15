@@ -129,7 +129,7 @@ describe("Blackboard Architecture", () => {
       const runner = createDefaultPipeline();
       const state = runner.runAll(board);
 
-      expect(state.completedAgents.length).toBe(8);
+      expect(state.completedAgents.length).toBe(9);
       expect(state.errors).toEqual([]);
       expect(state.knowledgeGraph).not.toBeNull();
       expect(state.funnelResult).not.toBeNull();
@@ -216,7 +216,7 @@ describe("Blackboard Architecture", () => {
       for (const field of fields) {
         const state = runFullPipeline(makeFormData({ businessField: field }));
         expect(state.errors).toEqual([]);
-        expect(state.completedAgents.length).toBe(8);
+        expect(state.completedAgents.length).toBe(9);
       }
     });
   });

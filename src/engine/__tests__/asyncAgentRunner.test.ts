@@ -96,7 +96,7 @@ describe("AsyncAgentRunner", () => {
 
     const result = await runner.runAllAsync(board);
 
-    expect(result.completedAgents.length).toBe(8);
+    expect(result.completedAgents.length).toBe(9);
     expect(result.failedAgents).toEqual([]);
     expect(result.durationMs).toBeGreaterThan(0);
     expect(board.get("knowledgeGraph")).not.toBeNull();

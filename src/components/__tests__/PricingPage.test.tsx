@@ -18,8 +18,9 @@ describe("PricingPage", () => {
   it("shows prices", () => {
     render(<PricingPage />);
     expect(screen.getByText("₪0")).toBeInTheDocument();
-    expect(screen.getByText("₪99/month")).toBeInTheDocument();
-    expect(screen.getByText("₪249/month")).toBeInTheDocument();
+    // Price and billing suffix are rendered in separate elements
+    expect(screen.getByText("₪99")).toBeInTheDocument();
+    expect(screen.getByText("₪249")).toBeInTheDocument();
   });
 
   it("highlights current tier", () => {
@@ -35,7 +36,8 @@ describe("PricingPage", () => {
   it("calls onSelectTier when clicking upgrade", () => {
     const onSelect = vi.fn();
     render(<PricingPage onSelectTier={onSelect} />);
-    const upgradeButtons = screen.getAllByText("Upgrade Now");
+    // Pro and Business tiers have a free trial, so the CTA reads "Start Free Trial"
+    const upgradeButtons = screen.getAllByText("Start Free Trial");
     fireEvent.click(upgradeButtons[0]);
     expect(onSelect).toHaveBeenCalled();
   });
