@@ -212,12 +212,21 @@ export function EmailTemplateGallery() {
   const template = TEMPLATES.find((tpl) => tpl.id === activeTemplate)!;
 
   function copyToClipboard(text: string) {
-    navigator.clipboard.writeText(text).then(() => {
-      toast({
-        title: t("הועתק!", "Copied!"),
-        description: t("הטקסט הועתק ללוח", "Text copied to clipboard"),
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        toast({
+          title: t("הועתק!", "Copied!"),
+          description: t("הטקסט הועתק ללוח", "Text copied to clipboard"),
+        });
+      })
+      .catch(() => {
+        toast({
+          title: t("שגיאה", "Error"),
+          description: t("לא ניתן להעתיק ללוח", "Could not copy to clipboard"),
+          variant: "destructive",
+        });
       });
-    });
   }
 
   function copyAllSteps() {
