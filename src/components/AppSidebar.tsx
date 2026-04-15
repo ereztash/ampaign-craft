@@ -16,7 +16,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain, Sparkles, SparklesOff } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain, Sparkles } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
@@ -223,7 +223,7 @@ const AppSidebar = () => {
                     <NavLink to="/archetype">
                       {adaptationsEnabled
                         ? <Sparkles className="text-primary" />
-                        : <SparklesOff className="text-muted-foreground" />}
+                        : <Sparkles className="text-muted-foreground opacity-50" />}
                       <span>
                         {adaptationsEnabled
                           ? tx({ he: "התאמות פעילות", en: "Adaptations on" }, language)
@@ -242,7 +242,7 @@ const AppSidebar = () => {
                     className="cursor-pointer"
                   >
                     {adaptationsEnabled
-                      ? <SparklesOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                      ? <Sparkles className="h-4 w-4 text-muted-foreground opacity-50" aria-hidden="true" />
                       : <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />}
                     <span className="text-muted-foreground text-xs">
                       {adaptationsEnabled
