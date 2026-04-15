@@ -32,7 +32,7 @@ export const ENGINE_MANIFEST = {
 // Types
 // ───────────────────────────────────────────────
 
-type BilingualText = { he: string; en: string };
+import type { BilingualText } from "@/types/i18n";
 
 export type NudgeType =
   | "loss_aversion"
