@@ -124,10 +124,10 @@ const NEXT_COPY: Record<
 
 function PipelineDots({
   current,
-  isHe,
+  language,
 }: {
   current: number;
-  isHe: boolean;
+  language: "he" | "en";
 }) {
   return (
     <div
@@ -198,7 +198,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
         <Card className="border-2 border-primary/30 overflow-hidden">
           <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-primary to-pink-400" />
           <CardContent className="p-6 text-center space-y-4">
-            <PipelineDots current={current} isHe={isHe} />
+            <PipelineDots current={current} language={language} />
             <div className="flex justify-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
                 <Trophy className="h-7 w-7 text-primary" />
@@ -256,7 +256,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
         />
         <CardContent className="p-6 space-y-5">
           {/* Progress dots */}
-          <PipelineDots current={current} isHe={isHe} />
+          <PipelineDots current={current} language={language} />
 
           {/* Content row */}
           <div
