@@ -23,7 +23,7 @@ interface ChatMessage {
   content: string;
 }
 
-function getSmartPrompts(graph: UserKnowledgeGraph, isHe: boolean): string[] {
+function getSmartPrompts(graph: UserKnowledgeGraph, isHe: boolean, language: "he" | "en"): string[] {
   const field = isHe ? graph.derived.identityStatement.he.slice(0, 30) : graph.business.field;
   const pain = tx(graph.derived.topPainPoint, language);
   const channels = graph.business.channels.slice(0, 2).join(" + ");
@@ -109,7 +109,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     try { const raw = localStorage.getItem("funnelforge-stylome-voice"); return raw ? JSON.parse(raw) : null; } catch { return null; }
   }, []);
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
-  const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe), [graph, isHe]);
+  const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe, language), [graph, isHe, language]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });

@@ -11,6 +11,7 @@ import { generateGuidance, getOverallHealth } from "@/engine/guidanceEngine";
 import { getKpiStatusColor } from "@/lib/colorSemantics";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { tx } from "@/i18n/tx";
+import type { Language } from "@/i18n/tx";
 
 interface MetaMonitorProps {
   result: FunnelResult;
@@ -33,7 +34,7 @@ const StatusIcon = ({ status }: { status: KpiGap["status"] }) => {
   return <XCircle className={`h-4 w-4 ${colors.text}`} />;
 };
 
-const GapRow = ({ gap, isHe }: { gap: KpiGap; isHe: boolean }) => {
+const GapRow = ({ gap, language }: { gap: KpiGap; language: Language }) => {
   const isOver = gap.gapPercent > 0;
   const TrendIcon = isOver ? TrendingUp : gap.gapPercent < 0 ? TrendingDown : Minus;
   const statusColors = getKpiStatusColor(gap.status);
@@ -65,7 +66,7 @@ const GapRow = ({ gap, isHe }: { gap: KpiGap; isHe: boolean }) => {
   );
 };
 
-const GuidanceCard = ({ item, isHe }: { item: GuidanceItem; isHe: boolean }) => {
+const GuidanceCard = ({ item, language }: { item: GuidanceItem; language: Language }) => {
   const [expanded, setExpanded] = useState(false);
   const priorityStatus = item.priority === "high" ? "critical" as const : item.priority === "medium" ? "warning" as const : "good" as const;
   const priorityColors = getKpiStatusColor(priorityStatus);
@@ -229,7 +230,7 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
           </CardHeader>
           <CardContent>
             {gaps.map((gap, i) => (
-              <GapRow key={i} gap={gap} isHe={isHe} />
+              <GapRow key={i} gap={gap} language={language} />
             ))}
           </CardContent>
         </Card>
@@ -243,7 +244,7 @@ const MetaMonitor = ({ result, accountId, accessToken }: MetaMonitorProps) => {
           </h4>
           <div className="space-y-3">
             {guidance.map((item, i) => (
-              <GuidanceCard key={i} item={item} isHe={isHe} />
+              <GuidanceCard key={i} item={item} language={language} />
             ))}
           </div>
         </div>
