@@ -67,7 +67,7 @@ export const PARAMETERS: ParameterEntry[] = [
   { index: 37, category: "CATEGORY_D_CONTENT_QA",      name: "Stylometric matching",            backingEngines: ["stylomeEngine"] },
   { index: 38, category: "CATEGORY_D_CONTENT_QA",      name: "Visual export",                   backingEngines: ["visualExportEngine"] },
   { index: 39, category: "CATEGORY_D_CONTENT_QA",      name: "Export to channels",              backingEngines: ["exportEngine"] },
-  { index: 40, category: "CATEGORY_D_CONTENT_QA",      name: "Training data flywheel",          backingEngines: ["trainingDataEngine", "trainingExportEngine"] },
+  { index: 40, category: "CATEGORY_D_CONTENT_QA",      name: "Training data flywheel",          backingEngines: ["trainingDataEngine"] },
 
   // ── CATEGORY E: INFRASTRUCTURE ──
   { index: 41, category: "CATEGORY_E_INFRASTRUCTURE",  name: "User knowledge graph",            backingEngines: ["userKnowledgeGraph"] },

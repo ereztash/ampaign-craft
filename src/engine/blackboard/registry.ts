@@ -95,7 +95,6 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "seoContentEngine",
   "stylomeEngine",
   "trainingDataEngine",
-  "trainingExportEngine",
   "userKnowledgeGraph",
   "uvpSynthesisEngine",
   "visualExportEngine",
