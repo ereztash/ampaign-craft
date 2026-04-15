@@ -17,6 +17,40 @@
   <meta property="og:description" content="FunnelForge - Build a personalized marketing funnel for your business in minutes. Smart analysis, channel recommendations, and budget planning.">
   <meta name="twitter:description" content="FunnelForge - Build a personalized marketing funnel for your business in minutes. Smart analysis, channel recommendations, and budget planning.">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <!-- GA4 — replace G-XXXXXXXXXX with real measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
+  </script>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#F97316" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <!-- Canonical + structured data -->
+  <link rel="canonical" href="https://funnelforge.app/" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "FunnelForge",
+    "applicationCategory": "BusinessApplication",
+    "description": "בניית פאנל שיווקי מותאם אישית לעסקים קטנים בישראל תוך דקות",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "ILS"
+    },
+    "operatingSystem": "Web",
+    "inLanguage": "he"
+  }
+  </script>
 </head>
 
   <body>

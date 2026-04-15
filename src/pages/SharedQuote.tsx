@@ -7,6 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import QuotePreview from "@/components/QuotePreview";
 import LoadingFallback from "@/components/LoadingFallback";
 import type { Quote } from "@/types/quote";
+import { Analytics, getUTM } from "@/lib/analytics";
 
 export default function SharedQuote() {
   const { token } = useParams<{ token: string }>();
@@ -23,6 +24,11 @@ export default function SharedQuote() {
       setLoading(false);
       return;
     }
+
+    // Track share view — capture referral code from UTM if present
+    const utm = getUTM();
+    Analytics.shareViewed(token, utm.ref);
+
 
     (async () => {
       try {

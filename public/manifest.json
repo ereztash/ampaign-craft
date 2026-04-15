@@ -1,0 +1,65 @@
+{
+  "name": "FunnelForge – בניית פאנל שיווקי",
+  "short_name": "FunnelForge",
+  "description": "בניית פאנל שיווקי מותאם אישית לעסקים קטנים בישראל תוך דקות",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#F97316",
+  "lang": "he",
+  "dir": "rtl",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "דשבורד FunnelForge"
+    },
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "FunnelForge במובייל"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "צור פאנל חדש",
+      "url": "/wizard",
+      "description": "פתח ויזארד יצירת פאנל"
+    },
+    {
+      "name": "הפלנים שלי",
+      "url": "/plans",
+      "description": "צפה בפלנים הקיימים"
+    },
+    {
+      "name": "AI Coach",
+      "url": "/ai",
+      "description": "שוחח עם AI Coach"
+    }
+  ]
+}
