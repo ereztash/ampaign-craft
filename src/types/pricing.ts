@@ -3,10 +3,7 @@
 // Cross-domain: Behavioral Economics × SaaS Pricing × Offer Architecture
 // ═══════════════════════════════════════════════
 
-export interface BilingualText {
-  he: string;
-  en: string;
-}
+export type { BilingualText } from "./i18n";
 
 // === INPUT ===
 

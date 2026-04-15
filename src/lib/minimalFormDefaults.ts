@@ -1,10 +1,4 @@
-// Fill partial FormData with sensible defaults for standalone module entry
-import { FormData, initialFormData } from "@/types/funnel";
-
-export function fillFormDefaults(partial: Partial<FormData>): FormData {
-  return { ...initialFormData, ...partial };
-}
-
+// Helpers for standalone module entry pages
 export function getLatestPlanResult() {
   try {
     const plans = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");

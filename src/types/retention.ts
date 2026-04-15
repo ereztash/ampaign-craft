@@ -3,7 +3,7 @@
 // Cross-domain: Hooked Model × Customer Success × Lifecycle Marketing
 // ═══════════════════════════════════════════════
 
-export interface BilingualText { he: string; en: string }
+export type { BilingualText } from "./i18n";
 
 export interface RetentionResult {
   onboarding: OnboardingSequence;

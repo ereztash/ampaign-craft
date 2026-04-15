@@ -78,7 +78,6 @@ const PAGE_HINTS: Record<string, string> = {
   visualExportEngine: "src/pages/ResultsDashboard.tsx",
   exportEngine: "src/pages/ResultsDashboard.tsx",
   trainingDataEngine: "src/pages/Dashboard.tsx",
-  trainingExportEngine: "src/pages/Dashboard.tsx",
   userKnowledgeGraph: "src/pages/Wizard.tsx",
   dataImportEngine: "src/pages/DataHub.tsx",
   integrationEngine: "src/pages/DataHub.tsx",

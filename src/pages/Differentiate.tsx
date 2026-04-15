@@ -33,12 +33,16 @@ const PageComponent = () => {
 
   // Load last result from DB on mount
   useEffect(() => {
-    loadDifferentiationResults().then((results) => {
-      if (results.length > 0) {
-        const lastResult = results[0].result || results[0];
-        setResult(lastResult as DifferentiationResult);
-      }
-    });
+    loadDifferentiationResults()
+      .then((results) => {
+        if (results.length > 0) {
+          const lastResult = results[0].result || results[0];
+          setResult(lastResult as DifferentiationResult);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load differentiation results:", err);
+      });
   }, [loadDifferentiationResults]);
 
   const handleStart = () => {

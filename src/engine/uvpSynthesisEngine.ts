@@ -19,10 +19,8 @@ export const ENGINE_MANIFEST = {
 
 // ═══ TYPES ═══
 
-export interface BilingualText {
-  he: string;
-  en: string;
-}
+import type { BilingualText } from "@/types/i18n";
+export type { BilingualText };
 
 export type UVPFormat =
   | "oneLiner"
