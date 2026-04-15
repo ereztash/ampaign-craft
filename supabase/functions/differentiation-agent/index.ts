@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Deno Edge Function — cannot import frontend types; any is intentional here.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -35,10 +37,19 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { phase, formData, previousResults } = await req.json();
+    const reqBody = await req.json();
+    const { phase, formData, previousResults } = reqBody;
 
-    const systemPrompt = buildSystemPrompt(phase, formData, previousResults);
-    const userMessage = buildUserMessage(phase, formData, previousResults);
+    let systemPrompt: string;
+    let userMessage: string;
+
+    if (phase === "principles_scan") {
+      systemPrompt = buildPrincipleSystemPrompt(reqBody);
+      userMessage = buildPrincipleUserMessage(reqBody);
+    } else {
+      systemPrompt = buildSystemPrompt(phase, formData, previousResults);
+      userMessage = buildUserMessage(phase, formData, previousResults);
+    }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -198,4 +209,58 @@ function buildUserMessage(phase: string, formData: any, previousResults: any): s
   }
 
   return JSON.stringify(formData);
+}
+
+// ───────────────────────────────────────────────
+// Principles scan (Layer 2 — 12-agent parallel pattern).
+// Called once per principle; the client fans out 12 requests.
+// ───────────────────────────────────────────────
+
+// deno-lint-ignore no-explicit-any
+function buildPrincipleSystemPrompt(body: any): string {
+  const p = body.principleDefinition || {};
+  const name = p?.name?.en || body.principleCode || "Unknown Principle";
+  const focus = p?.focus?.en || "";
+  const questions: string[] = Array.isArray(p?.scanQuestions) ? p.scanQuestions : [];
+  const positive: string[] = Array.isArray(p?.positiveSignals) ? p.positiveSignals : [];
+  const negative: string[] = Array.isArray(p?.negativeSignals) ? p.negativeSignals : [];
+
+  const lines = [
+    "You are a differentiation signal analyst focused on ONE principle at a time.",
+    `Your principle: ${body.principleCode} — ${name}.`,
+    `Focus: ${focus}`,
+    "",
+    "You are scanning a meeting transcript between a business consultant and a client.",
+    "You are evidence-based and ruthless. No praise, no filler.",
+    "",
+    "Your scan questions:",
+    ...questions.map((q: string) => `- ${q}`),
+    "",
+    "Positive signals (raise score):",
+    ...positive.map((s: string) => `- ${s}`),
+    "",
+    "Negative signals (lower score):",
+    ...negative.map((s: string) => `- ${s}`),
+    "",
+    "CRITICAL RULES:",
+    "- Relevance score 0..10. 10 = strong explicit signal present. 0 = not present at all.",
+    "- Quote EXACT strings from the transcript for evidence. No paraphrase.",
+    "- Max 3 evidence quotes. One sentence each.",
+    "- summary_observation: one sentence describing what you saw.",
+    "- differentiation_hypothesis: one sentence tying the observation to a differentiation angle.",
+    "- This is a business meeting. Do NOT produce medical/clinical recommendations.",
+    "- Respond ONLY in valid JSON. No markdown, no prose.",
+    "",
+    'JSON SCHEMA: { "relevanceScore": number, "evidenceQuotes": string[], "summaryObservation": string, "differentiationHypothesis": string }',
+  ];
+  return lines.join("\n");
+}
+
+// deno-lint-ignore no-explicit-any
+function buildPrincipleUserMessage(body: any): string {
+  return JSON.stringify({
+    principleCode: body.principleCode,
+    clientContext: body.clientContext || {},
+    transcript: typeof body.transcript === "string" ? body.transcript.slice(0, 32000) : "",
+  });
 }

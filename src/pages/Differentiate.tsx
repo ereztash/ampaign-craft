@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -8,27 +9,34 @@ import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { DifferentiationResult } from "@/types/differentiation";
 import DifferentiationWizard from "@/components/DifferentiationWizard";
 import DifferentiationResultView from "@/components/DifferentiationResult";
+import DifferentiationTranscriptWizard from "@/components/DifferentiationTranscriptWizard";
 import PaywallModal from "@/components/PaywallModal";
 import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
-import { Crosshair, Sparkles, Shield, Brain, Map, Zap } from "lucide-react";
+import { Crosshair, Sparkles, Shield, Brain, Map, Zap, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { generateDifferentiation } from "@/engine/differentiationEngine";
 import { getQuestionsForPhase } from "@/engine/differentiationPhases";
 import { generateCrossDomainInsights, type Industry as CrossDomainIndustry } from "@/engine/crossDomainBenchmarkEngine";
 
-type ViewState = "idle" | "wizard" | "results";
+type ViewState = "idle" | "wizard" | "results" | "transcript";
 
 const PageComponent = () => {
   const { t, language } = useLanguage();
   const reducedMotion = useReducedMotion();
   const isHe = language === "he";
+  const location = useLocation();
   const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
   const { profile } = useUserProfile();
   const { saveDifferentiationResult, loadDifferentiationResults } = useUserData();
-  const [view, setView] = useState<ViewState>("idle");
+
+  // ?mode=transcript deep-link support
+  const initialView: ViewState = new URLSearchParams(location.search).get("mode") === "transcript"
+    ? "transcript"
+    : "idle";
+  const [view, setView] = useState<ViewState>(initialView);
   const [result, setResult] = useState<DifferentiationResult | null>(null);
 
   // Load last result from DB on mount
@@ -154,14 +162,31 @@ const PageComponent = () => {
               </div>
             )}
 
-            <Button size="lg" onClick={handleStart} className="gap-2 text-lg px-8">
-              <Sparkles className="h-5 w-5" />
-              {t("diffStartCta")}
-            </Button>
+            {/* Primary CTA: 5-phase form wizard */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button size="lg" onClick={handleStart} className="gap-2 text-lg px-8">
+                <Sparkles className="h-5 w-5" />
+                {t("diffStartCta")}
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setView("transcript")}
+                className="gap-2 text-lg px-8"
+              >
+                <FileText className="h-5 w-5" />
+                {tx({ he: "העלה תמלול פגישה", en: "Upload Meeting Transcript" }, language)}
+              </Button>
+            </div>
 
-            <p className="text-xs text-muted-foreground">
-              {tx({ he: "5 שלבים · ~10 דקות · מופעל ב-AI", en: "5 phases · ~10 minutes · AI-powered" }, language)}
-            </p>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">
+                {tx({ he: "5 שלבים · ~10 דקות · מופעל ב-AI", en: "5 phases · ~10 minutes · AI-powered" }, language)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {tx({ he: "או: 12 עקרונות במקביל על תמלול קיים · ~3 דקות", en: "or: 12 parallel principles on existing transcript · ~3 min" }, language)}
+              </p>
+            </div>
           </motion.div>
         )}
 
@@ -171,6 +196,10 @@ const PageComponent = () => {
             onBack={handleReset}
             initialPrefill={profile.unifiedProfile ? toDifferentiationPrefill(profile.unifiedProfile) : undefined}
           />
+        )}
+
+        {view === "transcript" && (
+          <DifferentiationTranscriptWizard onBack={handleReset} />
         )}
 
         {view === "results" && result && (
