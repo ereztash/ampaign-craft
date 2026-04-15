@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook, Sparkles, SparklesOff } from "lucide-react";
+import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook, Sparkles } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -291,7 +291,7 @@ const PageComponent = () => {
                   >
                     {adaptationsEnabled
                       ? <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
-                      : <SparklesOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
+                      : <Sparkles className="h-4 w-4 text-muted-foreground opacity-50" aria-hidden="true" />}
                     {tx({ he: "התאמה אישית", en: "Personalisation" }, language)}
                   </h2>
 
