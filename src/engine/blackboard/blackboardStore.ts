@@ -92,6 +92,19 @@ export interface AgentMetaStats {
   recommendation?: string;
 }
 
+export interface AARRRHealthScore {
+  /** Composite AARRR score — weighted average of 5 stages (0–110). */
+  overall: number;
+  /** Per-stage scores (0–110 each). */
+  acquisition: number;
+  activation: number;
+  retention: number;
+  revenue: number;
+  referral: number;
+  /** Computed from blackboard signals available at meta-agent runtime. */
+  computedFrom: string[];
+}
+
 export interface MetaMetrics {
   /** Cycle identifier — Unix ms of pipeline start. */
   cycleId: string;
@@ -110,6 +123,11 @@ export interface MetaMetrics {
   perAgent: AgentMetaStats[];
   /** Agent names exceeding the rejection-rate threshold. */
   flaggedAgents: string[];
+  /**
+   * AARRR health score derived from blackboard signals.
+   * Represents product growth quality for the current user's cycle.
+   */
+  aarrrHealth: AARRRHealthScore | null;
 }
 
 // ═══════════════════════════════════════════════

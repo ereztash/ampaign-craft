@@ -14,12 +14,47 @@ const db = _supabase as unknown as SupabaseClient<any>;
 // ═══════════════════════════════════════════════
 
 export type EventType =
+  // ── Core system events ──────────────────────────
   | "plan.generated"
   | "plan.qa_requested"
   | "research.requested"
   | "embedding.requested"
   | "benchmark.update"
-  | "notification.send";
+  | "notification.send"
+  // ── AARRR: Acquisition ──────────────────────────
+  | "aarrr.acquisition.landing_view"
+  | "aarrr.acquisition.signup_started"
+  | "aarrr.acquisition.signup_completed"
+  | "aarrr.acquisition.onboarding_started"
+  | "aarrr.acquisition.utm_captured"
+  // ── AARRR: Activation ───────────────────────────
+  | "aarrr.activation.onboarding_completed"
+  | "aarrr.activation.first_plan_generated"
+  | "aarrr.activation.first_template_copied"
+  | "aarrr.activation.first_share_created"
+  | "aarrr.activation.archetype_revealed"
+  | "aarrr.activation.aha_moment"
+  | "aarrr.activation.onboarding_abandoned"
+  // ── AARRR: Retention ────────────────────────────
+  | "aarrr.retention.weekly_active"
+  | "aarrr.retention.monthly_active"
+  | "aarrr.retention.streak_broken"
+  | "aarrr.retention.reactivated"
+  | "aarrr.retention.pulse_opened"
+  | "aarrr.retention.blind_spot_nudge_clicked"
+  // ── AARRR: Revenue ──────────────────────────────
+  | "aarrr.revenue.paywall_viewed"
+  | "aarrr.revenue.checkout_started"
+  | "aarrr.revenue.conversion_completed"
+  | "aarrr.revenue.upgrade"
+  | "aarrr.revenue.downgrade"
+  | "aarrr.revenue.churned"
+  // ── AARRR: Referral ─────────────────────────────
+  | "aarrr.referral.share_created"
+  | "aarrr.referral.share_viewed"
+  | "aarrr.referral.signup_from_share"
+  | "aarrr.referral.reward_earned"
+  | "aarrr.referral.referral_clicked";
 
 export interface PublishOptions {
   priority?: number;        // 1=highest, 10=lowest (default 5)
@@ -174,4 +209,110 @@ export async function requestResearch(
   userId: string
 ): Promise<{ eventId: string | null; error?: string }> {
   return publishEvent("research.requested", { question, domain, userId }, userId, { priority: 4 });
+}
+
+// ═══════════════════════════════════════════════
+// AARRR CONVENIENCE PUBLISHERS
+// ═══════════════════════════════════════════════
+
+/** Track signup completion for Acquisition funnel. */
+export async function trackSignupCompleted(
+  userId: string,
+  source?: string
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent("aarrr.acquisition.signup_completed", { source }, userId, { priority: 3 });
+}
+
+/** Track first plan generated — the core Activation Aha Moment. */
+export async function trackFirstPlanGenerated(
+  userId: string,
+  planId: string,
+  industry?: string
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent(
+    "aarrr.activation.first_plan_generated",
+    { planId, industry },
+    userId,
+    { priority: 2 }
+  );
+}
+
+/** Track onboarding abandonment for re-engagement flows. */
+export async function trackOnboardingAbandoned(
+  userId: string,
+  lastStep: number
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent(
+    "aarrr.activation.onboarding_abandoned",
+    { lastStep, abandonedAt: new Date().toISOString() },
+    userId,
+    { priority: 4 }
+  );
+}
+
+/** Track archetype reveal — key deepening moment. */
+export async function trackArchetypeRevealed(
+  userId: string,
+  archetype: string,
+  confidence: number
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent(
+    "aarrr.activation.archetype_revealed",
+    { archetype, confidence },
+    userId,
+    { priority: 3 }
+  );
+}
+
+/** Track paywall view for Revenue funnel. */
+export async function trackPaywallViewed(
+  userId: string,
+  feature: string,
+  currentTier: string
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent(
+    "aarrr.revenue.paywall_viewed",
+    { feature, currentTier },
+    userId,
+    { priority: 3 }
+  );
+}
+
+/** Track share creation for Referral funnel. */
+export async function trackShareCreated(
+  userId: string,
+  shareId: string
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent(
+    "aarrr.referral.share_created",
+    { shareId },
+    userId,
+    { priority: 4 }
+  );
+}
+
+/** Track when a referred user signs up. */
+export async function trackSignupFromShare(
+  userId: string,
+  referrerCode: string
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent(
+    "aarrr.referral.signup_from_share",
+    { referrerCode },
+    userId,
+    { priority: 2 }
+  );
+}
+
+/** Track retention reward (share reward claimed). */
+export async function trackReferralRewardEarned(
+  userId: string,
+  rewardType: string
+): Promise<{ eventId: string | null; error?: string }> {
+  return publishEvent(
+    "aarrr.referral.reward_earned",
+    { rewardType, claimedAt: new Date().toISOString() },
+    userId,
+    { priority: 3 }
+  );
 }

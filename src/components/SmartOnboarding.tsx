@@ -1,4 +1,6 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { trackOnboardingAbandoned, trackArchetypeRevealed } from "@/services/eventQueue";
+import { Analytics } from "@/lib/analytics";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Button } from "@/components/ui/button";
@@ -19,9 +21,12 @@ import type { UnifiedProfile, ValuePriority } from "@/types/profile";
 import { getIndustryDefaults, INITIAL_UNIFIED_PROFILE } from "@/types/profile";
 import { computeFingerprint } from "@/engine/businessFingerprintEngine";
 
+const ONBOARDING_DRAFT_KEY = "funnelforge-onboarding-draft";
+
 interface SmartOnboardingProps {
   onComplete: (profile: UnifiedProfile) => void;
   initialProfile?: UnifiedProfile | null;
+  userId?: string;
 }
 
 type Step = 1 | 2 | 3 | 4;
@@ -59,18 +64,47 @@ const VALUE_OPTIONS: { id: ValuePriority; label: { he: string; en: string }; emo
   { id: "innovation", label: { he: "חדשנות ובידול", en: "Innovation" }, emoji: "🚀" },
 ];
 
-const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) => {
+const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboardingProps) => {
   const { language, isRTL } = useLanguage();
   const isHe = language === "he";
   const reducedMotion = useReducedMotion();
 
+  // Restore draft from localStorage if no initialProfile passed
+  const restoredProfile = useMemo(() => {
+    if (initialProfile) return initialProfile;
+    try {
+      const raw = localStorage.getItem(ONBOARDING_DRAFT_KEY);
+      if (raw) return JSON.parse(raw) as UnifiedProfile;
+    } catch { /* ignore */ }
+    return null;
+  }, [initialProfile]);
+
   const [step, setStep] = useState<Step>(1);
   const [profile, setProfile] = useState<UnifiedProfile>(
-    initialProfile || { ...INITIAL_UNIFIED_PROFILE }
+    restoredProfile || { ...INITIAL_UNIFIED_PROFILE }
   );
 
+  // Persist draft on every profile change
   const update = useCallback((patch: Partial<UnifiedProfile>) => {
-    setProfile((prev) => ({ ...prev, ...patch }));
+    setProfile((prev) => {
+      const next = { ...prev, ...patch };
+      try { localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+
+  // Track abandon on unmount (if not completed)
+  const completedRef = { current: false };
+  useEffect(() => {
+    Analytics.onboardingStarted(userId);
+    return () => {
+      if (!completedRef.current && step > 1) {
+        if (userId) {
+          trackOnboardingAbandoned(userId, step).catch(() => {});
+        }
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fingerprint = useMemo(() => computeFingerprint(profile), [profile]);
@@ -390,7 +424,17 @@ const SmartOnboarding = ({ onComplete, initialProfile }: SmartOnboardingProps) =
             </Button>
           ) : (
             <Button
-              onClick={() => onComplete(profile)}
+              onClick={() => {
+                completedRef.current = true;
+                // Clear draft — onboarding complete
+                try { localStorage.removeItem(ONBOARDING_DRAFT_KEY); } catch { /* ignore */ }
+                // Track completion
+                if (userId) {
+                  Analytics.firstPlanGenerated("pending", userId, profile.businessField);
+                  trackArchetypeRevealed(userId, "pending", 0).catch(() => {});
+                }
+                onComplete(profile);
+              }}
               className="gap-2 cta-warm"
             >
               <Sparkles className="h-4 w-4" />

@@ -8,7 +8,12 @@ import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph, loadChatInsights, loadImportedDataSignals, loadMetaSignals } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
+import { assessChurnRisk } from "@/engine/churnPredictionEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
+import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
+import ReferralDashboard from "@/components/ReferralDashboard";
+import { Analytics } from "@/lib/analytics";
+import { useAuth } from "@/contexts/AuthContext";
 import { useArchetypePipeline } from "@/hooks/useArchetypePipeline";
 import { getPrimaryCtaVerbs } from "@/engine/behavioralHeuristicEngine";
 import { useArchetype } from "@/contexts/ArchetypeContext";
@@ -32,7 +37,14 @@ const Dashboard = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { profile } = useUserProfile();
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Track weekly active on Dashboard mount
+  useMemo(() => {
+    if (user) Analytics.weeklyActive(user.id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
   const { streak, mastery } = useAchievements(language);
 
   const savedPlans = useMemo<SavedPlan[]>(() => {
@@ -56,6 +68,11 @@ const Dashboard = () => {
     if (lastPlan) return calculateHealthScore(lastPlan.result, graph ?? undefined);
     return null;
   }, [lastPlan, graph]);
+
+  const churnRisk = useMemo(() => {
+    if (lastPlan) return assessChurnRisk(lastPlan.result.formData);
+    return null;
+  }, [lastPlan]);
 
   const staticNextStep = useMemo(() => {
     const fallbackGraph = graph || buildDefaultKnowledgeGraph();
@@ -371,6 +388,18 @@ const Dashboard = () => {
             </Card>
           ))}
         </div>
+
+        {/* Churn Risk (Phase 3 AARRR — Retention) */}
+        {churnRisk && (
+          <section>
+            <ChurnPredictionCard assessment={churnRisk} />
+          </section>
+        )}
+
+        {/* Referral Dashboard (Phase 5 AARRR — Referral) */}
+        <section>
+          <ReferralDashboard />
+        </section>
 
         {/* New Plan FAB */}
         <div className="fixed bottom-20 end-4 z-30">

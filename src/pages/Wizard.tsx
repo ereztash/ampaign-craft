@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { Analytics } from "@/lib/analytics";
+import { onPlanGenerated, trackFirstPlanGenerated } from "@/services/eventQueue";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FormData, FunnelResult } from "@/types/funnel";
@@ -110,6 +112,14 @@ const Wizard = () => {
 
     setResult(personalized);
     setState("processing");
+
+    // AARRR Activation — track first plan generated
+    if (user) {
+      onPlanGenerated(personalized.id, user.id).catch(() => {});
+      trackFirstPlanGenerated(user.id, personalized.id, fd.businessField).catch(() => {});
+      Analytics.firstPlanGenerated(personalized.id, user.id, fd.businessField);
+      Analytics.ahaMoment(user.id, "first_plan_generated");
+    }
 
     // Update archetype profile with available signals from this pipeline run
     updateFromBlackboard({ formData: fd, knowledgeGraph: graph });

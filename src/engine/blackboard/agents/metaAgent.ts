@@ -16,7 +16,7 @@
 
 import type { AgentDefinition } from "../agentRunner";
 import type { Blackboard } from "../blackboardStore";
-import type { MetaMetrics, AgentMetaStats } from "../blackboardStore";
+import type { MetaMetrics, AgentMetaStats, AARRRHealthScore } from "../blackboardStore";
 
 // ═══════════════════════════════════════════════
 // Constants
@@ -145,6 +145,76 @@ function mean(values: number[]): number | null {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
+/**
+ * Derive AARRR health from available blackboard signals.
+ *
+ * Acquisition  — presence of formData + knowledgeGraph
+ * Activation   — presence of funnelResult + healthScore
+ * Retention    — presence of retentionFlywheel + churnRisk (healthy tier)
+ * Revenue      — presence of hormoziValue (high score) + costOfInaction
+ * Referral     — jGradient proxy (well-connected blackboard = share-ready plan)
+ *
+ * Scores 0–110 per stage; overall = weighted average.
+ */
+function computeAARRRHealth(
+  board: Blackboard,
+  jGradient: number,
+  systemRejectionRate: number,
+): AARRRHealthScore {
+  const state = board.getState();
+  const signals: string[] = [];
+
+  // ── Acquisition (0–110) ──────────────────────
+  let acquisition = 0;
+  if (state.formData) { acquisition += 40; signals.push("formData"); }
+  if (state.knowledgeGraph) { acquisition += 40; signals.push("knowledgeGraph"); }
+  // Penalise high rejection (bad data quality)
+  acquisition -= Math.round(systemRejectionRate * 30);
+  acquisition = Math.max(0, Math.min(110, acquisition));
+
+  // ── Activation (0–110) ───────────────────────
+  let activation = 0;
+  if (state.funnelResult) { activation += 50; signals.push("funnelResult"); }
+  if (state.healthScore) {
+    activation += Math.round((state.healthScore.overall / 100) * 40);
+    signals.push("healthScore");
+  }
+  if (state.discProfile) { activation += 20; signals.push("discProfile"); }
+  activation = Math.min(110, activation);
+
+  // ── Retention (0–110) ────────────────────────
+  let retention = 0;
+  if (state.retentionFlywheel) { retention += 55; signals.push("retentionFlywheel"); }
+  if (state.churnRisk) {
+    const churnBonus = state.churnRisk.riskTier === "healthy" ? 40
+      : state.churnRisk.riskTier === "watch" ? 25
+      : state.churnRisk.riskTier === "at-risk" ? 10 : 0;
+    retention += churnBonus;
+    signals.push("churnRisk");
+  }
+  retention = Math.min(110, retention);
+
+  // ── Revenue (0–110) ──────────────────────────
+  let revenue = 0;
+  if (state.hormoziValue) {
+    revenue += Math.round((state.hormoziValue.overallScore / 100) * 70);
+    signals.push("hormoziValue");
+  }
+  if (state.costOfInaction) { revenue += 40; signals.push("costOfInaction"); }
+  revenue = Math.min(110, revenue);
+
+  // ── Referral (0–110) ─────────────────────────
+  // Proxy: J gradient ≈ how "share-worthy" the plan is (high info = high referral value)
+  const referral = Math.min(110, Math.round(jGradient * 110));
+  signals.push("jGradient");
+
+  const overall = Math.round(
+    (acquisition * 0.2 + activation * 0.25 + retention * 0.2 + revenue * 0.2 + referral * 0.15)
+  );
+
+  return { overall, acquisition, activation, retention, revenue, referral, computedFrom: signals };
+}
+
 // ═══════════════════════════════════════════════
 // Agent Definition
 // ═══════════════════════════════════════════════
@@ -191,6 +261,9 @@ export const metaAgent: AgentDefinition = {
       .filter((a) => a.rejectionRate > REJECTION_THRESHOLD)
       .map((a) => a.agentName);
 
+    // ── AARRR Health ─────────────────────────────
+    const aarrrHealth = computeAARRRHealth(board, jGradient, systemRejectionRate);
+
     // ── Write to board ───────────────────────────
     const metrics: MetaMetrics = {
       cycleId: cycleStartMs.toString(),
@@ -201,6 +274,7 @@ export const metaAgent: AgentDefinition = {
       avgHalfLifeMs,
       perAgent,
       flaggedAgents,
+      aarrrHealth,
     };
 
     // Use board.set() directly — metaAgent is exempt from verifiedSet()

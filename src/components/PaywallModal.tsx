@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { TIERS, PricingTier, Feature } from "@/lib/pricingTiers";
@@ -6,9 +6,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import { Check, Lock, Loader2 } from "lucide-react";
+import { Check, Lock, Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { trackPaywallViewed } from "@/services/eventQueue";
+import { Analytics } from "@/lib/analytics";
 
 interface PaywallModalProps {
   open: boolean;
@@ -19,15 +21,29 @@ interface PaywallModalProps {
 
 const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModalProps) => {
   const { language } = useLanguage();
-  const { setTier, isLocalAuth } = useAuth();
+  const { user, setTier, isLocalAuth, tier: currentTier } = useAuth();
   const isHe = language === "he";
   const tier = TIERS.find((t) => t.id === requiredTier) || TIERS[1];
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
+  // Track paywall view whenever modal opens
+  useEffect(() => {
+    if (open && user) {
+      trackPaywallViewed(user.id, feature, currentTier).catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   const handleUpgrade = async () => {
+    // Track checkout started
+    if (user) {
+      Analytics.checkoutStarted(requiredTier, user.id);
+    }
+
     if (import.meta.env.DEV && isLocalAuth) {
       // Dev-only: instant tier change for testing
       setTier(requiredTier);
+      if (user) Analytics.conversionCompleted(requiredTier, "monthly", user.id);
       toast.success(tx({ he: `שודרגת ל-${tier.name.he}!`, en: `Upgraded to ${tier.name.en}!` }, language));
       onOpenChange(false);
       return;
@@ -89,6 +105,16 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
               ? `${FEATURE_NAMES[feature]?.he || feature} זמין בתוכנית ${tier.name.he}`
               : `${FEATURE_NAMES[feature]?.en || feature} is available in the ${tier.name.en} plan`}
           </p>
+
+          {/* Cost-of-Inaction loss-framing block */}
+          <div className="flex items-start gap-2 text-start rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2">
+            <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 shrink-0" />
+            <p className="text-xs text-amber-300">
+              {isHe
+                ? "כל חודש ללא כלי זה מפסיד לעסק שלך לידים וגישה לאסטרטגיה חכמה יותר. המתחרים שלך כבר פועלים."
+                : "Every month without this tool costs your business leads and smarter strategy. Your competitors are already acting."}
+            </p>
+          </div>
 
           <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-6">
             <Badge className="mb-2">{tier.name[language]}</Badge>

@@ -33,6 +33,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const SharedQuote = lazy(() => import("./pages/SharedQuote"));
 const CrmPage = lazy(() => import("./pages/CrmPage"));
 const ArchetypeRevealScreen = lazy(() => import("./components/ArchetypeRevealScreen"));
+const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const AnimatedRoutes = () => {
             <Route path="crm" element={<CrmPage />} />
             <Route path="profile" element={<Profile />} />
             <Route path="archetype" element={<ArchetypeRevealScreen />} />
+            <Route path="admin/aarrr" element={<AARRRDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
