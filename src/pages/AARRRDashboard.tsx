@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { supabase as _supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getOptimizationReport, type OptimizationReport } from "@/engine/promptOptimizerEngine";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = _supabase as unknown as SupabaseClient<any>;
@@ -129,6 +130,7 @@ export default function AARRRDashboard() {
   const [daily, setDaily] = useState<DailyPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [overallScore, setOverallScore] = useState(0);
+  const [optimReport, setOptimReport] = useState<OptimizationReport | null>(null);
 
   // Guard: admin only
   const isAdmin = isLocalAuth || (user as { role?: string } | null)?.role === "admin";
@@ -137,6 +139,8 @@ export default function AARRRDashboard() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     loadMetrics();
+    // F4: Load promptOptimizer report for flywheel insights
+    getOptimizationReport().then(setOptimReport).catch(() => {});
   }, []);
 
   async function loadMetrics() {
@@ -352,6 +356,45 @@ export default function AARRRDashboard() {
           * הנתונים מבוססים על event_queue — 30 ימים אחרונים. יעד ציון 110 = 110% מהיעד הכמותי.
         </p>
       </div>
+
+      {/* F4: promptOptimizer flywheel panel */}
+      {optimReport && (
+        <div className="rounded-2xl border border-white/10 p-6 bg-white/5 mt-8">
+          <h2 className="text-lg font-bold mb-1">🔁 Prompt Optimizer Flywheel</h2>
+          <p className="text-zinc-400 text-sm mb-4">
+            {optimReport.stats.total} training pairs ·{" "}
+            {optimReport.optimizations.length} אופטימיזציות מוצעות
+          </p>
+          {optimReport.optimizations.length === 0 ? (
+            <p className="text-zinc-500 text-sm">אין מספיק נתונים עדיין — נדרשים ≥3 occurrences לכל pattern.</p>
+          ) : (
+            <div className="space-y-3">
+              {optimReport.optimizations.slice(0, 5).map((opt, i) => (
+                <div key={i} className="rounded-xl border border-white/8 bg-white/3 p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-mono text-zinc-500">{opt.engineId}</span>
+                    <span
+                      className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                      style={{
+                        background: opt.confidence >= 80 ? "#10b98133" : "#f59e0b33",
+                        color: opt.confidence >= 80 ? "#10b981" : "#f59e0b",
+                      }}
+                    >
+                      {opt.confidence}% confidence
+                    </span>
+                    <span className="text-xs text-zinc-600">{opt.affectedPairs} pairs</span>
+                  </div>
+                  <p className="text-sm text-white">{opt.issue.he}</p>
+                  <p className="text-xs text-zinc-500 mt-1 font-mono">{opt.suggestedPromptAddition}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-zinc-600 text-xs mt-4">
+            * מבוסס על training_pairs — נדרשים ≥3 דוגמאות לכל pattern. מתעדכן בכל טעינה.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

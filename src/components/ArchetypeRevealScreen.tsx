@@ -21,6 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getBlindSpotProfile } from "@/lib/archetypeBlindSpots";
 import { emitArchetypeEvent } from "@/lib/archetypeAnalytics";
 import type { RevealSource } from "@/lib/archetypeAnalytics";
+import { Analytics } from "@/lib/analytics";
 import { getReferralData } from "@/engine/referralEngine";
 import { tx } from "@/i18n/tx";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,8 @@ export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeReve
       ? `גיליתי שהארכיטיפ שלי הוא ${archetypeEmoji} ${uiConfig?.label?.he ?? effectiveArchetypeId}! צור את תוכנית השיווק שלך חינם:`
       : `I just discovered my business archetype is ${archetypeEmoji} ${uiConfig?.label?.en ?? effectiveArchetypeId}! Build your free marketing plan:`;
     const url = `https://wa.me/?text=${encodeURIComponent(`${text} ${referralLink}`)}`;
+    // F3: track archetype share (referral event)
+    if (user) Analytics.archetypeShared(effectiveArchetypeId, user.id);
     window.open(url, "_blank", "noopener");
   }
 

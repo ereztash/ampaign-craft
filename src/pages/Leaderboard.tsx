@@ -4,11 +4,12 @@
 // Ref5: "Top Referrers this month" leaderboard.
 // Schelling Point: weekly reset = coordination signal.
 // ═══════════════════════════════════════════════
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { tx } from "@/i18n/tx";
 import { getReferralData } from "@/engine/referralEngine";
+import { Analytics } from "@/lib/analytics";
 import BackToHub from "@/components/BackToHub";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,11 @@ export default function Leaderboard() {
 
   const referralData = useMemo(() => user ? getReferralData(user.id) : null, [user]);
   const myReferralCount = referralData?.referrals.length ?? 0;
+
+  useEffect(() => {
+    if (user) Analytics.leaderboardViewed(user.id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Find if user is in top 10
   const userEntry = useMemo(() => {

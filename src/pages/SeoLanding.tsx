@@ -6,8 +6,10 @@
 // copy converts 3-5× better than generic.
 // ═══════════════════════════════════════════════
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { tx } from "@/i18n/tx";
+import { Analytics } from "@/lib/analytics";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -134,6 +136,12 @@ export default function SeoLanding() {
   const isHe = language === "he";
 
   const meta = (industry && INDUSTRY_META[industry]) ? INDUSTRY_META[industry] : INDUSTRY_META.other;
+
+  // F3: Track SEO landing page views
+  useEffect(() => {
+    if (industry) Analytics.seoLandingViewed(industry);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [industry]);
 
   return (
     <main className="min-h-screen bg-background">

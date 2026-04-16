@@ -141,7 +141,11 @@ const Dashboard = () => {
   // Record visit + variable reward on mount (R6)
   useEffect(() => {
     const { reward } = recordVisitAndGetReward();
-    if (reward) setStreakReward(reward);
+    if (reward) {
+      setStreakReward(reward);
+      // F3: track streak reward earned
+      if (user) Analytics.streakRewardEarned(reward.type, reward.milestone, user.id);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

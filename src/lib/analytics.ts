@@ -206,6 +206,22 @@ export const Analytics = {
     track("aarrr.referral.signup_from_share", { referrerCode }, { userId }),
   rewardEarned: (type: string, userId: string) =>
     track("aarrr.referral.reward_earned", { type }, { userId }),
+
+  // F3 Event audit additions — new Sprint A-F surfaces
+  archetypeShared: (archetypeId: string, userId: string) =>
+    track("aarrr.referral.archetype_shared", { archetypeId }, { userId }),
+  challengeCompleted: (weekNumber: number, userId: string) =>
+    track("aarrr.retention.challenge_completed", { weekNumber }, { userId }),
+  leaderboardViewed: (userId: string) =>
+    track("aarrr.referral.leaderboard_viewed", {}, { userId }),
+  npsSubmitted: (score: number, userId?: string) =>
+    track("aarrr.retention.nps_submitted", { score }, { userId }),
+  competitorScanRequested: (businessName: string) =>
+    track("aarrr.acquisition.competitor_scan_requested", { businessName }),
+  seoLandingViewed: (industry: string) =>
+    track("aarrr.acquisition.seo_landing_viewed", { industry }),
+  streakRewardEarned: (type: string, milestone: number, userId?: string) =>
+    track("aarrr.retention.streak_reward_earned", { type, milestone }, { userId }),
 };
 
 // ─── UTM Capture on page load ────────────────────

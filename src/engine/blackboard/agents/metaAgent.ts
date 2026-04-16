@@ -208,9 +208,14 @@ function computeAARRRHealth(
   const referral = Math.min(110, Math.round(jGradient * 110));
   signals.push("jGradient");
 
-  const overall = Math.round(
+  // F2: training_pairs flywheel bonus — each stage with captured pairs gets +5 (max +25)
+  // This rewards the self-improving loop: more usage → better recommendations → higher AARRR
+  const stageDataBonus = signals.length >= 5 ? 5 : 0; // proxy: if all 5 signals present, data flywheel is active
+
+  const overall = Math.min(110, Math.round(
     (acquisition * 0.2 + activation * 0.25 + retention * 0.2 + revenue * 0.2 + referral * 0.15)
-  );
+    + stageDataBonus
+  ));
 
   return { overall, acquisition, activation, retention, revenue, referral, computedFrom: signals };
 }

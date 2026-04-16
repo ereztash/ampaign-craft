@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Scan, CheckCircle, ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Analytics } from "@/lib/analytics";
 
 interface CompetitorScanCTAProps {
   className?: string;
@@ -29,6 +30,7 @@ export function CompetitorScanCTA({ className = "" }: CompetitorScanCTAProps) {
     e.preventDefault();
     if (!businessName.trim()) return;
     setSubmitted(true);
+    Analytics.competitorScanRequested(businessName);
     // Navigate to wizard after 1.5s — carry businessName as state
     setTimeout(() => navigate("/wizard", { state: { prefillBusiness: businessName } }), 1500);
   };
