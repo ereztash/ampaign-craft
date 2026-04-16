@@ -17,14 +17,16 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { getBlindSpotProfile } from "@/lib/archetypeBlindSpots";
 import { emitArchetypeEvent } from "@/lib/archetypeAnalytics";
 import type { RevealSource } from "@/lib/archetypeAnalytics";
+import { getReferralData } from "@/engine/referralEngine";
 import { tx } from "@/i18n/tx";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, XCircle, ArrowRight, ArrowLeft, Sparkles, AlertTriangle } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, ArrowLeft, Sparkles, AlertTriangle, Share2 } from "lucide-react";
 
 // Archetype emoji icons — same set used by AdminArchetypeDebugPanel
 const ARCHETYPE_ICONS: Record<string, string> = {
@@ -43,6 +45,7 @@ interface ArchetypeRevealScreenProps {
 export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeRevealScreenProps) {
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     effectiveArchetypeId,
     confidenceTier,
@@ -51,6 +54,21 @@ export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeReve
     setAdaptationsEnabled,
     adaptationsEnabled,
   } = useArchetype();
+
+  // Ref2: Share archetype CTA — surface referral link after reveal (network effect trigger)
+  const referralData = user ? getReferralData(user.id) : null;
+  const referralLink = referralData
+    ? `https://funnelforge.app/?ref=${referralData.code}`
+    : "https://funnelforge.app";
+  const archetypeEmoji = ARCHETYPE_ICONS[effectiveArchetypeId] ?? "✦";
+
+  function shareArchetype() {
+    const text = language === "he"
+      ? `גיליתי שהארכיטיפ שלי הוא ${archetypeEmoji} ${uiConfig?.label?.he ?? effectiveArchetypeId}! צור את תוכנית השיווק שלך חינם:`
+      : `I just discovered my business archetype is ${archetypeEmoji} ${uiConfig?.label?.en ?? effectiveArchetypeId}! Build your free marketing plan:`;
+    const url = `https://wa.me/?text=${encodeURIComponent(`${text} ${referralLink}`)}`;
+    window.open(url, "_blank", "noopener");
+  }
 
   const blindSpots = getBlindSpotProfile(effectiveArchetypeId);
   const icon = ARCHETYPE_ICONS[effectiveArchetypeId] ?? "✦";
@@ -223,6 +241,22 @@ export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeReve
               </Button>
             </>
           )}
+        </div>
+
+        {/* Ref2: Share archetype CTA — WhatsApp viral share (network effect) */}
+        <div className="pt-2 border-t border-border">
+          <p className="text-xs text-muted-foreground mb-2 text-center" dir="auto">
+            {tx({ he: "שתף את הארכיטיפ שלך עם חברים", en: "Share your archetype with friends" }, language)}
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-2 text-[#25D366] border-[#25D366]/30 hover:bg-[#25D366]/10"
+            onClick={shareArchetype}
+          >
+            <Share2 className="h-4 w-4" aria-hidden="true" />
+            {tx({ he: `שתף: אני ${archetypeEmoji} ${uiConfig?.label?.he ?? ""} ב-WhatsApp`, en: `Share: I'm ${archetypeEmoji} ${uiConfig?.label?.en ?? ""} on WhatsApp` }, language)}
+          </Button>
         </div>
 
       </article>
