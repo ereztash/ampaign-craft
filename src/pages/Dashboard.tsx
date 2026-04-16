@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -9,9 +9,14 @@ import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph, loadChatInsights, 
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { assessChurnRisk } from "@/engine/churnPredictionEngine";
+import { buildChurnPlaybook } from "@/engine/churnPlaybookEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
+import { recordVisitAndGetReward, type StreakReward } from "@/engine/streakRewardEngine";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import ReferralDashboard from "@/components/ReferralDashboard";
+import { SessionCapstone } from "@/components/SessionCapstone";
+import { NPSMini, useNPSEligibility } from "@/components/NPSMini";
+import { CommunityPanel } from "@/components/CommunityPanel";
 import { Analytics } from "@/lib/analytics";
 import { useAuth } from "@/contexts/AuthContext";
 import { useArchetypePipeline } from "@/hooks/useArchetypePipeline";
@@ -31,7 +36,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import { Crosshair, Rocket, FileText, Flame, Clock, Plus, BarChart3, TrendingUp, DollarSign, Heart, ArrowRight, Sparkles } from "lucide-react";
+import { Crosshair, Rocket, FileText, Flame, Clock, Plus, BarChart3, TrendingUp, DollarSign, Heart, ArrowRight, Sparkles, Gift } from "lucide-react";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -73,6 +78,14 @@ const Dashboard = () => {
     if (lastPlan) return assessChurnRisk(lastPlan.result.formData);
     return null;
   }, [lastPlan]);
+
+  // R3: Churn playbook auto-exec — fires when churn risk is high/critical
+  const churnPlaybook = useMemo(() => {
+    if (!lastPlan || !churnRisk) return null;
+    if (churnRisk.riskTier !== "at-risk" && churnRisk.riskTier !== "critical") return null;
+    const ukg = graph || buildDefaultKnowledgeGraph();
+    return buildChurnPlaybook(lastPlan.result.formData, ukg, churnRisk);
+  }, [lastPlan, churnRisk, graph]);
 
   const staticNextStep = useMemo(() => {
     const fallbackGraph = graph || buildDefaultKnowledgeGraph();
@@ -117,6 +130,18 @@ const Dashboard = () => {
   const modules = useModuleStatus();
   const completedModules = modules.filter((m) => m.completed).length;
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
+  const [capstoneDismissed, setCapstoneDismissed] = useState(false);
+  const [npsDismissed, setNpsDismissed] = useState(false);
+  const [showReferralCTA, setShowReferralCTA] = useState(false);
+  const [streakReward, setStreakReward] = useState<StreakReward | null>(null);
+  const npsEligible = useNPSEligibility();
+
+  // Record visit + variable reward on mount (R6)
+  useEffect(() => {
+    const { reward } = recordVisitAndGetReward();
+    if (reward) setStreakReward(reward);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const motivationState = useMemo(() => {
     const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
@@ -221,6 +246,30 @@ const Dashboard = () => {
             <Badge className="gap-1 text-sm"><Flame className="h-4 w-4" /> {streak.currentStreak} {tx({ he: "שבועות", en: "weeks" }, language)}</Badge>
           )}
         </div>
+
+        {/* R6: Variable reward banner — streak milestone or random bonus */}
+        {streakReward && (
+          <div className="mb-4 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 flex items-center gap-3">
+            <span className="text-2xl" role="img" aria-hidden="true">{streakReward.emoji}</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-foreground" dir="auto">
+                {streakReward.message[language]}
+              </p>
+            </div>
+            <button onClick={() => setStreakReward(null)} className="text-muted-foreground hover:text-foreground">
+              <span className="text-xs">{isHe ? "✕" : "✕"}</span>
+            </button>
+          </div>
+        )}
+
+        {/* R10: NPS mini survey — D7 post-activation */}
+        {npsEligible && !npsDismissed && (
+          <NPSMini
+            userId={user?.id}
+            onPromoter={() => { setNpsDismissed(true); setShowReferralCTA(true); }}
+            onDismiss={() => setNpsDismissed(true)}
+          />
+        )}
 
         {/* Behavioral Nudge */}
         {!nudgeDismissed && motivationState.nudge && (
@@ -428,10 +477,57 @@ const Dashboard = () => {
           </section>
         )}
 
+        {/* R3: Churn Playbook quick win — surfaces when risk is high */}
+        {churnPlaybook && (
+          <Card className="mb-6 border-destructive/30 bg-destructive/5">
+            <CardContent className="p-4">
+              <p className="text-sm font-bold text-foreground mb-1" dir="auto">
+                {isHe ? "⚠️ פעולת שימור דחופה" : "⚠️ Urgent Retention Action"}
+              </p>
+              <p className="text-xs text-muted-foreground mb-2" dir="auto">
+                {churnPlaybook.quickWin?.action?.he || churnPlaybook.quickWin?.action?.en || ""}
+              </p>
+              {churnPlaybook.weeklyActions[0] && (
+                <p className="text-xs text-foreground" dir="auto">
+                  {isHe ? churnPlaybook.weeklyActions[0].focus?.he : churnPlaybook.weeklyActions[0].focus?.en}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* R9: Community panel — archetype-specific network */}
+        <CommunityPanel archetypeId={effectiveArchetypeId} />
+
+        {/* Ref6: Promoter referral CTA — shown after NPS ≥ 9 */}
+        {showReferralCTA && (
+          <Card className="mb-6 border-accent/40 bg-accent/5">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm font-bold text-foreground mb-2" dir="auto">
+                {isHe ? "🎉 תודה! שתף את FunnelForge עם חבר ותרוויח שדרוג חינם" : "🎉 Thanks! Refer a friend and earn a free upgrade"}
+              </p>
+              <Button size="sm" onClick={() => navigate("/referral")} className="gap-2">
+                <Gift className="h-4 w-4" />
+                {isHe ? "שלח הזמנה" : "Send Invite"}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Referral Dashboard (Phase 5 AARRR — Referral) */}
         <section>
           <ReferralDashboard />
         </section>
+
+        {/* R4: SessionCapstone — Peak-End rule (shown at bottom of session) */}
+        {!capstoneDismissed && savedPlans.length > 0 && (
+          <SessionCapstone
+            completedModules={completedModules}
+            totalModules={modules.length}
+            planCount={savedPlans.length}
+            onDismiss={() => setCapstoneDismissed(true)}
+          />
+        )}
 
         {/* New Plan FAB */}
         <div className="fixed bottom-20 end-4 z-30">
