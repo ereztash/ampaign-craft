@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FormData } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { motion } from "framer-motion";
+import { calculateValueScore, HormoziValueResult } from "@/engine/hormoziValueEngine";
 
 interface ProcessingScreenProps {
   onComplete: () => void;
@@ -19,6 +20,12 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
   const [celebrating, setCelebrating] = useState(false);
   const [showContinue, setShowContinue] = useState(false);
   const isHe = language === "he";
+
+  // Act1: Compute Hormozi value score once (for celebration screen)
+  const hormoziResult = useMemo<HormoziValueResult | null>(() => {
+    if (!formData) return null;
+    try { return calculateValueScore(formData); } catch { return null; }
+  }, [formData]);
 
   // Contextual messages based on formData (Health-Tech pattern)
   const messages = formData
@@ -45,6 +52,12 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
     setMsgIndex(idx);
   }, [progress, messages.length]);
 
+  // Act6: Stage label for current step (1/4 → 4/4)
+  const stageLabel = useMemo(() => {
+    const stage = Math.min(Math.floor(progress / 25) + 1, 4);
+    return isHe ? `שלב ${stage} מתוך 4` : `Stage ${stage} of 4`;
+  }, [progress, isHe]);
+
   // Neuro-spectrum gradient: cortisol → oxytocin → dopamine
   const gradientStops = progress < 33
     ? "hsl(var(--destructive)), hsl(var(--chart-3))"   // cortisol→opportunity (red→orange)
@@ -64,11 +77,30 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
             {tx({ he: "התוכנית שלך מוכנה!", en: "Your plan is ready!" }, language)}
           </h2>
+          {/* Act9: Identity-based Aha Moment */}
+          <p className="text-base font-medium text-accent mb-1" dir="auto">
+            {tx({ he: "עצרת רגע — 94% מהעסקים לא מגיעים לשלב הזה.", en: "Pause — 94% of businesses never reach this point." }, language)}
+          </p>
           <p className="text-lg text-muted-foreground" dir="auto">
             {fieldName
               ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan — let's see the results` }, language))
               : (tx({ he: "בוא נראה מה בנינו", en: "Let's see what we built" }, language))}
           </p>
+          {/* Act1: Hormozi offer grade gauge */}
+          {hormoziResult && (
+            <div className="mt-4 rounded-xl border border-border bg-muted/40 px-6 py-3 text-center">
+              <p className="text-xs text-muted-foreground mb-1">
+                {tx({ he: "ציון ערך ההצעה שלך (Hormozi)", en: "Your Offer Value Score (Hormozi)" }, language)}
+              </p>
+              <p className="text-3xl font-bold text-foreground">{hormoziResult.overallScore}<span className="text-base font-normal text-muted-foreground">/100</span></p>
+              <p className="text-sm font-semibold mt-0.5" style={{ color: hormoziResult.offerGrade === "irresistible" ? "hsl(var(--accent))" : hormoziResult.offerGrade === "strong" ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}>
+                {hormoziResult.offerGrade === "irresistible" ? tx({ he: "🔥 הצעה בלתי ניתנת לסירוב", en: "🔥 Irresistible Offer" }, language)
+                  : hormoziResult.offerGrade === "strong" ? tx({ he: "💪 הצעה חזקה", en: "💪 Strong Offer" }, language)
+                  : hormoziResult.offerGrade === "average" ? tx({ he: "⚡ הצעה ממוצעת — ניתן לשפר", en: "⚡ Average Offer — improvable" }, language)
+                  : tx({ he: "🔧 הצעה חלשה — נעבוד על זה", en: "🔧 Weak Offer — let's fix it" }, language)}
+              </p>
+            </div>
+          )}
           <div className="mt-4 flex gap-2">
             {["🚀", "📊", "💡", "🎯", "✨"].map((e, i) => (
               <span key={i} role="img" aria-hidden="true" className="text-2xl">{e}</span>
@@ -103,11 +135,41 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2" dir="auto">
             {tx({ he: "התוכנית שלך מוכנה!", en: "Your plan is ready!" }, language)}
           </h2>
+          {/* Act9: Identity-based Aha Moment */}
+          <motion.p
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-base font-medium text-accent mb-1"
+            dir="auto"
+          >
+            {tx({ he: "עצרת רגע — 94% מהעסקים לא מגיעים לשלב הזה.", en: "Pause — 94% of businesses never reach this point." }, language)}
+          </motion.p>
           <p className="text-lg text-muted-foreground" dir="auto">
             {fieldName
               ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan — let's see the results` }, language))
               : (tx({ he: "בוא נראה מה בנינו", en: "Let's see what we built" }, language))}
           </p>
+          {/* Act1: Hormozi offer grade gauge */}
+          {hormoziResult && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-4 rounded-xl border border-border bg-muted/40 px-6 py-3 text-center"
+            >
+              <p className="text-xs text-muted-foreground mb-1">
+                {tx({ he: "ציון ערך ההצעה שלך (Hormozi)", en: "Your Offer Value Score (Hormozi)" }, language)}
+              </p>
+              <p className="text-3xl font-bold text-foreground">{hormoziResult.overallScore}<span className="text-base font-normal text-muted-foreground">/100</span></p>
+              <p className="text-sm font-semibold mt-0.5" style={{ color: hormoziResult.offerGrade === "irresistible" ? "hsl(var(--accent))" : hormoziResult.offerGrade === "strong" ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}>
+                {hormoziResult.offerGrade === "irresistible" ? tx({ he: "🔥 הצעה בלתי ניתנת לסירוב", en: "🔥 Irresistible Offer" }, language)
+                  : hormoziResult.offerGrade === "strong" ? tx({ he: "💪 הצעה חזקה", en: "💪 Strong Offer" }, language)
+                  : hormoziResult.offerGrade === "average" ? tx({ he: "⚡ הצעה ממוצעת — ניתן לשפר", en: "⚡ Average Offer — improvable" }, language)
+                  : tx({ he: "🔧 הצעה חלשה — נעבוד על זה", en: "🔧 Weak Offer — let's fix it" }, language)}
+              </p>
+            </motion.div>
+          )}
           <div className="mt-4 flex gap-2">
             {["🚀", "📊", "💡", "🎯", "✨"].map((e, i) => (
               <motion.span
@@ -158,6 +220,8 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           >
             <div className="h-full funnel-gradient" style={{ width: `${progress}%` }} aria-hidden="true" />
           </div>
+          {/* Act6: Stage label */}
+          <p className="text-xs text-muted-foreground mt-1">{stageLabel}</p>
           <p className="text-muted-foreground" aria-live="polite" aria-atomic="true">{messages[msgIndex]}</p>
         </div>
       </div>
@@ -226,6 +290,8 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           />
         </div>
 
+        {/* Act6: Stage label */}
+        <p className="text-xs text-muted-foreground mb-1">{stageLabel}</p>
         <motion.p
           key={msgIndex}
           initial={{ opacity: 0, y: 10 }}

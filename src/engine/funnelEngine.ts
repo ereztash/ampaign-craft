@@ -1204,6 +1204,8 @@ export function generateFunnel(data: FormData, blackboardCtx?: BlackboardWriteCo
       totalBudget: funnelResult.totalBudget,
       hormoziScore: funnelResult.hormoziValue?.overallScore,
     },
+    undefined,
+    { aarrr_stage: "activation" },
   ).catch(() => {});
 
   if (blackboardCtx) {

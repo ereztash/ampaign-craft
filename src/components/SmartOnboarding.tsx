@@ -31,16 +31,20 @@ interface SmartOnboardingProps {
 
 type Step = 1 | 2 | 3 | 4;
 
-const INDUSTRY_OPTIONS: { id: BusinessField; icon: React.ElementType; label: { he: string; en: string } }[] = [
+// Miller's Law: show 7±2 primary options, hide the rest behind "More"
+const INDUSTRY_OPTIONS_PRIMARY: { id: BusinessField; icon: React.ElementType; label: { he: string; en: string } }[] = [
   { id: "fashion", icon: ShoppingBag, label: { he: "אופנה וקמעונאות", en: "Fashion & Retail" } },
   { id: "tech", icon: Monitor, label: { he: "טכנולוגיה", en: "Technology" } },
   { id: "food", icon: UtensilsCrossed, label: { he: "מזון ומשקאות", en: "Food & Beverage" } },
   { id: "services", icon: Briefcase, label: { he: "שירותים מקצועיים", en: "Professional Services" } },
   { id: "education", icon: GraduationCap, label: { he: "חינוך והדרכה", en: "Education & Training" } },
   { id: "health", icon: Heart, label: { he: "בריאות ורווחה", en: "Health & Wellness" } },
+  { id: "personalBrand", icon: User, label: { he: "מותג אישי", en: "Personal Brand" } },
+];
+
+const INDUSTRY_OPTIONS_SECONDARY: { id: BusinessField; icon: React.ElementType; label: { he: string; en: string } }[] = [
   { id: "realEstate", icon: Building, label: { he: "נדל״ן", en: "Real Estate" } },
   { id: "tourism", icon: Plane, label: { he: "תיירות ואירוח", en: "Tourism & Hospitality" } },
-  { id: "personalBrand", icon: User, label: { he: "מותג אישי", en: "Personal Brand" } },
   { id: "other", icon: MoreHorizontal, label: { he: "אחר", en: "Other" } },
 ];
 
@@ -83,6 +87,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
   const [profile, setProfile] = useState<UnifiedProfile>(
     restoredProfile || { ...INITIAL_UNIFIED_PROFILE }
   );
+  const [showAllIndustries, setShowAllIndustries] = useState(false);
 
   // Persist draft on every profile change
   const update = useCallback((patch: Partial<UnifiedProfile>) => {
@@ -183,8 +188,12 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
               <p className="text-muted-foreground text-center mb-6" dir="auto">
                 {tx({ he: "בחר את התחום שהכי מתאים", en: "Select the best fit" }, language)}
               </p>
+              {/* Primary 7 industries (Miller's Law compliant) */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {INDUSTRY_OPTIONS.map((opt) => {
+                {[
+                  ...INDUSTRY_OPTIONS_PRIMARY,
+                  ...(showAllIndustries ? INDUSTRY_OPTIONS_SECONDARY : []),
+                ].map((opt) => {
                   const selected = profile.businessField === opt.id;
                   return (
                     <Card
@@ -208,6 +217,15 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
                   );
                 })}
               </div>
+              {/* Show more / less toggle */}
+              {!showAllIndustries && (
+                <button
+                  onClick={() => setShowAllIndustries(true)}
+                  className="mt-3 text-sm text-muted-foreground hover:text-primary underline-offset-2 hover:underline w-full text-center"
+                >
+                  {tx({ he: "תחומים נוספים (נדל״ן, תיירות, אחר)...", en: "More industries (Real Estate, Tourism, Other)..." }, language)}
+                </button>
+              )}
             </motion.div>
           )}
 

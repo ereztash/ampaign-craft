@@ -18,6 +18,7 @@
 import { SalesModel } from "@/types/funnel";
 import { applyCharmPricing } from "./pricingKnowledge";
 import type { BilingualText } from "@/types/pricing";
+import { captureTrainingPair } from "./trainingDataEngine";
 
 // ── Input Types ────────────────────────────────────────────────────────────
 
@@ -412,7 +413,7 @@ export function computePricingWizardRecommendation(
     en: "Based on: Van Westendorp PSM · Hormozi Value Equation · Prospect Theory (Kahneman) · Ariely Decoy Effect · Weber-Fechner JND",
   };
 
-  return {
+  const recommendation = {
     optimalPrice: optimalRaw,
     charmPrice,
     acceptableRange,
@@ -430,4 +431,15 @@ export function computePricingWizardRecommendation(
     rationale,
     methodology,
   };
+
+  // Rev10: Capture training pair for promptOptimizerEngine flywheel
+  void captureTrainingPair(
+    "pricing_wizard",
+    { ...input, tooChcapPrice: input.tooChcapPrice, stretchPrice: input.stretchPrice },
+    { charmPrice: recommendation.charmPrice, hormoziScore: recommendation.hormoziScore, diffPremium },
+    undefined,
+    { aarrr_stage: "revenue" },
+  ).catch(() => {});
+
+  return recommendation;
 }

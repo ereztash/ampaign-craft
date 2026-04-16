@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
 import { Check } from "lucide-react";
+import { getFlag } from "@/lib/featureFlags";
 
 interface PricingPageProps {
   currentTier?: PricingTier;
@@ -17,11 +18,19 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
   const isHe = language === "he";
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
 
+  // Rev9: A/B headline variant via featureFlags
+  const headlineVariant = getFlag("pricing.headline");
+  const headline = headlineVariant === "roi"
+    ? tx({ he: "מחשבון ה-ROI שלך", en: "Your ROI Calculator" }, language)
+    : headlineVariant === "money"
+    ? tx({ he: "התחל להרוויח יותר", en: "Start Making More Money" }, language)
+    : tx({ he: "בחר את התוכנית שלך", en: "Choose Your Plan" }, language);
+
   return (
     <div className="space-y-8 py-8">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-foreground">
-          {tx({ he: "בחר את התוכנית שלך", en: "Choose Your Plan" }, language)}
+          {headline}
         </h2>
         <p className="mt-2 text-muted-foreground">
           {tx({ he: "התחל בחינם, שדרג כשאתה מוכן", en: "Start free, upgrade when you're ready" }, language)}

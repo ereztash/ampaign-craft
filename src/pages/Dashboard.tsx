@@ -363,6 +363,38 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
+        {/* R5: Zeigarnik incomplete-loop card — keeps tension alive */}
+        {completedModules < modules.length && (
+          <Card className="mb-6 border-primary/30 bg-gradient-to-r from-primary/5 to-transparent cursor-pointer hover:shadow transition-shadow" role="button" tabIndex={0} onClick={() => navigate(nextStep.route)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(nextStep.route); } }}>
+            <CardContent className="p-4 flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground" dir="auto">
+                  {isHe
+                    ? `התוכנית שלך ${Math.round((completedModules / modules.length) * 100)}% מוכנה`
+                    : `Your plan is ${Math.round((completedModules / modules.length) * 100)}% complete`}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5" dir="auto">
+                  {isHe
+                    ? `השלמת ${completedModules} מתוך ${modules.length} מודולים — המשך לשלב הבא`
+                    : `Completed ${completedModules} of ${modules.length} modules — continue to the next step`}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="w-12 h-12 relative">
+                  <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(var(--muted))" strokeWidth="3" />
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeDasharray={`${Math.round((completedModules / modules.length) * 100)} 100`} strokeLinecap="round" />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-primary">
+                    {Math.round((completedModules / modules.length) * 100)}%
+                  </span>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground rtl:rotate-180" aria-hidden="true" />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Peer Benchmark */}
         <PeerBenchmark
           businessField={profile.lastFormData?.businessField || "other"}

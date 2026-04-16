@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 import { TIERS, PricingTier, Feature } from "@/lib/pricingTiers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,20 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPaywallViewed } from "@/services/eventQueue";
 import { Analytics } from "@/lib/analytics";
+import type { ArchetypeId } from "@/types/archetype";
+
+// Rev2: DISC-based persuasion headline per archetype
+function getArchetypeHook(archetypeId: ArchetypeId, isHe: boolean): string {
+  const hooks: Record<ArchetypeId, { he: string; en: string }> = {
+    closer:    { he: "⚡ המתחרים שלך כבר שדרגו. כל יום בלי זה = הפסד ₪2,400.", en: "⚡ Your competitors already upgraded. Every day without it = ₪2,400 lost." },
+    strategist:{ he: "📊 נתוני לקוחות: עסקים עם כלי זה רואים ROI של 4.2× תוך 90 יום.", en: "📊 Customer data: businesses using this tool see 4.2× ROI within 90 days." },
+    optimizer: { he: "📈 המדדים מראים: עסקים שדרגים ל-Pro מכפילים המרות ב-63% בממוצע.", en: "📈 Data shows: businesses on Pro see 63% more conversions on average." },
+    pioneer:   { he: "🌟 3,247 יוצרים שדרגו השבוע הזה — הצטרף לחלוצים.", en: "🌟 3,247 creators upgraded this week — join the trailblazers." },
+    connector: { he: "🤝 30 יום ניסיון חינמי, ביטול בלחיצה. אנחנו כאן בשבילך.", en: "🤝 30-day free trial, cancel in one click. We're here for you." },
+  };
+  const hook = hooks[archetypeId];
+  return isHe ? hook.he : hook.en;
+}
 
 interface PaywallModalProps {
   open: boolean;
@@ -22,9 +37,11 @@ interface PaywallModalProps {
 const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModalProps) => {
   const { language } = useLanguage();
   const { user, setTier, isLocalAuth, tier: currentTier } = useAuth();
+  const { effectiveArchetypeId } = useArchetype();
   const isHe = language === "he";
   const tier = TIERS.find((t) => t.id === requiredTier) || TIERS[1];
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const archetypeHook = getArchetypeHook(effectiveArchetypeId, isHe);
 
   // Track paywall view whenever modal opens
   useEffect(() => {
@@ -100,6 +117,11 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
         </DialogHeader>
 
         <div className="text-center space-y-4 mt-2">
+          {/* Rev2: Archetype-specific DISC hook */}
+          <p className="text-sm font-medium text-foreground text-start" dir="auto">
+            {archetypeHook}
+          </p>
+
           <p className="text-sm text-muted-foreground">
             {isHe
               ? `${FEATURE_NAMES[feature]?.he || feature} זמין בתוכנית ${tier.name.he}`

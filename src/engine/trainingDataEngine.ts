@@ -58,9 +58,12 @@ export interface TrainingPair {
   created_at: string;
 }
 
+export type AARRRStage = "acquisition" | "activation" | "retention" | "revenue" | "referral";
+
 export interface CaptureOptions {
   engineVersion?: string;
   metadata?: Record<string, unknown>;
+  aarrr_stage?: AARRRStage;
 }
 
 export interface TrainingFilters {
@@ -148,6 +151,7 @@ export async function captureTrainingPair(
 
   const engineVersion = options.engineVersion ?? "1.0.0";
   const metadata = options.metadata ?? {};
+  const aarrr_stage = options.aarrr_stage ?? null;
   const timestamp = new Date().toISOString();
 
   // No authenticated user → buffer for later flush
@@ -174,6 +178,7 @@ export async function captureTrainingPair(
         user_id: userId,
         timestamp,
         metadata,
+        ...(aarrr_stage ? { aarrr_stage } : {}),
       })
       .select("id")
       .single();

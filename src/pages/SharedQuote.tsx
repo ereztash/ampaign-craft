@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { tx } from "@/i18n/tx";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -8,11 +8,13 @@ import QuotePreview from "@/components/QuotePreview";
 import LoadingFallback from "@/components/LoadingFallback";
 import type { Quote } from "@/types/quote";
 import { Analytics, getUTM } from "@/lib/analytics";
+import { Button } from "@/components/ui/button";
 
 export default function SharedQuote() {
   const { token } = useParams<{ token: string }>();
   const { language } = useLanguage();
   const isHe = language === "he";
+  const navigate = useNavigate();
 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(true);
@@ -71,9 +73,33 @@ export default function SharedQuote() {
 
   if (!quote) return null;
 
+  // Capture referral code from URL for attribution
+  const utm = getUTM();
+  const refCode = utm.ref as string | undefined;
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <QuotePreview quote={quote} language={language} className="shadow-lg" />
+
+      {/* Ref3: Viral CTA at bottom of shared quote — Cialdini Reciprocity */}
+      <div className="max-w-2xl mx-auto mt-8 rounded-2xl border border-border bg-background p-6 text-center shadow-sm">
+        <p className="text-lg font-bold text-foreground mb-1" dir="auto">
+          {isHe ? "אתה רואה הצעת מחיר מקצועית — הנה שלך בחינם." : "You're seeing a professional quote — here's yours, free."}
+        </p>
+        <p className="text-sm text-muted-foreground mb-4" dir="auto">
+          {isHe ? "צור תוכנית שיווק + הצעת מחיר בשתי דקות" : "Build a marketing plan + quote in two minutes"}
+        </p>
+        <Button
+          size="lg"
+          className="funnel-gradient border-0 text-accent-foreground px-8 font-semibold"
+          onClick={() => navigate(refCode ? `/wizard?ref=${refCode}` : "/wizard")}
+        >
+          {isHe ? "צור את התוכנית שלך → חינם" : "Create Your Plan → Free"}
+        </Button>
+        <p className="text-xs text-muted-foreground mt-3">
+          {isHe ? "אין צורך בכרטיס אשראי" : "No credit card required"}
+        </p>
+      </div>
     </div>
   );
 }
