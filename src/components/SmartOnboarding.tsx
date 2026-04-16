@@ -14,8 +14,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles, Check, GripVertical } from "lucide-react";
 import {
   ShoppingBag, Monitor, UtensilsCrossed, Briefcase,
-  GraduationCap, Heart, Building, Plane, User, MoreHorizontal,
+  GraduationCap, Heart, Building, Plane, User, MoreHorizontal, AlertCircle,
 } from "lucide-react";
+import { detectBottlenecks } from "@/engine/bottleneckEngine";
 import type { BusinessField, AudienceType, MainGoal, SalesModel } from "@/types/funnel";
 import type { UnifiedProfile, ValuePriority } from "@/types/profile";
 import { getIndustryDefaults, INITIAL_UNIFIED_PROFILE } from "@/types/profile";
@@ -88,6 +89,8 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
     restoredProfile || { ...INITIAL_UNIFIED_PROFILE }
   );
   const [showAllIndustries, setShowAllIndustries] = useState(false);
+  // Act7: IKEA confidence slider — "How accurate is this profile?" (Norton-Mochon-Ariely)
+  const [profileConfidence, setProfileConfidence] = useState<number>(8);
 
   // Persist draft on every profile change
   const update = useCallback((patch: Partial<UnifiedProfile>) => {
@@ -298,6 +301,30 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
                     })}
                   </div>
                 </div>
+
+                {/* Act5: Bottleneck pre-flight — inline warning before form completion (Fogg Ability-matching) */}
+                {profile.audienceType && profile.mainGoal && (() => {
+                  const bottlenecks = detectBottlenecks({
+                    funnelResult: null,
+                    hasDifferentiation: false,
+                    planCount: 0,
+                    connectedSources: 0,
+                    healthScoreTotal: null,
+                  }).filter((b) => b.severity === "critical").slice(0, 1);
+                  if (!bottlenecks.length) return null;
+                  const b = bottlenecks[0];
+                  return (
+                    <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+                      <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-semibold text-amber-600 dark:text-amber-400" dir="auto">
+                          {b.title[language]}
+                        </p>
+                        <p className="text-xs text-muted-foreground" dir="auto">{b.tactics[0][language]}</p>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </motion.div>
           )}
@@ -406,8 +433,48 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
 
               <BusinessDNACard fingerprint={fingerprint} />
 
-              <div className="mt-6 text-center">
-                <p className="text-sm text-muted-foreground mb-4" dir="auto">
+              {/* Act7: IKEA confidence slider — users who co-author value it more */}
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <p className="font-medium text-foreground" dir="auto">
+                    {isHe ? "כמה מדויק הפרופיל הזה?" : "How accurate is this profile?"}
+                  </p>
+                  <Badge variant={profileConfidence < 6 ? "destructive" : "secondary"} className="text-sm font-bold">
+                    {profileConfidence}/10
+                  </Badge>
+                </div>
+                <input
+                  type="range"
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={profileConfidence}
+                  onChange={(e) => setProfileConfidence(Number(e.target.value))}
+                  className="w-full accent-primary h-2 cursor-pointer"
+                  aria-label={isHe ? "ציון דיוק פרופיל" : "Profile accuracy score"}
+                />
+                <div className="flex justify-between text-xs text-muted-foreground" dir="auto">
+                  <span>{isHe ? "לא מדויק" : "Not accurate"}</span>
+                  <span>{isHe ? "מדויק מאוד" : "Very accurate"}</span>
+                </div>
+                {profileConfidence < 6 && (
+                  <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 space-y-2">
+                    <p className="text-xs text-amber-600 dark:text-amber-400" dir="auto">
+                      {isHe
+                        ? "נשמע שהפרופיל לא מדויק מספיק — רוצה לחזור ולעדכן?"
+                        : "Sounds like the profile isn't accurate enough — want to go back and update?"}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1"
+                      onClick={() => setStep(1)}
+                    >
+                      {isHe ? "חזור לשלב 1" : "Back to Step 1"}
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground text-center" dir="auto">
                   {isHe
                     ? "כל התוכן, ההמלצות והניתוח יותאמו לפרופיל הזה"
                     : "All content, recommendations, and analysis will adapt to this profile"}

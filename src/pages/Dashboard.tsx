@@ -14,6 +14,7 @@ import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { recordVisitAndGetReward, type StreakReward } from "@/engine/streakRewardEngine";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import { ForecasterSignalCard } from "@/components/ForecasterSignalCard";
+import { generateColdStartGuidance } from "@/engine/guidanceEngine";
 import ReferralDashboard from "@/components/ReferralDashboard";
 import { SessionCapstone } from "@/components/SessionCapstone";
 import { NPSMini, useNPSEligibility } from "@/components/NPSMini";
@@ -271,6 +272,27 @@ const Dashboard = () => {
             onDismiss={() => setNpsDismissed(true)}
           />
         )}
+
+        {/* Act4: Cold-start guidance above fold — Goal-Gradient (closer to finish = more motivated) */}
+        {savedPlans.length <= 1 && !profile.lastFormData?.productDescription && (() => {
+          const coldItems = generateColdStartGuidance().slice(0, 2);
+          if (!coldItems.length) return null;
+          return (
+            <Card className="mb-4 border-primary/20 bg-primary/5">
+              <CardContent className="p-4 space-y-2">
+                <p className="text-xs font-semibold text-primary uppercase tracking-wide" dir="auto">
+                  {tx({ he: "המשלמה הבאה שלך", en: "Your next milestone" }, language)}
+                </p>
+                {coldItems.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm">
+                    <span className="text-primary mt-0.5 shrink-0">→</span>
+                    <span className="text-foreground" dir="auto">{item.actions?.[0]?.[language] ?? item.issue[language]}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* Act3/Rev5: ForecasterSignalCard — loss-aversion trigger (Prospect Theory 2:1) */}
         <ForecasterSignalCard className="mb-4" />

@@ -175,7 +175,7 @@ export const getOverallHealth = (
 
 // ═══ Cold-Start Guidance ═══
 
-function generateColdStartGuidance(): GuidanceItem[] {
+export function generateColdStartGuidance(): GuidanceItem[] {
   return [
     {
       priority: "high",
