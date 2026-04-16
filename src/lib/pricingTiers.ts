@@ -9,7 +9,7 @@
 //  • canAccess() is the single gate; getLimitValue() exposes raw quota
 // ═══════════════════════════════════════════════
 
-export type PricingTier = "free" | "pro" | "business";
+export type PricingTier = "free" | "lite" | "pro" | "business";
 export type BillingCycle = "monthly" | "annual";
 
 export interface TierLimits {
@@ -80,6 +80,35 @@ export interface TierConfig {
 // ─── Tier definitions ──────────────────────────────────────────────────────
 
 export const TIERS: TierConfig[] = [
+  {
+    id: "lite",
+    name: { he: "Lite", en: "Lite" },
+    price: { he: "₪49/חודש", en: "₪49/month" },
+    priceMonthly: 49,
+    priceAnnualMonthly: 39,
+    priceAnnualTotal: 468,
+    annualSavingsPct: 20,
+    trialDays: 0,
+    features: [
+      { he: "5 משפכים שיווקיים", en: "5 marketing funnels" },
+      { he: "אסטרטגיה + תכנון + תוכן", en: "Strategy + Planning + Content" },
+      { he: "ציון בריאות שיווקית", en: "Marketing Health Score" },
+      { he: "10 הודעות AI Coach/חודש", en: "10 AI Coach messages/month" },
+    ],
+    limits: {
+      maxFunnels: 5,
+      aiCoachMessages: 10,
+      aiCoachOveragePriceNIS: 0,
+      pdfExport: false,
+      whatsappTemplates: 0,
+      campaignCockpit: false,
+      templatePublishing: false,
+      differentiationAgent: true,
+      seats: 1,
+      brandedReports: false,
+      prioritySupport: false,
+    },
+  },
   {
     id: "free",
     name: { he: "חינם", en: "Free" },

@@ -180,6 +180,16 @@ const PricingWizard = ({
       ? Math.round(Math.sqrt(tooChcapPrice * stretchPrice))
       : null;
 
+  // Rev4: Live price preview — monthly / annual with savings (Endowment + Anchoring)
+  const liveTierLabel = psmMidpoint !== null
+    ? psmMidpoint < 100 ? (isHe ? "Lite" : "Lite")
+      : psmMidpoint < 200 ? (isHe ? "Pro" : "Pro")
+      : (isHe ? "Business" : "Business")
+    : null;
+  const liveMonthly = psmMidpoint !== null ? psmMidpoint : null;
+  const liveAnnual = liveMonthly !== null ? Math.round(liveMonthly * 12 * 0.8) : null;
+  const liveSavings = liveMonthly !== null && liveAnnual !== null ? Math.round(liveMonthly * 12 - liveAnnual) : null;
+
   // ── Step content ────────────────────────────────────────────────────────
 
   const stepContent = [
@@ -680,6 +690,27 @@ const PricingWizard = ({
           </Button>
         )}
       </div>
+
+      {/* Rev4: Live price preview strip (Endowment + Anchoring) */}
+      {liveMonthly !== null && liveTierLabel !== null && (
+        <div className="rounded-xl border-2 border-accent/30 bg-accent/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+          <div dir="auto">
+            <span className="text-muted-foreground">{tx({ he: "תוכנית מומלצת:", en: "Recommended tier:" }, language)}</span>
+            <span className="font-bold text-foreground ms-2">{liveTierLabel}</span>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            <span className="font-bold text-foreground">{formatNIS(liveMonthly)}{isHe ? "/חודש" : "/mo"}</span>
+            {liveAnnual !== null && (
+              <span className="text-muted-foreground">
+                {isHe ? "שנתי:" : "Annual:"} {formatNIS(liveAnnual)}
+                {liveSavings !== null && liveSavings > 0 && (
+                  <span className="text-accent ms-1">{isHe ? `חיסכון ${formatNIS(liveSavings)}` : `Save ${formatNIS(liveSavings)}`}</span>
+                )}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Methodology footnote */}
       <p className="text-center text-[10px] text-muted-foreground/60" dir="auto">

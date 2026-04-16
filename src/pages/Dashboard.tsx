@@ -13,6 +13,7 @@ import { buildChurnPlaybook } from "@/engine/churnPlaybookEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { recordVisitAndGetReward, type StreakReward } from "@/engine/streakRewardEngine";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
+import { ForecasterSignalCard } from "@/components/ForecasterSignalCard";
 import ReferralDashboard from "@/components/ReferralDashboard";
 import { SessionCapstone } from "@/components/SessionCapstone";
 import { NPSMini, useNPSEligibility } from "@/components/NPSMini";
@@ -270,6 +271,9 @@ const Dashboard = () => {
             onDismiss={() => setNpsDismissed(true)}
           />
         )}
+
+        {/* Act3/Rev5: ForecasterSignalCard — loss-aversion trigger (Prospect Theory 2:1) */}
+        <ForecasterSignalCard className="mb-4" />
 
         {/* Behavioral Nudge */}
         {!nudgeDismissed && motivationState.nudge && (
