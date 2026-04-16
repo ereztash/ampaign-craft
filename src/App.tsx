@@ -34,6 +34,7 @@ const SharedQuote = lazy(() => import("./pages/SharedQuote"));
 const CrmPage = lazy(() => import("./pages/CrmPage"));
 const ArchetypeRevealScreen = lazy(() => import("./components/ArchetypeRevealScreen"));
 const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
+const SeoLanding = lazy(() => import("./pages/SeoLanding"));
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const AnimatedRoutes = () => {
         <Routes location={location}>
           <Route path="/legacy" element={<Index />} />
           <Route path="/quote/:token" element={<SharedQuote />} />
+          <Route path="/seo/:industry" element={<SeoLanding />} />
           <Route element={<AppShell />}>
             <Route index element={<CommandCenter />} />
             <Route path="data/:sourceId?" element={<DataHub />} />

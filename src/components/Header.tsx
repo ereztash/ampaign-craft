@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
+import { CommandPalette } from "@/components/CommandPalette";
 import { tx } from "@/i18n/tx";
-import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home } from "lucide-react";
+import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -22,7 +23,20 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
   const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
   const isHe = language === "he";
+
+  // A8: keyboard "/" opens CommandPalette (Fitts + power-user delight)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "/" && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        setCmdOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   return (
     <>
@@ -38,6 +52,12 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
 
           {/* Clean 3-item nav: Language + UserMenu (Reference: Vercel) */}
           <div className="flex items-center gap-2">
+            {/* A8: Search / Command Palette — ≥44px Fitts target */}
+            <Button variant="ghost" size="sm" onClick={() => setCmdOpen(true)} className="gap-1.5 h-9 min-w-[44px] text-muted-foreground" aria-label={isHe ? "חיפוש" : "Search"}>
+              <Search className="h-4 w-4" />
+              <kbd className="hidden sm:inline-block text-xs bg-muted rounded px-1 font-mono">/</kbd>
+            </Button>
+
             {/* Language toggle */}
             <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-9 min-w-[44px]">
               <Globe className="h-4 w-4" />
@@ -99,6 +119,7 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
 
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
       <AchievementBadgesPanel open={badgesOpen} onOpenChange={setBadgesOpen} />
+      <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
     </>
   );
 };

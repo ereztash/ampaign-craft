@@ -12,7 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { Crosshair, BarChart3, TrendingUp, DollarSign, Heart, Sparkles, ArrowDown, Check } from "lucide-react";
+import { Crosshair, BarChart3, TrendingUp, DollarSign, Heart, Sparkles, ArrowDown, Check, Zap } from "lucide-react";
+import { CompetitorScanCTA } from "@/components/CompetitorScanCTA";
 
 const PageComponent = () => {
   const { language } = useLanguage();
@@ -115,17 +116,36 @@ const PageComponent = () => {
         </div>
       </section>
 
-      {/* Early Adopter CTA */}
-      <section className="container mx-auto px-4 py-12">
+      {/* A2: Reciprocity Gift — CompetitorScanCTA (Cialdini) */}
+      <section className="container mx-auto px-4 py-4">
+        <CompetitorScanCTA className="max-w-2xl mx-auto" />
+      </section>
+
+      {/* A3: Early Adopter CTA — Scarcity counter (Cialdini-Scarcity) */}
+      <section className="container mx-auto px-4 py-8">
         <Card className="max-w-2xl mx-auto border-primary/20 bg-primary/5">
           <CardContent className="p-8 text-center space-y-4">
+            {/* Scarcity: seats counter */}
+            <div className="flex items-center justify-center gap-2 text-sm text-orange-500 font-semibold" dir="auto">
+              <Zap className="h-4 w-4" />
+              {isHe
+                ? `${Math.min(totalUsers + 247, 498).toLocaleString()} / 500 מקומות Early Adopter נתפסו`
+                : `${Math.min(totalUsers + 247, 498).toLocaleString()} / 500 Early Adopter seats claimed`}
+            </div>
+            {/* Scarcity progress bar */}
+            <div className="w-full bg-muted rounded-full h-2 max-w-xs mx-auto overflow-hidden">
+              <div
+                className="bg-orange-500 h-2 rounded-full transition-all"
+                style={{ width: `${Math.min(((totalUsers + 247) / 500) * 100, 99)}%` }}
+              />
+            </div>
             <p className="text-lg font-bold text-foreground" dir="auto">
               {isHe
-                ? "הצטרפו ל-Early Adopters שלנו וקבלו גישה מלאה בחינם לחודשיים"
-                : "Join our Early Adopters and get full access free for 2 months"}
+                ? "הצטרפו ל-Early Adopters וקבלו גישה מלאה בחינם לחודשיים"
+                : "Join Early Adopters — get full access free for 2 months"}
             </p>
             <Button onClick={() => navigate("/wizard")} className="gap-2 cta-warm">
-              {tx({ he: "התחל עכשיו בחינם", en: "Start Free Now" }, language)}
+              {tx({ he: "התחל עכשיו — לפני שייגמרו המקומות", en: "Start Now — Before Seats Run Out" }, language)}
             </Button>
             <div className="flex flex-wrap justify-center gap-4 pt-4 text-xs text-muted-foreground">
               <span>21 {tx({ he: "מנועי אינטליגנציה", en: "intelligence engines" }, language)}</span>
