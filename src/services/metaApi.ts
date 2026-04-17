@@ -1,14 +1,60 @@
 import { MetaAdAccount, MetaInsights } from "@/types/meta";
+import {
+  metaAdAccountListSchema,
+  metaErrorSchema,
+  metaInsightsListSchema,
+  metaTokenExchangeSchema,
+} from "@/schemas/metaApi";
+import { logger } from "@/lib/logger";
 
 const GRAPH_URL = "https://graph.facebook.com/v19.0";
 
+export class MetaAuthExpiredError extends Error {
+  constructor(msg = "Meta auth expired") {
+    super(msg);
+    this.name = "MetaAuthExpiredError";
+  }
+}
+
+function dispatchReconnectRequired(): void {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("meta:reconnect-required"));
+  }
+}
+
+async function fetchJson(url: string, init?: RequestInit, attempt = 0): Promise<unknown> {
+  const res = await fetch(url, init);
+  if (res.status === 401 || res.status === 403) {
+    dispatchReconnectRequired();
+    throw new MetaAuthExpiredError();
+  }
+  if (res.status === 429 && attempt < 3) {
+    const wait = Math.pow(2, attempt) * 1000;
+    await new Promise((r) => setTimeout(r, wait));
+    return fetchJson(url, init, attempt + 1);
+  }
+
+  const body = await res.json().catch(() => ({}));
+  const asError = metaErrorSchema.safeParse(body);
+  if (asError.success) {
+    logger.warn("metaApi.errorPayload", asError.data.error);
+    throw new Error(asError.data.error.message);
+  }
+  if (!res.ok) {
+    throw new Error(`Meta API ${res.status}`);
+  }
+  return body;
+}
+
 export const getAdAccounts = async (token: string): Promise<MetaAdAccount[]> => {
-  const res = await fetch(
-    `${GRAPH_URL}/me/adaccounts?fields=id,name,currency,account_status&access_token=${token}`
-  );
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.data ?? [];
+  const url = `${GRAPH_URL}/me/adaccounts?fields=id,name,currency,account_status&access_token=${token}`;
+  const raw = await fetchJson(url);
+  const parsed = metaAdAccountListSchema.safeParse(raw);
+  if (!parsed.success) {
+    logger.error("metaApi.getAdAccounts.parse", parsed.error);
+    return [];
+  }
+  return parsed.data.data as MetaAdAccount[];
 };
 
 export const getCampaignInsights = async (
@@ -28,12 +74,14 @@ export const getCampaignInsights = async (
     "cost_per_action_type",
   ].join(",");
 
-  const res = await fetch(
-    `${GRAPH_URL}/${accountId}/insights?fields=${fields}&date_preset=${datePreset}&access_token=${token}`
-  );
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.data?.[0] ?? null;
+  const url = `${GRAPH_URL}/${accountId}/insights?fields=${fields}&date_preset=${datePreset}&access_token=${token}`;
+  const raw = await fetchJson(url);
+  const parsed = metaInsightsListSchema.safeParse(raw);
+  if (!parsed.success) {
+    logger.error("metaApi.getCampaignInsights.parse", parsed.error);
+    return null;
+  }
+  return (parsed.data.data?.[0] as unknown as MetaInsights) ?? null;
 };
 
 export const exchangeForLongLivedToken = async (
@@ -49,15 +97,22 @@ export const exchangeForLongLivedToken = async (
     },
     body: JSON.stringify({ shortLivedToken }),
   });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error);
-  return data;
+  const data = await res.json().catch(() => ({}));
+  const asError = metaErrorSchema.safeParse(data);
+  if (asError.success) throw new Error(asError.data.error.message);
+  if ((data as { error?: string }).error) throw new Error(String((data as { error?: string }).error));
+  const parsed = metaTokenExchangeSchema.safeParse(data);
+  if (!parsed.success) {
+    logger.error("metaApi.exchangeForLongLivedToken.parse", parsed.error);
+    throw new Error("Invalid Meta token response");
+  }
+  return { access_token: parsed.data.access_token, expires_in: parsed.data.expires_in };
 };
 
 export const buildMetaOAuthUrl = (): string => {
   const appId = import.meta.env.VITE_META_APP_ID;
   const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
-  const scope = encodeURIComponent("ads_read,ads_management");
+  const scope = encodeURIComponent("ads_read");
   return `https://www.facebook.com/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
 };
 

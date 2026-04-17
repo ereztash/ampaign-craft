@@ -1,4 +1,4 @@
-import { Facebook, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Facebook, Loader2, AlertCircle, CheckCircle2, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -16,6 +16,7 @@ interface MetaConnectProps {
   onDisconnect: () => void;
   onSelectAccount: (id: string, name: string) => void;
   lastSyncTimestamp?: number | null;
+  disabled?: boolean;
 }
 
 const MetaConnect = ({
@@ -28,12 +29,37 @@ const MetaConnect = ({
   onDisconnect,
   onSelectAccount,
   lastSyncTimestamp,
+  disabled,
 }: MetaConnectProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
   const isStale = lastSyncTimestamp != null && (Date.now() - lastSyncTimestamp) > SEVEN_DAYS_MS;
   const staleDate = lastSyncTimestamp ? new Date(lastSyncTimestamp).toLocaleDateString() : null;
+
+  if (disabled) {
+    return (
+      <Card className="border-dashed bg-muted/30">
+        <CardContent className="flex items-center gap-3 py-6">
+          <PowerOff className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+          <div>
+            <p className="text-sm font-medium text-foreground" dir="auto">
+              {tx(
+                { he: "חיבור Meta Ads אינו זמין כעת", en: "Meta Ads integration is currently unavailable" },
+                language,
+              )}
+            </p>
+            <p className="text-xs text-muted-foreground" dir="auto">
+              {tx(
+                { he: "נא לנסות שוב בעוד מספר דקות.", en: "Please try again in a few minutes." },
+                language,
+              )}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (loading) {
     return (

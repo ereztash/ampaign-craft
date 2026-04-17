@@ -1,19 +1,23 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
 Deno.serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+
+  if (!isOriginAllowed(req)) return corsDenied(req);
+
+  const rl = checkRateLimit(req, "ai-coach", 20, 60_000);
+  if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
   if (!ANTHROPIC_API_KEY) {
     return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }), {

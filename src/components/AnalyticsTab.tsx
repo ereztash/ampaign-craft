@@ -25,6 +25,7 @@ export interface MetaConnectionProps {
   onConnect: () => void;
   onDisconnect: () => void;
   onSelectAccount: (id: string, name: string) => void;
+  disabled?: boolean;
 }
 
 interface AnalyticsTabProps {

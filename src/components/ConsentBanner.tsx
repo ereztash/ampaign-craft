@@ -1,24 +1,21 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { ConsentRecord, DEFAULT_CONSENT } from "@/types/governance";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { tx } from "@/i18n/tx";
+import { safeStorage } from "@/lib/safeStorage";
 
 const CONSENT_KEY = "funnelforge-consent";
 
 export function loadConsent(): ConsentRecord | null {
-  try {
-    const raw = localStorage.getItem(CONSENT_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+  return safeStorage.getJSON<ConsentRecord | null>(CONSENT_KEY, null);
 }
 
 export function saveConsent(consent: ConsentRecord): void {
-  localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+  safeStorage.setJSON(CONSENT_KEY, consent);
 }
 
 export function hasConsented(): boolean {
@@ -91,6 +88,15 @@ const ConsentBanner = ({ onAccept }: ConsentBannerProps) => {
             {isHe
               ? "אנו מעבדים מידע עסקי ושיווקי שלך כדי לספק המלצות מותאמות אישית. המידע מאוחסן באופן מאובטח ולא משותף עם צדדים שלישיים."
               : "We process your business and marketing information to provide personalized recommendations. Data is stored securely and not shared with third parties."}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            <Link to="/privacy" className="underline">
+              {tx({ he: "מדיניות פרטיות", en: "Privacy policy" }, language)}
+            </Link>
+            {" · "}
+            <Link to="/terms" className="underline">
+              {tx({ he: "תנאי שימוש", en: "Terms" }, language)}
+            </Link>
           </p>
 
           <div className="space-y-3">

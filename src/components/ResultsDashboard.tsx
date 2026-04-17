@@ -78,7 +78,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   const { profile } = useUserProfile();
   const reducedMotion = useReducedMotion();
   const isHe = language === "he";
-  const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect } = useMetaAuth();
+  const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect, disabled: metaDisabled } = useMetaAuth();
   const peerModules = useModuleStatus();
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState<string | null>(null);
@@ -169,7 +169,12 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   }, []), [result.stages, language]);
 
   const savePlan = async () => {
-    await savePlanToStore(result, result.funnelName[language]);
+    const name =
+      result.funnelName?.[language] ??
+      result.funnelName?.en ??
+      result.funnelName?.he ??
+      "Untitled Plan";
+    await savePlanToStore(result, name);
     toast.success(t("planSaved"));
     trackFeature("plan_saved");
     if (savedPlans.length + 1 >= 5) unlock("five_plans");
@@ -401,6 +406,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
                   setSelectedAccountId(id);
                   setSelectedAccountName(name);
                 },
+                disabled: metaDisabled,
               }}
               auth={auth}
               result={result}

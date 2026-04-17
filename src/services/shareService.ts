@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════
 
 import type { SavedPlan } from "@/types/funnel";
+import { safeStorage } from "@/lib/safeStorage";
 
 const SHARES_KEY = "funnelforge-shared-plans";
 const EXPIRY_DAYS = 30;
@@ -30,16 +31,11 @@ function generateShareId(): string {
 }
 
 function getSharedPlans(): SharedPlanSnapshot[] {
-  try {
-    const raw = localStorage.getItem(SHARES_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<SharedPlanSnapshot[]>(SHARES_KEY, []);
 }
 
 function saveSharedPlans(plans: SharedPlanSnapshot[]): void {
-  localStorage.setItem(SHARES_KEY, JSON.stringify(plans));
+  safeStorage.setJSON(SHARES_KEY, plans);
 }
 
 /**

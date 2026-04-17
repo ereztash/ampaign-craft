@@ -20,8 +20,14 @@ export default defineConfig(({ mode }) => ({
     dedupe: ["react", "react-dom"],
   },
   build: {
+    // "hidden" emits .map files for upload to error trackers but omits the
+    // sourceMappingURL comment from the bundle, so the maps are not served
+    // publicly. Flip to true in staging if you need in-browser DevTools maps.
+    sourcemap: "hidden",
     rollupOptions: {
       output: {
+        // Keep original source content out of the hosted maps.
+        sourcemapExcludeSources: true,
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
           charts: ["recharts"],

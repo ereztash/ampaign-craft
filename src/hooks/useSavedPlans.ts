@@ -2,16 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { FunnelResult, SavedPlan } from "@/types/funnel";
-import { safeParseJson } from "@/lib/utils";
+import { safeStorage } from "@/lib/safeStorage";
 
 const LOCAL_KEY = "funnelforge-plans";
 
 function loadLocal(): SavedPlan[] {
-  return safeParseJson<SavedPlan[]>(LOCAL_KEY, []);
+  return safeStorage.getJSON<SavedPlan[]>(LOCAL_KEY, []);
 }
 
 function saveLocal(plans: SavedPlan[]) {
-  localStorage.setItem(LOCAL_KEY, JSON.stringify(plans));
+  safeStorage.setJSON(LOCAL_KEY, plans);
 }
 
 // Typed helper that wraps supabase calls so we avoid repeated `as any`.

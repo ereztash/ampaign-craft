@@ -1,7 +1,8 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { logger } from "@/lib/logger";
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -15,6 +16,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
+import ConsentBanner from "@/components/ConsentBanner";
 
 const Index = lazy(() => import("./pages/Index"));
 const CommandCenter = lazy(() => import("./pages/CommandCenter"));
@@ -34,8 +36,18 @@ const SharedQuote = lazy(() => import("./pages/SharedQuote"));
 const CrmPage = lazy(() => import("./pages/CrmPage"));
 const ArchetypeRevealScreen = lazy(() => import("./components/ArchetypeRevealScreen"));
 const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
+const Privacy = lazy(() => import("./pages/legal/Privacy"));
+const Terms = lazy(() => import("./pages/legal/Terms"));
+const Support = lazy(() => import("./pages/Support"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => logger.error("react-query", error),
+  }),
+  mutationCache: new MutationCache({
+    onError: (error) => logger.error("react-query-mutation", error),
+  }),
+});
 
 /** Old /plans/:id links → strategy canvas */
 function LegacyPlanRedirect() {
@@ -80,6 +92,9 @@ const AnimatedRoutes = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="archetype" element={<ArchetypeRevealScreen />} />
             <Route path="admin/aarrr" element={<AARRRDashboard />} />
+            <Route path="privacy" element={<Privacy />} />
+            <Route path="terms" element={<Terms />} />
+            <Route path="support" element={<Support />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
@@ -104,6 +119,7 @@ const App = () => (
                   <Suspense fallback={<LoadingFallback />}>
                     <AnimatedRoutes />
                   </Suspense>
+                  <ConsentBanner />
                 </ErrorBoundary>
               </BrowserRouter>
             </TooltipProvider>

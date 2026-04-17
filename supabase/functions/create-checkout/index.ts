@@ -1,14 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 const STRIPE_PRICE_PRO = Deno.env.get("STRIPE_PRICE_PRO");
 const STRIPE_PRICE_BUSINESS = Deno.env.get("STRIPE_PRICE_BUSINESS");
@@ -19,9 +16,16 @@ const PRICE_IDS: Record<string, string | undefined> = {
 };
 
 Deno.serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+
+  if (!isOriginAllowed(req)) return corsDenied(req);
+
+  const rl = checkRateLimit(req, "create-checkout", 10, 60_000);
+  if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
   if (!STRIPE_SECRET_KEY) {
     return new Response(JSON.stringify({ error: "Stripe not configured" }), {

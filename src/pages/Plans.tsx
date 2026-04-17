@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { Plus, FileText, Clock, Trash2 } from "lucide-react";
+import { safeStorage } from "@/lib/safeStorage";
 
 const Plans = () => {
   const { language } = useLanguage();
@@ -15,13 +16,14 @@ const Plans = () => {
 
   const [refreshKey, setRefreshKey] = useState(0);
   const plans = useMemo<SavedPlan[]>(() => {
-    try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]").sort((a: SavedPlan, b: SavedPlan) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()); }
-    catch { return []; }
+    return safeStorage
+      .getJSON<SavedPlan[]>("funnelforge-plans", [])
+      .sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
   }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const deletePlan = (id: string) => {
     const updated = plans.filter((p) => p.id !== id);
-    localStorage.setItem("funnelforge-plans", JSON.stringify(updated));
+    safeStorage.setJSON("funnelforge-plans", updated);
     setRefreshKey((k) => k + 1);
   };
 

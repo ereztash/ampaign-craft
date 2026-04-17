@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Language, translations, TranslationKey } from "./translations";
+import { safeStorage } from "@/lib/safeStorage";
 
 interface LanguageContextType {
   language: Language;
@@ -14,13 +15,13 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window === "undefined") return "he";
-    const saved = localStorage.getItem("funnelforge-lang");
+    const saved = safeStorage.getString("funnelforge-lang", "");
     return (saved === "he" || saved === "en") ? saved : "he";
   });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    if (typeof window !== "undefined") { localStorage.setItem("funnelforge-lang", lang); }
+    if (typeof window !== "undefined") safeStorage.setString("funnelforge-lang", lang);
   };
 
   const t = (key: TranslationKey): string => {

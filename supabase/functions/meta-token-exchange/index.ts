@@ -1,17 +1,37 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
 serve(async (req) => {
+  const started = Date.now();
+  const corsHeaders = buildCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (!isOriginAllowed(req)) {
+    console.log(JSON.stringify({
+      event: "meta_token_exchange.origin_denied",
+      origin: req.headers.get("origin"),
+      ts: new Date().toISOString(),
+    }));
+    return corsDenied(req);
+  }
+
+  // 3 exchanges per minute per IP is plenty for a legitimate user flow.
+  const rl = checkRateLimit(req, "meta-token-exchange", 3, 60_000);
+  if (!rl.allowed) {
+    console.log(JSON.stringify({
+      event: "meta_token_exchange.rate_limited",
+      retryAfterSec: rl.retryAfterSec,
+      ts: new Date().toISOString(),
+    }));
+    return rateLimitResponse(rl, corsHeaders);
   }
 
   // Verify JWT
@@ -45,11 +65,25 @@ serve(async (req) => {
       throw new Error(data.error.message);
     }
 
+    console.log(JSON.stringify({
+      event: "meta_token_exchange.success",
+      userId: user.id,
+      ts: new Date().toISOString(),
+      durationMs: Date.now() - started,
+    }));
+
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.log(JSON.stringify({
+      event: "meta_token_exchange.error",
+      userId: user.id,
+      error: err instanceof Error ? err.message : String(err),
+      ts: new Date().toISOString(),
+      durationMs: Date.now() - started,
+    }));
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
