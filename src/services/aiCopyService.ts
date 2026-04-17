@@ -8,6 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { selectModel, trackUsage, isOverMonthlyBudget, getMonthlyUsage, getMonthlyCap, wouldExceedCostCap, type CopyTask, type ModelSelection, type PricingTier } from "./llmRouter";
 import type { FunnelResult, FormData } from "@/types/funnel";
 import { analyzeAIDetection } from "@/engine/perplexityBurstiness";
+import { buildCohortPromptSection, type CohortPriors } from "./cohortBenchmarks";
+import type { RegimeState } from "@/engine/optimization/regimeDetector";
+import { getActivePromptPatches, buildPatchPromptSection } from "@/engine/promptOptimizerLoop";
+import { getStoredStylomePrompt } from "@/hooks/useStylomeProfile";
 
 export const ENGINE_MANIFEST = {
   name: "aiCopyService",
@@ -26,6 +30,10 @@ export interface CopyGenerationRequest {
   stylomePrompt?: string;
   qualityPriority?: "speed" | "balanced" | "quality";
   language?: "he" | "en";
+  /** Optional cohort priors — when provided, top-converting patterns are injected into the prompt. */
+  cohortPriors?: CohortPriors | null;
+  /** Optional user regime — "crisis" escalates model tier one step. */
+  regime?: RegimeState;
 }
 
 export interface CopyGenerationResult {
@@ -83,6 +91,24 @@ function buildSystemPrompt(request: CopyGenerationRequest): string {
     if (fd.mainGoal) parts.push(`Goal: ${fd.mainGoal}`);
   }
 
+  // Cohort priors (MOAT flywheel): inject anonymized pick-rate patterns
+  // for users in the same archetype cohort. Empty string when below threshold.
+  const cohortSection = buildCohortPromptSection(request.cohortPriors ?? null, lang);
+  if (cohortSection) {
+    parts.push("");
+    parts.push(cohortSection);
+  }
+
+  // Self-healing prompt patches (Phi_META loop): pull cached patches
+  // generated from negative feedback on training_pairs. Zero latency —
+  // reads from safeStorage, never blocks.
+  const patches = getActivePromptPatches("aiCopyService");
+  const patchSection = buildPatchPromptSection(patches, lang);
+  if (patchSection) {
+    parts.push("");
+    parts.push(patchSection);
+  }
+
   // Task-specific instructions
   parts.push("");
   parts.push("=== TASK ===");
@@ -133,19 +159,28 @@ export async function generateCopy(
     );
   }
 
+  // Auto-inject the persisted stylome profile when the caller didn't supply one.
+  // This makes voice cloning the default behavior once the user has analyzed
+  // their writing samples — no per-call wiring required.
+  const enrichedRequest: CopyGenerationRequest = {
+    ...request,
+    stylomePrompt: request.stylomePrompt ?? getStoredStylomePrompt(),
+  };
+
   const modelSelection = selectModel({
-    task: request.task,
-    textLength: request.task === "landing-page" || request.task === "email-sequence" ? "long" : "medium",
-    qualityPriority: request.qualityPriority || "balanced",
+    task: enrichedRequest.task,
+    textLength: enrichedRequest.task === "landing-page" || enrichedRequest.task === "email-sequence" ? "long" : "medium",
+    qualityPriority: enrichedRequest.qualityPriority || "balanced",
+    regime: enrichedRequest.regime,
   }, pricingTier);
 
-  const systemPrompt = buildSystemPrompt(request);
+  const systemPrompt = buildSystemPrompt(enrichedRequest);
 
   const _resp = await fetch("/api/growth/generate-copy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-      prompt: request.prompt,
+      prompt: enrichedRequest.prompt,
       systemPrompt,
       model: modelSelection.model,
       maxTokens: modelSelection.maxTokens,

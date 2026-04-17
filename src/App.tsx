@@ -12,7 +12,7 @@ import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { ArchetypeProvider } from "@/contexts/ArchetypeContext";
 import { ArchetypeThemeProvider } from "@/providers/ArchetypeThemeProvider";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
@@ -20,6 +20,16 @@ import ConsentBanner from "@/components/ConsentBanner";
 import { PMFSurveyModal } from "@/components/PMFSurveyModal";
 import { NPSWidget } from "@/components/NPSWidget";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
+
+/** Guard: redirects non-owner/admin users to home. */
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingFallback />;
+  if (!user || (user.role !== "owner" && user.role !== "admin")) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+}
 
 const Index = lazy(() => import("./pages/Index"));
 const CommandCenter = lazy(() => import("./pages/CommandCenter"));
@@ -103,7 +113,7 @@ const AnimatedRoutes = () => {
             />
             <Route path="profile" element={<Profile />} />
             <Route path="archetype" element={<ArchetypeRevealScreen />} />
-            <Route path="admin/aarrr" element={<AARRRDashboard />} />
+            <Route path="admin/aarrr" element={<AdminRoute><AARRRDashboard /></AdminRoute>} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="terms" element={<Terms />} />
             <Route path="support" element={<Support />} />

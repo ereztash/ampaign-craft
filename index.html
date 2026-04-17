@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net; connect-src 'self' https://*.supabase.co https://graph.facebook.com https://www.google-analytics.com https://*.ingest.sentry.io; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://browser.sentry-cdn.com; connect-src 'self' https://*.supabase.co https://graph.facebook.com https://www.google-analytics.com https://*.ingest.sentry.io; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
     <meta name="description" content="FunnelForge - Build a personalized marketing funnel for your business in minutes. Smart analysis, channel recommendations, and budget planning.">
     <title>FunnelForge – Marketing Funnel Planner</title>
 
@@ -19,13 +19,20 @@
   <meta name="twitter:description" content="FunnelForge - Build a personalized marketing funnel for your business in minutes. Smart analysis, channel recommendations, and budget planning.">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
-  <!-- GA4 — replace G-XXXXXXXXXX with real measurement ID -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <!-- GA4 — configured via VITE_GA4_ID env var; completely skipped if unset -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
+    (function(){
+      var id='%VITE_GA4_ID%';
+      if(!id)return;
+      var s=document.createElement('script');
+      s.async=true;
+      s.src='https://www.googletagmanager.com/gtag/js?id='+id;
+      document.head.appendChild(s);
+      window.dataLayer=window.dataLayer||[];
+      window.gtag=function(){window.dataLayer.push(arguments);};
+      window.gtag('js',new Date());
+      window.gtag('config',id,{send_page_view:false});
+    })();
   </script>
 
   <!-- PWA manifest -->
