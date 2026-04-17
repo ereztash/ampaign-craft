@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
 import { UserRole, canPerform as canPerformAction } from "@/types/governance";
+import { safeStorage } from "@/lib/safeStorage";
 
 // ═══════════════════════════════════════════════
 // Auth Context — Dual mode: Supabase (if available) or Local fallback
@@ -46,28 +47,25 @@ interface LocalUserRecord {
 
 function getLocalUsers(): LocalUserRecord[] {
   if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || "[]");
-  } catch { return []; }
+  return safeStorage.getJSON<LocalUserRecord[]>(LOCAL_USERS_KEY, []);
 }
 
 function saveLocalUsers(users: LocalUserRecord[]) {
-  if (typeof window !== "undefined") { localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users)); }
+  if (typeof window === "undefined") return;
+  safeStorage.setJSON(LOCAL_USERS_KEY, users);
 }
 
 function getLocalSession(): { userId: string; email: string } | null {
   if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(LOCAL_SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+  return safeStorage.getJSON<{ userId: string; email: string } | null>(LOCAL_SESSION_KEY, null);
 }
 
 function setLocalSession(session: { userId: string; email: string } | null) {
+  if (typeof window === "undefined") return;
   if (session) {
-    if (typeof window !== "undefined") { localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session)); }
+    safeStorage.setJSON(LOCAL_SESSION_KEY, session);
   } else {
-    if (typeof window !== "undefined") { localStorage.removeItem(LOCAL_SESSION_KEY); }
+    safeStorage.remove(LOCAL_SESSION_KEY);
   }
 }
 

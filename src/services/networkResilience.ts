@@ -3,6 +3,8 @@
 // Provides fault-tolerant wrappers for API calls.
 // ═══════════════════════════════════════════════
 
+import { safeStorage } from "@/lib/safeStorage";
+
 const OFFLINE_QUEUE_KEY = "funnelforge-offline-queue";
 
 /**
@@ -48,34 +50,24 @@ interface QueuedOperation {
 }
 
 export function enqueueOfflineOperation(type: string, payload: unknown): void {
-  try {
-    const existing = getOfflineQueue();
-    const op: QueuedOperation = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      type,
-      payload,
-      createdAt: new Date().toISOString(),
-    };
-    existing.push(op);
-    // Cap at 100 queued operations
-    const trimmed = existing.slice(-100);
-    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(trimmed));
-  } catch {
-    // localStorage unavailable — silently drop
-  }
+  const existing = getOfflineQueue();
+  const op: QueuedOperation = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    type,
+    payload,
+    createdAt: new Date().toISOString(),
+  };
+  existing.push(op);
+  const trimmed = existing.slice(-100);
+  safeStorage.setJSON(OFFLINE_QUEUE_KEY, trimmed);
 }
 
 export function getOfflineQueue(): QueuedOperation[] {
-  try {
-    const raw = localStorage.getItem(OFFLINE_QUEUE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<QueuedOperation[]>(OFFLINE_QUEUE_KEY, []);
 }
 
 export function clearOfflineQueue(): void {
-  localStorage.removeItem(OFFLINE_QUEUE_KEY);
+  safeStorage.remove(OFFLINE_QUEUE_KEY);
 }
 
 /**
@@ -110,7 +102,7 @@ export async function flushOfflineQueue(
   if (remaining.length === 0) {
     clearOfflineQueue();
   } else {
-    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(remaining));
+    safeStorage.setJSON(OFFLINE_QUEUE_KEY, remaining);
   }
 
   return { processed, failed };

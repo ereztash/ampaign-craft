@@ -20,6 +20,8 @@ import BackToHub from "@/components/BackToHub";
 import SmartOnboarding from "@/components/SmartOnboarding";
 import ProcessingScreen from "@/components/ProcessingScreen";
 import { tx } from "@/i18n/tx";
+import { safeStorage } from "@/lib/safeStorage";
+import type { SavedPlan } from "@/types/funnel";
 
 type WizardState = "onboarding" | "processing";
 
@@ -123,7 +125,7 @@ const Wizard = () => {
 
     // Update archetype profile with available signals from this pipeline run
     updateFromBlackboard({ formData: fd, knowledgeGraph: graph });
-  }, [persistFormData, persistUnifiedProfile, updateFromBlackboard, language]);
+  }, [persistFormData, persistUnifiedProfile, updateFromBlackboard, language, user]);
 
   const handleProcessingComplete = useCallback(() => {
     if (!result) return;
@@ -135,12 +137,15 @@ const Wizard = () => {
     if (formDataCache?.productDescription) {
       void regenerateHeroCopy(formDataCache.productDescription);
     }
-    try {
-      const plans = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-      const plan = { id: result.id, name: result.funnelName.he || result.funnelName.en, result, savedAt: new Date().toISOString() };
-      plans.push(plan);
-      localStorage.setItem("funnelforge-plans", JSON.stringify(plans));
-    } catch { /* ignore */ }
+    const plans = safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []);
+    const plan: SavedPlan = {
+      id: result.id,
+      name: result.funnelName?.he || result.funnelName?.en || "Untitled Plan",
+      result,
+      savedAt: new Date().toISOString(),
+    };
+    plans.push(plan);
+    safeStorage.setJSON("funnelforge-plans", plans);
     navigate(`/strategy/${result.id}`);
   }, [result, navigate, formDataCache, loadPromptOptimizations, regenerateHeroCopy]);
 

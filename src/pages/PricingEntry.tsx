@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, RefreshCw } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
+import { safeStorage } from "@/lib/safeStorage";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -28,24 +29,20 @@ import Illustration from "@/components/ui/illustration";
  * This lets PricingIntelligenceTab use the derived price next time.
  */
 function savePricingToLatestPlan(input: PricingWizardInput): void {
-  try {
-    const plans = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-    if (!plans.length) return;
-    const sorted = [...plans].sort(
-      (a: { savedAt: string }, b: { savedAt: string }) =>
-        new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
-    );
-    const latest = sorted[0];
-    if (latest?.result?.formData) {
-      latest.result.formData.averagePrice = input.tooChcapPrice > 0
-        ? Math.round(Math.sqrt(input.tooChcapPrice * input.stretchPrice))
-        : 0;
-      latest.result.formData.salesModel   = input.salesModel;
-    }
-    localStorage.setItem("funnelforge-plans", JSON.stringify(plans));
-  } catch {
-    // swallow — non-critical
+  type PlanShape = { savedAt: string; result?: { formData?: { averagePrice: number; salesModel: string } } };
+  const plans = safeStorage.getJSON<PlanShape[]>("funnelforge-plans", []);
+  if (!plans.length) return;
+  const sorted = [...plans].sort(
+    (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
+  );
+  const latest = sorted[0];
+  if (latest?.result?.formData) {
+    latest.result.formData.averagePrice = input.tooChcapPrice > 0
+      ? Math.round(Math.sqrt(input.tooChcapPrice * input.stretchPrice))
+      : 0;
+    latest.result.formData.salesModel = input.salesModel;
   }
+  safeStorage.setJSON("funnelforge-plans", plans);
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -83,8 +80,7 @@ const PageComponent = () => {
   // Wizard completion handler
   const handleWizardComplete = useCallback((input: PricingWizardInput) => {
     savePricingToLatestPlan(input);
-    // Persist full input so the retention engine can read Hormozi axes later
-    try { localStorage.setItem(PRICING_WIZARD_STORAGE_KEY, JSON.stringify(input)); } catch { /* non-critical */ }
+    safeStorage.setJSON(PRICING_WIZARD_STORAGE_KEY, input);
     setWizardInput(input);
     setView("results");
   }, []);

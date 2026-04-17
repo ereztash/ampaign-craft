@@ -66,6 +66,7 @@ const DataSourceDetail = ({ source, open, onOpenChange }: DataSourceDetailProps)
               onSelectAccount={(id) => {
                 setSelectedAccountId(id);
               }}
+              disabled={meta.disabled}
             />
           )}
           {source.id !== "meta" && (

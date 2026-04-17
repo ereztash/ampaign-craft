@@ -19,6 +19,8 @@ import {
   GraduationCap, Heart, Building, Plane, MoreHorizontal,
   Users, Building2, UsersRound, Megaphone, UserPlus, ShoppingCart, Award, User,
 } from "lucide-react";
+import { toast } from "sonner";
+import { validateFormData, formatZodErrors } from "@/schemas/formData";
 
 interface MultiStepFormProps {
   onComplete: (data: FormData) => void;
@@ -110,8 +112,14 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
       setAttemptedNext(true);
       return;
     }
+    const validation = validateFormData(formData);
+    if (!validation.ok) {
+      setAttemptedNext(true);
+      toast.error(formatZodErrors(validation.errors, language === "he" ? "he" : "en"));
+      return;
+    }
     setAttemptedNext(false);
-    onComplete(formData);
+    onComplete(validation.data);
   };
 
   const stepTimeEstimates: Record<string, number> = {

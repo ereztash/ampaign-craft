@@ -27,11 +27,22 @@ const DATE_LABELS: Record<DatePreset, { he: string; en: string }> = {
   last_30d: { he: "30 ימים", en: "30 days" },
 };
 
-const StatusIcon = ({ status }: { status: KpiGap["status"] }) => {
+const STATUS_LABELS: Record<KpiGap["status"], { he: string; en: string }> = {
+  good: { he: "תקין", en: "OK" },
+  warning: { he: "אזהרה", en: "Warning" },
+  critical: { he: "קריטי", en: "Critical" },
+};
+
+const StatusIcon = ({ status, language }: { status: KpiGap["status"]; language: Language }) => {
   const colors = getKpiStatusColor(status);
-  if (status === "good") return <CheckCircle2 className={`h-4 w-4 ${colors.text}`} />;
-  if (status === "warning") return <AlertTriangle className={`h-4 w-4 ${colors.text}`} />;
-  return <XCircle className={`h-4 w-4 ${colors.text}`} />;
+  const label = tx(STATUS_LABELS[status], language);
+  const Icon = status === "good" ? CheckCircle2 : status === "warning" ? AlertTriangle : XCircle;
+  return (
+    <span role="img" aria-label={label} className="inline-flex items-center">
+      <Icon className={`h-4 w-4 ${colors.text}`} aria-hidden="true" />
+      <span className="sr-only">{label}</span>
+    </span>
+  );
 };
 
 const GapRow = ({ gap, language }: { gap: KpiGap; language: Language }) => {
@@ -43,7 +54,7 @@ const GapRow = ({ gap, language }: { gap: KpiGap; language: Language }) => {
   return (
     <div className="flex items-center justify-between py-2 border-b last:border-0">
       <div className="flex items-center gap-2">
-        <StatusIcon status={gap.status} />
+        <StatusIcon status={gap.status} language={language} />
         <span className="text-sm font-medium">{tx(gap.kpiName, language)}</span>
       </div>
       <div className="flex items-center gap-3 text-sm">
