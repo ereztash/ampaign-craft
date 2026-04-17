@@ -17,6 +17,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
 import ConsentBanner from "@/components/ConsentBanner";
+import { PMFSurveyModal } from "@/components/PMFSurveyModal";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 
 const Index = lazy(() => import("./pages/Index"));
@@ -129,6 +130,7 @@ const App = () => (
                     <AnimatedRoutes />
                   </Suspense>
                   <ConsentBanner />
+                  <PMFSurveyModal />
                 </ErrorBoundary>
               </BrowserRouter>
             </TooltipProvider>
