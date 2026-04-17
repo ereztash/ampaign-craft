@@ -21,6 +21,7 @@ import { useArchetype } from "@/contexts/ArchetypeContext";
 import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
 import { tx } from "@/i18n/tx";
+import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 
 const AdminArchetypeDebugPanel = lazy(() => import("@/components/AdminArchetypeDebugPanel"));
 
@@ -122,20 +123,28 @@ const AppSidebar = () => {
             <SidebarGroupLabel>{t("navWorkspace")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {orderedWorkspace.map((item) => (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.to, item.end)}
-                      tooltip={t(item.labelKey as Parameters<typeof t>[0])}
-                    >
-                      <NavLink to={item.to} end={item.end}>
-                        {item.icon}
-                        <span>{t(item.labelKey as Parameters<typeof t>[0])}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {orderedWorkspace.map((item) => {
+                  const isComingSoon = HIDE_INCOMPLETE && item.id === "crm";
+                  return (
+                    <SidebarMenuItem key={item.id}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.to, item.end)}
+                        tooltip={t(item.labelKey as Parameters<typeof t>[0])}
+                      >
+                        <NavLink to={item.to} end={item.end}>
+                          {item.icon}
+                          <span>{t(item.labelKey as Parameters<typeof t>[0])}</span>
+                          {isComingSoon && (
+                            <span className="ml-auto text-[10px] font-medium text-muted-foreground border border-muted-foreground/30 rounded px-1">
+                              {tx({ he: "בקרוב", en: "Soon" }, language)}
+                            </span>
+                          )}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

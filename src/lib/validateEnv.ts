@@ -25,6 +25,13 @@ export function validateEnv(): void {
 export const META_ENABLED: boolean =
   import.meta.env.VITE_META_ENABLED !== "false";
 
+// Beta scope gate: hide features that are incomplete for Beta users.
+// Set VITE_HIDE_INCOMPLETE=true to replace incomplete pages with "Coming Soon".
+// Default: false in dev, true in production Beta builds.
+export const HIDE_INCOMPLETE: boolean =
+  import.meta.env.VITE_HIDE_INCOMPLETE === "true" ||
+  (import.meta.env.PROD && import.meta.env.VITE_HIDE_INCOMPLETE !== "false");
+
 // Optional: explicit sentry DSN (only wired in PROD).
 export const SENTRY_DSN: string | undefined =
   typeof import.meta.env.VITE_SENTRY_DSN === "string"

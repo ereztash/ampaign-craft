@@ -166,14 +166,13 @@ const TOOLS = [
 
 // ─── Tool Handlers ────────────────────────────────────────────────────────────
 
-// deno-lint-ignore no-explicit-any
+type SupabaseClient = ReturnType<typeof createClient>;
+
 async function handleTool(
   name: string,
-  // deno-lint-ignore no-explicit-any
-  args: Record<string, any>,
+  args: Record<string, unknown>,
   userId: string,
-  // deno-lint-ignore no-explicit-any
-  supabase: any
+  supabase: SupabaseClient
 ): Promise<string> {
   switch (name) {
     // ── list_plans ──────────────────────────────────────────────
@@ -189,10 +188,10 @@ async function handleTool(
         return "אין תוכניות שמורות עדיין.\nNo saved plans yet. Create one through the FunnelForge app first.";
       }
 
-      const list = data
-        // deno-lint-ignore no-explicit-any
+      type PlanRow = { id: string; plan_name: string; created_at: string };
+      const list = (data as PlanRow[])
         .map(
-          (p: any, i: number) =>
+          (p, i) =>
             `${i + 1}. **${p.plan_name}**\n   ID: \`${p.id}\`\n   Created: ${new Date(p.created_at).toLocaleDateString("he-IL")}`
         )
         .join("\n\n");
@@ -210,11 +209,15 @@ async function handleTool(
         .eq("user_id", userId)
         .single();
 
-      if (error || !data) throw new Error("Plan not found or access denied");
+      if (!data) throw new Error("Plan not found or access denied");
 
-      // deno-lint-ignore no-explicit-any
-      const result = (data.result as any) || {};
-      const fd = result.formData || {};
+      type PlanResult = {
+        formData?: Record<string, unknown>;
+        funnelResult?: { executiveSummary?: string };
+        summary?: string;
+      };
+      const result = (data.result as PlanResult | null) || {};
+      const fd = (result.formData || {}) as Record<string, string | undefined>;
 
       const lines = [
         `# ${data.plan_name}`,
@@ -275,10 +278,16 @@ async function handleTool(
         return `אין נתוני Blackboard לתוכנית \`${plan_id}\`.\nNo blackboard data found. Run the pipeline in the app first.`;
       }
 
-      const entries = data
-        // deno-lint-ignore no-explicit-any
+      type BlackboardEntry = {
+        concept_key: string;
+        stage: string;
+        payload: unknown;
+        written_by: string;
+        created_at: string;
+      };
+      const entries = (data as BlackboardEntry[])
         .map(
-          (e: any) =>
+          (e) =>
             `### ${e.concept_key} [${e.stage}]\n**Written by:** ${e.written_by}\n\`\`\`json\n${JSON.stringify(e.payload, null, 2)}\n\`\`\``
         )
         .join("\n\n");
@@ -293,8 +302,7 @@ async function handleTool(
         plan_id?: string;
       };
 
-      // deno-lint-ignore no-explicit-any
-      let planContext: Record<string, any> = {};
+      let planContext: Record<string, unknown> = {};
       if (plan_id) {
         const { data } = await supabase
           .from("saved_plans")
@@ -304,8 +312,11 @@ async function handleTool(
           .single();
 
         if (data?.result) {
-          // deno-lint-ignore no-explicit-any
-          const r = data.result as any;
+          type CoachPlanResult = {
+            formData?: Record<string, string | number | undefined>;
+            funnelResult?: { executiveSummary?: string };
+          };
+          const r = data.result as CoachPlanResult;
           planContext = {
             planName: data.plan_name,
             businessField: r.formData?.businessField,
@@ -475,10 +486,19 @@ Use conversational yet professional language. Avoid clichés.`;
       if (error) throw new Error(`DB error: ${error.message}`);
       if (!data || data.length === 0) return "No agent tasks found.";
 
-      const rows = data
-        // deno-lint-ignore no-explicit-any
+      type AgentTaskRow = {
+        id: string;
+        agent_name: string;
+        status: string;
+        created_at: string;
+        completed_at: string | null;
+        tokens_used: number | null;
+        cost_nis: number | null;
+        error: string | null;
+      };
+      const rows = (data as AgentTaskRow[])
         .map(
-          (t: any) =>
+          (t) =>
             `- **${t.agent_name}** [${t.status}]\n  Created: ${new Date(t.created_at).toLocaleString("he-IL")}\n  Tokens: ${t.tokens_used || 0} | Cost: ₪${Number(t.cost_nis || 0).toFixed(4)}\n  ${t.error ? `⚠️ Error: ${t.error}` : ""}`
         )
         .join("\n\n");
@@ -496,10 +516,14 @@ Use conversational yet professional language. Avoid clichés.`;
         .eq("user_id", userId)
         .single();
 
-      if (error || !data) throw new Error("Plan not found or access denied");
+      if (!data) throw new Error("Plan not found or access denied");
 
-      // deno-lint-ignore no-explicit-any
-      const result = (data.result as any) || {};
+      type HealthResult = {
+        funnelResult?: { healthScore?: unknown };
+        healthScore?: unknown;
+        marketingHealth?: unknown;
+      };
+      const result = (data.result as HealthResult | null) || {};
       const hs =
         result.funnelResult?.healthScore ||
         result.healthScore ||
@@ -509,7 +533,8 @@ Use conversational yet professional language. Avoid clichés.`;
         return `Plan **${data.plan_name}** does not yet have a health score. Run the marketing funnel engine in the FunnelForge app to generate one.`;
       }
 
-      const score = typeof hs === "object" ? hs.overall ?? hs.score ?? hs : hs;
+      const hsObj = hs as { overall?: number; score?: number } | null;
+      const score = typeof hs === "object" ? hsObj?.overall ?? hsObj?.score ?? hs : hs;
       const breakdown =
         typeof hs === "object" ? JSON.stringify(hs, null, 2) : null;
 
@@ -572,10 +597,15 @@ Deno.serve(async (req) => {
   }
 
   // ── Parse body ──────────────────────────────────────────────────
-  // deno-lint-ignore no-explicit-any
-  let body: any;
+  type JsonRpcRequest = {
+    jsonrpc?: string;
+    id?: unknown;
+    method?: string;
+    params?: { name?: string; arguments?: Record<string, unknown> };
+  };
+  let body: JsonRpcRequest;
   try {
-    body = await req.json();
+    body = (await req.json()) as JsonRpcRequest;
   } catch {
     return rpcError(null, -32700, "Parse error: invalid JSON");
   }
@@ -610,9 +640,8 @@ Deno.serve(async (req) => {
       return rpcResult(id, { tools: TOOLS });
 
     case "tools/call": {
-      const toolName: string = params?.name;
-      // deno-lint-ignore no-explicit-any
-      const toolArgs: Record<string, any> = params?.arguments ?? {};
+      const toolName: string | undefined = params?.name;
+      const toolArgs: Record<string, unknown> = params?.arguments ?? {};
 
       if (!toolName) {
         return rpcError(id, -32602, "Invalid params: missing tool name");

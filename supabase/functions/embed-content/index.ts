@@ -58,7 +58,9 @@ Deno.serve(async (req) => {
     }
 
     // Generate embeddings in batch (max 2048 items per API call)
-    const texts = items.map((item: any) => item.text as string);
+    type EmbedItem = { text: string; contentType?: string; metadata?: Record<string, unknown> };
+    const typedItems = items as EmbedItem[];
+    const texts = typedItems.map((item) => item.text);
     const embeddings = await generateEmbeddings(texts);
 
     if (embeddings.length !== items.length) {
@@ -81,7 +83,7 @@ Deno.serve(async (req) => {
     }
 
     // Insert new embeddings
-    const rows = items.map((item: any, i: number) => ({
+    const rows = typedItems.map((item, i) => ({
       plan_id: planId || null,
       user_id: userId,
       content_type: item.contentType || "unknown",
@@ -138,7 +140,9 @@ async function generateEmbeddings(texts: string[]): Promise<number[][]> {
     throw new Error(data.error?.message || `Embedding API error: ${response.status}`);
   }
 
-  return data.data
-    .sort((a: any, b: any) => a.index - b.index)
-    .map((item: any) => item.embedding);
+  type OpenAIEmbedding = { index: number; embedding: number[] };
+  const rows = data.data as OpenAIEmbedding[];
+  return rows
+    .sort((a, b) => a.index - b.index)
+    .map((item) => item.embedding);
 }

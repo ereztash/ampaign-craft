@@ -17,6 +17,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
 import ConsentBanner from "@/components/ConsentBanner";
+import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 
 const Index = lazy(() => import("./pages/Index"));
 const CommandCenter = lazy(() => import("./pages/CommandCenter"));
@@ -34,6 +35,7 @@ const RetentionEntry = lazy(() => import("./pages/RetentionEntry"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const SharedQuote = lazy(() => import("./pages/SharedQuote"));
 const CrmPage = lazy(() => import("./pages/CrmPage"));
+const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const ArchetypeRevealScreen = lazy(() => import("./components/ArchetypeRevealScreen"));
 const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
 const Privacy = lazy(() => import("./pages/legal/Privacy"));
@@ -88,7 +90,14 @@ const AnimatedRoutes = () => {
             <Route path="sales" element={<SalesEntry />} />
             <Route path="pricing" element={<PricingEntry />} />
             <Route path="retention" element={<RetentionEntry />} />
-            <Route path="crm" element={<CrmPage />} />
+            <Route
+              path="crm"
+              element={
+                HIDE_INCOMPLETE
+                  ? <ComingSoon featureName={{ he: "CRM", en: "CRM" }} eta={{ he: "לאחר Beta", en: "post-Beta" }} />
+                  : <CrmPage />
+              }
+            />
             <Route path="profile" element={<Profile />} />
             <Route path="archetype" element={<ArchetypeRevealScreen />} />
             <Route path="admin/aarrr" element={<AARRRDashboard />} />

@@ -16,7 +16,8 @@ const corsHeaders = {
 };
 
 // Event handler registry
-type EventHandler = (payload: Record<string, unknown>, supabase: any) => Promise<Record<string, unknown> | void>;
+type SupabaseClient = ReturnType<typeof createClient>;
+type EventHandler = (payload: Record<string, unknown>, supabase: SupabaseClient) => Promise<Record<string, unknown> | void>;
 
 const EVENT_HANDLERS: Record<string, EventHandler> = {
   "plan.generated": handlePlanGenerated,
@@ -119,7 +120,7 @@ Deno.serve(async (req) => {
 
 async function handlePlanGenerated(
   payload: Record<string, unknown>,
-  _supabase: any
+  _supabase: SupabaseClient
 ): Promise<Record<string, unknown>> {
   // Trigger embedding + benchmark update for the new plan
   const planId = payload.planId as string;
@@ -147,7 +148,7 @@ async function handlePlanGenerated(
 
 async function handleQARequested(
   payload: Record<string, unknown>,
-  supabase: any
+  supabase: SupabaseClient
 ): Promise<Record<string, unknown>> {
   const planId = payload.planId as string;
   const planData = payload.planData as Record<string, unknown> | undefined;
@@ -171,7 +172,7 @@ async function handleQARequested(
 
 async function handleResearchRequested(
   payload: Record<string, unknown>,
-  supabase: any
+  supabase: SupabaseClient
 ): Promise<Record<string, unknown>> {
   const question = payload.question as string;
   const domain = payload.domain as string;
@@ -196,7 +197,7 @@ async function handleResearchRequested(
 
 async function handleEmbeddingRequested(
   payload: Record<string, unknown>,
-  supabase: any
+  supabase: SupabaseClient
 ): Promise<Record<string, unknown>> {
   const planId = payload.planId as string;
   const userId = payload.userId as string;
@@ -219,7 +220,7 @@ async function handleEmbeddingRequested(
 
 async function handleBenchmarkUpdate(
   payload: Record<string, unknown>,
-  supabase: any
+  supabase: SupabaseClient
 ): Promise<Record<string, unknown>> {
   const planId = payload.planId as string;
 
@@ -258,7 +259,7 @@ async function handleBenchmarkUpdate(
 
 async function handleNotificationSend(
   payload: Record<string, unknown>,
-  supabase: any
+  supabase: SupabaseClient
 ): Promise<Record<string, unknown>> {
   const platform = payload.platform as string;
   const message = payload.message as string;
