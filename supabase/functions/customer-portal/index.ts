@@ -1,3 +1,8 @@
+// Creates a Stripe Billing Portal session for the authenticated user so
+// they can manage their subscription (update card, change plan, cancel)
+// without leaving the app. Requires that the user has already completed a
+// checkout — stripe_customer_id is written by the stripe-webhook handler.
+
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
@@ -6,14 +11,6 @@ import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-const STRIPE_PRICE_PRO = Deno.env.get("STRIPE_PRICE_PRO");
-const STRIPE_PRICE_BUSINESS = Deno.env.get("STRIPE_PRICE_BUSINESS");
-
-const PRICE_IDS: Record<string, string | undefined> = {
-  pro: STRIPE_PRICE_PRO,
-  business: STRIPE_PRICE_BUSINESS,
-};
 
 Deno.serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
@@ -24,7 +21,7 @@ Deno.serve(async (req) => {
 
   if (!isOriginAllowed(req)) return corsDenied(req);
 
-  const rl = checkRateLimit(req, "create-checkout", 10, 60_000);
+  const rl = checkRateLimit(req, "customer-portal", 10, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
   if (!STRIPE_SECRET_KEY) {
@@ -36,10 +33,8 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-    // Get user from JWT
     const token = authHeader?.replace("Bearer ", "");
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
     const { data: { user } } = await supabase.auth.getUser(token);
     if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -48,43 +43,47 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { tier } = await req.json();
-    const priceId = PRICE_IDS[tier];
-    if (!priceId) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("id", user.id)
+      .single();
+
+    const customerId = (profile as { stripe_customer_id?: string } | null)?.stripe_customer_id;
+    if (!customerId) {
       return new Response(
-        JSON.stringify({ error: tier in PRICE_IDS ? "Stripe price not configured for this tier" : "Invalid tier" }),
+        JSON.stringify({ error: "No active subscription on this account" }),
         {
-          status: tier in PRICE_IDS ? 500 : 400,
+          status: 404,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
-    // Create Stripe Checkout Session
-    const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+    const returnUrl = `${Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il"}/profile`;
+
+    const response = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${STRIPE_SECRET_KEY}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        "mode": "subscription",
-        "customer_email": user.email || "",
-        "client_reference_id": user.id,
-        "line_items[0][price]": priceId,
-        "line_items[0][quantity]": "1",
-        "success_url": `${Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=success`,
-        "cancel_url": `${Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=cancel`,
-        "metadata[user_id]": user.id,
-        "metadata[tier]": tier,
-        // Propagate metadata to the Subscription object so customer.subscription.*
-        // webhook events (e.g. cancellation) can still resolve the user.
-        "subscription_data[metadata][user_id]": user.id,
-        "subscription_data[metadata][tier]": tier,
+        customer: customerId,
+        return_url: returnUrl,
       }),
     });
 
     const session = await response.json();
+    if (!response.ok || !session?.url) {
+      return new Response(
+        JSON.stringify({ error: session?.error?.message || "Stripe portal session failed" }),
+        {
+          status: 502,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -29,6 +29,8 @@ interface AuthContextValue {
   loading: boolean;
   tier: PricingTier;
   setTier: (tier: PricingTier) => void;
+  /** Re-read tier from the database (Supabase mode). No-op in local auth. */
+  refreshTier: () => Promise<void>;
   canUse: (feature: Feature) => boolean;
   canPerform: (action: string) => boolean;
   signUp: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -90,7 +92,7 @@ async function hashPassword(password: string): Promise<string> {
 // The generated client doesn't have runtime types for custom tables,
 // so we wrap with a minimal typed interface instead of using `as any`.
 
-type ProfileRecord = { display_name?: string };
+type ProfileRecord = { display_name?: string; tier?: string };
 type ProfilesClient = {
   from: (table: string) => {
     select: (cols: string) => {
@@ -103,6 +105,10 @@ type ProfilesClient = {
 };
 function profilesDb(supa: unknown): ProfilesClient {
   return supa as ProfilesClient;
+}
+
+function isPricingTier(value: unknown): value is PricingTier {
+  return value === "free" || value === "pro" || value === "business";
 }
 
 // ═══ Admin seed ═══
@@ -170,6 +176,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
+  // Re-read tier from the profiles table. Used after returning from Stripe
+  // checkout so the UI reflects the webhook-applied tier without a reload.
+  const refreshTier = useCallback(async () => {
+    if (!user || isLocalAuth) return;
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await profilesDb(supabase).from("profiles").select("tier").eq("id", user.id).single();
+      if (isPricingTier(data?.tier)) setTierState(data.tier);
+    } catch { /* ignore — tier stays as last known */ }
+  }, [user, isLocalAuth]);
+
   // Initialize: try Supabase, fallback to local
   useEffect(() => {
     let cancelled = false;
@@ -186,10 +203,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const { data: { session: s } } = await supabase.auth.getSession();
           if (s?.user && !cancelled) {
             setUser({ id: s.user.id, email: s.user.email || "", displayName: s.user.email?.split("@")[0] || "", role: "owner" });
-            // Fetch tier from profile
-            const { data: profile } = await profilesDb(supabase).from("profiles").select("display_name").eq("id", s.user.id).single();
-            if (profile?.display_name === "pro" || profile?.display_name === "business") {
-              setTierState(profile.display_name);
+            // Fetch tier from the dedicated tier column. The Stripe webhook
+            // writes to this column on checkout.session.completed.
+            const { data: profile } = await profilesDb(supabase).from("profiles").select("tier").eq("id", s.user.id).single();
+            if (isPricingTier(profile?.tier)) {
+              setTierState(profile.tier);
             }
           }
 
@@ -198,9 +216,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (cancelled) return;
             if (sess?.user) {
               setUser({ id: sess.user.id, email: sess.user.email || "", displayName: sess.user.email?.split("@")[0] || "", role: "owner" });
-              const { data: prof } = await profilesDb(supabase).from("profiles").select("display_name").eq("id", sess.user.id).single();
-              if (prof?.display_name === "pro" || prof?.display_name === "business") {
-                setTierState(prof.display_name);
+              const { data: prof } = await profilesDb(supabase).from("profiles").select("tier").eq("id", sess.user.id).single();
+              if (isPricingTier(prof?.tier)) {
+                setTierState(prof.tier);
               }
               // Flush any buffered training pairs captured while unauthenticated
               try {
@@ -336,7 +354,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [isLocalAuth]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, tier, setTier, canUse, canPerform, signUp, signIn, signOut, isLocalAuth }}>
+    <AuthContext.Provider value={{ user, loading, tier, setTier, refreshTier, canUse, canPerform, signUp, signIn, signOut, isLocalAuth }}>
       {children}
     </AuthContext.Provider>
   );

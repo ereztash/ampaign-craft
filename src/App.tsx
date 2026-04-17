@@ -17,6 +17,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
 import ConsentBanner from "@/components/ConsentBanner";
+import CheckoutReturnHandler from "@/components/CheckoutReturnHandler";
 import { PMFSurveyModal } from "@/components/PMFSurveyModal";
 import { NPSWidget } from "@/components/NPSWidget";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
@@ -142,6 +143,7 @@ const App = () => (
                   <Suspense fallback={<LoadingFallback />}>
                     <AnimatedRoutes />
                   </Suspense>
+                  <CheckoutReturnHandler />
                   <ConsentBanner />
                   <PMFSurveyModal />
                   <NPSWidget />

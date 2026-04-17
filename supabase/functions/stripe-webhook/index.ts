@@ -81,17 +81,21 @@ Deno.serve(async (req) => {
     }
 
     const event = JSON.parse(body);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-      const userId = session.metadata?.user_id;
+      const userId = session.metadata?.user_id ?? session.client_reference_id;
       const tier = session.metadata?.tier;
 
       if (userId && tier) {
-        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
         await supabase.from("profiles").update({
           tier,
+          // Store Stripe IDs so the Customer Portal can open without a lookup
+          // and so customer.subscription.deleted can resolve the user even if
+          // subscription metadata is stripped.
+          stripe_customer_id: typeof session.customer === "string" ? session.customer : null,
+          stripe_subscription_id: typeof session.subscription === "string" ? session.subscription : null,
         }).eq("id", userId);
       }
     }
@@ -99,12 +103,19 @@ Deno.serve(async (req) => {
     if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object;
       const userId = subscription.metadata?.user_id;
+      const customerId = typeof subscription.customer === "string" ? subscription.customer : null;
 
+      // Prefer metadata; fall back to customer-id lookup if metadata was lost.
       if (userId) {
-        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
         await supabase.from("profiles").update({
           tier: "free",
+          stripe_subscription_id: null,
         }).eq("id", userId);
+      } else if (customerId) {
+        await supabase.from("profiles").update({
+          tier: "free",
+          stripe_subscription_id: null,
+        }).eq("stripe_customer_id", customerId);
       }
     }
 

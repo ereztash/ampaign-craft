@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook, Sparkles } from "lucide-react";
+import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook, Sparkles, CreditCard } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -44,6 +44,34 @@ const PageComponent = () => {
   const [saving, setSaving] = useState(false);
   const [integrationState] = useState<IntegrationState>(() => createEmptyIntegrationState());
   const [webhookBusy, setWebhookBusy] = useState<"dispatch" | "receive" | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  // Opens the Stripe Billing Portal so the user can update their card, change
+  // plan, or cancel without contacting support. Only shown for paid tiers —
+  // free users have no Stripe customer yet.
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal", {});
+      if (error) throw error;
+      const portalUrl = (data as { url?: string } | null)?.url;
+      if (portalUrl) {
+        window.location.href = portalUrl;
+        return;
+      }
+      toast({
+        title: tx({ he: "לא נמצא מנוי פעיל", en: "No active subscription found" }, language),
+        variant: "destructive",
+      });
+    } catch {
+      toast({
+        title: tx({ he: "שגיאה בפתיחת פורטל התשלום", en: "Could not open billing portal" }, language),
+        variant: "destructive",
+      });
+    } finally {
+      setPortalLoading(false);
+    }
+  };
 
   // Invoke the webhook-dispatch edge function with a lightweight ping payload.
   // Exposes outbound webhook delivery as a real client-side consumer so the
@@ -262,7 +290,7 @@ const PageComponent = () => {
             {/* Tier */}
             <div className="space-y-2">
               <Label>{tx({ he: "מנוי", en: "Subscription Tier" }, language)}</Label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge className={`${tierColors[tier]} text-white`}>
                   {tier === "pro" ? <Shield className="h-3 w-3 me-1" /> : tier === "business" ? <Crown className="h-3 w-3 me-1" /> : null}
                   {tierLabels[tier]}
@@ -278,6 +306,20 @@ const PageComponent = () => {
                   </Button>
                 )}
               </div>
+              {!isLocalAuth && tier !== "free" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleManageSubscription}
+                  disabled={portalLoading}
+                  className="gap-2"
+                >
+                  {portalLoading
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <CreditCard className="h-3.5 w-3.5" />}
+                  {tx({ he: "נהל מנוי וחיוב", en: "Manage subscription & billing" }, language)}
+                </Button>
+              )}
             </div>
 
             {/* Personalisation section — visible at confident/strong tier */}
