@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Test coverage output
+coverage/
+load-tests/results/
+
 # Environment variables — never commit secrets
 .env
 .env.local
