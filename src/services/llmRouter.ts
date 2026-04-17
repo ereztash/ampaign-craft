@@ -3,12 +3,16 @@
 // Routes requests to optimal Claude model based on task complexity
 // ═══════════════════════════════════════════════
 
+import type { RegimeState } from "@/engine/optimization/regimeDetector";
+
 export type ModelTier = "fast" | "standard" | "deep";
 
 export interface LLMRouterConfig {
   task: CopyTask;
   textLength: "short" | "medium" | "long";
   qualityPriority: "speed" | "balanced" | "quality";
+  /** Optional: user's current behavioral regime — escalates tier when crisis detected. */
+  regime?: RegimeState;
 }
 
 export type CopyTask =
@@ -96,7 +100,19 @@ export function selectModel(config: LLMRouterConfig, pricingTier?: PricingTier):
     else if (tier === "standard") tier = "fast";
   }
 
-  // Clamp to pricing tier limit
+  // Regime-aware escalation: when the user's metrics are in crisis,
+  // upgrade one tier (even over `speed` priority) because a bad answer
+  // in crisis is more expensive than a slow-but-good one.
+  // Transitional regime nudges up only if already "fast" (borderline users
+  // benefit from Sonnet-quality analysis); stable keeps the baseline.
+  if (config.regime === "crisis") {
+    if (tier === "fast") tier = "standard";
+    else if (tier === "standard") tier = "deep";
+  } else if (config.regime === "transitional" && tier === "fast") {
+    tier = "standard";
+  }
+
+  // Clamp to pricing tier limit (applied LAST — free users never escalate past Haiku)
   if (pricingTier) {
     tier = clampTier(tier, getMaxTierForPricingTier(pricingTier));
   }
@@ -109,12 +125,13 @@ export function selectModel(config: LLMRouterConfig, pricingTier?: PricingTier):
   const modelConfig = MODEL_MAP[tier];
   const estimatedCostNIS = (maxTokens / 1000) * modelConfig.costPer1kTokens * 3.6; // USD to NIS
 
+  const regimeNote = config.regime && config.regime !== "stable" ? ` [regime: ${config.regime}]` : "";
   return {
     model: modelConfig.model,
     tier,
     maxTokens,
     estimatedCostNIS: Math.round(estimatedCostNIS * 100) / 100,
-    reasoning: `Task "${config.task}" (${config.qualityPriority} priority) → ${tier} tier → ${modelConfig.model}`,
+    reasoning: `Task "${config.task}" (${config.qualityPriority} priority)${regimeNote} → ${tier} tier → ${modelConfig.model}`,
   };
 }
 

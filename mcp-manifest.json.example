@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "funnelforge": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch",
+        "https://<YOUR-SUPABASE-PROJECT>.supabase.co/functions/v1/mcp-server"
+      ],
+      "env": {
+        "AUTHORIZATION": "Bearer <YOUR-SUPABASE-USER-JWT>"
+      }
+    }
+  }
+}

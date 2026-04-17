@@ -89,6 +89,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "pricingKnowledge",
   "pricingWizardEngine",
   "promptOptimizerEngine",
+  "promptOptimizerLoop",
   "pulseEngine",
   "quoteAssemblyEngine",
   "referralEngine",

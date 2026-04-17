@@ -9,6 +9,7 @@ import AppTopBar from "@/components/AppTopBar";
 import MobileTabBar from "@/components/MobileTabBar";
 import LoadingFallback from "@/components/LoadingFallback";
 import { useAdaptiveTheme } from "@/hooks/useAdaptiveTheme";
+import { useOutreachEscalation } from "@/hooks/useOutreachEscalation";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { BlindSpotNudge } from "@/components/BlindSpotNudge";
 
@@ -36,6 +37,9 @@ const AppShell = () => {
   const { effectiveArchetypeId, adaptationsEnabled, confidenceTier } = useArchetype();
   // Activates all [data-archetype], [data-density], [data-field] CSS blocks in index.css
   useAdaptiveTheme();
+  // Autonomous outreach when a user is "stuck" (>7d dwell) on any module.
+  // Fires at most once per module per 30 days; in-app channel by default.
+  useOutreachEscalation();
 
   const isAdapted =
     adaptationsEnabled && (confidenceTier === "confident" || confidenceTier === "strong");
