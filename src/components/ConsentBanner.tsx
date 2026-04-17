@@ -78,8 +78,8 @@ const ConsentBanner = ({ onAccept }: ConsentBannerProps) => {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/20 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-lg animate-in slide-in-from-bottom-4">
+    <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center p-4 pointer-events-none">
+      <Card className="w-full max-w-lg animate-in slide-in-from-bottom-4 pointer-events-auto shadow-2xl border-primary/20">
         <CardContent className="p-6 space-y-4" dir="auto">
           <h3 className="text-lg font-semibold">
             {tx({ he: "הגנת פרטיות ותנאי שימוש", en: "Privacy & Terms of Service" }, language)}
