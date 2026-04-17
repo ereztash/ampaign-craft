@@ -30,13 +30,22 @@ export const REFERRAL_REWARDS: Record<string, ReferralReward> = {
   referee: { type: "pro_trial", durationDays: 14, forRole: "referee" },
 };
 
+function djb2(s: string): number {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) + h) + s.charCodeAt(i);
+    h &= h;
+  }
+  return Math.abs(h);
+}
+
 /**
- * Generate a unique referral code for a user.
+ * Generate a deterministic referral code from userId (no Date.now — safe in tests).
  */
 export function generateReferralCode(userId: string): string {
-  // Deterministic but not easily guessable
-  const base = userId.slice(0, 4) + Date.now().toString(36).slice(-4);
-  return base.toUpperCase();
+  const prefix = userId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 4).padEnd(4, "X");
+  const hash = djb2(userId).toString(36).padStart(4, "0").slice(-4);
+  return (prefix + hash).toUpperCase();
 }
 
 /**

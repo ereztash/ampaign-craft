@@ -17,6 +17,16 @@ vi.mock("react-router-dom", () => ({
   useNavigate: () => vi.fn(),
 }));
 
+// Auth context stub — Dashboard calls useAuth() for user state.
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({
+    user: null,
+    session: null,
+    isLoading: false,
+    signOut: vi.fn(),
+  }),
+}));
+
 // Stub the UserProfile context with a fresh profile that has no form data
 // so the component hits the first-time-user branch.
 vi.mock("@/contexts/UserProfileContext", () => ({
