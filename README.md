@@ -93,14 +93,14 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 
 | Layer | Choice |
 |-------|--------|
-| Frontend | React 18, TypeScript (strict), Vite, Tailwind CSS, shadcn/ui |
+| Frontend | React 18, TypeScript (pragmatic — strict ratchet in progress), Vite, Tailwind CSS, shadcn/ui |
 | Routing | react-router-dom v6, lazy-loaded |
 | Animation | Framer Motion |
 | Charts | Recharts |
 | Backend | Supabase (Auth, PostgreSQL, Edge Functions, pgvector) |
 | AI | Anthropic Claude (Haiku / Sonnet / Opus) via LLM Router |
 | Embeddings | OpenAI text-embedding-3-small |
-| Auth | Dual-mode: Supabase JWT or local SHA-256 fallback |
+| Auth | Dual-mode: Supabase JWT or local PBKDF2 fallback |
 | Payments | Stripe |
 | Ads | Meta Graph API |
 | Testing | Vitest + React Testing Library |
@@ -110,13 +110,15 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 
 ## Architecture
 
-**MAS-CC** — async Multi-Agent System with Blackboard orchestration.
+**AI Engine** — async pipeline that runs every plan through multiple specialized checks before delivery.
 
-- **Blackboard** — shared state written by 13 agents (8 core + 4 QA + Φ_META_AGENT)
-- **LLM Router** — selects Haiku / Sonnet / Opus based on task complexity and cost caps
+- **Orchestrator** — 13 specialized analysis passes (knowledge graph → funnel → DISC → pricing → QA → meta-analysis) run in dependency order
+- **LLM Router** — selects Claude Haiku / Sonnet / Opus based on task complexity and cost caps
 - **GRAOS** — 6 strictly-additive optimization overlays (M1–M6) that rewrite engine output without touching source engines
 - **QA Pipeline** — 15+ static + content + security checks run after every generation
-- **Research sub-agents** — regulatory, market, and marketing research on demand
+- **Research agents** — regulatory, market, and marketing research on demand
+
+> Internal engineering docs use the term **MAS-CC / Blackboard** for this architecture — see [`docs/architecture.md`](./docs/architecture.md).
 
 ---
 
@@ -127,7 +129,7 @@ Dual-mode — the app detects Supabase availability at startup and falls back to
 | Mode | Condition | Persistence |
 |------|-----------|-------------|
 | Supabase | `VITE_SUPABASE_URL` set + reachable | JWT |
-| Local | No Supabase / offline | `localStorage` (SHA-256 hashed) |
+| Local | No Supabase / offline | `localStorage` (PBKDF2-hashed, 100K iterations) |
 
 **Roles:** `owner` · `admin` · `editor` · `viewer`
 

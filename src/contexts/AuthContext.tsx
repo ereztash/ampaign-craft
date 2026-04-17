@@ -45,6 +45,8 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 const LOCAL_USERS_KEY = "funnelforge-users";
 const LOCAL_SESSION_KEY = "funnelforge-session";
+const LOCAL_AUTH_VERSION_KEY = "funnelforge-auth-version";
+const CURRENT_AUTH_VERSION = "v2"; // v2 = PBKDF2 (replaces v1 SHA-256)
 
 interface LocalUserRecord {
   id: string;
@@ -80,12 +82,39 @@ function setLocalSession(session: { userId: string; email: string } | null) {
   }
 }
 
-// Simple hash for local storage (NOT cryptographically secure — for demo/local use only)
+// PBKDF2 password hashing via Web Crypto API (100k iterations).
+// For local/offline fallback only — Supabase handles production auth.
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
-  const data = encoder.encode(password + "funnelforge-salt-2026");
-  const buffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
+  const salt = encoder.encode("funnelforge-2026-local-pbkdf2");
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt, iterations: 100_000 },
+    keyMaterial,
+    256,
+  );
+  return Array.from(new Uint8Array(bits))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// Migrate local auth storage to current version.
+// On version mismatch (e.g. SHA-256 → PBKDF2), clear stored users so the
+// admin seed is re-created with the new hash algorithm.
+function migrateLocalAuthIfNeeded() {
+  if (typeof window === "undefined") return;
+  const stored = safeStorage.getJSON<string>(LOCAL_AUTH_VERSION_KEY, "v1");
+  if (stored !== CURRENT_AUTH_VERSION) {
+    safeStorage.remove(LOCAL_USERS_KEY);
+    safeStorage.remove(LOCAL_SESSION_KEY);
+    safeStorage.setJSON(LOCAL_AUTH_VERSION_KEY, CURRENT_AUTH_VERSION);
+  }
 }
 
 // ═══ Typed Supabase profiles accessor ═══
@@ -113,7 +142,7 @@ function isPricingTier(value: unknown): value is PricingTier {
 
 // ═══ Admin seed ═══
 // Seeds the built-in admin account on first load (demo/local auth only).
-// Plain-text password is never stored — only the SHA-256 hash.
+// Plain-text password is never stored — only the PBKDF2-derived hash.
 
 const ADMIN_SEED_ID = "admin-erez-seed";
 
@@ -246,6 +275,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Local auth fallback
       if (!cancelled) {
         setIsLocalAuth(true);
+        migrateLocalAuthIfNeeded();
         await seedAdminUser();
         const session = getLocalSession();
         if (session) {

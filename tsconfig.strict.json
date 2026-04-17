@@ -1,0 +1,27 @@
+{
+  // ═══════════════════════════════════════════════════════════════
+  // Strict Ratchet Config — NOT used in production build.
+  //
+  // Purpose: track strict-mode violation count over time so we can
+  // incrementally tighten tsconfig.app.json one flag at a time.
+  //
+  // Usage:
+  //   npm run typecheck:strict          ← count violations
+  //   npm run typecheck:strict 2>&1 | grep "error TS" | wc -l
+  //
+  // Ratchet plan (activate quarterly, one flag at a time):
+  //   Q2 2026 — noImplicitAny: true
+  //   Q3 2026 — noUnusedLocals: true + noUnusedParameters: true
+  //   Q4 2026 — strict: true (full strict mode)
+  //
+  // Target: src/engine/ first (pure functions, easiest to fix).
+  // ═══════════════════════════════════════════════════════════════
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true
+  },
+  "include": ["src/engine"]
+}
