@@ -6,6 +6,7 @@ import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
 import BackToHub from "@/components/BackToHub";
 import SalesTab from "@/components/SalesTab";
 import { ModuleNextStep } from "@/components/ModuleNextStep";
+import { DidThisHelp } from "@/components/DidThisHelp";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { TrendingUp } from "lucide-react";
@@ -25,6 +26,7 @@ const PageComponent = () => {
           <>
             <SalesTab result={result} />
             <ModuleNextStep current={3} />
+            <DidThisHelp module="sales" className="mt-4 justify-center" />
           </>
         ) : (
           <div className="text-center py-16 space-y-4">

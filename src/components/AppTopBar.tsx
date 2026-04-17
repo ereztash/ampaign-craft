@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { tx } from "@/i18n/tx";
 import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +62,7 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
               <span className="hidden md:inline text-xs font-medium">Admin</span>
             </Button>
           )}
+          <NotificationCenter />
           <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "he" ? "en" : "he")} className="gap-1 h-9 min-w-[44px]" aria-label={tx({ he: "Switch to English", en: "עבור לעברית" }, language)}>
             <Globe className="h-4 w-4" />
             {language === "he" ? "EN" : "עב"}

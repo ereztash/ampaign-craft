@@ -11,6 +11,7 @@ import type { DifferentiationResult } from "@/types/differentiation";
 import BackToHub from "@/components/BackToHub";
 import RetentionGrowthTab from "@/components/RetentionGrowthTab";
 import { ModuleNextStep } from "@/components/ModuleNextStep";
+import { DidThisHelp } from "@/components/DidThisHelp";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { Heart } from "lucide-react";
@@ -64,6 +65,7 @@ const PageComponent = () => {
             })()}
             <RetentionGrowthTab result={result} />
             <ModuleNextStep current={5} />
+            <DidThisHelp module="retention" className="mt-4 justify-center" />
           </>
         ) : (
           <div className="text-center py-16 space-y-4">
