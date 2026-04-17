@@ -83,8 +83,8 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
             </svg>
           </motion.div>
 
-          {/* Returning user greeting */}
-          {profile.isReturningUser ? (
+          {/* Returning user greeting — only when there is real progress to reflect */}
+          {profile.isReturningUser && profile.savedPlanCount > 0 ? (
             <>
               <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
                 {language === "he" ? "ברוך שובך!" : "Welcome Back!"}

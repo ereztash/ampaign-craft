@@ -65,11 +65,11 @@ function ConnectionRow({ connected, label, icon, badgeColor, children }: Connect
           <span className="text-sm font-medium" dir="auto">{label}</span>
           {connected ? (
             <Badge className={`text-[10px] px-1.5 py-0 h-4 ${badgeColor} text-white`}>
-              {tx({ he: "מחובר", en: "Connected" }, language)}
+              {tx({ he: "מזהה נשמר", en: "ID saved" }, language)}
             </Badge>
           ) : (
             <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 text-muted-foreground">
-              {tx({ he: "לא מחובר", en: "Not connected" }, language)}
+              {tx({ he: "לא הוזן", en: "Not set" }, language)}
             </Badge>
           )}
         </div>
@@ -137,17 +137,20 @@ export function AnalyticsConnectCard() {
           <span className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-primary" />
             {tx({ he: "חיבור נתוני ביצועים", en: "Connect Analytics" }, language)}
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-amber-500 text-amber-600">
+              Beta
+            </Badge>
           </span>
           {connectedCount > 0 && (
             <Badge className="text-[10px] px-1.5 bg-green-500 text-white">
-              {connectedCount} {tx({ he: "מחוברים", en: "connected" }, language)}
+              {connectedCount} {tx({ he: "שמורים", en: "saved" }, language)}
             </Badge>
           )}
         </CardTitle>
         <p className="text-xs text-muted-foreground" dir="auto">
           {isHe
-            ? "חבר את הנתונים האמיתיים כדי לסגור את לולאת התובנות"
-            : "Connect real performance data to close the insights loop"}
+            ? "שמור כאן את המזהים של חשבונות הניתוח שלך. משיכת נתונים חיה תיפתח בשלב הבא."
+            : "Save your analytics account IDs here. Live data pulling is coming in the next release."}
         </p>
       </CardHeader>
 
