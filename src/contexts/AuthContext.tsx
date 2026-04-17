@@ -2,6 +2,15 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
 import { UserRole, canPerform as canPerformAction } from "@/types/governance";
 import { safeStorage } from "@/lib/safeStorage";
+import { Analytics, getUTM } from "@/lib/analytics";
+
+// Fire signup_from_share if the user arrived via a referral link (?ref=CODE)
+async function trackReferralSignup(userId: string): Promise<void> {
+  const utm = getUTM();
+  if (utm.ref) {
+    await Analytics.signupFromShare(utm.ref, userId);
+  }
+}
 
 // ═══════════════════════════════════════════════
 // Auth Context — Dual mode: Supabase (if available) or Local fallback
@@ -247,6 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { user: newUser } } = await supabase.auth.getUser();
         if (newUser) {
           await profilesDb(supabase).from("profiles").upsert({ id: newUser.id, display_name: email.split("@")[0], visit_count: 1 });
+          void trackReferralSignup(newUser.id);
         }
         return { error: null };
       } catch (err) {
@@ -275,6 +285,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLocalSession({ userId: newUser.id, email: newUser.email });
     setUser({ id: newUser.id, email: newUser.email, displayName: newUser.displayName, role: "owner" });
     setTierState(newUser.tier);
+    void trackReferralSignup(newUser.id);
 
     return { error: null };
   }, [isLocalAuth]);

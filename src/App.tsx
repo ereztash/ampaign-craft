@@ -17,6 +17,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
 import ConsentBanner from "@/components/ConsentBanner";
+import { PMFSurveyModal } from "@/components/PMFSurveyModal";
+import { NPSWidget } from "@/components/NPSWidget";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 
 const Index = lazy(() => import("./pages/Index"));
@@ -41,6 +43,7 @@ const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
 const Privacy = lazy(() => import("./pages/legal/Privacy"));
 const Terms = lazy(() => import("./pages/legal/Terms"));
 const Support = lazy(() => import("./pages/Support"));
+const UseCases = lazy(() => import("./pages/UseCases"));
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -104,6 +107,7 @@ const AnimatedRoutes = () => {
             <Route path="privacy" element={<Privacy />} />
             <Route path="terms" element={<Terms />} />
             <Route path="support" element={<Support />} />
+            <Route path="use-cases" element={<UseCases />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
@@ -129,6 +133,8 @@ const App = () => (
                     <AnimatedRoutes />
                   </Suspense>
                   <ConsentBanner />
+                  <PMFSurveyModal />
+                  <NPSWidget />
                 </ErrorBoundary>
               </BrowserRouter>
             </TooltipProvider>

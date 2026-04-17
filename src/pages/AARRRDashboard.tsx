@@ -11,10 +11,12 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid, Cell
+  ResponsiveContainer, CartesianGrid, Cell, FunnelChart, Funnel,
+  LabelList,
 } from "recharts";
 import { supabase as _supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { NORTH_STAR_METRIC } from "@/lib/analytics";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = _supabase as unknown as SupabaseClient<any>;
@@ -129,6 +131,8 @@ export default function AARRRDashboard() {
   const [daily, setDaily] = useState<DailyPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [overallScore, setOverallScore] = useState(0);
+  const [nsmValue, setNsmValue] = useState(0);
+  const [ahaFunnel, setAhaFunnel] = useState<{ name: string; value: number; fill: string }[]>([]);
 
   // Guard: admin only
   const isAdmin = isLocalAuth || (user as { role?: string } | null)?.role === "admin";
@@ -177,6 +181,34 @@ export default function AARRRDashboard() {
       setMetrics(updated);
       setOverallScore(Math.round(updated.reduce((s, m) => s + m.score, 0) / updated.length));
 
+      // NSM: weekly activated plans (last 7 days)
+      const week = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: nsmData } = await db
+        .from("event_queue")
+        .select("id")
+        .eq("event_type", NORTH_STAR_METRIC.event)
+        .gte("created_at", week);
+      setNsmValue((nsmData ?? []).length);
+
+      // Aha Funnel: signup → plan → aha → return
+      const funnelStages = [
+        { event: "aarrr.acquisition.signup_completed", name: "Signup", fill: "#3b82f6" },
+        { event: "aarrr.activation.first_plan_generated", name: "First Plan", fill: "#10b981" },
+        { event: "aarrr.activation.aha_moment", name: "Aha Moment", fill: "#f59e0b" },
+        { event: "aarrr.retention.weekly_active", name: "Week-1 Return", fill: "#8b5cf6" },
+      ];
+      const funnelCounts = await Promise.all(
+        funnelStages.map(async (s) => {
+          const { data: fd } = await db
+            .from("event_queue")
+            .select("id")
+            .eq("event_type", s.event)
+            .gte("created_at", since);
+          return { name: s.name, value: (fd ?? []).length, fill: s.fill };
+        })
+      );
+      setAhaFunnel(funnelCounts);
+
       // Build daily chart (last 14 days)
       const sortedDays = Object.keys(dailyMap).sort().slice(-14);
       setDaily(
@@ -216,6 +248,37 @@ export default function AARRRDashboard() {
         </div>
         <h1 className="text-3xl font-bold">דשבורד AARRR Growth</h1>
         <p className="text-zinc-400 mt-1">מדדי פיראטים פנימיים — FunnelForge</p>
+      </div>
+
+      {/* ★ North Star Metric Hero */}
+      <div className="mb-8 p-6 rounded-2xl border border-yellow-500/30 bg-yellow-500/5">
+        <div className="flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <p className="text-yellow-400 text-xs font-semibold uppercase tracking-widest mb-1">
+              ★ North Star Metric
+            </p>
+            <p className="text-zinc-300 text-sm mb-3">{NORTH_STAR_METRIC.description}</p>
+            <div className="flex items-end gap-2">
+              <span className="text-6xl font-black text-yellow-400">{loading ? "—" : nsmValue}</span>
+              <span className="text-zinc-500 text-sm mb-2">{NORTH_STAR_METRIC.unit.he} • יעד {NORTH_STAR_METRIC.target}</span>
+            </div>
+            <div className="mt-3 h-2 bg-zinc-800 rounded-full w-64 max-w-full">
+              <div
+                className="h-2 rounded-full bg-yellow-400 transition-all duration-700"
+                style={{ width: `${Math.min(100, Math.round((nsmValue / NORTH_STAR_METRIC.target) * 100))}%` }}
+              />
+            </div>
+            <p className="text-zinc-600 text-xs mt-1">
+              {Math.min(100, Math.round((nsmValue / NORTH_STAR_METRIC.target) * 100))}% מיעד שבועי
+            </p>
+          </div>
+          <div className="text-right text-zinc-600 text-xs max-w-xs">
+            <p className="font-semibold text-zinc-400 mb-1">מה זה מודד?</p>
+            <p>כמה תוכניות שיווק חדשות נוצרו השבוע. מדד זה מייצג ערך ממשי שמשתמשים קיבלו מהמוצר.</p>
+            <p className="mt-2 font-semibold text-zinc-400">מתי לפעול?</p>
+            <p>אם יורד מתחת ל-{Math.round(NORTH_STAR_METRIC.target * 0.6)} — investigate drop-off בשלב Activation.</p>
+          </div>
+        </div>
       </div>
 
       {/* Metric Cards */}
@@ -300,6 +363,79 @@ export default function AARRRDashboard() {
           </ResponsiveContainer>
         </div>
       )}
+
+      {/* Aha Moment Funnel */}
+      {ahaFunnel.length > 0 && (
+        <div className="rounded-2xl border border-white/10 p-6 bg-white/5 mb-8">
+          <h2 className="text-lg font-bold mb-1">Aha Moment Funnel</h2>
+          <p className="text-zinc-500 text-xs mb-4">Signup → First Plan → Aha Moment → Week-1 Return · 30 ימים</p>
+          <ResponsiveContainer width="100%" height={200}>
+            <FunnelChart>
+              <Tooltip contentStyle={{ background: "#18181b", border: "1px solid #27272a", color: "#fff" }} />
+              <Funnel dataKey="value" data={ahaFunnel} isAnimationActive>
+                <LabelList position="right" fill="#a1a1aa" stroke="none" dataKey="name" />
+              </Funnel>
+            </FunnelChart>
+          </ResponsiveContainer>
+          {ahaFunnel.every((s) => s.value === 0) && (
+            <p className="text-center text-zinc-600 text-xs mt-2">Sample — populates after first activated users</p>
+          )}
+        </div>
+      )}
+
+      {/* Cohort Retention Matrix */}
+      <div className="rounded-2xl border border-white/10 p-6 bg-white/5 mb-8">
+        <h2 className="text-lg font-bold mb-1">Cohort Retention</h2>
+        <p className="text-zinc-500 text-xs mb-4">
+          {nsmValue === 0
+            ? "Sample data — live cohorts populate after first users activate"
+            : "Week-over-week retention by signup cohort"}
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-center">
+            <thead>
+              <tr className="text-zinc-500 border-b border-white/10">
+                <th className="text-right pb-2 font-medium pr-4">Cohort</th>
+                <th className="pb-2 font-medium">W0</th>
+                <th className="pb-2 font-medium">W1</th>
+                <th className="pb-2 font-medium">W2</th>
+                <th className="pb-2 font-medium">W4</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(nsmValue === 0
+                ? [
+                    { cohort: "Sample — Apr W1", w0: 100, w1: 62, w2: 48, w4: 35 },
+                    { cohort: "Sample — Apr W2", w0: 100, w1: 58, w2: 44, w4: null },
+                    { cohort: "Sample — Apr W3", w0: 100, w1: 55, w2: null, w4: null },
+                  ]
+                : []
+              ).map((row) => (
+                <tr key={row.cohort} className="border-b border-white/5">
+                  <td className="py-2 text-left pr-4 text-zinc-400">{row.cohort}</td>
+                  {[row.w0, row.w1, row.w2, row.w4].map((v, i) => (
+                    <td key={i} className="py-2">
+                      {v == null ? (
+                        <span className="text-zinc-700">—</span>
+                      ) : (
+                        <span
+                          className="px-2 py-0.5 rounded text-xs font-semibold"
+                          style={{
+                            background: v >= 50 ? "#10b98133" : v >= 30 ? "#f59e0b33" : "#ef444433",
+                            color: v >= 50 ? "#10b981" : v >= 30 ? "#f59e0b" : "#ef4444",
+                          }}
+                        >
+                          {v}%
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Target table */}
       <div className="rounded-2xl border border-white/10 p-6 bg-white/5">

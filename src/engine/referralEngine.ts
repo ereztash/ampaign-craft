@@ -108,11 +108,17 @@ export function markReferralConverted(userId: string, refereeEmail: string): Ref
 }
 
 /**
- * Get the referral link URL.
+ * Get the referral link URL with UTM attribution params.
  */
 export function getReferralLink(userId: string): string {
   const data = getReferralData(userId);
-  return `${window.location.origin}/?ref=${data.code}`;
+  const params = new URLSearchParams({
+    ref: data.code,
+    utm_source: "funnelforge",
+    utm_medium: "referral",
+    utm_campaign: "referral_program",
+  });
+  return `${window.location.origin}/?${params.toString()}`;
 }
 
 /**
