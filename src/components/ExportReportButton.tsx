@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { FileDown, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from "@/lib/logger";
 import type { FunnelResult } from "@/types/funnel";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 
@@ -181,7 +182,7 @@ export function ExportReportButton({
       doc.save(filename);
       toast({ title: tx({ he: "הדוח יוצא בהצלחה", en: "Report exported successfully" }, language) });
     } catch (err) {
-      console.error("PDF export error:", err);
+      logger.error("ExportReportButton.pdf", err);
       toast({
         title: tx({ he: "שגיאה בייצוא", en: "Export failed" }, language),
         description: String(err),

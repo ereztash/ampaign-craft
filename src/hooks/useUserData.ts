@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useAuth } from "@/contexts/AuthContext";
 import { safeStorage } from "@/lib/safeStorage";
+import { logger } from "@/lib/logger";
 
 /**
  * Hook for persisting user data to Supabase with localStorage fallback.
@@ -29,7 +30,7 @@ export function useUserData() {
           { onConflict: "user_id,form_type" }
         );
 
-      if (error) console.warn("Failed to save form data:", error.message);
+      if (error) logger.warn("useUserData.saveFormData", error);
     },
     [user]
   );
@@ -68,7 +69,7 @@ export function useUserData() {
           result,
         });
 
-      if (error) console.warn("Failed to save differentiation result:", error.message);
+      if (error) logger.warn("useUserData.saveDifferentiationResult", error);
     },
     [user]
   );

@@ -6,6 +6,7 @@
 
 import { supabase as _supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { logger } from "@/lib/logger";
 
 // Cast to untyped client since these tables aren't in the generated schema yet
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,7 +55,7 @@ export async function saveBlackboardSnapshot(
     .single();
 
   if (error) {
-    console.error("Failed to save blackboard snapshot:", error);
+    logger.error("blackboardPersistence.saveSnapshot", error);
     return null;
   }
 
@@ -131,7 +132,7 @@ export async function enqueueAgentTask(
     .single();
 
   if (error) {
-    console.error("Failed to enqueue agent task:", error);
+    logger.error("blackboardPersistence.enqueueTask", error);
     return null;
   }
 
@@ -191,7 +192,7 @@ export async function logAgentEvent(
     });
 
   if (error) {
-    console.error("Failed to log agent event:", error);
+    logger.error("blackboardPersistence.logAgentEvent", error);
   }
 }
 

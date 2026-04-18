@@ -17,6 +17,7 @@ import {
 import { supabase as _supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { NORTH_STAR_METRIC } from "@/lib/analytics";
+import { logger } from "@/lib/logger";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = _supabase as unknown as SupabaseClient<any>;
@@ -222,7 +223,7 @@ export default function AARRRDashboard() {
         }))
       );
     } catch (err) {
-      console.error("[AARRRDashboard] Failed to load metrics:", err);
+      logger.error("AARRRDashboard.loadMetrics", err);
       // Show zeros — don't crash
     }
     setLoading(false);

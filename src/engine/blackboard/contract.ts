@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════
 
 import { supabase } from "@/integrations/supabase/client";
+import { logger } from "@/lib/logger";
 
 // ───────────────────────────────────────────────
 // Types
@@ -107,12 +108,12 @@ export async function readContext(
       .maybeSingle();
 
     if (error) {
-      console.warn("[blackboard] readContext failed:", error.message);
+      logger.warn("blackboard.readContext", error);
       return null;
     }
     return data;
   } catch (err) {
-    console.warn("[blackboard] readContext threw:", err);
+    logger.warn("blackboard.readContext", err);
     return null;
   }
 }
@@ -144,7 +145,7 @@ export async function writeContext(params: WriteContextParams): Promise<void> {
         .eq("concept_key", key);
 
       if (error) {
-        console.warn("[blackboard] writeContext update failed:", error.message);
+        logger.warn("blackboard.writeContext.update", error);
       }
       return;
     }
@@ -162,10 +163,10 @@ export async function writeContext(params: WriteContextParams): Promise<void> {
       .maybeSingle();
 
     if (error) {
-      console.warn("[blackboard] writeContext insert failed:", error.message);
+      logger.warn("blackboard.writeContext.insert", error);
     }
   } catch (err) {
-    console.warn("[blackboard] writeContext threw:", err);
+    logger.warn("blackboard.writeContext", err);
   }
 }
 

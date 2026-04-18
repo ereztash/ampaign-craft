@@ -78,34 +78,18 @@ export default tseslint.config(
       "no-console": "error",
     },
   },
-  // Approved: logger.ts is the one file that wraps console, plus test files
-  // where console output aids debugging.
+  // Approved console boundaries:
+  //   - logger.ts: the one file that wraps console for warn/error routing
+  //   - analytics.ts / archetypeAnalytics.ts: DEV-gated AARRR diagnostic prints
+  //     (NOT errors — purely development-time observability, not Sentry routing)
+  //   - test files
   {
     files: [
       "src/lib/logger.ts",
-      "src/**/__tests__/**/*.{ts,tsx}",
-      "src/**/*.{test,spec}.{ts,tsx}",
-    ],
-    rules: { "no-console": "off" },
-  },
-  // PR-3 debt — existing console.* calls tolerated until migrated to logger.
-  // Do NOT add new files here; fix them instead.
-  {
-    files: [
-      "src/components/ExportReportButton.tsx",
-      "src/components/LandingPage.tsx",
-      "src/engine/blackboard/blackboardStore.ts",
-      "src/engine/blackboard/contract.ts",
-      "src/engine/trainingDataEngine.ts",
-      "src/hooks/useTemplateMarketplace.ts",
-      "src/hooks/useUserData.ts",
-      "src/lib/agentOrchestrator.ts",
       "src/lib/analytics.ts",
       "src/lib/archetypeAnalytics.ts",
-      "src/pages/AARRRDashboard.tsx",
-      "src/pages/AiCoachPage.tsx",
-      "src/pages/Differentiate.tsx",
-      "src/services/blackboardPersistence.ts",
+      "src/**/__tests__/**/*.{ts,tsx}",
+      "src/**/*.{test,spec}.{ts,tsx}",
     ],
     rules: { "no-console": "off" },
   },

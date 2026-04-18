@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
+import { logger } from "@/lib/logger";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { toDifferentiationPrefill } from "@/types/profile";
@@ -49,7 +50,7 @@ const PageComponent = () => {
         }
       })
       .catch((err) => {
-        console.error("Failed to load differentiation results:", err);
+        logger.error("Differentiate.loadResults", err);
       });
   }, [loadDifferentiationResults]);
 

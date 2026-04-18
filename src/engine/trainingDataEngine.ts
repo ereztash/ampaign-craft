@@ -7,6 +7,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { safeStorage } from "@/lib/safeStorage";
+import { logger } from "@/lib/logger";
 
 // ───────────────────────────────────────────────
 // Types
@@ -164,7 +165,7 @@ export async function captureTrainingPair(
       .single();
 
     if (error) {
-      console.warn("[trainingData] capture failed, buffering:", error.message);
+      logger.warn("trainingData.capture", error);
       appendToBuffer({
         engine_id: engineId,
         engine_version: engineVersion,
@@ -178,7 +179,7 @@ export async function captureTrainingPair(
 
     return (data?.id as string) ?? null;
   } catch (err) {
-    console.warn("[trainingData] capture threw, buffering:", err);
+    logger.warn("trainingData.capture", err);
     appendToBuffer({
       engine_id: engineId,
       engine_version: engineVersion,
@@ -213,14 +214,14 @@ export async function flushTrainingBuffer(userId: string): Promise<number> {
     const { error } = await (supabase as unknown as SupabaseClient).from("training_pairs").insert(rows);
 
     if (error) {
-      console.warn("[trainingData] flush failed:", error.message);
+      logger.warn("trainingData.flush", error);
       return 0;
     }
 
     writeBuffer([]);
     return rows.length;
   } catch (err) {
-    console.warn("[trainingData] flush threw:", err);
+    logger.warn("trainingData.flush", err);
     return 0;
   }
 }
@@ -247,12 +248,12 @@ export async function updateFeedback(
       .eq("id", pairId);
 
     if (error) {
-      console.warn("[trainingData] feedback update failed:", error.message);
+      logger.warn("trainingData.updateFeedback", error);
       return false;
     }
     return true;
   } catch (err) {
-    console.warn("[trainingData] feedback update threw:", err);
+    logger.warn("trainingData.updateFeedback", err);
     return false;
   }
 }
@@ -278,12 +279,12 @@ export async function getTrainingPairs(
 
     const { data, error } = await query;
     if (error) {
-      console.warn("[trainingData] query failed:", error.message);
+      logger.warn("trainingData.getTrainingPairs", error);
       return [];
     }
     return (data as TrainingPair[]) ?? [];
   } catch (err) {
-    console.warn("[trainingData] query threw:", err);
+    logger.warn("trainingData.getTrainingPairs", err);
     return [];
   }
 }
