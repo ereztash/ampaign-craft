@@ -54,6 +54,8 @@ const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
 const Privacy = lazy(() => import("./pages/legal/Privacy"));
 const Terms = lazy(() => import("./pages/legal/Terms"));
 const Support = lazy(() => import("./pages/Support"));
+const Contact = lazy(() => import("./pages/Contact"));
+const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
 const UseCases = lazy(() => import("./pages/UseCases"));
 
 const queryClient = new QueryClient({
@@ -118,6 +120,8 @@ const AnimatedRoutes = () => {
             <Route path="privacy" element={<Privacy />} />
             <Route path="terms" element={<Terms />} />
             <Route path="support" element={<Support />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="refund-policy" element={<RefundPolicy />} />
             <Route path="use-cases" element={<UseCases />} />
             <Route path="*" element={<NotFound />} />
           </Route>

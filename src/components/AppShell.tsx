@@ -8,6 +8,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import AppTopBar from "@/components/AppTopBar";
 import MobileTabBar from "@/components/MobileTabBar";
 import LoadingFallback from "@/components/LoadingFallback";
+import Footer from "@/components/Footer";
 import { useAdaptiveTheme } from "@/hooks/useAdaptiveTheme";
 import { useOutreachEscalation } from "@/hooks/useOutreachEscalation";
 import { useArchetype } from "@/contexts/ArchetypeContext";
@@ -78,6 +79,7 @@ const AppShell = () => {
               <Suspense fallback={<LoadingFallback />}>
                 <Outlet />
               </Suspense>
+              <Footer />
             </main>
             <MobileTabBar />
             <BlindSpotNudge />
