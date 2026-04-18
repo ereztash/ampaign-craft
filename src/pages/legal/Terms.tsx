@@ -50,15 +50,16 @@ const Terms = () => {
             )}
           </p>
 
-          <h2>{tx({ he: "סיום שירות", en: "Termination" }, language)}</h2>
+          <h2>{tx({ he: "סיום שירות וביטול עסקה", en: "Termination & cancellation" }, language)}</h2>
           <p>
             {tx(
               {
-                he: "באפשרותך לסגור את חשבונך בכל עת. אנו רשאים לסיים את השירות עם הודעה של 30 יום מראש, למעט מקרי הפרה — אשר יכולים להוביל להשעיה מיידית.",
-                en: "You may close your account at any time. We may terminate with 30 days' notice, except in cases of breach where immediate suspension may apply.",
+                he: "באפשרותך לסגור את חשבונך בכל עת. אנו רשאים לסיים את השירות עם הודעה של 30 יום מראש, למעט מקרי הפרה — אשר יכולים להוביל להשעיה מיידית. לפרטי ביטול עסקה והחזרים כספיים, ראה ",
+                en: "You may close your account at any time. We may terminate with 30 days' notice, except in cases of breach where immediate suspension may apply. For cancellation and refund details, see our ",
               },
               language,
             )}
+            <a href="/refund-policy">{tx({ he: "תקנון ביטולים והחזרים", en: "Refund & Cancellation Policy" }, language)}</a>.
           </p>
 
           <h2>{tx({ he: "דין ושיפוט", en: "Governing law" }, language)}</h2>
