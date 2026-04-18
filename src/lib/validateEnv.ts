@@ -42,3 +42,16 @@ export const APP_ENV: string =
   typeof import.meta.env.VITE_ENV === "string"
     ? import.meta.env.VITE_ENV
     : (import.meta.env.MODE ?? "development");
+
+// Local-auth fallback gate.
+//
+// AuthContext can fall back to a localStorage-only auth implementation when
+// Supabase is unreachable. This is a developer convenience — it keeps the
+// app usable for offline demos and local development without Supabase.
+//
+// In production we DON'T want a Supabase outage to silently flip real users
+// into a fresh local account (where their real plans/settings are invisible).
+// Set VITE_ALLOW_LOCAL_AUTH=true to permit local fallback in production
+// (e.g. for an offline-first demo build); the default is dev-only.
+export const ALLOW_LOCAL_AUTH: boolean =
+  import.meta.env.VITE_ALLOW_LOCAL_AUTH === "true" || import.meta.env.DEV;
