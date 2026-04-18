@@ -226,6 +226,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     const init = async () => {
+      // DEV-only: always seed the local admin account and check for a persisted
+      // local session BEFORE talking to Supabase. This lets the owner sign in
+      // with the local admin credentials (erez / 10031999) even when Supabase
+      // is reachable — so the admin panel is always accessible in development.
+      if (import.meta.env.DEV && ALLOW_LOCAL_AUTH) {
+        migrateLocalAuthIfNeeded();
+        await seedAdminUser();
+        const localSession = getLocalSession();
+        if (localSession) {
+          const localUsers = getLocalUsers();
+          const localFound = localUsers.find((u) => u.id === localSession.userId);
+          if (localFound) {
+            setIsLocalAuth(true);
+            setUser({ id: localFound.id, email: localFound.email, displayName: localFound.displayName, role: localFound.role ?? "owner" });
+            setTierState(localFound.tier);
+            if (!cancelled) setLoading(false);
+            return;
+          }
+        }
+      }
+
       const hasSupabase = await checkSupabase();
 
       if (hasSupabase && !cancelled) {
@@ -364,14 +385,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ═══ Sign In ═══
   const signIn = useCallback(async (email: string, password: string): Promise<{ error: string | null }> => {
     if (!isLocalAuth) {
+      let supabaseError: string | null = null;
       try {
         const { supabase } = await import("@/integrations/supabase/client");
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) return { error: error.message };
-        return { error: null };
+        if (!error) return { error: null };
+        supabaseError = error.message;
       } catch (err) {
-        return { error: String(err) };
+        supabaseError = String(err);
       }
+
+      // DEV fallback: if Supabase auth failed, try the local user store.
+      // This lets the local admin account (erez / 10031999) work even when
+      // Supabase is reachable and doesn't know about this user.
+      if (import.meta.env.DEV && ALLOW_LOCAL_AUTH) {
+        const localUsers = getLocalUsers();
+        const localFound = localUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+        if (localFound) {
+          const hash = await hashPassword(password);
+          if (localFound.passwordHash === hash) {
+            setLocalSession({ userId: localFound.id, email: localFound.email });
+            setIsLocalAuth(true);
+            setUser({ id: localFound.id, email: localFound.email, displayName: localFound.displayName, role: localFound.role ?? "owner" });
+            setTierState(localFound.tier);
+            return { error: null };
+          }
+        }
+      }
+
+      return { error: supabaseError };
     }
 
     // Local sign in
