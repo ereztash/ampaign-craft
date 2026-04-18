@@ -53,7 +53,14 @@ export default function IdentityStrip() {
     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground px-1" dir="auto">
       {confidenceTier !== "none" && (
         <>
-          <Badge className={tierTone[confidenceTier]} variant="secondary">
+          <Badge
+            className={tierTone[confidenceTier]}
+            variant="secondary"
+            title={tx(
+              { he: "מבוסס על: תחום עסקי, קהל יעד, מטרה ואופן קבלת החלטות", en: "Based on: industry, audience, goal, and decision patterns" },
+              language,
+            )}
+          >
             <User className="h-3 w-3 me-1" />
             {uiConfig.label[language]}
           </Badge>
@@ -77,14 +84,17 @@ export default function IdentityStrip() {
         </>
       )}
 
-      <button
-        type="button"
-        onClick={() => navigate("/archetype")}
-        className="ms-auto inline-flex items-center gap-1 text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
-      >
-        <Sparkles className="h-3 w-3" />
-        {tx({ he: "זה לא אני?", en: "Not me?" }, language)}
-      </button>
+      {/* Only offer the correction path when there's an actual inference to correct */}
+      {confidenceTier !== "none" && (
+        <button
+          type="button"
+          onClick={() => navigate("/archetype")}
+          className="ms-auto inline-flex items-center gap-1 text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
+        >
+          <Sparkles className="h-3 w-3" />
+          {tx({ he: "זה לא אני?", en: "Not me?" }, language)}
+        </button>
+      )}
     </div>
   );
 }

@@ -257,10 +257,14 @@ const CommandCenter = () => {
           hasPlan={plans.length > 0}
           hasAnyConnection={connectedCount > 0}
           stuckPoint={
+            // Prefer the dedicated signal key (persists after onboarding completion).
+            // Fall back to the live draft for users mid-onboarding.
+            safeStorage.getJSON<string | null>("funnelforge-signal-stuck-point", null) ??
             safeStorage.getJSON<{ currentStuckPoint?: string } | null>(
               "funnelforge-onboarding-draft",
               null,
-            )?.currentStuckPoint ?? undefined
+            )?.currentStuckPoint ??
+            undefined
           }
         />
 

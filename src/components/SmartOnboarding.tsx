@@ -502,7 +502,11 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
             <Button
               onClick={() => {
                 completedRef.current = true;
-                // Clear draft — onboarding complete
+                // Promote stuck point to its own key before clearing draft so
+                // CommandCenter can echo it back after the draft is gone.
+                if (profile.currentStuckPoint) {
+                  safeStorage.setJSON("funnelforge-signal-stuck-point", profile.currentStuckPoint);
+                }
                 safeStorage.remove(ONBOARDING_DRAFT_KEY);
                 // Track completion
                 if (userId) {

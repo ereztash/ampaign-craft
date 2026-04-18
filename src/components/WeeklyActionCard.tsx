@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   RotateCcw,
   Trophy,
+  Minus,
   AlertTriangle,
   Users,
 } from "lucide-react";
@@ -351,6 +352,15 @@ export default function WeeklyActionCard({
               {tx({ he: "לא בוצע", en: "Skipped" }, language)}
             </Button>
           </div>
+          {isMissed && (
+            <button
+              type="button"
+              onClick={handleSwitchMove}
+              className="w-full text-center text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline mt-1"
+            >
+              {tx({ he: "בחר מהלך אחר במקום לדווח", en: "Pick a different move instead" }, language)}
+            </button>
+          )}
         </CardContent>
       </Card>
     );
@@ -364,6 +374,7 @@ export default function WeeklyActionCard({
       : c.outcome === "partial"
         ? tx({ he: "בוצע חלקית", en: "Partial outcome" }, language)
         : tx({ he: "דולג השבוע", en: "Skipped this week" }, language);
+    const OutcomeIcon = c.outcome === "skipped" ? Minus : Trophy;
     const tone = c.outcome === "done"
       ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
       : c.outcome === "partial"
@@ -375,7 +386,7 @@ export default function WeeklyActionCard({
         <CardContent className="p-6 space-y-4">
           <div className="flex items-center justify-between gap-2">
             <Badge className={tone} variant="secondary">
-              <Trophy className="h-3 w-3 me-1" />
+              <OutcomeIcon className="h-3 w-3 me-1" />
               {outcomeLabel}
             </Badge>
           </div>
@@ -386,7 +397,7 @@ export default function WeeklyActionCard({
                 ? { he: "כל הכבוד. דיווחת — המערכת לומדת.", en: "Nicely done. You reported — the system learns." }
                 : c.outcome === "partial"
                   ? { he: "התקדמות חלקית זה עדיין התקדמות.", en: "Partial progress is still progress." }
-                  : { he: "דולג השבוע — נתחיל חדש.", en: "Skipped this week — let's start fresh." },
+                  : { he: "לא כל שבוע מצליח — זה בסדר. נתחיל חדש.", en: "Not every week works out — that's fine. Fresh start." },
               language,
             )}
           </h2>
@@ -480,14 +491,23 @@ export default function WeeklyActionCard({
         )}
 
         <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span dir="auto">
-              {tx({ he: "עד סוף השבוע", en: "By end of this week" }, language)}
-            </span>
-          </div>
+          {candidate.kind === "cold-start" || candidate.kind === "steady" ? (
+            // No active commitment yet — deadline framing would be meaningless
+            <div />
+          ) : (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span dir="auto">
+                {tx({ he: "עד סוף השבוע", en: "By end of this week" }, language)}
+              </span>
+            </div>
+          )}
           <Button onClick={handleCommitAndGo} className="gap-2">
-            {tx({ he: "התחייב ובצע", en: "Commit and go" }, language)}
+            {candidate.kind === "cold-start"
+              ? tx({ he: "קבל את המהלך", en: "Get the move" }, language)
+              : candidate.kind === "steady"
+                ? tx({ he: "פתח מודול", en: "Open module" }, language)
+                : tx({ he: "התחייב ובצע", en: "Commit and go" }, language)}
             <Arrow className="h-4 w-4" />
           </Button>
         </div>
