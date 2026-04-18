@@ -69,7 +69,7 @@ describe("canAccess", () => {
 describe("getTierConfig", () => {
   it("returns correct tier", () => {
     expect(getTierConfig("pro").id).toBe("pro");
-    expect(getTierConfig("business").priceMonthly).toBe(249);
+    expect(getTierConfig("business").priceMonthly).toBe(299);
   });
 
   it("falls back to free for unknown tier", () => {
@@ -79,14 +79,14 @@ describe("getTierConfig", () => {
 
 describe("getEffectivePrice", () => {
   it("returns priceMonthly for monthly cycle", () => {
-    expect(getEffectivePrice("pro", "monthly")).toBe(99);
-    expect(getEffectivePrice("business", "monthly")).toBe(249);
+    expect(getEffectivePrice("pro", "monthly")).toBe(129);
+    expect(getEffectivePrice("business", "monthly")).toBe(299);
     expect(getEffectivePrice("free", "monthly")).toBe(0);
   });
 
   it("returns priceAnnualMonthly for annual cycle", () => {
-    expect(getEffectivePrice("pro", "annual")).toBe(79);
-    expect(getEffectivePrice("business", "annual")).toBe(199);
+    expect(getEffectivePrice("pro", "annual")).toBe(84);
+    expect(getEffectivePrice("business", "annual")).toBe(194);
     expect(getEffectivePrice("free", "annual")).toBe(0);
   });
 
@@ -135,8 +135,8 @@ describe("getAnnualSavings", () => {
   });
 
   it("returns positive savings for paid tiers", () => {
-    expect(getAnnualSavings("pro")).toBe((99 - 79) * 12);      // ₪240
-    expect(getAnnualSavings("business")).toBe((249 - 199) * 12); // ₪600
+    expect(getAnnualSavings("pro")).toBe((129 - 84) * 12);      // ₪540
+    expect(getAnnualSavings("business")).toBe((299 - 194) * 12); // ₪1,260
   });
 });
 

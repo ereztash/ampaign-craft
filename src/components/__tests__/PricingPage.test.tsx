@@ -19,8 +19,8 @@ describe("PricingPage", () => {
     render(<PricingPage />);
     expect(screen.getByText("₪0")).toBeInTheDocument();
     // Price and billing suffix are rendered in separate elements
-    expect(screen.getByText("₪99")).toBeInTheDocument();
-    expect(screen.getByText("₪249")).toBeInTheDocument();
+    expect(screen.getByText("₪129")).toBeInTheDocument();
+    expect(screen.getByText("₪299")).toBeInTheDocument();
   });
 
   it("highlights current tier", () => {

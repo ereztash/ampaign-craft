@@ -50,7 +50,7 @@ describe("PaywallModal", () => {
       />
     );
     expect(screen.getByText("Upgrade to Business")).toBeInTheDocument();
-    expect(screen.getByText("₪249/month")).toBeInTheDocument();
+    expect(screen.getByText("₪299/month")).toBeInTheDocument();
   });
 
   it("shows cancel anytime text", () => {

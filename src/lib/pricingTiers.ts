@@ -66,7 +66,7 @@ export interface TierConfig {
   /**
    * Percentage saved vs. equivalent monthly billing.
    * annualSavingsPct = round((1 − priceAnnualMonthly / priceMonthly) × 100)
-   * 0 for the free tier.
+   * Pro & Business = 35% off annual. 0 for the free tier.
    */
   annualSavingsPct: number;
 
@@ -112,11 +112,11 @@ export const TIERS: TierConfig[] = [
   {
     id: "pro",
     name: { he: "Pro", en: "Pro" },
-    price: { he: "₪99/חודש", en: "₪99/month" },
-    priceMonthly: 99,
-    priceAnnualMonthly: 79,        // ₪948/yr — save ₪240 vs monthly
-    priceAnnualTotal: 948,
-    annualSavingsPct: 20,
+    price: { he: "₪129/חודש", en: "₪129/month" },
+    priceMonthly: 129,
+    priceAnnualMonthly: 84,        // ₪1,008/yr — save ₪540 vs monthly (35% off)
+    priceAnnualTotal: 1008,
+    annualSavingsPct: 35,
     trialDays: 14,
     features: [
       { he: "משפכים ללא הגבלה", en: "Unlimited funnels" },
@@ -144,11 +144,11 @@ export const TIERS: TierConfig[] = [
   {
     id: "business",
     name: { he: "Business", en: "Business" },
-    price: { he: "₪249/חודש", en: "₪249/month" },
-    priceMonthly: 249,
-    priceAnnualMonthly: 199,       // ₪2,388/yr — save ₪600 vs monthly
-    priceAnnualTotal: 2388,
-    annualSavingsPct: 20,
+    price: { he: "₪299/חודש", en: "₪299/month" },
+    priceMonthly: 299,
+    priceAnnualMonthly: 194,       // ₪2,328/yr — save ₪1,260 vs monthly (35% off)
+    priceAnnualTotal: 2328,
+    annualSavingsPct: 35,
     trialDays: 14,
     features: [
       { he: "כל מה שב-Pro +", en: "Everything in Pro +" },

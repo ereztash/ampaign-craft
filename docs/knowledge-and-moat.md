@@ -1,22 +1,28 @@
 # Knowledge Domains & MOAT Data Flywheel
 
-The 40+ embedded knowledge domains and the MOAT data flywheel architecture.
+The embedded knowledge domains and the MOAT data flywheel architecture.
 
-## Cross-Domain Knowledge Embedded (46 domains)
+## Summary
+
+**16 core operational domains** are actively wired into running engines, verified by the runtime-reachability gate (`verify-runtime-calls.ts`). An additional 30 domains provide theoretical grounding and inform future engine development.
+
+The table below lists all 46; domains marked **[LIVE]** are exercised in production code paths.
+
+## Cross-Domain Knowledge Embedded (46 domains — 16 core operational)
 
 | # | Domain | Application |
 |---|--------|-------------|
-| 1 | Behavioral Economics | Loss aversion, cost of inaction, anchoring, decoy effect, endowment |
-| 2 | Neuroscience | 3-vector system (cortisol/oxytocin/dopamine) for copy + closing + brand |
-| 3 | Sales Psychology | DISC personalities, SPIN, Challenger, MEDDIC, neuro-closing |
-| 4 | Israeli Culture | Holiday calendar, army cycle, WhatsApp 98%, protexia referral |
-| 5 | Hebrew Linguistics | Directness, gender-aware copy, dugri score, code-mixing |
-| 6 | Copywriting Science | PAS/AIDA/BAB/Caples/Hopkins, reader profiles (System 1/2) |
+| 1 | **[LIVE]** Behavioral Economics | Loss aversion, cost of inaction, anchoring, decoy effect, endowment |
+| 2 | **[LIVE]** Neuroscience | 3-vector system (cortisol/oxytocin/dopamine) for copy + closing + brand |
+| 3 | **[LIVE]** Sales Psychology | DISC personalities, SPIN, Challenger, MEDDIC, neuro-closing |
+| 4 | **[LIVE]** Israeli Culture | Holiday calendar, army cycle, WhatsApp 98%, protexia referral |
+| 5 | **[LIVE]** Hebrew Linguistics | Directness, gender-aware copy, dugri score, code-mixing |
+| 6 | **[LIVE]** Copywriting Science | PAS/AIDA/BAB/Caples/Hopkins, reader profiles (System 1/2) |
 | 7 | Game Design | Achievements, streaks, flywheels, dynamic difficulty |
 | 8 | Network Effects | CLG, referral mechanics, LTV multipliers, viral loops |
 | 9 | NLP | Copy QA, cortisol overload, reactance risk, persona matching |
 | 10 | Branding Theory | Brand-neuro matching, vector alignment, Blue Ocean ERRC |
-| 11 | Product Strategy | 4 flywheel types, churn reduction, IKEA effect |
+| 11 | **[LIVE]** Product Strategy | 4 flywheel types, churn reduction, IKEA effect |
 | 12 | Data Science | Industry benchmarks, seasonal predictions, budget optimization |
 | 13 | Adaptive Learning (EdTech) | ZPD calibration, zone of proximal development |
 | 14 | Recommendation Engines | Taste clusters, cold start, presentation personalization |
@@ -29,27 +35,27 @@ The 40+ embedded knowledge domains and the MOAT data flywheel architecture.
 | 21 | Wizard UX | Step indicators, validation timing, progress saving |
 | 22 | Cognitive Load Theory | Intrinsic/extraneous load, split-attention, expertise reversal |
 | 23 | Emotional Design | Visceral/behavioral/reflective, delight patterns, celebrations |
-| 24 | SaaS Pricing | Value metrics, tier ratios, annual discount (20%), overage pricing, seats model |
-| 25 | Behavioral Pricing | Charm pricing, Weber-Fechner JND, Van Westendorp PSM, pain of paying |
-| 26 | Offer Architecture | Hormozi value equation, offer stacking, guarantee design |
-| 27 | Subscription Economics | LTV:CAC ratios, churn-price relationship, NRR |
-| 28 | Customer Success | Onboarding design, time-to-value, health scoring |
+| 24 | **[LIVE]** SaaS Pricing | Value metrics, tier ratios, annual discount (35%), overage pricing, seats model |
+| 25 | **[LIVE]** Behavioral Pricing | Charm pricing, Weber-Fechner JND, Van Westendorp PSM, pain of paying |
+| 26 | **[LIVE]** Offer Architecture | Hormozi value equation, offer stacking, guarantee design |
+| 27 | **[LIVE]** Subscription Economics | LTV:CAC ratios, churn-price relationship, NRR |
+| 28 | **[LIVE]** Customer Success | Onboarding design, time-to-value, health scoring |
 | 29 | Lifecycle Marketing | Email/WhatsApp sequences, win-back, milestone celebrations |
-| 30 | Churn Prevention | Prediction signals, cancellation flows, dunning |
+| 30 | **[LIVE]** Churn Prevention | Prediction signals, cancellation flows, dunning |
 | 31 | Loyalty & Referral | Points/tiers/experiential, Israeli referral culture, UGC loops |
-| 32 | Stylometry | Perplexity & burstiness scoring, AI text detection, register shift analysis |
-| 33 | Personality Psychology | DISC profiling, personality-driven messaging, CTA optimization |
-| 34 | Value Engineering | Hormozi Value Equation (Dream Outcome × Likelihood / Time × Effort) |
-| 35 | Multi-Agent Systems | Blackboard architecture, async parallel execution, circuit breakers |
-| 36 | Quality Assurance | Static analysis, LLM-powered content review, security scanning |
+| 32 | **[LIVE]** Stylometry | Perplexity & burstiness scoring, AI text detection, register shift analysis |
+| 33 | **[LIVE]** Personality Psychology | DISC profiling, personality-driven messaging, CTA optimization |
+| 34 | **[LIVE]** Value Engineering | Hormozi Value Equation (Dream Outcome × Likelihood / Time × Effort) |
+| 35 | **[LIVE]** Multi-Agent Systems | Blackboard architecture, async parallel execution, circuit breakers |
+| 36 | **[LIVE]** Quality Assurance | Static analysis, LLM-powered content review, security scanning |
 | 37 | Israeli Regulatory | Advertising law, data protection, consumer rights compliance |
 | 38 | Market Intelligence | Competitor analysis, pricing benchmarks, industry trends |
 | 39 | SEO & Content Strategy | Keyword generation, content briefs, social calendar |
 | 40 | Predictive Analytics | Success probability forecasting, budget efficiency scoring |
 | 41 | Event-Driven Architecture | PostgreSQL queue, atomic claims, dead letter, retry patterns |
 | 42 | Vector Search | pgvector embeddings, semantic similarity, codebase comprehension |
-| 43 | Regulatory Focus Theory | Higgins 1997 — Prevention vs. Promotion focus drives archetype pipeline order |
-| 44 | Adaptive UX Personalization | 5-archetype classifier, 8 heuristics (H1–H8), L1–L5 CSS resolution, Glass-Box traceability |
+| 43 | **[LIVE]** Regulatory Focus Theory | Higgins 1997 — Prevention vs. Promotion focus drives archetype pipeline order |
+| 44 | **[LIVE]** Adaptive UX Personalization | 5-archetype classifier, 8 heuristics (H1–H8), L1–L5 CSS resolution, Glass-Box traceability |
 | 45 | Information Theory × Pricing | Shannon 3-tier entropy theorem (H=log₂3≈1.58 bits) applied in PricingWizardEngine tier architecture |
 | 46 | Autopoietic Systems (J=∂I/∂Ω) | Φ_META_AGENT measures information gain gradient, semantic half-life, per-agent rejection rates |
 

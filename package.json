@@ -12,6 +12,8 @@
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest",
+    "typecheck:strict": "tsc --project tsconfig.strict.json --noEmit",
+    "test:coverage": "vitest run --coverage && bash scripts/check-coverage-critical.sh",
     "sync:pull": "bash scripts/sync-from-corsys.sh",
     "sync:push": "bash scripts/sync-to-corsys.sh"
   },
