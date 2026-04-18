@@ -265,6 +265,30 @@ export function startNewWeek(): void {
 }
 
 /**
+ * Restart the current (reported) commitment as a fresh week — same move,
+ * new cycle. Clears reportedAt/outcome/note, resets committedAt to now,
+ * assigns a new id so downstream analytics can distinguish cycles.
+ *
+ * Used by the between_weeks "continue same move" flow for users who
+ * reported partial progress and want another week on the same action.
+ */
+export function continueCommitment(): WeeklyCommitment | null {
+  const current = readCommitment();
+  if (!current) return null;
+  const restarted: WeeklyCommitment = {
+    ...current,
+    id: crypto.randomUUID(),
+    committedAt: new Date().toISOString(),
+    reportedAt: null,
+    outcome: null,
+    note: null,
+  };
+  writeCommitment(restarted);
+  logger.info("weeklyLoop.continue", { actionId: restarted.actionId, module: restarted.module });
+  return restarted;
+}
+
+/**
  * Abandon the current commitment without reporting — e.g. user wants to
  * re-select a different move mid-week. Archives with outcome="skipped".
  */

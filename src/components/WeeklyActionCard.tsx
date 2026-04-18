@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,7 @@ import {
   Clock,
   CheckCircle2,
   RotateCcw,
+  Repeat,
   Trophy,
   Minus,
   AlertTriangle,
@@ -26,11 +28,13 @@ import {
   reportOutcome,
   startNewWeek,
   abandonCommitment,
+  continueCommitment,
   getLoopSnapshot,
   type LoopSnapshot,
   type ReportOutcome,
 } from "@/engine/weeklyLoopEngine";
 import { fetchCohortPriors, type CohortPriors } from "@/services/cohortBenchmarks";
+import { Analytics } from "@/lib/analytics";
 
 // Maps each bottleneck module to the route where the next action lives.
 // Keeping this in one place so the Action Card stays authoritative about
@@ -81,6 +85,7 @@ export default function WeeklyActionCard({
 }: WeeklyActionCardProps) {
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Candidate action — what the engines currently recommend for the user
   // regardless of commitment state. Used for decision_pending/no_signal.
@@ -207,14 +212,44 @@ export default function WeeklyActionCard({
   }, [reportNote, refreshSnapshot]);
 
   const handleStartNewWeek = useCallback(() => {
+    const prevModule = snapshot.commitment?.module ?? "unknown";
     startNewWeek();
+    if (user?.id) Analytics.loopNewMove(user.id, prevModule).catch(() => {});
     refreshSnapshot();
-  }, [refreshSnapshot]);
+  }, [refreshSnapshot, snapshot.commitment, user?.id]);
+
+  const handleContinueMove = useCallback(() => {
+    const prevModule = snapshot.commitment?.module ?? "unknown";
+    continueCommitment();
+    if (user?.id) Analytics.loopContinued(user.id, prevModule).catch(() => {});
+    refreshSnapshot();
+  }, [refreshSnapshot, snapshot.commitment, user?.id]);
 
   const handleSwitchMove = useCallback(() => {
     abandonCommitment();
     refreshSnapshot();
   }, [refreshSnapshot]);
+
+  // Fire cadence_hint_shown once per state entry while the hint is on screen.
+  // Pairing this with later commit/report events tells us whether exposure to
+  // the cadence text correlates with users actually staying in the loop.
+  const lastHintStateRef = useRef<string | null>(null);
+  useEffect(() => {
+    const showsCadenceHint =
+      snapshot.state === "no_signal" ||
+      snapshot.state === "decision_pending" ||
+      snapshot.state === "action_ready" ||
+      snapshot.state === "in_progress";
+    if (!showsCadenceHint) {
+      lastHintStateRef.current = null;
+      return;
+    }
+    if (lastHintStateRef.current === snapshot.state) return;
+    lastHintStateRef.current = snapshot.state;
+    if (user?.id) {
+      Analytics.cadenceHintShown(user.id, snapshot.state).catch(() => {});
+    }
+  }, [snapshot.state, user?.id]);
 
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
@@ -274,6 +309,16 @@ export default function WeeklyActionCard({
               <RotateCcw className="h-4 w-4" />
               {tx({ he: "החלף מהלך", en: "Switch move" }, language)}
             </Button>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80 border-t border-border/50 pt-3 mt-1" dir="auto">
+            <Repeat className="h-3 w-3" />
+            <span>
+              {tx(
+                { he: "מחזור: שבוע → דיווח → מהלך הבא", en: "Cycle: week → report → next move" },
+                language,
+              )}
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -424,14 +469,14 @@ export default function WeeklyActionCard({
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              <span dir="auto">
-                {tx({ he: "שבוע חדש", en: "New week" }, language)}
-              </span>
-            </div>
-            <Button onClick={handleStartNewWeek} className="gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+            {(c.outcome === "partial" || c.outcome === "done") && (
+              <Button onClick={handleContinueMove} variant="outline" className="gap-2 flex-1">
+                <Repeat className="h-4 w-4" />
+                {tx({ he: "המשך באותו מהלך", en: "Continue same move" }, language)}
+              </Button>
+            )}
+            <Button onClick={handleStartNewWeek} className="gap-2 flex-1">
               {tx({ he: "בחר מהלך חדש", en: "Pick a new move" }, language)}
               <Arrow className="h-4 w-4" />
             </Button>
@@ -510,6 +555,16 @@ export default function WeeklyActionCard({
                 : tx({ he: "התחייב ובצע", en: "Commit and go" }, language)}
             <Arrow className="h-4 w-4" />
           </Button>
+        </div>
+
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80 border-t border-border/50 pt-3 mt-1" dir="auto">
+          <Repeat className="h-3 w-3" />
+          <span>
+            {tx(
+              { he: "מחזור: שבוע → דיווח → מהלך הבא", en: "Cycle: week → report → next move" },
+              language,
+            )}
+          </span>
         </div>
       </CardContent>
     </Card>
