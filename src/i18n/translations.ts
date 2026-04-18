@@ -10,14 +10,14 @@ export const translations = {
 
   // Landing
   heroTitle: {
-    he: "תכנן את המשפך השיווקי שלך בדקות",
-    en: "Plan Your Marketing Funnel in Minutes",
+    he: "תגיד לנו מה תקוע השבוע",
+    en: "Tell us what's stuck this week",
   },
   heroSubtitle: {
-    he: "מערכת חכמה שמנתחת את העסק שלך ובונה תוכנית שיווק מותאמת אישית",
-    en: "A smart system that analyzes your business and builds a personalized marketing plan",
+    he: "ניתן לך את המהלך האחד שהכי סביר שיעבוד לעסק כמו שלך",
+    en: "We'll give you the one move most likely to work for a business like yours",
   },
-  ctaButton: { he: "בנה את המשפך שלך", en: "Build Your Funnel" },
+  ctaButton: { he: "תן לי את המהלך", en: "Give me the move" },
   featureAnalyze: { he: "נתח", en: "Analyze" },
   featureAnalyzeDesc: {
     he: "הזן את פרטי העסק שלך ואנחנו ננתח את השוק",

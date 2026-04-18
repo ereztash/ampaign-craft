@@ -22,6 +22,7 @@ import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { getTotalUsers } from "@/lib/socialProofData";
 import BusinessPulseBar from "@/components/BusinessPulseBar";
+import WeeklyActionCard from "@/components/WeeklyActionCard";
 import InsightFeed from "@/components/InsightFeed";
 import { NudgeBanner } from "@/components/NudgeBanner";
 import { ProgressMomentum } from "@/components/ProgressMomentum";
@@ -216,18 +217,16 @@ const CommandCenter = () => {
           {user && profile.lastFormData ? (
             <>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground" dir="auto">
-                {graph.derived.identityStatement[language]}
+                {tx({ he: "המהלך הבא שלך השבוע", en: "Your next move this week" }, language)}
               </h1>
               <p className="text-sm text-muted-foreground" dir="auto">
-                {hasArchetype
-                  ? `${ctaVerbs.primary[language]} · ${tx({ he: "סקירת עסק ותובנות בזמן אמת", en: "Live business snapshot" }, language)}`
-                  : tx({ he: "סקירת עסק ותובנות בזמן אמת", en: "Live business snapshot and intelligence" }, language)}
+                {graph.derived.identityStatement[language]}
               </p>
             </>
           ) : showExpressWizard ? (
             <>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground md:text-4xl" dir="auto">
-                {tx({ he: "בוא נתחיל — 2 לחיצות ויש לך תוכנית", en: "Let's start — 2 clicks and you have a plan" }, language)}
+                {tx({ he: "בוא נתחיל — 2 לחיצות ויש לך מהלך", en: "Let's start — 2 clicks and you have a move" }, language)}
               </h1>
               <p className="text-muted-foreground max-w-xl mx-auto" dir="auto">
                 {isHe
@@ -238,26 +237,47 @@ const CommandCenter = () => {
           ) : (
             <>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground md:text-4xl" dir="auto">
-                {tx({ he: "הפוך נתונים לאסטרטגיה", en: "Turn data into strategy" }, language)}
+                {tx({ he: "המהלך הבא שלך השבוע", en: "Your next move this week" }, language)}
               </h1>
               <p className="text-muted-foreground max-w-xl mx-auto" dir="auto">
                 {isHe
-                  ? `${totalUsers.toLocaleString()}+ בעלי עסקים כבר בפנים. התחל מחיבור נתונים או תוכנית ראשונה.`
-                  : `${totalUsers.toLocaleString()}+ business owners inside. Start by connecting data or your first plan.`}
+                  ? `${totalUsers.toLocaleString()}+ בעלי עסקים כבר בפנים. תגיד לנו מה תקוע — נחזיר לך את המהלך לעשות.`
+                  : `${totalUsers.toLocaleString()}+ business owners inside. Tell us what's stuck — we'll give you the move to make.`}
               </p>
             </>
           )}
         </motion.section>
 
-        <BusinessPulseBar
-          healthTotal={healthTotal}
-          connectedSources={connectedCount}
-          bottleneckCount={bottlenecks.filter((b) => b.severity === "critical" || b.severity === "warning").length}
-          planCount={plans.length}
-          streakWeeks={streak.currentStreak}
-          completedModules={completedModules}
-          totalModules={modules.length}
+        <WeeklyActionCard
+          bottlenecks={bottlenecks}
+          guidance={guidanceItems}
+          hasPlan={plans.length > 0}
+          hasAnyConnection={connectedCount > 0}
+          stuckPoint={
+            safeStorage.getJSON<{ currentStuckPoint?: string } | null>(
+              "funnelforge-onboarding-draft",
+              null,
+            )?.currentStuckPoint ?? undefined
+          }
         />
+
+        <details className="group">
+          <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground select-none list-none flex items-center gap-2" dir="auto">
+            <span className="group-open:rotate-90 transition-transform">›</span>
+            {tx({ he: "מצב העסק ומדדים", en: "Business status & metrics" }, language)}
+          </summary>
+          <div className="mt-3">
+            <BusinessPulseBar
+              healthTotal={healthTotal}
+              connectedSources={connectedCount}
+              bottleneckCount={bottlenecks.filter((b) => b.severity === "critical" || b.severity === "warning").length}
+              planCount={plans.length}
+              streakWeeks={streak.currentStreak}
+              completedModules={completedModules}
+              totalModules={modules.length}
+            />
+          </div>
+        </details>
 
         {isNewUser && showExpressWizard && (
           <div className="space-y-2">
