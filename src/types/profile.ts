@@ -34,6 +34,10 @@ export interface UnifiedProfile {
   interests?: string;
   businessName?: string;
   industry?: string;
+
+  // Pain-first signal captured at the start of onboarding. Feeds the weekly
+  // decision loop as the initial "Signal" the user entered the product with.
+  currentStuckPoint?: string;
 }
 
 export const INITIAL_UNIFIED_PROFILE: UnifiedProfile = {

@@ -30,7 +30,19 @@ interface SmartOnboardingProps {
   userId?: string;
 }
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 0 | 1 | 2 | 3 | 4;
+
+// Pain-first opener presets — the user can pick one or type their own.
+// These are the most common "what's stuck" entries for SMB operators and
+// seed the initial Signal for the weekly decision loop.
+const STUCK_PRESETS: { id: string; label: { he: string; en: string } }[] = [
+  { id: "leads",    label: { he: "לא מגיעים מספיק לידים",       en: "Not enough leads coming in" } },
+  { id: "convert",  label: { he: "לידים לא הופכים ללקוחות",     en: "Leads aren't converting" } },
+  { id: "pricing",  label: { he: "לא בטוח/ה בתמחור",            en: "Not sure about pricing" } },
+  { id: "retention",label: { he: "לקוחות לא חוזרים",            en: "Customers aren't coming back" } },
+  { id: "content",  label: { he: "לא יודע/ת מה לפרסם השבוע",    en: "Don't know what to post this week" } },
+  { id: "focus",    label: { he: "לא ברור מה המהלך הבא",        en: "Unclear what the next move is" } },
+];
 
 const INDUSTRY_OPTIONS: { id: BusinessField; icon: React.ElementType; label: { he: string; en: string } }[] = [
   { id: "fashion", icon: ShoppingBag, label: { he: "אופנה וקמעונאות", en: "Fashion & Retail" } },
@@ -76,7 +88,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
     return safeStorage.getJSON<UnifiedProfile | null>(ONBOARDING_DRAFT_KEY, null);
   }, [initialProfile]);
 
-  const [step, setStep] = useState<Step>(1);
+  const [step, setStep] = useState<Step>(0);
   const [profile, setProfile] = useState<UnifiedProfile>(
     restoredProfile || { ...INITIAL_UNIFIED_PROFILE }
   );
@@ -98,7 +110,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
   useEffect(() => {
     Analytics.onboardingStarted(userId);
     return () => {
-      if (!completedRef.current && step > 1) {
+      if (!completedRef.current && step > 0) {
         if (userId) {
           trackOnboardingAbandoned(userId, step).catch(() => {});
         }
@@ -164,17 +176,81 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-muted-foreground">
-              {tx({ he: `שלב ${step} מתוך 4`, en: `Step ${step} of 4` }, language)}
+              {tx({ he: `שלב ${step + 1} מתוך 5`, en: `Step ${step + 1} of 5` }, language)}
             </span>
             <Badge variant="outline" className="text-xs gap-1">
               <Sparkles className="h-3 w-3" />
               {tx({ he: `התאמה ${personalizationPercent}%`, en: `${personalizationPercent}% personalized` }, language)}
             </Badge>
           </div>
-          <Progress value={step * 25} className="h-2" />
+          <Progress value={(step + 1) * 20} className="h-2" />
         </div>
 
         <AnimatePresence mode="wait">
+          {step === 0 && (
+            <motion.div key="step0" {...mp}>
+              <h1 className="text-2xl font-bold text-foreground mb-2 text-center" dir="auto">
+                {tx({ he: "מה תקוע השבוע?", en: "What's stuck this week?" }, language)}
+              </h1>
+              <p className="text-muted-foreground text-center mb-6" dir="auto">
+                {tx(
+                  { he: "בחר/י מה הכי קרוב — או כתוב/י במילים שלך", en: "Pick the closest — or write it in your own words" },
+                  language,
+                )}
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                {STUCK_PRESETS.map((opt) => {
+                  const selected = profile.currentStuckPoint === opt.label[language];
+                  return (
+                    <Card
+                      key={opt.id}
+                      role="button"
+                      tabIndex={0}
+                      className={`cursor-pointer transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary ${
+                        selected ? "border-primary border-2 bg-primary/5" : "border-border hover:border-primary/50"
+                      }`}
+                      onClick={() => update({ currentStuckPoint: opt.label[language] })}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") update({ currentStuckPoint: opt.label[language] });
+                      }}
+                    >
+                      <CardContent className="p-3 flex items-center gap-2">
+                        {selected && <Check className="h-4 w-4 text-primary shrink-0" />}
+                        <span className={`text-sm font-medium ${selected ? "text-primary" : "text-foreground"}`}>
+                          {opt.label[language]}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              <label className="block">
+                <span className="text-xs text-muted-foreground mb-1 block" dir="auto">
+                  {tx({ he: "או במילים שלך", en: "Or in your own words" }, language)}
+                </span>
+                <textarea
+                  className="w-full min-h-[72px] rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder={tx(
+                    { he: "לדוגמה: הלידים מהקמפיין האחרון לא נסגרים למכירה", en: "e.g. Leads from the last campaign aren't closing" },
+                    language,
+                  )}
+                  value={profile.currentStuckPoint ?? ""}
+                  onChange={(e) => update({ currentStuckPoint: e.target.value })}
+                  dir="auto"
+                />
+              </label>
+
+              <p className="text-xs text-muted-foreground text-center mt-4" dir="auto">
+                {tx(
+                  { he: "אפשר גם לדלג — נשאל שאלות מהירות ונחזור לזה", en: "You can skip — we'll ask quick questions and come back to this" },
+                  language,
+                )}
+              </p>
+            </motion.div>
+          )}
+
           {step === 1 && (
             <motion.div key="step1" {...mp}>
               <h1 className="text-2xl font-bold text-foreground mb-2 text-center" dir="auto">
@@ -400,7 +476,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
         </AnimatePresence>
 
         <div className="flex items-center justify-between mt-8">
-          {step > 1 ? (
+          {step > 0 ? (
             <Button
               variant="ghost"
               onClick={() => setStep((s) => (s - 1) as Step)}
