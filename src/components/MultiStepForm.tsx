@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { FormData, initialFormData, Channel } from "@/types/funnel";
 import { getVisibleSteps, canProceed, getStepValidationError, shouldShowAgeRange, shouldShowAveragePrice, getDifferentiationPreFill } from "@/lib/adaptiveFormRules";
 import { getProgressColor } from "@/lib/colorSemantics";
+import { safeStorage } from "@/lib/safeStorage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -79,7 +80,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
     setDirection(1);
     setStepIndex((s) => {
       const next = Math.min(s + 1, totalSteps - 1);
-      try { localStorage.setItem("funnelforge-form-step", String(next)); } catch { /* ignore */ }
+      safeStorage.setString("funnelforge-form-step", String(next));
       return next;
     });
   };
@@ -87,7 +88,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
     setDirection(-1);
     setStepIndex((s) => {
       const prev = Math.max(s - 1, 0);
-      try { localStorage.setItem("funnelforge-form-step", String(prev)); } catch { /* ignore */ }
+      safeStorage.setString("funnelforge-form-step", String(prev));
       return prev;
     });
   };

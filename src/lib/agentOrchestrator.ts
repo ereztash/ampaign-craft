@@ -37,6 +37,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { logger } from "./logger";
 
 export interface RunAgentParams {
   userId: string;
@@ -105,12 +106,12 @@ async function insertPendingTask(params: RunAgentParams): Promise<string | null>
       .maybeSingle();
 
     if (error) {
-      console.warn("[agentOrchestrator] insert task failed:", error.message);
+      logger.warn("agentOrchestrator.insertTask", error);
       return null;
     }
     return data?.id ?? null;
   } catch (err) {
-    console.warn("[agentOrchestrator] insert task threw:", err);
+    logger.warn("agentOrchestrator.insertTask", err);
     return null;
   }
 }
@@ -126,7 +127,7 @@ async function markTaskCompleted(taskId: string, output: string): Promise<void> 
       })
       .eq("id", taskId);
   } catch (err) {
-    console.warn("[agentOrchestrator] update task threw:", err);
+    logger.warn("agentOrchestrator.markTaskCompleted", err);
   }
 }
 

@@ -13,6 +13,8 @@
 // Cross-user aggregation: Supabase "framework_rankings" table (async).
 // ═══════════════════════════════════════════════
 
+import { safeStorage } from "@/lib/safeStorage";
+
 export type CopyFramework = "PAS" | "AIDA" | "BAB" | "Hormozi" | "Challenge";
 
 export interface FrameworkStats {
@@ -39,18 +41,11 @@ const MAX_SNAPSHOTS = 30; // max unique (archetype, field) combos to retain
 // ───────────────────────────────────────────────
 
 function readStore(): FrameworkRankSnapshot[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as FrameworkRankSnapshot[]) : [];
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<FrameworkRankSnapshot[]>(STORAGE_KEY, []);
 }
 
 function writeStore(snapshots: FrameworkRankSnapshot[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshots.slice(-MAX_SNAPSHOTS)));
-  } catch { /* storage full */ }
+  safeStorage.setJSON(STORAGE_KEY, snapshots.slice(-MAX_SNAPSHOTS));
 }
 
 function rankKey(archetypeId: string, businessField: string): string {
@@ -165,7 +160,7 @@ export function getFrameworkRanking(
  * Clear all local rankings (GDPR / testing).
  */
 export function clearFrameworkRankings(): void {
-  try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+  safeStorage.remove(STORAGE_KEY);
 }
 
 // ───────────────────────────────────────────────

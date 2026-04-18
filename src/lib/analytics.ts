@@ -10,6 +10,7 @@
 // ═══════════════════════════════════════════════
 
 import { publishEvent, type EventType } from "@/services/eventQueue";
+import { safeSessionStorage } from "./safeStorage";
 
 // ─── North Star Metric ───────────────────────────
 // Single metric that drives all product decisions.
@@ -238,17 +239,12 @@ export function captureUTM(userId?: string): void {
   }
 
   if (Object.keys(captured).length > 0) {
-    sessionStorage.setItem("funnelforge_utm", JSON.stringify(captured));
+    safeSessionStorage.setJSON("funnelforge_utm", captured);
     track("aarrr.acquisition.utm_captured", captured, { userId, uiOnly: true });
   }
 }
 
 /** Retrieve previously captured UTM params. */
 export function getUTM(): Record<string, string> {
-  try {
-    const raw = sessionStorage.getItem("funnelforge_utm");
-    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
-  } catch {
-    return {};
-  }
+  return safeSessionStorage.getJSON<Record<string, string>>("funnelforge_utm", {});
 }

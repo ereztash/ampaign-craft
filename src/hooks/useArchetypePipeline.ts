@@ -14,6 +14,7 @@
 import { useMemo } from "react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { getArchetypeUIConfig } from "@/lib/archetypeUIConfig";
+import { safeStorage } from "@/lib/safeStorage";
 import type { PipelineStep } from "@/types/archetype";
 
 export interface ResolvedPipelineStep extends PipelineStep {
@@ -37,20 +38,16 @@ export interface UseArchetypePipelineResult {
 
 function resolveCompletion(completionKey: string | undefined): boolean {
   if (!completionKey) return false;
+  const raw = safeStorage.getString(completionKey, "");
+  if (!raw) return false;
+  // Arrays (e.g. funnelforge-plans) must have length > 0
   try {
-    const raw = localStorage.getItem(completionKey);
-    if (raw === null) return false;
-    // Arrays (e.g. funnelforge-plans) must have length > 0
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed.length > 0;
-    } catch {
-      // Not JSON — treat raw truthy string as completed
-    }
-    return !!raw;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.length > 0;
   } catch {
-    return false;
+    // Not JSON — treat raw truthy string as completed
   }
+  return true;
 }
 
 export function useArchetypePipeline(): UseArchetypePipelineResult {

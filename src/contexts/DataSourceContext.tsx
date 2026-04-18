@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { safeStorage } from "@/lib/safeStorage";
 
 const STORAGE_KEY = "funnelforge-data-sources";
 
@@ -109,26 +110,8 @@ const defaultSources = (): DataSource[] => [
 ];
 
 function loadState(): DataSourceState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return {
-        sources: defaultSources(),
-        totalRecords: 0,
-        lastGlobalSync: null,
-        dataQualityScore: 0,
-      };
-    }
-    const parsed = JSON.parse(raw) as Partial<DataSourceState>;
-    const sources = parsed.sources?.length ? parsed.sources : defaultSources();
-    const totalRecords = sources.reduce((s, x) => s + (x.recordCount || 0), 0);
-    return {
-      sources,
-      totalRecords: parsed.totalRecords ?? totalRecords,
-      lastGlobalSync: parsed.lastGlobalSync ?? null,
-      dataQualityScore: parsed.dataQualityScore ?? Math.min(100, totalRecords > 0 ? 40 + sources.filter((s) => s.status === "connected").length * 15 : 0),
-    };
-  } catch {
+  const parsed = safeStorage.getJSON<Partial<DataSourceState> | null>(STORAGE_KEY, null);
+  if (!parsed) {
     return {
       sources: defaultSources(),
       totalRecords: 0,
@@ -136,6 +119,14 @@ function loadState(): DataSourceState {
       dataQualityScore: 0,
     };
   }
+  const sources = parsed.sources?.length ? parsed.sources : defaultSources();
+  const totalRecords = sources.reduce((s, x) => s + (x.recordCount || 0), 0);
+  return {
+    sources,
+    totalRecords: parsed.totalRecords ?? totalRecords,
+    lastGlobalSync: parsed.lastGlobalSync ?? null,
+    dataQualityScore: parsed.dataQualityScore ?? Math.min(100, totalRecords > 0 ? 40 + sources.filter((s) => s.status === "connected").length * 15 : 0),
+  };
 }
 
 function computeQuality(sources: DataSource[], totalRecords: number): number {
@@ -150,7 +141,7 @@ export function DataSourceProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DataSourceState>(loadState);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    safeStorage.setJSON(STORAGE_KEY, state);
   }, [state]);
 
   const setSourceStatus = useCallback((id: string, status: DataSourceStatus, lastSyncArg?: string | null) => {

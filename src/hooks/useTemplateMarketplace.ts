@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useAuth } from "@/contexts/AuthContext";
+import { logger } from "@/lib/logger";
 import { SavedPlan } from "@/types/funnel";
 
 export interface PlanTemplate {
@@ -120,7 +121,7 @@ export function useTemplateMarketplace() {
           .eq("id", templateId);
       }
     } catch (err) {
-      console.warn("Template upvote failed (table may not exist):", err);
+      logger.warn("useTemplateMarketplace.upvote", err);
     }
 
     setTemplates((prev) => prev.map((t) =>

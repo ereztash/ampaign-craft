@@ -1,5 +1,6 @@
 // Module status tracking — reads from existing localStorage keys
 import { useMemo } from "react";
+import { safeStorage } from "@/lib/safeStorage";
 
 export interface ModuleStatus {
   id: string;
@@ -12,8 +13,8 @@ export interface ModuleStatus {
 
 export function useModuleStatus(): ModuleStatus[] {
   return useMemo(() => {
-    const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
-    const plans = (() => { try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; } })();
+    const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
+    const plans = safeStorage.getJSON<unknown[]>("funnelforge-plans", []);
     const hasPlan = plans.length > 0;
 
     return [

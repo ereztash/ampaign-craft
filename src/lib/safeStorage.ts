@@ -66,6 +66,27 @@ export const safeStorage = {
       logger.warn(`safeStorage.remove:${key}`, e);
     }
   },
+
+  /** Return all storage keys matching a prefix (for GDPR / cache cleanup). */
+  keysWithPrefix(prefix: string): string[] {
+    const keys: string[] = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(prefix)) keys.push(k);
+      }
+    } catch (e) {
+      logger.warn(`safeStorage.keysWithPrefix:${prefix}`, e);
+    }
+    return keys;
+  },
+
+  /** Remove all keys matching a prefix. Returns the keys that were removed. */
+  removeWithPrefix(prefix: string): string[] {
+    const removed = this.keysWithPrefix(prefix);
+    for (const key of removed) this.remove(key);
+    return removed;
+  },
 };
 
 export const safeSessionStorage = {

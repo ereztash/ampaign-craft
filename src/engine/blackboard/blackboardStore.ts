@@ -18,6 +18,7 @@ import type { QAStaticResult, QAContentResult, QASecurityResult, QAOverallScore 
 import type { ResearchSession } from "@/types/research";
 import type { ModelTier } from "@/services/llmRouter";
 import { verifyWrite } from "./ontologicalVerifier";
+import { logger } from "@/lib/logger";
 
 // ═══════════════════════════════════════════════
 // TELEMETRY TYPES
@@ -364,10 +365,10 @@ export class Blackboard {
    */
   onUpdate(listener: Listener): () => void {
     if (this.listeners.length >= MAX_LISTENERS) {
-      console.warn(
-        `[Blackboard] onUpdate: listener count (${this.listeners.length}) reached ` +
-        `MAX_LISTENERS (${MAX_LISTENERS}). A subscriber is likely missing its cleanup ` +
-        `call. Ensure the unsubscribe function returned by onUpdate() is called on unmount.`,
+      logger.warn(
+        "Blackboard.onUpdate",
+        `listener count (${this.listeners.length}) reached MAX_LISTENERS (${MAX_LISTENERS}). ` +
+        `A subscriber is likely missing its cleanup call.`,
       );
     }
     this.listeners.push(listener);

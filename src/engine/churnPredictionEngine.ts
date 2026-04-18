@@ -10,6 +10,7 @@
 // ═══════════════════════════════════════════════
 
 import { FormData } from "@/types/funnel";
+import { safeStorage } from "@/lib/safeStorage";
 
 export interface ChurnSignal {
   signal: string;
@@ -61,12 +62,7 @@ export interface ChurnCalibrationEntry {
 type CalibrationStore = Record<string, ChurnCalibrationEntry>;
 
 function readCalibration(): CalibrationStore {
-  try {
-    const raw = localStorage.getItem(CALIBRATION_KEY);
-    return raw ? (JSON.parse(raw) as CalibrationStore) : {};
-  } catch {
-    return {};
-  }
+  return safeStorage.getJSON<CalibrationStore>(CALIBRATION_KEY, {});
 }
 
 /**
@@ -103,9 +99,7 @@ export function applyCalibrationUpdate(
     };
   }
 
-  try {
-    localStorage.setItem(CALIBRATION_KEY, JSON.stringify(store));
-  } catch { /* storage full */ }
+  safeStorage.setJSON(CALIBRATION_KEY, store);
 }
 
 /**

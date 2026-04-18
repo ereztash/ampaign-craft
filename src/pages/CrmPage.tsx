@@ -7,6 +7,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { safeStorage } from "@/lib/safeStorage";
 import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -72,15 +73,11 @@ export interface Lead {
 const STORAGE_KEY = "funnelforge-crm-leads";
 
 function loadLeads(): Lead[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<Lead[]>(STORAGE_KEY, []);
 }
 
 function saveLeads(leads: Lead[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
+  safeStorage.setJSON(STORAGE_KEY, leads);
 }
 
 // ─── Column definitions ───────────────────────────────────────────────────────

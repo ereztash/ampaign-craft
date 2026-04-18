@@ -6,6 +6,8 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { safeStorage } from "@/lib/safeStorage";
+import { logger } from "@/lib/logger";
 
 // ───────────────────────────────────────────────
 // Types
@@ -97,23 +99,12 @@ interface BufferedPair {
 }
 
 function readBuffer(): BufferedPair[] {
-  try {
-    const raw = localStorage.getItem(BUFFER_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  const parsed = safeStorage.getJSON<BufferedPair[]>(BUFFER_KEY, []);
+  return Array.isArray(parsed) ? parsed : [];
 }
 
 function writeBuffer(pairs: BufferedPair[]): void {
-  try {
-    const trimmed = pairs.slice(-BUFFER_MAX);
-    localStorage.setItem(BUFFER_KEY, JSON.stringify(trimmed));
-  } catch {
-    /* storage full or unavailable — skip */
-  }
+  safeStorage.setJSON(BUFFER_KEY, pairs.slice(-BUFFER_MAX));
 }
 
 function appendToBuffer(pair: BufferedPair): void {
@@ -138,13 +129,8 @@ export async function captureTrainingPair(
   options: CaptureOptions = {}
 ): Promise<string | null> {
   // Gate behind training data consent (GDPR)
-  try {
-    const consentRaw = localStorage.getItem("funnelforge-consent");
-    if (consentRaw) {
-      const consent = JSON.parse(consentRaw);
-      if (consent.trainingDataOptIn === false) return null;
-    }
-  } catch { /* continue if consent not found — backwards compat */ }
+  const consent = safeStorage.getJSON<{ trainingDataOptIn?: boolean } | null>("funnelforge-consent", null);
+  if (consent && consent.trainingDataOptIn === false) return null;
 
   const engineVersion = options.engineVersion ?? "1.0.0";
   const metadata = options.metadata ?? {};
@@ -179,7 +165,7 @@ export async function captureTrainingPair(
       .single();
 
     if (error) {
-      console.warn("[trainingData] capture failed, buffering:", error.message);
+      logger.warn("trainingData.capture", error);
       appendToBuffer({
         engine_id: engineId,
         engine_version: engineVersion,
@@ -193,7 +179,7 @@ export async function captureTrainingPair(
 
     return (data?.id as string) ?? null;
   } catch (err) {
-    console.warn("[trainingData] capture threw, buffering:", err);
+    logger.warn("trainingData.capture", err);
     appendToBuffer({
       engine_id: engineId,
       engine_version: engineVersion,
@@ -228,14 +214,14 @@ export async function flushTrainingBuffer(userId: string): Promise<number> {
     const { error } = await (supabase as unknown as SupabaseClient).from("training_pairs").insert(rows);
 
     if (error) {
-      console.warn("[trainingData] flush failed:", error.message);
+      logger.warn("trainingData.flush", error);
       return 0;
     }
 
     writeBuffer([]);
     return rows.length;
   } catch (err) {
-    console.warn("[trainingData] flush threw:", err);
+    logger.warn("trainingData.flush", err);
     return 0;
   }
 }
@@ -262,12 +248,12 @@ export async function updateFeedback(
       .eq("id", pairId);
 
     if (error) {
-      console.warn("[trainingData] feedback update failed:", error.message);
+      logger.warn("trainingData.updateFeedback", error);
       return false;
     }
     return true;
   } catch (err) {
-    console.warn("[trainingData] feedback update threw:", err);
+    logger.warn("trainingData.updateFeedback", err);
     return false;
   }
 }
@@ -293,12 +279,12 @@ export async function getTrainingPairs(
 
     const { data, error } = await query;
     if (error) {
-      console.warn("[trainingData] query failed:", error.message);
+      logger.warn("trainingData.getTrainingPairs", error);
       return [];
     }
     return (data as TrainingPair[]) ?? [];
   } catch (err) {
-    console.warn("[trainingData] query threw:", err);
+    logger.warn("trainingData.getTrainingPairs", err);
     return [];
   }
 }

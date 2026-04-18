@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { safeStorage } from "@/lib/safeStorage";
 import { tx } from "@/i18n/tx";
 import { ArrowRight, Save, Loader2, User, Shield, Crown, Webhook, Sparkles, CreditCard } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
@@ -160,13 +161,12 @@ const PageComponent = () => {
 
     if (isLocalAuth) {
       // Update local user
-      const raw = localStorage.getItem("funnelforge-users");
-      if (raw) {
-        const users = JSON.parse(raw);
-        const updated = users.map((u: { id: string }) =>
+      const users = safeStorage.getJSON<{ id: string }[]>("funnelforge-users", []);
+      if (users.length > 0) {
+        const updated = users.map((u) =>
           u.id === user.id ? { ...u, displayName } : u
         );
-        localStorage.setItem("funnelforge-users", JSON.stringify(updated));
+        safeStorage.setJSON("funnelforge-users", updated);
       }
       setSaving(false);
       toast({ title: tx({ he: "הפרופיל עודכן בהצלחה", en: "Profile updated successfully" }, language) });

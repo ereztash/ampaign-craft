@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { safeStorage } from "@/lib/safeStorage";
 import { tx } from "@/i18n/tx";
 import { Copy, Plus, Trash2, Fingerprint, Sparkles, ChevronRight, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -80,15 +81,13 @@ const StylomeExtractor = () => {
     setProfile(result);
     setStep("profile");
     // Persist voice profile for cross-module personalization
-    try {
-      localStorage.setItem("funnelforge-stylome-voice", JSON.stringify({
-        register: result.style.register,
-        dugriScore: result.metrics.dugriScore,
-        cognitiveStyle: result.style.cognitiveStyle,
-        emotionalIntensity: result.style.emotionalIntensity,
-        codeMixingIndex: result.metrics.codeMixingIndex,
-      }));
-    } catch { /* ignore */ }
+    safeStorage.setJSON("funnelforge-stylome-voice", {
+      register: result.style.register,
+      dugriScore: result.metrics.dugriScore,
+      cognitiveStyle: result.style.cognitiveStyle,
+      emotionalIntensity: result.style.emotionalIntensity,
+      codeMixingIndex: result.metrics.codeMixingIndex,
+    });
   };
 
   const copyPrompt = () => {

@@ -24,6 +24,7 @@
 import { FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
 import { DISCProfile } from "./discProfileEngine";
+import { safeStorage } from "@/lib/safeStorage";
 import {
   PricingWizardInput,
   DreamOutcomeLevel,
@@ -172,12 +173,7 @@ const DISC_COMM_STYLE: Record<"D" | "I" | "S" | "C", RetentionPersonalizationCon
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function safeParse<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : null;
-  } catch {
-    return null;
-  }
+  return safeStorage.getJSON<T | null>(key, null);
 }
 
 function deriveProductName(formData: FormData): string {

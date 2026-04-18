@@ -8,6 +8,7 @@ import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph, loadChatInsights, loadImportedDataSignals, loadMetaSignals } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
+import { safeStorage } from "@/lib/safeStorage";
 import { assessChurnRisk } from "@/engine/churnPredictionEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
@@ -47,13 +48,14 @@ const Dashboard = () => {
   }, [user?.id]);
   const { streak, mastery } = useAchievements(language);
 
-  const savedPlans = useMemo<SavedPlan[]>(() => {
-    try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); } catch { return []; }
-  }, [profile.savedPlanCount]); // eslint-disable-line react-hooks/exhaustive-deps
+  const savedPlans = useMemo<SavedPlan[]>(
+    () => safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []),
+    [profile.savedPlanCount], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const pulse = useMemo(() => generateWeeklyPulse(savedPlans), [savedPlans]);
   const lastPlan = savedPlans.length > 0 ? [...savedPlans].sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())[0] : null;
-  const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
+  const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
 
   // Personalized greeting from knowledge graph
   const graph = useMemo(() => {

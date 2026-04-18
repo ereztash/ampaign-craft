@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { safeParseJson, getWeekId } from "@/lib/utils";
+import { safeStorage } from "@/lib/safeStorage";
 
 export interface Achievement {
   id: string;
@@ -92,13 +93,9 @@ function loadAchievements(): Achievement[] {
 }
 
 function saveUnlock(id: string) {
-  try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    stored[id] = new Date().toISOString();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
-  } catch {
-    // ignore
-  }
+  const stored = safeStorage.getJSON<Record<string, string>>(STORAGE_KEY, {});
+  stored[id] = new Date().toISOString();
+  safeStorage.setJSON(STORAGE_KEY, stored);
 }
 
 function loadStreak(): StreakData {
@@ -106,7 +103,7 @@ function loadStreak(): StreakData {
 }
 
 function saveStreak(data: StreakData) {
-  localStorage.setItem(STREAK_KEY, JSON.stringify(data));
+  safeStorage.setJSON(STREAK_KEY, data);
 }
 
 function updateStreak(prev: StreakData): StreakData {
@@ -160,7 +157,7 @@ function loadMastery(): Set<string> {
 }
 
 function saveMastery(features: Set<string>) {
-  localStorage.setItem(MASTERY_KEY, JSON.stringify([...features]));
+  safeStorage.setJSON(MASTERY_KEY, [...features]);
 }
 
 const FEATURE_MAP: Record<string, { he: string; en: string }> = {

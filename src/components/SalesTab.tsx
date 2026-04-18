@@ -21,6 +21,7 @@ import { WhatsAppSendButton } from "@/components/WhatsAppSendButton";
 import { EmailComposer } from "@/components/EmailComposer";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { safeStorage } from "@/lib/safeStorage";
 import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Quote } from "@/types/quote";
@@ -33,12 +34,14 @@ interface SalesTabProps {
 const SalesTab = ({ result }: SalesTabProps) => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
-  const diffResult = useMemo<DifferentiationResult | null>(() => {
-    try { const raw = localStorage.getItem("funnelforge-differentiation-result"); return raw ? JSON.parse(raw) : null; } catch { return null; }
-  }, []);
-  const stylomeVoice = useMemo<StylomeVoice | null>(() => {
-    try { const raw = localStorage.getItem("funnelforge-stylome-voice"); return raw ? JSON.parse(raw) : null; } catch { return null; }
-  }, []);
+  const diffResult = useMemo<DifferentiationResult | null>(
+    () => safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null),
+    [],
+  );
+  const stylomeVoice = useMemo<StylomeVoice | null>(
+    () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
+    [],
+  );
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
   const pipeline = useMemo(() => generateSalesPipeline(result, graph), [result, graph]);
   const closingFrameworks = useMemo(() => getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c"), [pipeline.salesType, result.formData.audienceType]);
@@ -61,8 +64,8 @@ const SalesTab = ({ result }: SalesTabProps) => {
         currency: quote.currency,
         valid_until: quote.validUntil,
       });
-    } catch { /* localStorage fallback */ }
-    try { localStorage.setItem("funnelforge-last-quote", JSON.stringify(quote)); } catch { /* ignore */ }
+    } catch { /* fall through to local cache */ }
+    safeStorage.setJSON("funnelforge-last-quote", quote);
     toast.success(tx({ he: "הצעת המחיר נשמרה!", en: "Quote saved!" }, language));
     setQuoteView(false);
   }, [language]);

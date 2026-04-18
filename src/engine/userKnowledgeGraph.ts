@@ -12,6 +12,7 @@ import {
   conceptKey,
   type BlackboardWriteContext,
 } from "./blackboard/contract";
+import { safeStorage } from "@/lib/safeStorage";
 
 export const ENGINE_MANIFEST = {
   name: "userKnowledgeGraph",
@@ -541,54 +542,36 @@ export function extractChatInsights(
 // ═══════════════════════════════════════════════
 
 export function loadChatInsights(): ChatInsights | null {
-  try {
-    const raw = localStorage.getItem("funnelforge-coach-messages");
-    if (!raw) return null;
-    const messages = JSON.parse(raw) as { role: string; content: string }[];
-    if (!Array.isArray(messages) || messages.length === 0) return null;
-    return extractChatInsights(messages);
-  } catch {
-    return null;
-  }
+  const messages = safeStorage.getJSON<{ role: string; content: string }[]>("funnelforge-coach-messages", []);
+  if (!Array.isArray(messages) || messages.length === 0) return null;
+  return extractChatInsights(messages);
 }
 
 export function loadImportedDataSignals(): ImportedDataSignals | null {
-  try {
-    const raw = localStorage.getItem("funnelforge-data-sources");
-    if (!raw) return null;
-    const state = JSON.parse(raw);
-    const manual = state?.sources?.find((s: { id: string }) => s.id === "manual_import");
-    if (!manual || manual.status !== "connected" || !manual.recordCount) return null;
-    return {
-      datasetType: "custom",
-      overallDirection: "stable",
-      confidence: manual.recordCount > 30 ? 0.8 : manual.recordCount > 10 ? 0.6 : 0.3,
-      metricHighlights: [],
-      rowCount: manual.recordCount,
-    };
-  } catch {
-    return null;
-  }
+  const state = safeStorage.getJSON<{ sources?: { id: string; status: string; recordCount: number }[] } | null>("funnelforge-data-sources", null);
+  const manual = state?.sources?.find((s) => s.id === "manual_import");
+  if (!manual || manual.status !== "connected" || !manual.recordCount) return null;
+  return {
+    datasetType: "custom",
+    overallDirection: "stable",
+    confidence: manual.recordCount > 30 ? 0.8 : manual.recordCount > 10 ? 0.6 : 0.3,
+    metricHighlights: [],
+    rowCount: manual.recordCount,
+  };
 }
 
 export function loadMetaSignals(): MetaSignals | null {
-  try {
-    const raw = localStorage.getItem("funnelforge-meta-monitor");
-    if (!raw) return null;
-    const state = JSON.parse(raw);
-    if (!state?.connected || !state?.insights) return null;
-    const ins = state.insights;
-    return {
-      connected: true,
-      spend: parseFloat(ins.spend) || 0,
-      cpl: parseFloat(ins.cpc) || 0,
-      ctr: parseFloat(ins.ctr) || 0,
-      cvr: 0,
-      trendDirection: "stable",
-    };
-  } catch {
-    return null;
-  }
+  const state = safeStorage.getJSON<{ connected?: boolean; insights?: { spend?: string; cpc?: string; ctr?: string } } | null>("funnelforge-meta-monitor", null);
+  if (!state?.connected || !state?.insights) return null;
+  const ins = state.insights;
+  return {
+    connected: true,
+    spend: parseFloat(ins.spend ?? "") || 0,
+    cpl: parseFloat(ins.cpc ?? "") || 0,
+    ctr: parseFloat(ins.ctr ?? "") || 0,
+    cvr: 0,
+    trendDirection: "stable",
+  };
 }
 
 // ═══════════════════════════════════════════════

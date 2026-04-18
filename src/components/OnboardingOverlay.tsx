@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { safeStorage } from "@/lib/safeStorage";
 import { tx } from "@/i18n/tx";
 import { Target, BarChart3, Rocket, ArrowRight, X } from "lucide-react";
 
@@ -15,7 +16,7 @@ const OnboardingOverlay = () => {
 
   const [step, setStep] = useState(0);
   const [dismissed, setDismissed] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY) === "true" || profile.isReturningUser;
+    return safeStorage.getString(STORAGE_KEY, "") === "true" || profile.isReturningUser;
   });
 
   if (dismissed) return null;
@@ -54,7 +55,7 @@ const OnboardingOverlay = () => {
   ];
 
   const handleDismiss = () => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    safeStorage.setString(STORAGE_KEY, "true");
     setDismissed(true);
   };
 

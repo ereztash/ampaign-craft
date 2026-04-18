@@ -8,6 +8,7 @@ import { buildDefaultKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { useAchievements } from "@/hooks/useAchievements";
 import { getTotalUsers } from "@/lib/socialProofData";
+import { safeStorage } from "@/lib/safeStorage";
 import Header from "@/components/Header";
 import ModulePipeline from "@/components/ModulePipeline";
 import { Button } from "@/components/ui/button";
@@ -36,8 +37,8 @@ const PageComponent = () => {
     return null;
   }, [profile.lastFormData]);
 
-  const hasDiff = typeof window !== "undefined" && !!localStorage.getItem("funnelforge-differentiation-result");
-  const planCount = (() => { if (typeof window === "undefined") return 0; try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]").length; } catch { return 0; } })();
+  const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
+  const planCount = safeStorage.getJSON<unknown[]>("funnelforge-plans", []).length;
 
   const nextStep = useMemo(() => {
     const fallbackGraph = graph || buildDefaultKnowledgeGraph();

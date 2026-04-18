@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { safeStorage } from "@/lib/safeStorage";
 import { tx } from "@/i18n/tx";
 import {
   BarChart3,
@@ -30,15 +31,11 @@ interface AnalyticsConnections {
 }
 
 function load(): AnalyticsConnections {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-  } catch {
-    return {};
-  }
+  return safeStorage.getJSON<AnalyticsConnections>(STORAGE_KEY, {});
 }
 
 function save(data: AnalyticsConnections) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  safeStorage.setJSON(STORAGE_KEY, data);
 }
 
 interface ConnectionRowProps {

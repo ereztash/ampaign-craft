@@ -5,6 +5,7 @@ import { FunnelResult } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
 import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
+import { safeStorage } from "@/lib/safeStorage";
 import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -92,22 +93,23 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   const { language } = useLanguage();
   const isHe = language === "he";
   const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    try { const saved = localStorage.getItem("funnelforge-coach-messages"); return saved ? JSON.parse(saved) : []; }
-    catch { return []; }
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>(() =>
+    safeStorage.getJSON<ChatMessage[]>("funnelforge-coach-messages", []),
+  );
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Build knowledge graph for rich context
-  const diffResult = useMemo<DifferentiationResult | null>(() => {
-    try { const raw = localStorage.getItem("funnelforge-differentiation-result"); return raw ? JSON.parse(raw) : null; } catch { return null; }
-  }, []);
-  const stylomeVoice = useMemo<StylomeVoice | null>(() => {
-    try { const raw = localStorage.getItem("funnelforge-stylome-voice"); return raw ? JSON.parse(raw) : null; } catch { return null; }
-  }, []);
+  const diffResult = useMemo<DifferentiationResult | null>(
+    () => safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null),
+    [],
+  );
+  const stylomeVoice = useMemo<StylomeVoice | null>(
+    () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
+    [],
+  );
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
   const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe, language), [graph, isHe, language]);
 
@@ -115,7 +117,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
     // Persist messages to localStorage
     if (messages.length > 0) {
-      try { localStorage.setItem("funnelforge-coach-messages", JSON.stringify(messages.slice(-50))); } catch { /* ignore */ }
+      safeStorage.setJSON("funnelforge-coach-messages", messages.slice(-50));
     }
   }, [messages]);
 

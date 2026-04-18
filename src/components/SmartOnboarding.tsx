@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { trackOnboardingAbandoned, trackArchetypeRevealed } from "@/services/eventQueue";
 import { Analytics } from "@/lib/analytics";
+import { safeStorage } from "@/lib/safeStorage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Button } from "@/components/ui/button";
@@ -72,11 +73,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
   // Restore draft from localStorage if no initialProfile passed
   const restoredProfile = useMemo(() => {
     if (initialProfile) return initialProfile;
-    try {
-      const raw = localStorage.getItem(ONBOARDING_DRAFT_KEY);
-      if (raw) return JSON.parse(raw) as UnifiedProfile;
-    } catch { /* ignore */ }
-    return null;
+    return safeStorage.getJSON<UnifiedProfile | null>(ONBOARDING_DRAFT_KEY, null);
   }, [initialProfile]);
 
   const [step, setStep] = useState<Step>(1);
@@ -88,7 +85,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
   const update = useCallback((patch: Partial<UnifiedProfile>) => {
     setProfile((prev) => {
       const next = { ...prev, ...patch };
-      try { localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+      safeStorage.setJSON(ONBOARDING_DRAFT_KEY, next);
       return next;
     });
   }, []);
@@ -427,7 +424,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
               onClick={() => {
                 completedRef.current = true;
                 // Clear draft — onboarding complete
-                try { localStorage.removeItem(ONBOARDING_DRAFT_KEY); } catch { /* ignore */ }
+                safeStorage.remove(ONBOARDING_DRAFT_KEY);
                 // Track completion
                 if (userId) {
                   Analytics.firstPlanGenerated("pending", userId, profile.businessField);

@@ -4,6 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
+import { safeStorage } from "@/lib/safeStorage";
 import { SavedPlan } from "@/types/funnel";
 import ResultsDashboard from "@/components/ResultsDashboard";
 import StrategyMap from "@/components/StrategyMap";
@@ -30,13 +31,10 @@ const StrategyCanvas = () => {
   const isHe = language === "he";
   const navigate = useNavigate();
 
-  const plans = useMemo<SavedPlan[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-    } catch {
-      return [];
-    }
-  }, []);
+  const plans = useMemo<SavedPlan[]>(
+    () => safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []),
+    [],
+  );
 
   // All hooks must be called unconditionally before any early returns
   const { profile } = useUserProfile();
@@ -133,16 +131,10 @@ const StrategyCanvas = () => {
     );
   }
 
-  const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
+  const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
   const connectedSources = (() => {
-    try {
-      const raw = localStorage.getItem("funnelforge-data-sources");
-      if (!raw) return 0;
-      const s = JSON.parse(raw).sources as { status: string }[];
-      return s?.filter((x) => x.status === "connected").length ?? 0;
-    } catch {
-      return 0;
-    }
+    const state = safeStorage.getJSON<{ sources?: { status: string }[] } | null>("funnelforge-data-sources", null);
+    return state?.sources?.filter((x) => x.status === "connected").length ?? 0;
   })();
 
   const bottlenecks = detectBottlenecks({
