@@ -61,11 +61,6 @@ export function useCampaignTracking(planId: string | null) {
   const [metrics, setMetrics] = useState<TrackedMetric[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!planId) return;
-    loadMetrics();
-  }, [planId, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const loadMetrics = useCallback(async () => {
     if (!planId) return;
     setLoading(true);
@@ -97,6 +92,11 @@ export function useCampaignTracking(planId: string | null) {
 
     setLoading(false);
   }, [planId, user]);
+
+  useEffect(() => {
+    if (!planId) return;
+    void loadMetrics();
+  }, [planId, loadMetrics]);
 
   const addMetric = useCallback(async (
     stageId: string, channel: string, metric: string,

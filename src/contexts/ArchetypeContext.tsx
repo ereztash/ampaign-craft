@@ -142,15 +142,18 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
   const uiConfig = getArchetypeUIConfig(effectiveArchetypeId);
 
   // ── Hydrate from localStorage on user change ──
+  // Pull user.id out so the effect only depends on the stable id, not the
+  // (sometimes-recreated) user object reference.
+  const userId = user?.id;
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setProfile(makeColdStartProfile());
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    const parsed = safeStorage.getJSON<UserArchetypeProfile | null>(storageKey(user.id), null);
+    const parsed = safeStorage.getJSON<UserArchetypeProfile | null>(storageKey(userId), null);
     if (parsed) {
       if (parsed.version === SCHEMA_VERSION) {
         setProfile(parsed);
@@ -166,10 +169,7 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
       setProfile(makeColdStartProfile());
     }
     setLoading(false);
-  // user object identity changes on login/logout; user.id alone is sufficient
-  // but ESLint requires the full object when it appears in the effect body.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [userId]);
 
   // ── Persist to localStorage whenever profile changes ──
   const persist = useCallback((next: UserArchetypeProfile) => {

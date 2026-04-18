@@ -28,6 +28,8 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
   const reducedMotion = useReducedMotion();
   const { streak, mastery } = useAchievements(language);
 
+  // Re-read plans from storage when count changes (count is the reactive
+  // proxy for the localStorage key — there's no native subscribe API).
   const savedPlans = useMemo<SavedPlan[]>(
     () => safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []),
     [profile.savedPlanCount], // eslint-disable-line react-hooks/exhaustive-deps

@@ -57,6 +57,8 @@ const CommandCenter = () => {
     refreshFromProfile(!!profile.lastFormData);
   }, [profile.lastFormData, refreshFromProfile]);
 
+  // Re-read plans from storage when the count, last summary, or route changes
+  // (these are the reactive proxies for the non-reactive localStorage key).
   const plans = useMemo(
     (): SavedPlan[] => safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,6 +183,8 @@ const CommandCenter = () => {
       planCount: plans.length,
       connectedSources: connectedCount,
     });
+  // Snapshot only when meaningful summary stats change. Including the full
+  // bottlenecks/plans arrays would re-snapshot on every reference change.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveArchetypeId, healthTotal, bottlenecks.length, plans.length, connectedCount]);
 
@@ -198,6 +202,8 @@ const CommandCenter = () => {
         mainGoal: profile.lastFormData.mainGoal,
       },
     });
+  // Capture content snapshot only when form data or archetype changes —
+  // not when user object reference changes.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.lastFormData, effectiveArchetypeId]);
 

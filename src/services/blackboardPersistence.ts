@@ -4,13 +4,8 @@
 // and server-side agent access to blackboard data.
 // ═══════════════════════════════════════════════
 
-import { supabase as _supabase } from "@/integrations/supabase/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { supabaseLoose as supabase } from "@/integrations/supabase/loose";
 import { logger } from "@/lib/logger";
-
-// Cast to untyped client since these tables aren't in the generated schema yet
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const supabase = _supabase as unknown as SupabaseClient<any>;
 import type { BlackboardState } from "@/engine/blackboard/blackboardStore";
 import type { PipelineExecutionResult } from "@/engine/blackboard/agentTypes";
 

@@ -14,6 +14,9 @@ const Plans = () => {
   const isHe = language === "he";
   const navigate = useNavigate();
 
+  // refreshKey is incremented after deletePlan to force a fresh storage read.
+  // It appears in deps even though it isn't read inside the callback —
+  // that's the manual-invalidation pattern.
   const [refreshKey, setRefreshKey] = useState(0);
   const plans = useMemo<SavedPlan[]>(() => {
     return safeStorage

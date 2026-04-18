@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
 import { UserRole, canPerform as canPerformAction } from "@/types/governance";
 import { safeStorage } from "@/lib/safeStorage";
+import { logger } from "@/lib/logger";
+import { ALLOW_LOCAL_AUTH } from "@/lib/validateEnv";
 import { Analytics, getUTM } from "@/lib/analytics";
 
 // Fire signup_from_share if the user arrived via a referral link (?ref=CODE)
@@ -141,12 +143,15 @@ function isPricingTier(value: unknown): value is PricingTier {
 }
 
 // ═══ Admin seed ═══
-// Seeds the built-in admin account on first load (demo/local auth only).
+// Seeds the built-in admin account on first load. ONLY in development —
+// guarded so the seed never lands in a real user's browser if a production
+// Supabase outage flips them into local-auth mode.
 // Plain-text password is never stored — only the PBKDF2-derived hash.
 
 const ADMIN_SEED_ID = "admin-erez-seed";
 
 async function seedAdminUser() {
+  if (!import.meta.env.DEV) return; // never seed in production builds
   const users = getLocalUsers();
   if (users.some((u) => u.id === ADMIN_SEED_ID)) return; // already seeded
   const hash = await hashPassword("10031999");
@@ -274,6 +279,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Local auth fallback
       if (!cancelled) {
+        if (!ALLOW_LOCAL_AUTH) {
+          // Production with Supabase down: don't silently flip the user into
+          // a fresh local account. Surface the failure so they can retry.
+          logger.error(
+            "AuthContext.bootstrap",
+            "Supabase unreachable and VITE_ALLOW_LOCAL_AUTH is false — refusing to fall back to local auth in production.",
+          );
+          setIsLocalAuth(false);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        if (!import.meta.env.DEV) {
+          logger.warn(
+            "AuthContext.bootstrap",
+            "Supabase unreachable — falling back to local auth (VITE_ALLOW_LOCAL_AUTH=true).",
+          );
+        }
         setIsLocalAuth(true);
         migrateLocalAuthIfNeeded();
         await seedAdminUser();

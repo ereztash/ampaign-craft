@@ -3,11 +3,7 @@
 // Events are processed by the queue-processor Edge Function.
 // ═══════════════════════════════════════════════
 
-import { supabase as _supabase } from "@/integrations/supabase/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = _supabase as unknown as SupabaseClient<any>;
+import { supabaseLoose as db } from "@/integrations/supabase/loose";
 
 // ═══════════════════════════════════════════════
 // TYPES

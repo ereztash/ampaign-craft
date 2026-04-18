@@ -26,13 +26,14 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
   const tier = TIERS.find((t) => t.id === requiredTier) || TIERS[1];
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
-  // Track paywall view whenever modal opens
+  // Track paywall view whenever modal opens. Intentionally fires only on the
+  // open transition, not on user/feature/tier changes — those don't represent
+  // a new "view" event.
   useEffect(() => {
     if (open && user) {
       trackPaywallViewed(user.id, feature, currentTier).catch(() => {});
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, user, feature, currentTier]);
 
   const handleUpgrade = async () => {
     // Track checkout started

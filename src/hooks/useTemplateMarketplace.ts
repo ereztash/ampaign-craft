@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { useAuth } from "@/contexts/AuthContext";
 import { logger } from "@/lib/logger";
 import { SavedPlan } from "@/types/funnel";
@@ -137,7 +136,8 @@ export function useTemplateMarketplace() {
       .update({ use_count: template.useCount + 1 })
       .eq("id", templateId);
 
-    const { data } = await ((supabase as unknown as SupabaseClient).from("saved_plans"))
+    const { data } = await supabase
+      .from("saved_plans")
       .select("result")
       .eq("id", template.planId)
       .single();
