@@ -14,13 +14,9 @@ import {
   ResponsiveContainer, CartesianGrid, Cell, FunnelChart, Funnel,
   LabelList,
 } from "recharts";
-import { supabase as _supabase } from "@/integrations/supabase/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { supabaseLoose as db } from "@/integrations/supabase/loose";
 import { NORTH_STAR_METRIC } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = _supabase as unknown as SupabaseClient<any>;
 
 // ─── Types ──────────────────────────────────────
 

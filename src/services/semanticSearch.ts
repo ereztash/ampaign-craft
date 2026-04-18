@@ -4,10 +4,7 @@
 // across all user content and plans.
 // ═══════════════════════════════════════════════
 
-import { supabase } from "@/integrations/supabase/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-const db = supabase as unknown as SupabaseClient;
+import { supabaseLoose as db } from "@/integrations/supabase/loose";
 import type { FunnelResult } from "@/types/funnel";
 
 // ═══════════════════════════════════════════════

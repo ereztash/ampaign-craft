@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseLoose } from "@/integrations/supabase/loose";
 import { tx } from "@/i18n/tx";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { useLanguage } from "@/i18n/LanguageContext";
 import QuotePreview from "@/components/QuotePreview";
 import LoadingFallback from "@/components/LoadingFallback";
@@ -32,7 +31,7 @@ export default function SharedQuote() {
 
     (async () => {
       try {
-        const { data, error: dbError } = await (supabase as unknown as SupabaseClient)
+        const { data, error: dbError } = await supabaseLoose
           .from("quotes")
           .select("data, status, valid_until")
           .eq("share_token", token)

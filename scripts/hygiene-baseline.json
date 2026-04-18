@@ -2,13 +2,13 @@
   "_comment": "Hygiene debt baseline — 2026-04-18. CI fails if any counter INCREASES above this value. Decrease each counter as PRs land.",
   "raw_storage_calls": 67,
   "console_calls": 4,
-  "supabase_any_cast": 17,
+  "supabase_any_cast": 2,
   "explicit_any": 6,
   "exhaustive_deps_suppressions": 18,
   "debt_prs": {
     "PR-2": "DONE 2026-04-18 — raw localStorage/sessionStorage migrated to safeStorage. Remaining 67 matches are all comments/strings (down from 193).",
     "PR-3": "DONE 2026-04-18 — error/warn console.* migrated to logger. Remaining 4 calls are: logger.ts (the wrapper itself, 2 calls) + analytics.ts / archetypeAnalytics.ts (DEV-gated diagnostic prints, 1 each).",
-    "PR-4": "Type Supabase client helpers (target: supabase_any_cast → 0)",
+    "PR-4": "DONE 2026-04-18 — all 15 call sites moved to supabaseLoose boundary in @/integrations/supabase/loose. Remaining 2 matches are: 1 doc comment in loose.ts + 1 single `as unknown as SupabaseClient<any,'public',any>` inside loose.ts (the boundary itself).",
     "PR-5": "Fix React effect deps (target: exhaustive_deps_suppressions → 0)"
   }
 }
