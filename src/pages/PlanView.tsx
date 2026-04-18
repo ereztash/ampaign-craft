@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { SavedPlan } from "@/types/funnel";
+import { safeStorage } from "@/lib/safeStorage";
 import ResultsDashboard from "@/components/ResultsDashboard";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
@@ -17,10 +18,8 @@ const PageComponent = () => {
   const navigate = useNavigate();
 
   const plan = useMemo<SavedPlan | null>(() => {
-    try {
-      const plans: SavedPlan[] = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-      return plans.find((p) => p.id === planId) || null;
-    } catch { return null; }
+    const plans = safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []);
+    return plans.find((p) => p.id === planId) || null;
   }, [planId]);
 
   if (!plan) {

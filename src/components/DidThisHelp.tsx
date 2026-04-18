@@ -8,6 +8,7 @@ import { tx } from "@/i18n/tx";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { safeSessionStorage } from "@/lib/safeStorage";
 
 interface DidThisHelpProps {
   module: string;
@@ -19,11 +20,11 @@ export function DidThisHelp({ module, className = "" }: DidThisHelpProps) {
   const { user } = useAuth();
   const sessionKey = `funnelforge-dth-${module}`;
   const [state, setState] = useState<"idle" | "thanks">(() =>
-    sessionStorage.getItem(sessionKey) ? "thanks" : "idle"
+    safeSessionStorage.getJSON<string | null>(sessionKey, null) ? "thanks" : "idle"
   );
 
   async function handleVote(helpful: boolean) {
-    sessionStorage.setItem(sessionKey, helpful ? "yes" : "no");
+    safeSessionStorage.setJSON(sessionKey, helpful ? "yes" : "no");
     setState("thanks");
 
     await supabase.from("feedback").insert({

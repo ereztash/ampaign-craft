@@ -1,21 +1,17 @@
 import { useState, useCallback, useEffect } from "react";
 import { ImportedDataset, TrendAnalysis } from "@/types/importedData";
 import { analyzeTrends } from "@/engine/dataImportEngine";
+import { safeStorage } from "@/lib/safeStorage";
 
 const STORAGE_KEY = "funnelforge-imported-data";
 const MAX_DATASETS = 10;
 
 function loadDatasets(): ImportedDataset[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<ImportedDataset[]>(STORAGE_KEY, []);
 }
 
 function saveDatasets(datasets: ImportedDataset[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(datasets));
+  safeStorage.setJSON(STORAGE_KEY, datasets);
 }
 
 export function useImportedData() {

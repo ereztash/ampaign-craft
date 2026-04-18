@@ -4,6 +4,8 @@
 // Reward: referrer → +1 month Pro trial, referee → 14-day Pro trial.
 // ═══════════════════════════════════════════════
 
+import { safeStorage } from "@/lib/safeStorage";
+
 const REFERRAL_KEY = "funnelforge-referral";
 
 export interface ReferralData {
@@ -52,13 +54,8 @@ export function generateReferralCode(userId: string): string {
  * Get or create referral data for a user.
  */
 export function getReferralData(userId: string): ReferralData {
-  try {
-    const raw = localStorage.getItem(REFERRAL_KEY);
-    if (raw) {
-      const data = JSON.parse(raw) as ReferralData;
-      if (data.userId === userId) return data;
-    }
-  } catch { /* continue to create new */ }
+  const existing = safeStorage.getJSON<ReferralData | null>(REFERRAL_KEY, null);
+  if (existing && existing.userId === userId) return existing;
 
   const data: ReferralData = {
     code: generateReferralCode(userId),
@@ -67,7 +64,7 @@ export function getReferralData(userId: string): ReferralData {
     referrals: [],
   };
 
-  localStorage.setItem(REFERRAL_KEY, JSON.stringify(data));
+  safeStorage.setJSON(REFERRAL_KEY, data);
   return data;
 }
 
@@ -88,7 +85,7 @@ export function recordReferral(userId: string, refereeEmail: string): ReferralDa
     rewardClaimed: false,
   });
 
-  localStorage.setItem(REFERRAL_KEY, JSON.stringify(data));
+  safeStorage.setJSON(REFERRAL_KEY, data);
   return data;
 }
 
@@ -101,7 +98,7 @@ export function markReferralConverted(userId: string, refereeEmail: string): Ref
 
   if (referral && !referral.convertedAt) {
     referral.convertedAt = new Date().toISOString();
-    localStorage.setItem(REFERRAL_KEY, JSON.stringify(data));
+    safeStorage.setJSON(REFERRAL_KEY, data);
   }
 
   return data;

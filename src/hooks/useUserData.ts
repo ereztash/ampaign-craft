@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useAuth } from "@/contexts/AuthContext";
+import { safeStorage } from "@/lib/safeStorage";
 
 /**
  * Hook for persisting user data to Supabase with localStorage fallback.
@@ -12,9 +13,7 @@ export function useUserData() {
   const saveFormData = useCallback(
     async (formType: string, data: Record<string, unknown>) => {
       // Always save to localStorage as cache
-      try {
-        localStorage.setItem(`funnelforge-${formType}`, JSON.stringify(data));
-      } catch { /* ignore */ }
+      safeStorage.setJSON(`funnelforge-${formType}`, data);
 
       if (!user) return;
 
@@ -49,12 +48,7 @@ export function useUserData() {
       }
 
       // Fallback to localStorage
-      try {
-        const raw = localStorage.getItem(`funnelforge-${formType}`);
-        if (raw) return JSON.parse(raw) as T;
-      } catch { /* ignore */ }
-
-      return fallback;
+      return safeStorage.getJSON<T>(`funnelforge-${formType}`, fallback);
     },
     [user]
   );
@@ -62,9 +56,7 @@ export function useUserData() {
   const saveDifferentiationResult = useCallback(
     async (formData: Record<string, unknown>, result: Record<string, unknown>) => {
       // Always cache locally
-      try {
-        localStorage.setItem("funnelforge-differentiation-result", JSON.stringify(result));
-      } catch { /* ignore */ }
+      safeStorage.setJSON("funnelforge-differentiation-result", result);
 
       if (!user) return;
 
@@ -84,11 +76,8 @@ export function useUserData() {
   const loadDifferentiationResults = useCallback(
     async () => {
       if (!user) {
-        try {
-          const raw = localStorage.getItem("funnelforge-differentiation-result");
-          if (raw) return [JSON.parse(raw)];
-        } catch { /* ignore */ }
-        return [];
+        const cached = safeStorage.getJSON<unknown>("funnelforge-differentiation-result", null);
+        return cached ? [cached] : [];
       }
 
       const { data, error } = await (supabase as unknown as SupabaseClient)

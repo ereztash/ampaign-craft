@@ -35,6 +35,7 @@ import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import { personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
 import { calculateValueScore } from "@/engine/hormoziValueEngine";
+import { safeStorage } from "@/lib/safeStorage";
 import { DifferentiationResult } from "@/types/differentiation";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -96,18 +97,14 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
 
   // Load saved differentiation + stylome from localStorage (if available)
-  const diffResult = useMemo<DifferentiationResult | null>(() => {
-    try {
-      const raw = localStorage.getItem("funnelforge-differentiation-result");
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  }, []);
-  const stylomeVoice = useMemo<StylomeVoice | null>(() => {
-    try {
-      const raw = localStorage.getItem("funnelforge-stylome-voice");
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  }, []);
+  const diffResult = useMemo<DifferentiationResult | null>(
+    () => safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null),
+    [],
+  );
+  const stylomeVoice = useMemo<StylomeVoice | null>(
+    () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
+    [],
+  );
 
   // Knowledge graph + personalized result (cross-domain inputs included)
   const graph = useMemo(

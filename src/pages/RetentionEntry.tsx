@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
+import { safeStorage } from "@/lib/safeStorage";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";
 import { buildRetentionContext, PRICING_WIZARD_STORAGE_KEY, DIFF_RESULT_STORAGE_KEY } from "@/engine/retentionPersonalizationContext";
@@ -18,7 +19,7 @@ import { Heart } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
 
 function safeParse<T>(key: string): T | null {
-  try { const r = localStorage.getItem(key); return r ? JSON.parse(r) as T : null; } catch { return null; }
+  return safeStorage.getJSON<T | null>(key, null);
 }
 
 const PageComponent = () => {

@@ -16,6 +16,7 @@ import type {
 import { classifyArchetype, blendScores } from "@/engine/archetypeClassifier";
 import { getArchetypeUIConfig } from "@/lib/archetypeUIConfig";
 import { useAuth } from "@/contexts/AuthContext";
+import { safeStorage } from "@/lib/safeStorage";
 
 // ═══════════════════════════════════════════════
 // CONSTANTS
@@ -149,25 +150,19 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
     }
 
     setLoading(true);
-    try {
-      const raw = localStorage.getItem(storageKey(user.id));
-      if (raw) {
-        const parsed: UserArchetypeProfile = JSON.parse(raw);
-        if (parsed.version === SCHEMA_VERSION) {
-          setProfile(parsed);
-        } else if (parsed.version === 1) {
-          // Migrate v1 → v2: existing personalisation was silent/automatic,
-          // so we start with adaptationsEnabled=false — the user must accept
-          // the reveal to re-enable it (IKEA-effect transparency).
-          const migrated = migrateV1ToV2(parsed);
-          setProfile(migrated);
-        } else {
-          setProfile(makeColdStartProfile());
-        }
+    const parsed = safeStorage.getJSON<UserArchetypeProfile | null>(storageKey(user.id), null);
+    if (parsed) {
+      if (parsed.version === SCHEMA_VERSION) {
+        setProfile(parsed);
+      } else if (parsed.version === 1) {
+        // Migrate v1 → v2: existing personalisation was silent/automatic,
+        // so we start with adaptationsEnabled=false — the user must accept
+        // the reveal to re-enable it (IKEA-effect transparency).
+        setProfile(migrateV1ToV2(parsed));
       } else {
         setProfile(makeColdStartProfile());
       }
-    } catch {
+    } else {
       setProfile(makeColdStartProfile());
     }
     setLoading(false);
@@ -179,9 +174,7 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
   // ── Persist to localStorage whenever profile changes ──
   const persist = useCallback((next: UserArchetypeProfile) => {
     if (!user) return;
-    try {
-      localStorage.setItem(storageKey(user.id), JSON.stringify(next));
-    } catch { /* quota exceeded — silently skip */ }
+    safeStorage.setJSON(storageKey(user.id), next);
 
     // Fire-and-forget Supabase upsert
     void (async () => {
@@ -268,7 +261,7 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
     const fresh = makeColdStartProfile();
     setProfile(fresh);
     if (user) {
-      try { localStorage.removeItem(storageKey(user.id)); } catch { /* ignore */ }
+      safeStorage.remove(storageKey(user.id));
     }
   }, [user]);
 
@@ -304,15 +297,11 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     const pickKey = `${VARIANT_PICK_STORAGE_PREFIX}${user.id}`;
-    let picks: string[] = [];
-    try {
-      const raw = localStorage.getItem(pickKey);
-      picks = raw ? (JSON.parse(raw) as string[]) : [];
-    } catch { /* ignore */ }
+    const picks = safeStorage.getJSON<string[]>(pickKey, []);
 
     picks.push(choice);
     const window = picks.slice(-VARIANT_PICK_WINDOW);
-    try { localStorage.setItem(pickKey, JSON.stringify(window)); } catch { /* ignore */ }
+    safeStorage.setJSON(pickKey, window);
 
     if (window.length < VARIANT_PICK_THRESHOLD) return;
 

@@ -8,6 +8,7 @@
 
 import type { SavedPlan } from "@/types/funnel";
 import { calculateHealthScore } from "./healthScoreEngine";
+import { safeStorage } from "@/lib/safeStorage";
 
 export interface BusinessInsight {
   id: string;
@@ -19,16 +20,12 @@ export interface BusinessInsight {
 }
 
 function getPlans(): SavedPlan[] {
-  try {
-    return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []);
 }
 
 function getVisitedModules(): string[] {
   const flags = [
-    localStorage.getItem("funnelforge-differentiation-result") ? "differentiation" : null,
+    safeStorage.getString("funnelforge-differentiation-result", "") ? "differentiation" : null,
   ];
   return flags.filter(Boolean) as string[];
 }
@@ -81,7 +78,7 @@ export function generateInsights(): BusinessInsight[] {
   }
 
   // ─── Pattern: differentiation done ────────────────────────
-  const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
+  const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
   if (hasDiff) {
     insights.push({
       id: "pattern-diff",

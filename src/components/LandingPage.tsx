@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { getTotalUsers } from "@/lib/socialProofData";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { useAchievements } from "@/hooks/useAchievements";
+import { safeStorage } from "@/lib/safeStorage";
 import MarketingWrapped from "@/components/MarketingWrapped";
 
 interface LandingPageProps {
@@ -27,10 +28,10 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
   const reducedMotion = useReducedMotion();
   const { streak, mastery } = useAchievements(language);
 
-  const savedPlans = useMemo<SavedPlan[]>(() => {
-    try { return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]"); }
-    catch { return []; }
-  }, [profile.savedPlanCount]); // eslint-disable-line react-hooks/exhaustive-deps
+  const savedPlans = useMemo<SavedPlan[]>(
+    () => safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []),
+    [profile.savedPlanCount], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const pulse = useMemo(() => generateWeeklyPulse(savedPlans), [savedPlans]);
 
@@ -46,16 +47,12 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
 
   const handleLoadLastPlan = () => {
     if (!onLoadLastPlan) return;
-    try {
-      const plans: SavedPlan[] = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-      if (plans.length > 0) {
-        const sorted = [...plans].sort(
-          (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
-        );
-        onLoadLastPlan(sorted[0].result);
-      }
-    } catch (err) {
-      console.error("Failed to load last plan:", err);
+    const plans = safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []);
+    if (plans.length > 0) {
+      const sorted = [...plans].sort(
+        (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
+      );
+      onLoadLastPlan(sorted[0].result);
     }
   };
 

@@ -3,6 +3,7 @@ import { FormData, ExperienceLevel, SavedPlan } from "@/types/funnel";
 import { UnifiedProfile, fromFormData, toFormData, INITIAL_UNIFIED_PROFILE } from "@/types/profile";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { safeStorage } from "@/lib/safeStorage";
 
 export type UserSegment = "new-beginner" | "new-intermediate" | "new-advanced" | "returning";
 
@@ -77,13 +78,7 @@ const KEYS = {
 
 function safeParseJson<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
+  return safeStorage.getJSON<T>(key, fallback);
 }
 
 function getSavedPlans(): SavedPlan[] {
@@ -155,12 +150,10 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setLastVisitDate(profileData.lastVisitDate);
     setIsReturningUser(isReturning);
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem(
-        KEYS.userProfile,
-        JSON.stringify({ visitCount: newVisitCount, lastVisitDate: new Date().toISOString() })
-      );
-    }
+    safeStorage.setJSON(KEYS.userProfile, {
+      visitCount: newVisitCount,
+      lastVisitDate: new Date().toISOString(),
+    });
 
     const lastForm = safeParseJson<FormData | null>(KEYS.lastForm, null);
     setLastFormData(lastForm);
@@ -181,7 +174,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     } else if (lastForm && lastForm.businessField) {
       const migrated = fromFormData(lastForm);
       setUnifiedProfileState(migrated);
-      if (typeof window !== "undefined") { localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(migrated)); }
+      safeStorage.setJSON(KEYS.unifiedProfile, migrated);
     }
 
     const savedMilestones = safeParseJson<OnboardingMilestones>(KEYS.milestones, {
@@ -190,7 +183,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     });
     setMilestones(savedMilestones);
 
-    const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
+    const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
     const modulesCompleted = (hasDiff ? 1 : 0) + (plans.length > 0 ? 1 : 0);
     const prevInvestment = safeParseJson<InvestmentMetrics>(KEYS.investment, {
       plansCreated: 0, modulesCompleted: 0, totalVisits: 0, firstSeenDate: null, totalSessionsMinutes: 0,
@@ -203,14 +196,14 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
       totalSessionsMinutes: prevInvestment.totalSessionsMinutes,
     };
     setInvestment(updatedInvestment);
-    if (typeof window !== "undefined") { localStorage.setItem(KEYS.investment, JSON.stringify(updatedInvestment)); }
+    safeStorage.setJSON(KEYS.investment, updatedInvestment);
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setInvestment((prev) => {
         const updated = { ...prev, totalSessionsMinutes: prev.totalSessionsMinutes + 1 };
-        if (typeof window !== "undefined") { localStorage.setItem(KEYS.investment, JSON.stringify(updated)); }
+        safeStorage.setJSON(KEYS.investment, updated);
         return updated;
       });
     }, 60_000);
@@ -229,7 +222,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const persistFormData = useCallback((data: FormData) => {
-    if (typeof window !== "undefined") { localStorage.setItem(KEYS.lastForm, JSON.stringify(data)); }
+    safeStorage.setJSON(KEYS.lastForm, data);
     setLastFormData(data);
   }, []);
 
@@ -239,9 +232,9 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
 
   const persistUnifiedProfile = useCallback((p: UnifiedProfile) => {
     setUnifiedProfileState(p);
-    if (typeof window !== "undefined") { localStorage.setItem(KEYS.unifiedProfile, JSON.stringify(p)); }
+    safeStorage.setJSON(KEYS.unifiedProfile, p);
     const fd = toFormData(p);
-    if (typeof window !== "undefined") { localStorage.setItem(KEYS.lastForm, JSON.stringify(fd)); }
+    safeStorage.setJSON(KEYS.lastForm, fd);
     setLastFormData(fd);
     if (p.experienceLevel) setExperienceLevelState(p.experienceLevel);
   }, []);
@@ -250,7 +243,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setAchievements((prev) => {
       if (prev.includes(id)) return prev;
       const updated = [...prev, id];
-      if (typeof window !== "undefined") { localStorage.setItem(KEYS.achievements, JSON.stringify(updated)); }
+      safeStorage.setJSON(KEYS.achievements, updated);
       return updated;
     });
   }, []);
@@ -265,7 +258,7 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     setMilestones((prev) => {
       if (prev[key]) return prev;
       const updated = { ...prev, [key]: true };
-      if (typeof window !== "undefined") { localStorage.setItem(KEYS.milestones, JSON.stringify(updated)); }
+      safeStorage.setJSON(KEYS.milestones, updated);
       return updated;
     });
   }, []);

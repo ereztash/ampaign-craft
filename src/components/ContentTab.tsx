@@ -7,6 +7,7 @@ import { FunnelResult } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
 import { analyzeCopy } from "@/engine/copyQAEngine";
 import { scoreHebrewCopy, getHebrewCopyRules } from "@/lib/hebrewCopyOptimizer";
+import { safeStorage } from "@/lib/safeStorage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -34,10 +35,7 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
   // Resolve diffResult from localStorage if not passed as prop
   const resolvedDiff = useMemo<DifferentiationResult | null>(() => {
     if (diffResult !== null) return diffResult;
-    try {
-      const raw = localStorage.getItem("funnelforge-differentiation-result");
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
+    return safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null);
   }, [diffResult]);
 
   const runCopyAudit = () => {

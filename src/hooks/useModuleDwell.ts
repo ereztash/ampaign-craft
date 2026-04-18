@@ -17,6 +17,7 @@ import { useLocation } from "react-router-dom";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBlindSpotProfile } from "@/lib/archetypeBlindSpots";
+import { safeStorage } from "@/lib/safeStorage";
 import type { BlindSpotEntry } from "@/lib/archetypeBlindSpots";
 
 const DISMISS_WINDOW_MS = 72 * 60 * 60 * 1000; // 72 hours
@@ -39,36 +40,20 @@ function dismissKey(userId: string, moduleId: string): string {
 }
 
 function getDwellRecord(userId: string, moduleId: string): DwellRecord | null {
-  try {
-    const raw = localStorage.getItem(dwellKey(userId, moduleId));
-    if (!raw) return null;
-    return JSON.parse(raw) as DwellRecord;
-  } catch {
-    return null;
-  }
+  return safeStorage.getJSON<DwellRecord | null>(dwellKey(userId, moduleId), null);
 }
 
 function setDwellRecord(userId: string, moduleId: string, record: DwellRecord): void {
-  try {
-    localStorage.setItem(dwellKey(userId, moduleId), JSON.stringify(record));
-  } catch { /* quota exceeded — silently skip */ }
+  safeStorage.setJSON(dwellKey(userId, moduleId), record);
 }
 
 export function getDismissRecord(userId: string, moduleId: string): DismissRecord | null {
-  try {
-    const raw = localStorage.getItem(dismissKey(userId, moduleId));
-    if (!raw) return null;
-    return JSON.parse(raw) as DismissRecord;
-  } catch {
-    return null;
-  }
+  return safeStorage.getJSON<DismissRecord | null>(dismissKey(userId, moduleId), null);
 }
 
 export function setDismissRecord(userId: string, moduleId: string): void {
-  try {
-    const record: DismissRecord = { dismissedAt: new Date().toISOString() };
-    localStorage.setItem(dismissKey(userId, moduleId), JSON.stringify(record));
-  } catch { /* quota exceeded — silently skip */ }
+  const record: DismissRecord = { dismissedAt: new Date().toISOString() };
+  safeStorage.setJSON(dismissKey(userId, moduleId), record);
 }
 
 /** Returns true if the module was dismissed within the 72-hour window. */
@@ -103,17 +88,13 @@ export interface ModuleDwellResult {
 /** Check a completionKey against localStorage — reuses same logic as useArchetypePipeline. */
 function resolveCompletion(completionKey: string | undefined): boolean {
   if (!completionKey) return false;
+  const raw = safeStorage.getString(completionKey, "");
+  if (!raw) return false;
   try {
-    const raw = localStorage.getItem(completionKey);
-    if (raw === null) return false;
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed.length > 0;
-    } catch { /* not JSON */ }
-    return !!raw;
-  } catch {
-    return false;
-  }
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.length > 0;
+  } catch { /* not JSON */ }
+  return true;
 }
 
 export function useModuleDwell(): ModuleDwellResult {

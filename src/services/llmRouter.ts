@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════
 
 import type { RegimeState } from "@/engine/optimization/regimeDetector";
+import { safeStorage } from "@/lib/safeStorage";
 
 export type ModelTier = "fast" | "standard" | "deep";
 
@@ -154,16 +155,11 @@ export function trackUsage(record: UsageRecord): void {
   existing.push(record);
   // Keep last 100 records
   const trimmed = existing.slice(-100);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+  safeStorage.setJSON(STORAGE_KEY, trimmed);
 }
 
 export function getUsageHistory(): UsageRecord[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<UsageRecord[]>(STORAGE_KEY, []);
 }
 
 export function getTotalCostNIS(): number {

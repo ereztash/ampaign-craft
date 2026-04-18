@@ -6,6 +6,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useDataSources } from "@/contexts/DataSourceContext";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { safeStorage } from "@/lib/safeStorage";
 import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { detectBottlenecks } from "@/engine/bottleneckEngine";
@@ -56,14 +57,11 @@ const CommandCenter = () => {
     refreshFromProfile(!!profile.lastFormData);
   }, [profile.lastFormData, refreshFromProfile]);
 
-  const plans = useMemo((): SavedPlan[] => {
-    try {
-      return JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-    } catch {
-      return [];
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile.savedPlanCount, profile.lastPlanSummary, location.key]);
+  const plans = useMemo(
+    (): SavedPlan[] => safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [profile.savedPlanCount, profile.lastPlanSummary, location.key],
+  );
 
   const latestPlan = useMemo(() => {
     if (plans.length === 0) return null;
@@ -87,7 +85,7 @@ const CommandCenter = () => {
     });
   }, [profile.lastFormData]);
 
-  const hasDiff = !!localStorage.getItem("funnelforge-differentiation-result");
+  const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
   const healthTotal = latestPlan ? calculateHealthScore(latestPlan.result).total : null;
   const pulse = generateWeeklyPulse(plans);
   const connectedCount = sources.filter((s) => s.status === "connected").length;
@@ -258,7 +256,7 @@ const CommandCenter = () => {
         {isNewUser && showExpressWizard && (
           <div className="space-y-2">
             <ExpressWizard onComplete={(data) => {
-              localStorage.setItem("funnelforge-last-form", JSON.stringify(data));
+              safeStorage.setJSON("funnelforge-last-form", data);
               setShowExpressWizard(false);
               navigate("/wizard", { state: { expressData: data } });
             }} />

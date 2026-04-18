@@ -4,6 +4,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { generateFunnel, personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { safeStorage } from "@/lib/safeStorage";
 import AiCoachChat from "@/components/AiCoachChat";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,13 +20,9 @@ const AiCoachPage = () => {
   const navigate = useNavigate();
 
   const result = useMemo(() => {
-    try {
-      const plans: SavedPlan[] = JSON.parse(localStorage.getItem("funnelforge-plans") || "[]");
-      const sorted = plans.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
-      if (sorted[0]?.result) return sorted[0].result;
-    } catch (err) {
-      console.error("Failed to load saved plans:", err);
-    }
+    const plans = safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []);
+    const sorted = plans.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
+    if (sorted[0]?.result) return sorted[0].result;
     if (profile.lastFormData) {
       const raw = generateFunnel(profile.lastFormData);
       const graph = buildUserKnowledgeGraph(profile.lastFormData);

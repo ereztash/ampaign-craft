@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { safeStorage } from './safeStorage'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -54,12 +55,7 @@ export const STATUS_COLORS: Record<string, string> = {
 }
 
 export function safeParseJson<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+  return safeStorage.getJSON<T>(key, fallback);
 }
 
 export function getWeekId(date: Date = new Date()): string {

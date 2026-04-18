@@ -6,6 +6,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { safeStorage } from "@/lib/safeStorage";
 
 // ───────────────────────────────────────────────
 // Types
@@ -97,23 +98,12 @@ interface BufferedPair {
 }
 
 function readBuffer(): BufferedPair[] {
-  try {
-    const raw = localStorage.getItem(BUFFER_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  const parsed = safeStorage.getJSON<BufferedPair[]>(BUFFER_KEY, []);
+  return Array.isArray(parsed) ? parsed : [];
 }
 
 function writeBuffer(pairs: BufferedPair[]): void {
-  try {
-    const trimmed = pairs.slice(-BUFFER_MAX);
-    localStorage.setItem(BUFFER_KEY, JSON.stringify(trimmed));
-  } catch {
-    /* storage full or unavailable — skip */
-  }
+  safeStorage.setJSON(BUFFER_KEY, pairs.slice(-BUFFER_MAX));
 }
 
 function appendToBuffer(pair: BufferedPair): void {
@@ -138,13 +128,8 @@ export async function captureTrainingPair(
   options: CaptureOptions = {}
 ): Promise<string | null> {
   // Gate behind training data consent (GDPR)
-  try {
-    const consentRaw = localStorage.getItem("funnelforge-consent");
-    if (consentRaw) {
-      const consent = JSON.parse(consentRaw);
-      if (consent.trainingDataOptIn === false) return null;
-    }
-  } catch { /* continue if consent not found — backwards compat */ }
+  const consent = safeStorage.getJSON<{ trainingDataOptIn?: boolean } | null>("funnelforge-consent", null);
+  if (consent && consent.trainingDataOptIn === false) return null;
 
   const engineVersion = options.engineVersion ?? "1.0.0";
   const metadata = options.metadata ?? {};

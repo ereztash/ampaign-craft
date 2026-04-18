@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, CheckCircle, BookOpen } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { safeStorage } from "@/lib/safeStorage";
 
 // ───────────────────────────────────────────────
 // Types
@@ -202,19 +203,11 @@ function storageKey(module: TutorialModule): string {
 }
 
 export function isTutorialCompleted(module: TutorialModule): boolean {
-  try {
-    return localStorage.getItem(storageKey(module)) === "true";
-  } catch {
-    return false;
-  }
+  return safeStorage.getString(storageKey(module), "") === "true";
 }
 
 export function markTutorialCompleted(module: TutorialModule): void {
-  try {
-    localStorage.setItem(storageKey(module), "true");
-  } catch {
-    /* storage unavailable */
-  }
+  safeStorage.setString(storageKey(module), "true");
 }
 
 // ───────────────────────────────────────────────

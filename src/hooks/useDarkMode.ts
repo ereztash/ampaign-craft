@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { safeStorage } from "@/lib/safeStorage";
 
 type DarkModePreference = "light" | "dark" | "system";
 
@@ -18,7 +19,7 @@ function applyDarkClass(isDark: boolean) {
 
 export function useDarkMode() {
   const [preference, setPreferenceState] = useState<DarkModePreference>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = safeStorage.getString(STORAGE_KEY, "");
     if (saved === "light" || saved === "dark" || saved === "system") return saved;
     return "system";
   });
@@ -42,7 +43,7 @@ export function useDarkMode() {
 
   const setPreference = useCallback((pref: DarkModePreference) => {
     setPreferenceState(pref);
-    localStorage.setItem(STORAGE_KEY, pref);
+    safeStorage.setString(STORAGE_KEY, pref);
   }, []);
 
   const toggle = useCallback(() => {

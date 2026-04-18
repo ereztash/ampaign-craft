@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { safeParseJson } from "@/lib/utils";
+import { safeStorage } from "@/lib/safeStorage";
 
 const LOCAL_KEY = "funnelforge-tracking";
 
@@ -52,7 +53,7 @@ function loadLocal(planId: string): TrackedMetric[] {
 }
 
 function saveLocal(metrics: TrackedMetric[]) {
-  localStorage.setItem(LOCAL_KEY, JSON.stringify(metrics));
+  safeStorage.setJSON(LOCAL_KEY, metrics);
 }
 
 export function useCampaignTracking(planId: string | null) {

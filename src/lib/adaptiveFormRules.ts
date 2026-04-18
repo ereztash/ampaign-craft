@@ -1,5 +1,6 @@
 import { FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
+import { safeStorage } from "./safeStorage";
 
 export interface StepConfig {
   id: string;
@@ -12,45 +13,40 @@ export interface StepConfig {
  * If so, we can pre-fill form fields and skip redundant steps.
  */
 export function getDifferentiationPreFill(): Partial<FormData> | null {
-  try {
-    const raw = localStorage.getItem("funnelforge-differentiation-result");
-    if (!raw) return null;
-    const diff: DifferentiationResult = JSON.parse(raw);
-    const fd = diff.formData;
-    if (!fd) return null;
+  const diff = safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null);
+  if (!diff) return null;
+  const fd = diff.formData;
+  if (!fd) return null;
 
-    // Map differentiation fields to funnel FormData
-    const preFill: Partial<FormData> = {};
+  // Map differentiation fields to funnel FormData
+  const preFill: Partial<FormData> = {};
 
-    // Industry → businessField (best effort mapping)
-    if (fd.industry) {
-      const industry = fd.industry.toLowerCase();
-      if (industry.includes("fashion") || industry.includes("אופנה")) preFill.businessField = "fashion";
-      else if (industry.includes("tech") || industry.includes("saas") || industry.includes("טכנו")) preFill.businessField = "tech";
-      else if (industry.includes("food") || industry.includes("מזון")) preFill.businessField = "food";
-      else if (industry.includes("health") || industry.includes("בריאות")) preFill.businessField = "health";
-      else if (industry.includes("education") || industry.includes("חינוך")) preFill.businessField = "education";
-      else if (industry.includes("real estate") || industry.includes("נדל")) preFill.businessField = "realEstate";
-      else if (industry.includes("tourism") || industry.includes("תיירות")) preFill.businessField = "tourism";
-      else if (industry.includes("service") || industry.includes("שירות") || industry.includes("consult") || industry.includes("ייעוץ")) preFill.businessField = "services";
-      else preFill.businessField = "other";
-    }
-
-    // targetMarket → audienceType
-    if (fd.targetMarket) {
-      preFill.audienceType = fd.targetMarket.startsWith("b2b") ? "b2b" : "b2c";
-    }
-
-    // priceRange → approximate averagePrice
-    if (fd.priceRange === "budget") preFill.averagePrice = 100;
-    else if (fd.priceRange === "mid") preFill.averagePrice = 500;
-    else if (fd.priceRange === "premium") preFill.averagePrice = 2000;
-    else if (fd.priceRange === "enterprise") preFill.averagePrice = 10000;
-
-    return preFill;
-  } catch {
-    return null;
+  // Industry → businessField (best effort mapping)
+  if (fd.industry) {
+    const industry = fd.industry.toLowerCase();
+    if (industry.includes("fashion") || industry.includes("אופנה")) preFill.businessField = "fashion";
+    else if (industry.includes("tech") || industry.includes("saas") || industry.includes("טכנו")) preFill.businessField = "tech";
+    else if (industry.includes("food") || industry.includes("מזון")) preFill.businessField = "food";
+    else if (industry.includes("health") || industry.includes("בריאות")) preFill.businessField = "health";
+    else if (industry.includes("education") || industry.includes("חינוך")) preFill.businessField = "education";
+    else if (industry.includes("real estate") || industry.includes("נדל")) preFill.businessField = "realEstate";
+    else if (industry.includes("tourism") || industry.includes("תיירות")) preFill.businessField = "tourism";
+    else if (industry.includes("service") || industry.includes("שירות") || industry.includes("consult") || industry.includes("ייעוץ")) preFill.businessField = "services";
+    else preFill.businessField = "other";
   }
+
+  // targetMarket → audienceType
+  if (fd.targetMarket) {
+    preFill.audienceType = fd.targetMarket.startsWith("b2b") ? "b2b" : "b2c";
+  }
+
+  // priceRange → approximate averagePrice
+  if (fd.priceRange === "budget") preFill.averagePrice = 100;
+  else if (fd.priceRange === "mid") preFill.averagePrice = 500;
+  else if (fd.priceRange === "premium") preFill.averagePrice = 2000;
+  else if (fd.priceRange === "enterprise") preFill.averagePrice = 10000;
+
+  return preFill;
 }
 
 /**

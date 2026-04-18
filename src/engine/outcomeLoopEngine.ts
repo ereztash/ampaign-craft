@@ -12,6 +12,8 @@
 // Loop closure happens async when the user returns and reports outcomes.
 // ═══════════════════════════════════════════════
 
+import { safeStorage } from "@/lib/safeStorage";
+
 // ───────────────────────────────────────────────
 // Types
 // ───────────────────────────────────────────────
@@ -121,18 +123,11 @@ type BufferedEvent =
   | { type: "outcome"; payload: OutcomeReport };
 
 function readBuffer(): BufferedEvent[] {
-  try {
-    const raw = localStorage.getItem(BUFFER_KEY);
-    return raw ? (JSON.parse(raw) as BufferedEvent[]) : [];
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<BufferedEvent[]>(BUFFER_KEY, []);
 }
 
 function writeBuffer(events: BufferedEvent[]): void {
-  try {
-    localStorage.setItem(BUFFER_KEY, JSON.stringify(events.slice(-BUFFER_MAX)));
-  } catch { /* storage full — drop oldest */ }
+  safeStorage.setJSON(BUFFER_KEY, events.slice(-BUFFER_MAX));
 }
 
 function bufferEvent(event: BufferedEvent): void {
@@ -437,10 +432,7 @@ const ENGINE_HISTORY_KEY = "funnelforge-engine-history";
 const ENGINE_HISTORY_MAX = 90; // ~3 months of daily snapshots
 
 function readEngineHistory(): EngineSnapshot[] {
-  try {
-    const raw = localStorage.getItem(ENGINE_HISTORY_KEY);
-    return raw ? (JSON.parse(raw) as EngineSnapshot[]) : [];
-  } catch { return []; }
+  return safeStorage.getJSON<EngineSnapshot[]>(ENGINE_HISTORY_KEY, []);
 }
 
 /**
@@ -490,7 +482,7 @@ export function snapshotEngineOutputs(params: {
 
   // Persist to localStorage
   const updated = [...history, snapshot].slice(-ENGINE_HISTORY_MAX);
-  try { localStorage.setItem(ENGINE_HISTORY_KEY, JSON.stringify(updated)); } catch { /* full */ }
+  safeStorage.setJSON(ENGINE_HISTORY_KEY, updated);
 
   // Async Supabase sync (fire-and-forget)
   void (async () => {
@@ -550,12 +542,9 @@ export function captureContentSnapshot(params: {
   };
 
   // Persist to localStorage
-  try {
-    const raw = localStorage.getItem(CONTENT_SNAP_KEY);
-    const arr: ContentSnapshot[] = raw ? JSON.parse(raw) : [];
-    arr.push(snapshot);
-    localStorage.setItem(CONTENT_SNAP_KEY, JSON.stringify(arr.slice(-CONTENT_SNAP_MAX)));
-  } catch { /* storage full */ }
+  const arr = safeStorage.getJSON<ContentSnapshot[]>(CONTENT_SNAP_KEY, []);
+  arr.push(snapshot);
+  safeStorage.setJSON(CONTENT_SNAP_KEY, arr.slice(-CONTENT_SNAP_MAX));
 
   // Async Supabase sync
   void (async () => {

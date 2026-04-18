@@ -3,6 +3,8 @@
 // Right-to-delete (Article 17) and data export (Article 20)
 // ═══════════════════════════════════════════════
 
+import { safeStorage } from "@/lib/safeStorage";
+
 const ALL_STORAGE_KEYS = [
   "funnelforge-user-profile",
   "funnelforge-last-form",
@@ -33,24 +35,16 @@ const ALL_STORAGE_KEYS = [
 export async function deleteAllUserData(userId?: string): Promise<{ deletedKeys: string[] }> {
   const deletedKeys: string[] = [];
 
-  // Clear localStorage
+  // Clear known keys
   for (const key of ALL_STORAGE_KEYS) {
-    if (localStorage.getItem(key) !== null) {
-      localStorage.removeItem(key);
+    if (safeStorage.getString(key, "")) {
+      safeStorage.remove(key);
       deletedKeys.push(key);
     }
   }
 
   // Also clear any funnelforge-prefixed keys we might have missed
-  const toRemove: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key?.startsWith("funnelforge-")) {
-      toRemove.push(key);
-    }
-  }
-  for (const key of toRemove) {
-    localStorage.removeItem(key);
+  for (const key of safeStorage.removeWithPrefix("funnelforge-")) {
     if (!deletedKeys.includes(key)) deletedKeys.push(key);
   }
 
@@ -79,8 +73,8 @@ export function exportUserData(): Record<string, unknown> {
   const data: Record<string, unknown> = {};
 
   for (const key of ALL_STORAGE_KEYS) {
-    const raw = localStorage.getItem(key);
-    if (raw !== null) {
+    const raw = safeStorage.getString(key, "");
+    if (raw) {
       try {
         data[key] = JSON.parse(raw);
       } catch {

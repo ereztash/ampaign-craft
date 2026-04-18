@@ -4,21 +4,17 @@
 // ═══════════════════════════════════════════════
 
 import type { AuditEntry } from "@/types/governance";
+import { safeStorage } from "@/lib/safeStorage";
 
 const STORAGE_KEY = "funnelforge-audit-log";
 const MAX_ENTRIES = 500;
 
 function getEntries(): AuditEntry[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<AuditEntry[]>(STORAGE_KEY, []);
 }
 
 function saveEntries(entries: AuditEntry[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  safeStorage.setJSON(STORAGE_KEY, entries);
 }
 
 /**
@@ -47,7 +43,7 @@ export function getAuditLog(): AuditEntry[] {
  * Clear the audit log.
  */
 export function clearAuditLog(): void {
-  localStorage.removeItem(STORAGE_KEY);
+  safeStorage.remove(STORAGE_KEY);
 }
 
 /**

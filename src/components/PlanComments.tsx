@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { safeStorage } from "@/lib/safeStorage";
 import { tx } from "@/i18n/tx";
 import { MessageSquare, Send } from "lucide-react";
 
@@ -18,24 +19,15 @@ export interface PlanComment {
 }
 
 function loadComments(planId: string): PlanComment[] {
-  try {
-    const raw = localStorage.getItem(COMMENTS_KEY);
-    const all: PlanComment[] = raw ? JSON.parse(raw) : [];
-    return all.filter((c) => c.planId === planId);
-  } catch {
-    return [];
-  }
+  const all = safeStorage.getJSON<PlanComment[]>(COMMENTS_KEY, []);
+  return all.filter((c) => c.planId === planId);
 }
 
 function saveComment(comment: PlanComment): void {
-  try {
-    const raw = localStorage.getItem(COMMENTS_KEY);
-    const all: PlanComment[] = raw ? JSON.parse(raw) : [];
-    all.push(comment);
-    // Cap at 500 total comments
-    const trimmed = all.slice(-500);
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(trimmed));
-  } catch { /* storage full — silently fail */ }
+  const all = safeStorage.getJSON<PlanComment[]>(COMMENTS_KEY, []);
+  all.push(comment);
+  // Cap at 500 total comments
+  safeStorage.setJSON(COMMENTS_KEY, all.slice(-500));
 }
 
 interface PlanCommentsProps {
