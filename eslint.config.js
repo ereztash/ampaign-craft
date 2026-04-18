@@ -69,6 +69,16 @@ export default tseslint.config(
   // PR-2 storage debt cleared 2026-04-18 — all raw localStorage / sessionStorage
   // calls now go through @/lib/safeStorage. No debt allowlist needed.
 
+  // Test files may use `any` for fixture objects and partial mocks without
+  // requiring fully-typed stubs — this is standard test-file pragmatism.
+  {
+    files: [
+      "src/**/__tests__/**/*.{ts,tsx}",
+      "src/**/*.{test,spec}.{ts,tsx}",
+    ],
+    rules: { "@typescript-eslint/no-explicit-any": "off" },
+  },
+
   // ─── Logging boundary enforcement ────────────────────────────────────────
   // Direct console.* usage is banned in src; use logger from @/lib/logger
   // which forwards errors/warnings to Sentry in production.
