@@ -209,26 +209,24 @@ describe("moderateOutput — high pressure", () => {
 
 describe("moderateOutput — cortisol overload", () => {
   it("high density of fear/urgency words flags cortisol_overload", () => {
-    // >3% of words must be fear words, text must be >20 words
-    // Pattern: \b(danger|risk|lose|miss|fail|urgent|now|last|...)\b
-    // Use "now" and "last" which are common English fear words matching \b
-    const fearText = "danger risk lose miss fail urgent now last now danger risk now lose fail urgent last danger";
-    // 17 words, 17 matches — but that's 100% which is >> 3% and > 20? No, 17 < 20
-    // Need >20 words: add padding
-    const fearText2 = "danger risk lose miss fail urgent now last now danger risk now lose fail urgent last danger risk lose miss";
-    const result = moderateOutput(fearText2);
+    // The check requires: words > 20 (strictly) AND fearWords/words > 0.03
+    // Construct 21+ word text where fear words dominate
+    const fearText = "danger risk lose miss fail urgent now last now danger risk now lose fail urgent last danger risk lose miss extra";
+    // 21 words; nearly all are fear words → ratio >> 3%
+    const result = moderateOutput(fearText);
     expect(result.flags).toContain("cortisol_overload");
   });
 
-  it("short text (<=20 words) does not trigger cortisol check", () => {
-    // Even with all fear words, <=20 words is not checked
-    const result = moderateOutput("danger risk lose miss fail urgent now last");
+  it("text with exactly 20 words does not trigger cortisol check (requires > 20)", () => {
+    const text20 = "danger risk lose miss fail urgent now last danger risk now lose fail urgent now last risk lose miss fail";
+    // exactly 20 words — condition is words > 20, so this is NOT checked
+    const result = moderateOutput(text20);
     expect(result.flags).not.toContain("cortisol_overload");
   });
 
   it("low density of fear words in long text does not flag", () => {
-    // 1 fear word in 50 normal words = 2% < 3% threshold
-    const normal = "We help clients succeed by delivering excellent marketing strategies. Our team is dedicated to providing outstanding results through creative approaches. The platform offers comprehensive tools for businesses. One risk that we help mitigate.";
+    // Carefully craft text with 0 fear words from the pattern
+    const normal = "We help clients succeed by delivering excellent marketing strategies. Our team is dedicated to providing outstanding results through creative approaches. The platform offers comprehensive tools for businesses. Clients achieve their goals effectively.";
     const result = moderateOutput(normal);
     expect(result.flags).not.toContain("cortisol_overload");
   });

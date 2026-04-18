@@ -232,11 +232,11 @@ describe("assembleQuote", () => {
     expect(quote.urgencyBlock?.he).toBeTruthy();
   });
 
-  it("urgencyBlock is undefined when funnelResult is null", () => {
-    // Mock calculateCostOfInaction to throw when no funnelResult
-    const { calculateCostOfInaction } = vi.mocked(await import("../costOfInactionEngine"));
-    calculateCostOfInaction.mockImplementationOnce(() => { throw new Error("no result"); });
+  it("urgencyBlock is absent when funnelResult is null (coi skipped)", () => {
+    // The engine only calls calculateCostOfInaction when funnelResult is truthy.
+    // With funnelResult=null, coi stays null, so urgencyBlock is undefined.
     const quote = assembleQuote(makeFormData(), makeGraph(), null, makeAssemblyInput());
+    // urgencyBlock should be undefined because funnelResult is null
     expect(quote.urgencyBlock).toBeUndefined();
   });
 

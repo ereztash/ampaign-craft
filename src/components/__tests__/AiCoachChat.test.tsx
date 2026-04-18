@@ -1,6 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { render, screen } from "@testing-library/react";
 import AiCoachChat from "../AiCoachChat";
+
+// jsdom does not implement scrollTo on HTMLElement
+beforeAll(() => {
+  window.HTMLElement.prototype.scrollTo = vi.fn();
+});
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRTL: false }),
