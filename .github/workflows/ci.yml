@@ -25,6 +25,9 @@ jobs:
       - name: Lint
         run: npx eslint src/ --ext .ts,.tsx --max-warnings 0
 
+      - name: Hygiene baseline check
+        run: bash scripts/check-hygiene-baseline.sh
+
       - name: Security audit
         # --audit-level=critical: xlsx has a known high CVE with no available fix;
         # we block on critical severity but track the xlsx issue separately.
