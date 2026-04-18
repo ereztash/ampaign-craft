@@ -23,6 +23,7 @@ import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { getTotalUsers } from "@/lib/socialProofData";
 import BusinessPulseBar from "@/components/BusinessPulseBar";
 import WeeklyActionCard from "@/components/WeeklyActionCard";
+import IdentityStrip from "@/components/IdentityStrip";
 import InsightFeed from "@/components/InsightFeed";
 import { NudgeBanner } from "@/components/NudgeBanner";
 import { ProgressMomentum } from "@/components/ProgressMomentum";
@@ -247,6 +248,8 @@ const CommandCenter = () => {
             </>
           )}
         </motion.section>
+
+        <IdentityStrip />
 
         <WeeklyActionCard
           bottlenecks={bottlenecks}

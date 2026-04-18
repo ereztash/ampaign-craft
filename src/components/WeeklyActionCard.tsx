@@ -1,6 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useArchetype } from "@/contexts/ArchetypeContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import {
   RotateCcw,
   Trophy,
   AlertTriangle,
+  Users,
 } from "lucide-react";
 import { tx } from "@/i18n/tx";
 import type { Bottleneck, BottleneckModule } from "@/engine/bottleneckEngine";
@@ -27,6 +29,7 @@ import {
   type LoopSnapshot,
   type ReportOutcome,
 } from "@/engine/weeklyLoopEngine";
+import { fetchCohortPriors, type CohortPriors } from "@/services/cohortBenchmarks";
 
 // Maps each bottleneck module to the route where the next action lives.
 // Keeping this in one place so the Action Card stays authoritative about
@@ -165,6 +168,23 @@ export default function WeeklyActionCard({
 
   const [reportNote, setReportNote] = useState("");
   const [reportSubmitting, setReportSubmitting] = useState(false);
+
+  // Cohort whisper — only surface "N similar businesses also reported X" when
+  // we have archetype context AND the cohort sample is statistically meaningful
+  // (n>=50, enforced inside fetchCohortPriors.isSignificant).
+  const { effectiveArchetypeId, confidenceTier } = useArchetype();
+  const [cohortPriors, setCohortPriors] = useState<CohortPriors | null>(null);
+  useEffect(() => {
+    // Skip cohort fetch when we don't have reliable archetype context yet —
+    // noisy whispers are worse than silence.
+    if (confidenceTier === "none" || confidenceTier === "tentative") return;
+    if (snapshot.state !== "between_weeks") return;
+    let cancelled = false;
+    void fetchCohortPriors(effectiveArchetypeId).then((priors) => {
+      if (!cancelled) setCohortPriors(priors);
+    });
+    return () => { cancelled = true; };
+  }, [effectiveArchetypeId, confidenceTier, snapshot.state]);
 
   const handleCommitAndGo = useCallback(() => {
     commitToAction({
@@ -377,6 +397,21 @@ export default function WeeklyActionCard({
               language,
             )}
           </p>
+
+          {cohortPriors?.isSignificant && cohortPriors.topActions.length > 0 && (
+            <div className="flex items-start gap-2 rounded-md bg-blue-50 dark:bg-blue-950/30 p-3 text-sm" dir="auto">
+              <Users className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+              <span className="text-foreground/80">
+                {tx(
+                  {
+                    he: `${cohortPriors.sampleSize} עסקים דומים לשלך דיווחו — הדפוסים המובילים בארכיטיפ שלך זמינים ב"בחר מהלך חדש".`,
+                    en: `${cohortPriors.sampleSize} similar businesses reported — top patterns for your archetype are available in "Pick a new move".`,
+                  },
+                  language,
+                )}
+              </span>
+            </div>
+          )}
 
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
