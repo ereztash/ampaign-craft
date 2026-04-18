@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/AuthModal";
@@ -6,7 +6,7 @@ import AchievementBadgesPanel from "@/components/AchievementBadgesPanel";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { tx } from "@/i18n/tx";
 import { Globe, Sun, Moon, LogIn, LogOut, Award, UserCircle, Settings, Home, Brain } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -24,7 +24,15 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
   const { isDark, toggle: toggleDarkMode } = useDarkMode();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [authOpen, setAuthOpen] = useState(false);
+
+  // Auto-open auth modal when redirected from a protected route
+  useEffect(() => {
+    if ((location.state as { openAuth?: boolean } | null)?.openAuth && !user) {
+      setAuthOpen(true);
+    }
+  }, [location.state, user]);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
   const isHe = language === "he";

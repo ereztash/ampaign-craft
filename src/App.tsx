@@ -22,12 +22,12 @@ import { PMFSurveyModal } from "@/components/PMFSurveyModal";
 import { NPSWidget } from "@/components/NPSWidget";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 
-/** Guard: redirects non-owner/admin users to home. */
+/** Guard: redirects non-owner/admin users to home with a login-required hint. */
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   if (loading) return <LoadingFallback />;
   if (!user || (user.role !== "owner" && user.role !== "admin")) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" state={{ openAuth: true }} replace />;
   }
   return <>{children}</>;
 }
