@@ -62,10 +62,11 @@ FunnelForge is a **Hebrew-first SaaS growth platform** integrating 5 connected m
 **Execution:** `agentRunner` (sync, topological sort) · `asyncAgentRunner` (Promise.allSettled, retries, timeouts)
 
 ### Testing & CI
-- **651 tests passing** (Vitest, jsdom)
-- **Coverage:** statements 31% · branches 67% · functions 49% · lines 31%
+- **651+ tests passing** across 69 test files (Vitest, jsdom)
+- **Coverage (actual, from `coverage/coverage-summary.json`):** statements 36.12% · branches 71.04% · functions 52.68% · lines 36.12%
+- **Coverage (floor in `vitest.config.ts`):** statements 31% · branches 67% · functions 49% · lines 31% — ratchet needs update to new baseline
 - **CI:** typecheck (tsc) · lint (max-warnings 0) · audit · test · build
-- **Risk:** 69% uncovered statements in 45 behavioral engines = gaps in math/logic
+- **Risk:** ~64% uncovered statements; critical-engine override (pricingWizard, hormoziValue, archetypeClassifier) enforced at 50% via `scripts/check-coverage-critical.sh`
 
 ### Code Quality
 **Positive:**
@@ -191,7 +192,7 @@ FunnelForge **is alone** in combining:
 | **R2** | Architecture complexity ≠ customer ROI | Theater risk; margin erosion if Jasper wins on simplicity | Build value metrics dashboard; demo archetype-ROI |
 | **R3** | Price too aggressive (₪79/mo annual) | CAC > ₪200 on paid; payback > 9m | Anchor ₪249 for Business; use value metrics pricing by Y2 |
 | **R4** | LTV:CAC 25× aspirational, not proven | Breakeven at 3–5× if paid acquisition needed | Plan conservatively; 25× is referral-only scenario |
-| **R5** | Coverage 31% on behavioral engines | Hidden math bugs (pricing error = ₪₪₪) | Ratchet to 50% by Q4 2026; prioritize pricingEngine, hormoziEngine, archetypeClassifier |
+| **R5** | Coverage 36% statements (up from 31% baseline) — still leaves behavioral engines under-tested | Hidden math bugs (pricing error = ₪₪₪) | Ratchet `vitest.config.ts` floor from 31 → 36; push to 50% on critical engines by Q4 2026 |
 | **R6** | TypeScript not-strict but documented strict | Due diligence catches immediately | Update README + `tsconfig.json` comment clarifying pragmatic path |
 | **R7** | DISC + behavioral nudges + Dark-UX-light = manipulation risk | Regulatory/ethical blowback (esp. if Hebrew framing) | Ethics whitepaper; Glass-Box transparency; opt-in adaptations |
 | **R8** | SHA-256 local auth (fast but insecure) | Production breach → user data leak | Replace with bcrypt/Argon2 before real users on local mode |
