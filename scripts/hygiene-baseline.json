@@ -1,0 +1,14 @@
+{
+  "_comment": "Hygiene debt baseline — 2026-04-18. CI fails if any counter INCREASES above this value. Decrease each counter as PRs land.",
+  "raw_storage_calls": 193,
+  "console_calls": 32,
+  "supabase_any_cast": 17,
+  "explicit_any": 6,
+  "exhaustive_deps_suppressions": 18,
+  "debt_prs": {
+    "PR-2": "Migrate raw localStorage/sessionStorage to safeStorage (target: raw_storage_calls → 0)",
+    "PR-3": "Migrate console.* to logger (target: console_calls → 0)",
+    "PR-4": "Type Supabase client helpers (target: supabase_any_cast → 0)",
+    "PR-5": "Fix React effect deps (target: exhaustive_deps_suppressions → 0)"
+  }
+}
