@@ -60,6 +60,8 @@ export function NudgeBanner({ nudge, onDismiss }: NudgeBannerProps) {
       action_label_en: nudge.type,
       context_snapshot: { route: nudge.route ?? null, has_cta: !!nudge.cta },
     });
+  // Fires once per nudge type — we do NOT want a new analytics event when
+  // the user/archetype changes mid-banner.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nudge?.type]);
 

@@ -41,13 +41,17 @@ const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Track weekly active on Dashboard mount
+  // Track weekly active on Dashboard mount per distinct user.id.
+  // Wrapping in useMemo (not useEffect) keeps the analytics emit inline with
+  // first paint instead of after; deps include only user.id so we don't fire
+  // when the user object reference changes.
+  const trackedUserId = user?.id;
   useMemo(() => {
-    if (user) Analytics.weeklyActive(user.id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+    if (trackedUserId) Analytics.weeklyActive(trackedUserId);
+  }, [trackedUserId]);
   const { streak, mastery } = useAchievements(language);
 
+  // Re-read plans from storage when count changes (proxy for non-reactive key).
   const savedPlans = useMemo<SavedPlan[]>(
     () => safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []),
     [profile.savedPlanCount], // eslint-disable-line react-hooks/exhaustive-deps

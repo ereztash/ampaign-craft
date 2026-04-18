@@ -85,6 +85,8 @@ function TrackedInsightCard({
       action_label_en: item.title,
       context_snapshot: contextSnapshot,
     });
+  // Fires once per insight item — userId/archetype changes during a session
+  // should NOT register as a new "recommendation shown" telemetry event.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.id]);
 

@@ -55,7 +55,9 @@ export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeReve
   const blindSpots = getBlindSpotProfile(effectiveArchetypeId);
   const icon = ARCHETYPE_ICONS[effectiveArchetypeId] ?? "✦";
 
-  // Mark reveal as seen + emit analytics on first mount
+  // Mark reveal as seen + emit analytics on first mount only.
+  // The reveal is a one-shot UI event tied to component lifecycle, not a
+  // reactive subscription to archetype/confidence changes.
   useEffect(() => {
     markRevealSeen();
     emitArchetypeEvent("archetype_revealed", {

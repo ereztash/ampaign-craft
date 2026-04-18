@@ -41,6 +41,9 @@ const PlanComments = ({ planId }: PlanCommentsProps) => {
   const [input, setInput] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // refreshKey is a manual invalidation knob (incremented after handleSubmit)
+  // — it appears in deps to force re-read of localStorage, even though the
+  // value isn't referenced inside the memoized callback.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const comments = useMemo(() => loadComments(planId), [planId, refreshKey]);
 

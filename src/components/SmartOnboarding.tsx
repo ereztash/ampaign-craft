@@ -92,6 +92,9 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
 
   // Track abandon on unmount (if not completed)
   const completedRef = { current: false };
+  // Mount-once: emit "started" + register the cleanup that fires
+  // "abandoned" if the user navigates away mid-flow. Re-running on userId
+  // or step changes would double-count both events.
   useEffect(() => {
     Analytics.onboardingStarted(userId);
     return () => {

@@ -62,7 +62,10 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
     }
   };
 
-  // Dynamic steps based on current form data — only re-compute on field changes that affect step visibility
+  // Dynamic steps based on form data. We deliberately depend on the four
+  // fields that drive step visibility instead of the whole formData object —
+  // re-computing on every keystroke (e.g. productDescription) would be wasteful
+  // and could re-render skipped steps mid-typing.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const visibleSteps = useMemo(() => getVisibleSteps(formData), [
     formData.businessField,
