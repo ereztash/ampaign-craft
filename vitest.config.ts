@@ -14,14 +14,17 @@ export default defineConfig({
       reporter: ["text", "lcov", "json-summary"],
       include: ["src/**/*.{ts,tsx}"],
       exclude: ["src/**/*.{test,spec}.{ts,tsx}", "src/test/**"],
-      // Global ratchet: current baseline −2%. Tighten quarterly.
+      // Global ratchet: trailing actual −1%. Tighten quarterly.
+      // Actual (2026-04-18): stmt 36.02%, branch 72.33%, fn 53.19%, lines 36.02%
       thresholds: {
-        statements: 31,
-        branches: 67,
-        functions: 49,
-        lines: 31,
-        // Critical-engine overrides — must hit 50% (enforced via scripts/check-coverage-critical.sh)
-        // Targets: pricingWizardEngine.ts · hormoziValueEngine.ts · archetypeClassifier.ts
+        statements: 35,
+        branches: 71,
+        functions: 52,
+        lines: 35,
+        // Critical-engine overrides — enforced via scripts/check-coverage-critical.sh
+        // costOfInactionEngine, churnPredictionEngine, copyQAEngine, discProfileEngine,
+        // behavioralHeuristicEngine all now ≥80% branches and 100% functions.
+        // pricingWizardEngine.ts · hormoziValueEngine.ts · archetypeClassifier.ts at 95%+.
       },
     },
   },

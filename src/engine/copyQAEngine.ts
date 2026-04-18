@@ -78,7 +78,8 @@ export function analyzeCopy(
 
   // === Reactance Check (too pushy) ===
   const exclamationCount = (text.match(/!/g) || []).length;
-  const capsWords = words.filter((w) => w.length > 2 && w === w.toUpperCase()).length;
+  // Use original (non-lowercased) split to detect all-caps words
+  const capsWords = text.split(/\s+/).filter((w) => w.length > 2 && w === w.toUpperCase() && /[A-Z]/.test(w)).length;
   if (exclamationCount > 3 || capsWords > 2) {
     risks.push({
       type: "reactance", severity: "high",

@@ -78,10 +78,15 @@ function mockArchetypeCtx(adaptationsEnabled = true, confidenceTier = "confident
       revealSeen: true,
     },
     uiConfig: { label: { en: "The Strategist", he: "האסטרטג" } },
+    loading: false,
+    revealSeen: true,
+    updateFromBlackboard: vi.fn(),
+    clearProfile: vi.fn(),
     markRevealSeen: vi.fn(),
     setAdaptationsEnabled: vi.fn(),
     setOverride: vi.fn(),
-  };
+    recordVariantPick: vi.fn(),
+  } as unknown as import("@/contexts/ArchetypeContext").ArchetypeContextValue;
 }
 
 // Override useModuleDwell to return controlled values

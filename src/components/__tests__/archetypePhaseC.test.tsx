@@ -49,12 +49,14 @@ function makeCtx(overrides: {
       label: { en: "The Pioneer", he: "החלוץ" },
     },
     loading: false,
+    revealSeen: true,
     updateFromBlackboard: vi.fn(),
     setOverride: vi.fn(),
     clearProfile: vi.fn(),
     setAdaptationsEnabled: vi.fn(),
     markRevealSeen: vi.fn(),
-  };
+    recordVariantPick: vi.fn(),
+  } as unknown as import("@/contexts/ArchetypeContext").ArchetypeContextValue;  
 }
 
 const FONT_LINK_ID = "archetype-pioneer-font";
