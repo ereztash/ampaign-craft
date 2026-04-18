@@ -11,7 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
-import { Loader2, Mail } from "lucide-react";
+import { Loader2, Mail, Phone, MapPin, Clock, FileText } from "lucide-react";
+import { BUSINESS_INFO } from "@/lib/businessInfo";
+import { Link } from "react-router-dom";
 
 const SUPPORT_EMAIL = "support@funnelforge.app";
 
@@ -79,10 +81,68 @@ const Support = () => {
     }
   };
 
+  const lang = language as "he" | "en";
+
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto max-w-2xl px-4 pt-4 pb-16">
         <BackToHub currentPage={tx({ he: "תמיכה", en: "Support" }, language)} />
+
+        {/* Business Info Card — required by Israeli payment processors (סולק) */}
+        <Card className="mt-6" dir="auto">
+          <CardHeader>
+            <CardTitle className="text-base">
+              {tx({ he: "פרטי בית העסק", en: "Business details" }, language)}
+            </CardTitle>
+            <CardDescription>
+              {tx(
+                { he: "פרטי קשר רשמיים לכל פנייה, כולל ביטולים והחזרים.", en: "Official contact info for all inquiries, including cancellations and refunds." },
+                language,
+              )}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="font-medium text-foreground" dir="auto">
+              {BUSINESS_INFO.legalName[lang]} · {BUSINESS_INFO.vatIdLabel[lang]} {BUSINESS_INFO.vatId}
+            </div>
+            <div className="grid gap-2 text-muted-foreground sm:grid-cols-2">
+              <a
+                href={`tel:${BUSINESS_INFO.phone.tel}`}
+                className="flex items-center gap-2 hover:text-foreground transition-colors"
+                dir="ltr"
+              >
+                <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>{BUSINESS_INFO.phone.display}</span>
+              </a>
+              <a
+                href={`mailto:${BUSINESS_INFO.email}`}
+                className="flex items-center gap-2 hover:text-foreground transition-colors break-all"
+                dir="ltr"
+              >
+                <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>{BUSINESS_INFO.email}</span>
+              </a>
+              <div className="flex items-start gap-2" dir="auto">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>{BUSINESS_INFO.address.full[lang]}</span>
+              </div>
+              <div className="flex items-start gap-2" dir="auto">
+                <Clock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>{BUSINESS_INFO.hours[lang]}</span>
+              </div>
+            </div>
+            <div className="pt-1">
+              <Link
+                to="/refund-policy"
+                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+              >
+                <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+                {tx({ he: "תקנון ביטולים והחזרים", en: "Refund & cancellation policy" }, language)}
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="mt-6" dir="auto">
           <CardHeader>
             <CardTitle>{tx({ he: "שלח לנו פידבק", en: "Send us feedback" }, language)}</CardTitle>
