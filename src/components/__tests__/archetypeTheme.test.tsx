@@ -111,7 +111,8 @@ function makeCtx(overrides: {
     clearProfile: vi.fn(),
     setAdaptationsEnabled: vi.fn(),
     markRevealSeen: vi.fn(),
-  };
+    recordVariantPick: vi.fn(),
+  } as unknown as import("@/contexts/ArchetypeContext").ArchetypeContextValue;
 }
 
 const DATA_ATTRS = [

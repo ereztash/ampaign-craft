@@ -25,6 +25,23 @@ const COLD_START_ARCHETYPE: ArchetypeId = "optimizer";
 const SIGNAL_HISTORY_CAP = 50;
 const SCHEMA_VERSION = 2;
 
+// Loop 2: Behavioral Correction constants
+const VARIANT_PICK_STORAGE_PREFIX = "funnelforge-variant-picks-";
+const VARIANT_PICK_WINDOW = 20;      // analyze last N picks
+const VARIANT_PICK_THRESHOLD = 10;   // minimum picks before correction fires
+// Expected primary pick rate per archetype (from behavioral theory):
+//   Strategist/Optimizer = systematic → prefer primary (high certainty picks)
+//   Pioneer/Connector/Closer = heuristic → more comfortable with variation
+const EXPECTED_PRIMARY_RATE: Record<ArchetypeId, number> = {
+  strategist: 0.60,
+  optimizer:  0.60,
+  pioneer:    0.45,
+  connector:  0.45,
+  closer:     0.50,
+};
+// If actual primary rate is this far below expected, lower confidence by one tier
+const DIVERGENCE_THRESHOLD = 0.25;
+
 function storageKey(userId: string): string {
   return `funnelforge-archetype-${userId}`;
 }
@@ -62,7 +79,7 @@ function migrateV1ToV2(p: UserArchetypeProfile): UserArchetypeProfile {
 // CONTEXT TYPES
 // ═══════════════════════════════════════════════
 
-interface ArchetypeContextValue {
+export interface ArchetypeContextValue {
   /** The stored profile (null until first hydration is complete) */
   profile: UserArchetypeProfile;
   /** Resolved UI config for the effective archetype */
@@ -97,6 +114,14 @@ interface ArchetypeContextValue {
   revealSeen: boolean;
   /** Mark the reveal as seen (called on first mount of ArchetypeRevealScreen). */
   markRevealSeen: () => void;
+  /**
+   * Loop 2 — Behavioral Correction.
+   * Record a variant pick (primary / variation / skip).
+   * After VARIANT_PICK_THRESHOLD picks, checks if the user's actual pick pattern
+   * diverges from the expected pattern for their archetype.
+   * If divergence exceeds DIVERGENCE_THRESHOLD, lowers confidence tier by one step.
+   */
+  recordVariantPick: (choice: "primary" | "variation" | "skip") => void;
 }
 
 const ArchetypeContext = createContext<ArchetypeContextValue | null>(null);
@@ -274,6 +299,49 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
     });
   }, [persist]);
 
+  // ── recordVariantPick (Loop 2: Behavioral Correction) ──
+  const recordVariantPick = useCallback((choice: "primary" | "variation" | "skip") => {
+    if (!user) return;
+
+    const pickKey = `${VARIANT_PICK_STORAGE_PREFIX}${user.id}`;
+    let picks: string[] = [];
+    try {
+      const raw = localStorage.getItem(pickKey);
+      picks = raw ? (JSON.parse(raw) as string[]) : [];
+    } catch { /* ignore */ }
+
+    picks.push(choice);
+    const window = picks.slice(-VARIANT_PICK_WINDOW);
+    try { localStorage.setItem(pickKey, JSON.stringify(window)); } catch { /* ignore */ }
+
+    if (window.length < VARIANT_PICK_THRESHOLD) return;
+
+    // Check divergence from expected primary rate for this archetype
+    const primaryCount = window.filter((c) => c === "primary").length;
+    const primaryRate = primaryCount / window.length;
+    const expected = EXPECTED_PRIMARY_RATE[effectiveArchetypeId] ?? 0.50;
+    const divergence = expected - primaryRate; // positive = user picks primary less than expected
+
+    if (divergence >= DIVERGENCE_THRESHOLD) {
+      setProfile((prev) => {
+        // Lower confidence by one tier
+        const tierOrder: ConfidenceTier[] = ["none", "tentative", "confident", "strong"];
+        const currentIdx = tierOrder.indexOf(prev.confidenceTier);
+        const newTier = currentIdx > 0 ? tierOrder[currentIdx - 1] : prev.confidenceTier;
+        if (newTier === prev.confidenceTier) return prev; // already at floor
+
+        const next: UserArchetypeProfile = {
+          ...prev,
+          confidenceTier: newTier,
+          confidence: Math.max(prev.confidence - 0.10, 0),
+          lastComputedAt: new Date().toISOString(),
+        };
+        persist(next);
+        return next;
+      });
+    }
+  }, [user, effectiveArchetypeId, persist]);
+
   const adaptationsEnabled = profile.adaptationsEnabled === true;
   const revealSeen = profile.revealSeen === true;
 
@@ -291,6 +359,7 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
       setAdaptationsEnabled,
       revealSeen,
       markRevealSeen,
+      recordVariantPick,
     }}>
       {children}
     </ArchetypeContext.Provider>

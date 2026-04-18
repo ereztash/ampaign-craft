@@ -84,7 +84,13 @@ export interface OutcomeReport {
   recommendation_id: string;
   user_id: string | null;
   horizon_days: OutcomeHorizon;
-  outcome_type: "navigated" | "plan_created" | "source_connected" | "revenue_reported" | "dismissed";
+  outcome_type:
+    | "navigated"
+    | "plan_created"
+    | "source_connected"
+    | "revenue_reported"
+    | "dismissed"
+    | "pricing_validated"; // Loop 1: explicit pricing accuracy signal
   delta_value: number | null;       // e.g. revenue delta, plan count delta
   reported_at: string;
 }
@@ -264,6 +270,68 @@ export function captureOutcome(
     const persisted = await persistOutcome(event);
     if (!persisted) bufferEvent({ type: "outcome", payload: event });
   })();
+}
+
+/**
+ * Loop 1 — Pricing Validation.
+ * Call when a user reports actual revenue after receiving a pricing recommendation.
+ * Compares actual revenue to the recommended price; if the miss exceeds 20%,
+ * writes a negative training pair to the "campaign_analytics" engine so the
+ * pricing wizard's prompt patches can self-correct over time.
+ *
+ * @param userId        - Authenticated user id (or null for anonymous)
+ * @param recommendedPrice - The price FunnelForge suggested (₪)
+ * @param actualRevenue    - The actual per-unit revenue the user achieved (₪)
+ * @param archetypeId      - Archetype at time of recommendation (for cohort analysis)
+ * @param businessField    - Business field (e.g. "tech", "services")
+ */
+export async function capturePricingOutcome(
+  userId: string | null,
+  recommendedPrice: number,
+  actualRevenue: number,
+  archetypeId: string,
+  businessField: string,
+): Promise<void> {
+  if (recommendedPrice <= 0) return;
+
+  const missRatio = Math.abs(actualRevenue - recommendedPrice) / recommendedPrice;
+  const isMiss = missRatio > 0.20; // >20% deviation = pricing miss
+
+  const recommendationId = crypto.randomUUID();
+  const outcomeEvent: OutcomeReport = {
+    recommendation_id: recommendationId,
+    user_id: userId,
+    horizon_days: 30,
+    outcome_type: "pricing_validated",
+    delta_value: actualRevenue,
+    reported_at: new Date().toISOString(),
+  };
+
+  void (async () => {
+    const persisted = await persistOutcome(outcomeEvent);
+    if (!persisted) bufferEvent({ type: "outcome", payload: outcomeEvent });
+  })();
+
+  if (isMiss) {
+    // Bridge to training data loop: the pricing recommendation was wrong
+    try {
+      const { captureTrainingPair } = await import("./trainingDataEngine");
+      await captureTrainingPair(
+        "campaign_analytics",
+        { recommendedPrice, archetypeId, businessField },
+        { actualRevenue, missRatio: +missRatio.toFixed(3), direction: actualRevenue < recommendedPrice ? "over" : "under" },
+        userId,
+        {
+          metadata: {
+            source: "pricing_validation",
+            miss_pct: Math.round(missRatio * 100),
+            archetype_id: archetypeId,
+            business_field: businessField,
+          },
+        },
+      );
+    } catch { /* non-fatal — trainingData import optional */ }
+  }
 }
 
 // ───────────────────────────────────────────────

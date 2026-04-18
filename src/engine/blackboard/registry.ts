@@ -71,6 +71,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "emotionalPerformanceEngine",
   "executiveBriefEngine",
   "exportEngine",
+  "frameworkRankingEngine",
   "funnelEngine",
   "gapEngine",
   "guidanceEngine",

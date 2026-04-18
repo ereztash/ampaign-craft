@@ -2,6 +2,11 @@
 // Churn Prediction & Prevention Engine
 // Cross-domain: Behavioral Psychology × SaaS Metrics × Communication Theory
 // 3-stage model: Active → Disengaging → Silent
+//
+// Loop 4 — Self-Calibration:
+//   applyCalibrationUpdate() stores field-level observations to localStorage.
+//   calculateRiskScore() merges dynamic overrides into the static baselines,
+//   allowing the engine to correct itself as real outcome data accumulates.
 // ═══════════════════════════════════════════════
 
 import { FormData } from "@/types/funnel";
@@ -34,6 +39,94 @@ export interface ChurnRiskAssessment {
   interventions: ChurnIntervention[];
   nrrProjection: NRRProjection;
   retentionPlaybook: { he: string; en: string }[];
+}
+
+// ═══════════════════════════════════════════════
+// LOOP 4 — SELF-CALIBRATION
+// Stores observed churn rates and NRR by business field.
+// Blends static baselines with observed data as N grows.
+// ═══════════════════════════════════════════════
+
+const CALIBRATION_KEY = "funnelforge-churn-calibration";
+const CALIBRATION_BLEND_START = 10; // observations needed before blending starts
+const CALIBRATION_BLEND_FULL  = 50; // observations for full weight on observed
+
+export interface ChurnCalibrationEntry {
+  observedChurnRate: number;
+  observedNRR: number;
+  sampleN: number;
+  updatedAt: string;
+}
+
+type CalibrationStore = Record<string, ChurnCalibrationEntry>;
+
+function readCalibration(): CalibrationStore {
+  try {
+    const raw = localStorage.getItem(CALIBRATION_KEY);
+    return raw ? (JSON.parse(raw) as CalibrationStore) : {};
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Record an observed outcome for a business field.
+ * Call when a user reports revenue outcomes (loop back from outcomeLoopEngine).
+ *
+ * @param field              - Business field key (e.g. "tech", "services")
+ * @param observedChurnRate  - Estimated annual churn 0–1 (e.g. 0.22 = 22%)
+ * @param observedNRR        - Net Revenue Retention % (e.g. 92)
+ */
+export function applyCalibrationUpdate(
+  field: string,
+  observedChurnRate: number,
+  observedNRR: number,
+): void {
+  const store = readCalibration();
+  const prev = store[field];
+
+  if (prev) {
+    // Incremental weighted average
+    const n = prev.sampleN + 1;
+    store[field] = {
+      observedChurnRate: (prev.observedChurnRate * prev.sampleN + observedChurnRate) / n,
+      observedNRR: (prev.observedNRR * prev.sampleN + observedNRR) / n,
+      sampleN: n,
+      updatedAt: new Date().toISOString(),
+    };
+  } else {
+    store[field] = {
+      observedChurnRate,
+      observedNRR,
+      sampleN: 1,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  try {
+    localStorage.setItem(CALIBRATION_KEY, JSON.stringify(store));
+  } catch { /* storage full */ }
+}
+
+/**
+ * Blend static baseline with observed data.
+ * Returns the static value when N < BLEND_START.
+ * Linearly transitions to full observed weight at N = BLEND_FULL.
+ */
+function blendCalibrated(staticVal: number, observed: number, sampleN: number): number {
+  if (sampleN < CALIBRATION_BLEND_START) return staticVal;
+  const weight = Math.min(
+    (sampleN - CALIBRATION_BLEND_START) / (CALIBRATION_BLEND_FULL - CALIBRATION_BLEND_START),
+    1,
+  );
+  return staticVal * (1 - weight) + observed * weight;
+}
+
+/**
+ * Retrieve the current calibration store (for admin/debug panels).
+ */
+export function getChurnCalibration(): CalibrationStore {
+  return readCalibration();
 }
 
 // ═══════════════════════════════════════════════
@@ -71,8 +164,13 @@ function calculateRiskScore(formData: FormData): { score: number; signals: Churn
   const signals: ChurnSignal[] = [];
   const field = formData.businessField || "other";
 
-  // === Industry base risk ===
-  const fieldChurn = FIELD_CHURN_RATES[field] || 0.30;
+  // === Industry base risk (Loop 4: blended with observed calibration data) ===
+  const calibration = readCalibration();
+  const cal = calibration[field];
+  const staticChurn = FIELD_CHURN_RATES[field] || 0.30;
+  const fieldChurn = cal
+    ? blendCalibrated(staticChurn, cal.observedChurnRate, cal.sampleN)
+    : staticChurn;
   score += Math.round(fieldChurn * 30); // 0-15 from industry
 
   if (fieldChurn >= 0.40) {
@@ -274,7 +372,11 @@ function generateInterventions(formData: FormData, riskTier: string): ChurnInter
 
 function projectNRR(formData: FormData, riskScore: number): NRRProjection {
   const field = formData.businessField || "other";
-  const baseline = NRR_BASELINES[field] || 80;
+  const staticNRR = NRR_BASELINES[field] || 80;
+  // Loop 4: blend with observed NRR if calibration data exists
+  const calibration = readCalibration();
+  const cal = calibration[field];
+  const baseline = cal ? blendCalibrated(staticNRR, cal.observedNRR, cal.sampleN) : staticNRR;
 
   // Risk reduces NRR
   const riskReduction = Math.round(riskScore * 0.15);
