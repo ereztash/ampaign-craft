@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import DifferentiationTranscriptWizard from "../DifferentiationTranscriptWizard";
 
 vi.mock("@/i18n/LanguageContext", () => ({
-  useLanguage: () => ({ language: "en", t: (k: string) => k, isRTL: false, isRTL: false }),
+  useLanguage: () => ({ language: "en", t: (k: string) => k, isRTL: false }),
 }));
 
 vi.mock("@/i18n/tx", () => ({

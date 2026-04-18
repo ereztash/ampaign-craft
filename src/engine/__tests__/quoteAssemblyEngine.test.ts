@@ -40,10 +40,6 @@ vi.mock("../discProfileEngine", () => ({
   })),
 }));
 
-vi.mock("./pricingKnowledge", () => ({
-  applyCharmPricing: vi.fn((price: number) => price - 1),
-}));
-
 vi.mock("../pricingKnowledge", () => ({
   applyCharmPricing: vi.fn((price: number) => price - 1),
 }));
