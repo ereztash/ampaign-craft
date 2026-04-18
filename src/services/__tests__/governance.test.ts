@@ -86,11 +86,13 @@ describe("Data governance — right-to-delete", () => {
     expect(localStorage.getItem("other-key")).toBe("keep");
   });
 
-  it("exports all user data", () => {
+  it("exports all user data (localStorage only when no userId)", async () => {
     localStorage.setItem("funnelforge-plans", '["plan1"]');
-    const data = exportUserData();
+    const data = await exportUserData();
     expect(data["funnelforge-plans"]).toEqual(["plan1"]);
-    expect(data._format).toBe("funnelforge-gdpr-export-v1");
+    expect(data._format).toBe("funnelforge-gdpr-export-v2");
+    // Without userId, no Supabase tables should be touched
+    expect(data["supabase:training_pairs"]).toBeUndefined();
   });
 });
 

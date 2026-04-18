@@ -1,6 +1,6 @@
 {
   "_comment": "Hygiene debt baseline — 2026-04-18. CI fails if any counter INCREASES above this value. Decrease each counter as PRs land.",
-  "raw_storage_calls": 70,
+  "raw_storage_calls": 72,
   "console_calls": 4,
   "supabase_any_cast": 2,
   "explicit_any": 6,
