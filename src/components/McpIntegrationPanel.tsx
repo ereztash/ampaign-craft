@@ -204,6 +204,7 @@ export function McpIntegrationPanel() {
                 size="icon"
                 className="h-6 w-6 shrink-0"
                 onClick={() => copyText(MCP_ENDPOINT, "url")}
+                aria-label="Copy MCP endpoint URL"
               >
                 {copied === "url" ? (
                   <CheckCheck className="h-3.5 w-3.5 text-green-500" />
@@ -252,6 +253,7 @@ export function McpIntegrationPanel() {
                 size="icon"
                 className="h-6 w-6 shrink-0"
                 onClick={() => copyText(token, "token")}
+                aria-label="Copy token"
               >
                 {copied === "token" ? (
                   <CheckCheck className="h-3.5 w-3.5 text-green-500" />
@@ -305,6 +307,7 @@ export function McpIntegrationPanel() {
                   size="icon"
                   className="absolute top-2 end-2 h-6 w-6"
                   onClick={() => copyText(configJson, "config")}
+                  aria-label="Copy configuration"
                 >
                   {copied === "config" ? (
                     <CheckCheck className="h-3.5 w-3.5 text-green-500" />

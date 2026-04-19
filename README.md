@@ -8,7 +8,7 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
 
 | | FunnelForge | Jasper / Copy.ai | HubSpot Breeze | GoHighLevel | Attio |
 |---|---|---|---|---|---|
-| **Hebrew-native** | ✅ 290+ keys, RTL, gendered copy | ❌ | ❌ (translated) | ❌ | ❌ |
+| **Hebrew-native** | ✅ 300+ keys, RTL, gendered copy | ❌ | ❌ (translated) | ❌ | ❌ |
 | **Behavioral-science wizards** | ✅ PSM + Hormozi + Decoy + CoI + DISC | ❌ copy only | ⚠️ limited | ❌ | ❌ |
 | **5 connected modules in one journey** | ✅ diff → marketing → sales → pricing → retention | ❌ | ⚠️ multi-hub needed | ⚠️ funnel-first | ❌ CRM-first |
 | **Closed feedback loops** | ✅ 6 self-correcting loops | ❌ | ⚠️ analytics only | ❌ | ❌ |
@@ -18,7 +18,7 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
 **Three uncommon bets:**
 1. **Behavioral-science stack** — Van Westendorp PSM, Hormozi Value Equation, Ariely Decoy, Kahneman CoI, DISC closing — as *wizards*, not research tools.
 2. **Six closed feedback loops** — every recommendation is measured, validated, and feeds back to self-correct the next one.
-3. **Hebrew-first, Arabic-ready RTL** — the only AI-native growth platform that ships production-quality Hebrew out of the box.
+3. **Hebrew-first, Arabic-ready RTL** — the only AI-native growth platform that ships production-quality Hebrew out of the box (300+ bilingual keys, gendered copy, RTL-first architecture).
 
 ---
 
@@ -76,7 +76,7 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
 | **Multi-agent orchestration** | ✅ 13 agents, write-gated | ⚠️ 4 Breeze agents | ❌ | ❌ | ⚠️ AI Research | ❌ |
 | **Closed feedback loops** | ✅ 6 loops | ⚠️ attribution only | ❌ | ❌ | ❌ | ❌ |
 | **Archetype-adaptive UI** | ✅ 5 archetypes | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Hebrew-native (not translation)** | ✅ 290+ keys, gendered | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Hebrew-native (not translation)** | ✅ 300+ keys, gendered | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **RTL-first architecture** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ### Behavioral-Science Framework Benchmarks
@@ -135,6 +135,8 @@ The unique logic FunnelForge encodes — every engine maps to a named, citable t
 | `copyQAEngine.ts` | 6 neuropsychological checks (concreteness, specificity, emotional valence, cognitive load, directional clarity, verification) | Runs after every LLM generation, rejects below threshold |
 | `retentionFlywheelEngine.ts` | Flywheel theory (Collins 2001) + Hooked Model (Eyal 2014) | Growth loop mapping with trigger-action-reward-investment stages |
 | `stylomeEngine.ts` + `perplexityBurstiness.ts` | Stylometry + Burstiness/Perplexity detection (post-2023 AI detection) | User-specific writing fingerprint + AI-content detection score |
+| `frameworkRankingEngine.ts` | Bandit-style pick-rate tracking (primary=2 / variation=1 / skip=0) | Selects best-performing copy framework (PAS/AIDA/BAB/Hormozi/Challenge) per (archetype, field) |
+| `researchOrchestrator.ts` | Multi-agent research pipeline (regulatory · market · marketing) | Decomposes macro questions → parallel sub-agents → cross-domain synthesis |
 | `predictiveContentScoreEngine.ts` | Anyword-style pre-publish scoring | 0-100 score before publishing, driver-level feedback |
 | `campaignAnalyticsEngine.ts` | Benchmark calibration with sample-size confidence weighting | Cross-cohort percentile comparisons (wired to Loop 5 for refresh) |
 
@@ -199,7 +201,7 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 | Auth | Dual-mode: Supabase JWT or local PBKDF2 fallback |
 | Payments | Stripe |
 | Ads | Meta Graph API |
-| Testing | Vitest + React Testing Library |
+| Testing | Vitest + React Testing Library · 305 test files · 4 506 tests |
 | CI | GitHub Actions (typecheck · lint · test · build) |
 
 ---
@@ -208,7 +210,7 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 
 **AI Engine** — async pipeline that runs every plan through multiple specialized checks before delivery.
 
-- **Orchestrator** — 13 specialized analysis passes (knowledge graph → funnel → DISC → pricing → QA → meta-analysis) run in dependency order
+- **Orchestrator** — 13 specialized analysis passes (knowledge graph → funnel → DISC → pricing → QA → meta-analysis) run in dependency order via 59 pure-function engines
 - **LLM Router** — selects Claude Haiku / Sonnet / Opus based on task complexity and cost caps
 - **GRAOS** — 6 strictly-additive optimization overlays (M1–M6) that rewrite engine output without touching source engines
 - **QA Pipeline** — 15+ static + content + security checks run after every generation
@@ -219,7 +221,7 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 ```
   ┌─────────────────────────────────────────────────────────────┐
   │  UI Layer — React + shadcn/ui + RTL + Archetype-adaptive    │
-  │  108 components · 17 pages · 16 hooks · L1-L5 resolution    │
+  │  104 components · 24 pages · 20 hooks · L1-L5 resolution    │
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
@@ -233,11 +235,11 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
   │  Blackboard / MAS-CC — 13 agents, write-gated JSONB state   │
-  │  KGraph · Funnel · DISC · Hormozi · CoI · QA · Φ_META        │
+  │  KGraph · Funnel · DISC · Hormozi · CoI · QA · Φ_META (15 files) │
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
-  │  Pure Engine Layer — 45+ engines, no I/O, no side-effects    │
+  │  Pure Engine Layer — 59 engines, no I/O, no side-effects     │
   │  Behavioral Science · Pricing · Churn · Archetype · Copy QA  │
   └──────────────────────────┬──────────────────────────────────┘
                              │
@@ -248,7 +250,7 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
   │  Persistence — Supabase Postgres + pgvector · Event Queue    │
-  │  RLS · 18 migrations · 12 Edge Functions · 1536-dim vectors  │
+  │  RLS · 18 migrations · 19 Edge Functions · 1536-dim vectors  │
   └─────────────────────────────────────────────────────────────┘
 ```
 

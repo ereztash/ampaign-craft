@@ -131,7 +131,7 @@ function CompetitorList({ formData, onUpdate, placeholder, maxItems }: { formDat
       {competitors.map((c, i) => (
         <div key={i} className="flex items-center gap-2">
           <Input value={c} onChange={(e) => change(i, e.target.value)} placeholder={`${placeholder} ${i + 1}`} aria-label={`${tx({ he: "מתחרה", en: "Competitor" }, language)} ${i + 1}`} dir="auto" />
-          <Button variant="ghost" size="icon" onClick={() => remove(i)} className="shrink-0"><X className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => remove(i)} className="shrink-0" aria-label={`Remove competitor ${i + 1}`}><X className="h-4 w-4" aria-hidden="true" /></Button>
         </div>
       ))}
       {competitors.length < maxItems && (

@@ -77,8 +77,8 @@ export function WhatsAppSendButton({
             <h4 className="text-sm font-semibold" dir="auto">
               {tx({ he: "שלח ב-WhatsApp", en: "Send via WhatsApp" }, language)}
             </h4>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setOpen(false)}>
-              <X className="h-3.5 w-3.5" />
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setOpen(false)} aria-label="Close">
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
             </Button>
           </div>
 
