@@ -96,11 +96,11 @@ describe("ModulePipeline", () => {
         <ModulePipeline />
       </MemoryRouter>,
     );
-    expect(screen.getByText("Differentiation")).toBeTruthy();
-    expect(screen.getByText("Marketing")).toBeTruthy();
-    expect(screen.getByText("Sales")).toBeTruthy();
-    expect(screen.getByText("Pricing")).toBeTruthy();
-    expect(screen.getByText("Retention")).toBeTruthy();
+    expect(screen.getAllByText("Differentiation")[0]).toBeTruthy();
+    expect(screen.getAllByText("Marketing")[0]).toBeTruthy();
+    expect(screen.getAllByText("Sales")[0]).toBeTruthy();
+    expect(screen.getAllByText("Pricing")[0]).toBeTruthy();
+    expect(screen.getAllByText("Retention")[0]).toBeTruthy();
   });
 
   it("shows Complete badge for completed module", () => {

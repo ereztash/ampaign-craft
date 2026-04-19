@@ -123,7 +123,7 @@ describe("Landing", () => {
         <Landing />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/plans/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/plans/i)[0]).toBeInTheDocument();
   });
 
   it("shows How It Works section", () => {

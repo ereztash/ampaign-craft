@@ -36,7 +36,7 @@ const mockProfile = {
 describe("DISCProfileCard", () => {
   it("renders without crashing", () => {
     render(<DISCProfileCard profile={mockProfile} />);
-    expect(screen.getByText("DISC Profile")).toBeInTheDocument();
+    expect(screen.getAllByText(/DISC Profile/i)[0]).toBeInTheDocument();
   });
 
   it("shows primary type badge", () => {

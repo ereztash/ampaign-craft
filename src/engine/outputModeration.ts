@@ -13,13 +13,17 @@ export interface ModerationResult {
 }
 
 // Blocklist patterns for harmful content
+// Hebrew word boundaries (\b) don't work with Unicode — use lookahead/lookbehind
+// against Hebrew letter range instead.
+const HB = "(?<![א-ת])"; // not preceded by Hebrew letter
+const HA = "(?![א-ת])";  // not followed by Hebrew letter
 const BLOCKLIST_HE = [
-  /\bנאצי\b/i,
-  /\bהיטלר\b/i,
-  /\bטרור\b/i,
-  /\bהתאבדות\b/i,
-  /\bגזענ/i,
-  /\bסמים\b/i,
+  new RegExp(`${HB}נאצי${HA}`, "i"),
+  new RegExp(`${HB}היטלר${HA}`, "i"),
+  new RegExp(`${HB}טרור${HA}`, "i"),
+  new RegExp(`${HB}התאבדות${HA}`, "i"),
+  /גזענ/i,
+  new RegExp(`${HB}סמים${HA}`, "i"),
 ];
 
 const BLOCKLIST_EN = [

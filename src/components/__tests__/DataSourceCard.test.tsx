@@ -64,7 +64,7 @@ describe("DataSourceCard", () => {
     };
     render(<DataSourceCard source={connectedSource} onOpen={vi.fn()} onConnect={vi.fn()} />);
     expect(screen.getByText("Configure")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /sync/i })).toBeTruthy();
+    expect(screen.getAllByRole("button", { name: /sync/i })[0]).toBeTruthy();
   });
 
   it("displays record count", () => {

@@ -106,6 +106,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "userKnowledgeGraph",
   "uvpSynthesisEngine",
   "visualExportEngine",
+  "weeklyLoopEngine",
 ] as const;
 
 // ───────────────────────────────────────────────

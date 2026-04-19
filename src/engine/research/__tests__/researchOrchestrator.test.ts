@@ -255,7 +255,7 @@ describe("runResearch", () => {
       const progressCallback = vi.fn();
       await runResearch(makeResearchQuery(), progressCallback);
 
-      expect(progressCallback).toHaveBeenCalledTimes(expect.any(Number));
+      expect(progressCallback).toHaveBeenCalled();
       expect(progressCallback.mock.calls.length).toBeGreaterThan(2);
     });
 
@@ -299,6 +299,7 @@ describe("runResearch", () => {
   // ── Error handling ────────────────────────────────────────────────────────
   describe("Error handling", () => {
     it("sets status to 'error' when LLM fetch fails", async () => {
+      vi.mocked(fetch).mockReset();
       vi.mocked(fetch).mockRejectedValueOnce(new Error("Network failure"));
 
       const session = await runResearch(makeResearchQuery());

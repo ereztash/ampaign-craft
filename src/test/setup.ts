@@ -44,3 +44,10 @@ Object.defineProperty(globalThis, "matchMedia", {
     dispatchEvent: () => false,
   }),
 });
+
+// Mock ResizeObserver (used by Radix UI components, not available in jsdom)
+globalThis.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

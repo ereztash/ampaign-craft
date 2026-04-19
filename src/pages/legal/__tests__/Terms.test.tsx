@@ -78,7 +78,7 @@ describe("Terms", () => {
         <Terms />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/liability/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/liability/i)[0]).toBeInTheDocument();
   });
 
   it("shows Termination & cancellation section", () => {

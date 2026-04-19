@@ -63,7 +63,7 @@ describe("CompetitiveIntelligenceDashboard", () => {
     expect(avgLabels.length).toBeGreaterThan(0);
   });
 
-  it("shows empty state when no benchmark data", () => {
+  it("shows empty state when no benchmark data", async () => {
     const { getIndustryBenchmarks } = await import("@/lib/industryBenchmarks") as any;
     getIndustryBenchmarks.mockReturnValueOnce([]);
     render(<CompetitiveIntelligenceDashboard industry="unknown-industry" />);

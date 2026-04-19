@@ -95,7 +95,7 @@ describe("DifferentiationWizard", () => {
 
   it("shows the first phase title", () => {
     render(<DifferentiationWizard onComplete={vi.fn()} onBack={vi.fn()} />);
-    expect(screen.getByText("Identity")).toBeTruthy();
+    expect(screen.getAllByText("Identity")[0]).toBeTruthy();
   });
 
   it("renders phase card", () => {

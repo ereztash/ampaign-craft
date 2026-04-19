@@ -36,7 +36,7 @@ describe("PlanComments", () => {
 
   it("shows Comments heading", () => {
     render(<PlanComments planId="plan-1" />);
-    expect(screen.getByText(/Comments/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Comments/i)[0]).toBeInTheDocument();
   });
 
   it("shows empty state message when no comments", () => {

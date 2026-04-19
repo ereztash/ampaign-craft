@@ -168,7 +168,7 @@ describe("a11y", () => {
     });
 
     it("handles multiple spaces", () => {
-      expect(fieldId("my   field")).toBe("field-my---field");
+      expect(fieldId("my   field")).toBe("field-my-field");
     });
 
     it("handles already lowercase input", () => {

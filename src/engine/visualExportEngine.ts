@@ -215,8 +215,10 @@ export function exportSocialPosts(posts: SocialPostData[]): ExportResult {
   XLSX.utils.book_append_sheet(wb, ws, "Social Posts");
 
   const csv = XLSX.utils.sheet_to_csv(ws);
-  const encoder = new TextEncoder();
-  const buffer = encoder.encode(csv).buffer;
+  const encoded = new TextEncoder().encode(csv);
+  // Explicitly create a new ArrayBuffer to avoid Node.js pool-backed buffers
+  const buffer = new ArrayBuffer(encoded.byteLength);
+  new Uint8Array(buffer).set(encoded);
 
   return {
     data: buffer,

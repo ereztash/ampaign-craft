@@ -153,7 +153,7 @@ export function getFrameworkRanking(
   const key = rankKey(archetypeId, businessField);
   const snapshot = store.find((s) => rankKey(s.archetypeId, s.businessField) === key);
   if (!snapshot) return [];
-  return [...snapshot.stats].sort((a, b) => b.score - a.score);
+  return snapshot.stats.map((s) => ({ ...s })).sort((a, b) => b.score - a.score);
 }
 
 /**

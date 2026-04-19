@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ── Supabase mock ─────────────────────────────────────────────────────────
 
-const mockInvoke = vi.fn();
-const mockInsert = vi.fn();
-const mockUpdate = vi.fn();
-const mockChannel = vi.fn();
-const mockRemoveChannel = vi.fn();
+const { mockInvoke, mockInsert, mockUpdate, mockChannel, mockRemoveChannel } = vi.hoisted(() => ({
+  mockInvoke: vi.fn(),
+  mockInsert: vi.fn(),
+  mockUpdate: vi.fn(),
+  mockChannel: vi.fn(),
+  mockRemoveChannel: vi.fn(),
+}));
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
