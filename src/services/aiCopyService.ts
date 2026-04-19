@@ -176,7 +176,7 @@ export async function generateCopy(
 
   const systemPrompt = buildSystemPrompt(enrichedRequest);
 
-  const _resp = await fetch("/api/growth/generate-copy", {
+  const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-copy`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

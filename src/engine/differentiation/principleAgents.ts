@@ -69,7 +69,7 @@ async function runSinglePrincipleAgent(
   };
 
   try {
-    const resp = await fetcher("/api/growth/differentiation-agent", {
+    const resp = await fetcher(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/differentiation-agent`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

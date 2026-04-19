@@ -132,7 +132,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     setError(null);
 
     try {
-      const _resp = await fetch("/api/growth/ai-coach", {
+      const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
