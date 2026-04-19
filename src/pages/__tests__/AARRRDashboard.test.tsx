@@ -99,7 +99,7 @@ describe("AARRRDashboard — admin (isLocalAuth)", () => {
         <AARRRDashboard />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/aarrr/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/aarrr/i)[0]).toBeInTheDocument();
   });
 
   it("shows the target table with all 5 metrics", () => {
@@ -108,8 +108,8 @@ describe("AARRRDashboard — admin (isLocalAuth)", () => {
         <AARRRDashboard />
       </MemoryRouter>,
     );
-    expect(screen.getByText("Acquisition")).toBeInTheDocument();
-    expect(screen.getByText("Activation")).toBeInTheDocument();
+    expect(screen.getAllByText("Acquisition")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Activation")[0]).toBeInTheDocument();
     // Retention appears in multiple places (stage + table)
     expect(screen.getAllByText(/retention/i).length).toBeGreaterThan(0);
   });

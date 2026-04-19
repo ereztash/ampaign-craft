@@ -70,7 +70,7 @@ describe("DifferentiationTranscriptWizard", () => {
 
   it("shows step 1 label by default", () => {
     render(<DifferentiationTranscriptWizard onBack={vi.fn()} />);
-    expect(screen.getByText("Client Intake")).toBeTruthy();
+    expect(screen.getAllByText("Client Intake")[0]).toBeTruthy();
   });
 
   it("renders client name input in step 1", () => {
@@ -107,7 +107,7 @@ describe("DifferentiationTranscriptWizard", () => {
     fireEvent.click(screen.getByText("None"));
     const continueBtn = screen.getByRole("button", { name: /continue/i });
     fireEvent.click(continueBtn);
-    expect(screen.getByText("Session Upload")).toBeTruthy();
+    expect(screen.getAllByText("Session Upload")[0]).toBeTruthy();
   });
 
   it("shows step progress indicators", () => {

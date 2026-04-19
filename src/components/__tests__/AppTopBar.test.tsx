@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AppTopBar from "../AppTopBar";
 
 vi.mock("@/i18n/LanguageContext", () => ({
@@ -48,7 +49,9 @@ describe("AppTopBar", () => {
   it("renders without crashing", () => {
     render(
       <MemoryRouter>
+        <SidebarProvider>
         <AppTopBar />
+        </SidebarProvider>
       </MemoryRouter>
     );
     expect(screen.getByText("navCommandCenter")).toBeInTheDocument();
@@ -57,7 +60,9 @@ describe("AppTopBar", () => {
   it("shows language toggle button", () => {
     render(
       <MemoryRouter>
+        <SidebarProvider>
         <AppTopBar />
+        </SidebarProvider>
       </MemoryRouter>
     );
     expect(screen.getByText("עב")).toBeInTheDocument();
@@ -66,7 +71,9 @@ describe("AppTopBar", () => {
   it("shows user menu button when logged in", () => {
     render(
       <MemoryRouter>
+        <SidebarProvider>
         <AppTopBar />
+        </SidebarProvider>
       </MemoryRouter>
     );
     const userMenuBtn = screen.getByLabelText("User menu");
@@ -76,7 +83,9 @@ describe("AppTopBar", () => {
   it("shows custom title when title prop provided", () => {
     render(
       <MemoryRouter>
+        <SidebarProvider>
         <AppTopBar title="Custom Page Title" />
+        </SidebarProvider>
       </MemoryRouter>
     );
     expect(screen.getByText("Custom Page Title")).toBeInTheDocument();
@@ -85,7 +94,9 @@ describe("AppTopBar", () => {
   it("renders notification center", () => {
     render(
       <MemoryRouter>
+        <SidebarProvider>
         <AppTopBar />
+        </SidebarProvider>
       </MemoryRouter>
     );
     expect(screen.getByTestId("notification-center")).toBeInTheDocument();
@@ -94,7 +105,9 @@ describe("AppTopBar", () => {
   it("does not show admin button for regular user", () => {
     render(
       <MemoryRouter>
+        <SidebarProvider>
         <AppTopBar />
+        </SidebarProvider>
       </MemoryRouter>
     );
     expect(screen.queryByText("Admin")).not.toBeInTheDocument();

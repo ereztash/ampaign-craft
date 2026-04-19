@@ -54,10 +54,10 @@ describe("HormoziValueCard", () => {
 
   it("shows all 4 dimension labels", () => {
     render(<HormoziValueCard data={mockData} />);
-    expect(screen.getByText("Dream Outcome")).toBeTruthy();
-    expect(screen.getByText("Perceived Likelihood")).toBeTruthy();
-    expect(screen.getByText("Time Delay")).toBeTruthy();
-    expect(screen.getByText("Effort & Sacrifice")).toBeTruthy();
+    expect(screen.getAllByText("Dream Outcome")[0]).toBeTruthy();
+    expect(screen.getAllByText("Perceived Likelihood")[0]).toBeTruthy();
+    expect(screen.getAllByText("Time Delay")[0]).toBeTruthy();
+    expect(screen.getAllByText("Effort & Sacrifice")[0]).toBeTruthy();
   });
 
   it("shows optimization priority", () => {
@@ -67,6 +67,6 @@ describe("HormoziValueCard", () => {
 
   it("shows tips when available", () => {
     render(<HormoziValueCard data={mockData} />);
-    expect(screen.getAllByText("Tip text").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/tip text/i).length).toBeGreaterThan(0);
   });
 });

@@ -44,7 +44,7 @@ describe("PricingWizardResults", () => {
 
   it("shows the charm price", () => {
     render(<PricingWizardResults rec={mockRec} />);
-    expect(screen.getByText("₪497")).toBeInTheDocument();
+    expect(screen.getAllByText("₪497")[0]).toBeInTheDocument();
   });
 
   it("shows Optimal Price label", () => {

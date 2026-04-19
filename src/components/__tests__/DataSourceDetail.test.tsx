@@ -61,10 +61,9 @@ describe("DataSourceDetail", () => {
   });
 
   it("renders without crashing when source is provided and open", () => {
-    const { container } = render(
-      <DataSourceDetail source={metaSource} open={true} onOpenChange={vi.fn()} />,
-    );
-    expect(container.firstChild).toBeTruthy();
+    render(<DataSourceDetail source={metaSource} open={true} onOpenChange={vi.fn()} />);
+    // Sheet renders into a portal outside container; verify via document.body
+    expect(document.body.textContent).toBeTruthy();
   });
 
   it("shows feed items for the source", () => {

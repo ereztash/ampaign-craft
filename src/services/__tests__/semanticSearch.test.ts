@@ -2,7 +2,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ── Supabase loose mock ───────────────────────────────────────────────────
 
-const mockRpc = vi.fn();
+const { mockRpc } = vi.hoisted(() => ({
+  mockRpc: vi.fn(),
+}));
 
 vi.mock("@/integrations/supabase/loose", () => ({
   supabaseLoose: {

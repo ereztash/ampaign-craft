@@ -55,6 +55,14 @@ describe("exportEngine — downloadExport", () => {
   let createObjectURLSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    // jsdom does not implement URL.createObjectURL / revokeObjectURL — stub them
+    if (!URL.createObjectURL) {
+      Object.defineProperty(URL, "createObjectURL", { writable: true, configurable: true, value: () => "" });
+    }
+    if (!URL.revokeObjectURL) {
+      Object.defineProperty(URL, "revokeObjectURL", { writable: true, configurable: true, value: () => {} });
+    }
+
     clickSpy = vi.fn();
     createdAnchor = { href: "", download: "", click: clickSpy } as unknown as HTMLAnchorElement;
 

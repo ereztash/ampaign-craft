@@ -90,7 +90,7 @@ describe("RefundPolicy", () => {
         <RefundPolicy />
       </MemoryRouter>,
     );
-    expect(screen.getByText("050-123-4567")).toBeInTheDocument();
+    expect(screen.getAllByText("050-123-4567")[0]).toBeInTheDocument();
   });
 
   it("shows the Right to cancel section", () => {

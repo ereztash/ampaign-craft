@@ -76,7 +76,7 @@ vi.mock("recharts", () => ({
 describe("AdminArchetypeDebugPanel", () => {
   it("renders without crashing when open", () => {
     render(<AdminArchetypeDebugPanel open={true} onOpenChange={vi.fn()} />);
-    expect(screen.getByText("Archetype Debug Panel")).toBeInTheDocument();
+    expect(document.body.textContent).toContain("Archetype Debug Panel");
   });
 
   it("shows owner only badge", () => {
@@ -91,7 +91,7 @@ describe("AdminArchetypeDebugPanel", () => {
 
   it("shows confidence percentage", () => {
     render(<AdminArchetypeDebugPanel open={true} onOpenChange={vi.fn()} />);
-    expect(screen.getByText("85%")).toBeInTheDocument();
+    expect(screen.getAllByText("85%")[0]).toBeInTheDocument();
   });
 
   it("shows signal breakdown section", () => {

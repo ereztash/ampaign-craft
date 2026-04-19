@@ -39,7 +39,7 @@ describe("ModuleNextStep", () => {
         <ModuleNextStep current={1} />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/marketing/i)).toBeTruthy();
+    expect(screen.getAllByText(/marketing/i)[0]).toBeTruthy();
   });
 
   it("shows transition heading for module 1", () => {

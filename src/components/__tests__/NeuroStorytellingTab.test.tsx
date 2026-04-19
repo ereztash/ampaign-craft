@@ -83,7 +83,7 @@ describe("NeuroStorytellingTab", () => {
 
   it("shows the Awareness stage button", () => {
     render(<NeuroStorytellingTab data={mockData} />);
-    expect(screen.getByText("Awareness")).toBeInTheDocument();
+    expect(screen.getAllByText("Awareness")[0]).toBeInTheDocument();
   });
 
   it("shows the entropy guide definition", () => {

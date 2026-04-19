@@ -58,7 +58,8 @@ const mockTemplateRow = {
 
 function setupSelectChain(data: unknown[] | null = [mockTemplateRow]) {
   const orderMock = vi.fn().mockResolvedValue({ data, error: null });
-  const eqMock = vi.fn().mockReturnValue({ eq: eqMock, order: orderMock });
+  const eqMock = vi.fn();
+  eqMock.mockReturnValue({ eq: eqMock, order: orderMock });
   const selectMock = vi.fn().mockReturnValue({ eq: eqMock, order: orderMock });
 
   // Assign to the shared mocks for inspection

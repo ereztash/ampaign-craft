@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "../AppSidebar";
 
 vi.mock("@/i18n/LanguageContext", () => ({
@@ -53,18 +54,18 @@ vi.mock("@/components/AdminArchetypeDebugPanel", () => ({
 describe("AppSidebar", () => {
   it("renders without crashing", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter><SidebarProvider>
         <AppSidebar />
-      </MemoryRouter>
+      </SidebarProvider></MemoryRouter>
     );
     expect(document.querySelector("[role='navigation']")).toBeInTheDocument();
   });
 
   it("shows workspace navigation items", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter><SidebarProvider>
         <AppSidebar />
-      </MemoryRouter>
+      </SidebarProvider></MemoryRouter>
     );
     expect(screen.getByText("navCommandCenter")).toBeInTheDocument();
     expect(screen.getByText("navDataSources")).toBeInTheDocument();
@@ -72,36 +73,36 @@ describe("AppSidebar", () => {
 
   it("shows module navigation items", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter><SidebarProvider>
         <AppSidebar />
-      </MemoryRouter>
+      </SidebarProvider></MemoryRouter>
     );
     expect(screen.getByText("navDifferentiate")).toBeInTheDocument();
   });
 
   it("shows profile link in footer", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter><SidebarProvider>
         <AppSidebar />
-      </MemoryRouter>
+      </SidebarProvider></MemoryRouter>
     );
     expect(screen.getByText("navProfile")).toBeInTheDocument();
   });
 
   it("does not show admin panel for regular user", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter><SidebarProvider>
         <AppSidebar />
-      </MemoryRouter>
+      </SidebarProvider></MemoryRouter>
     );
     expect(screen.queryByText("Archetype Panel")).not.toBeInTheDocument();
   });
 
   it("does not show personalisation toggle below confident tier", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter><SidebarProvider>
         <AppSidebar />
-      </MemoryRouter>
+      </SidebarProvider></MemoryRouter>
     );
     expect(screen.queryByText("Adaptations on")).not.toBeInTheDocument();
     expect(screen.queryByText("Personalise workspace")).not.toBeInTheDocument();

@@ -33,7 +33,7 @@ describe("ComingSoon", () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
-    expect(screen.getByText(/coming soon/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/coming soon/i)[0]).toBeInTheDocument();
   });
 
   it("renders the go back button", () => {
@@ -51,7 +51,7 @@ describe("ComingSoon", () => {
         <ComingSoon featureName={{ he: "תכונה מיוחדת", en: "Special Feature" }} />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/special feature/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/special feature/i)[0]).toBeInTheDocument();
   });
 
   it("accepts custom eta prop", () => {

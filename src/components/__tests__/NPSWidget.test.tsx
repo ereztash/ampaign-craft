@@ -49,7 +49,7 @@ describe("NPSWidget", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders the NPS dialog after timer fires when conditions met", () => {
+  it("renders the NPS dialog after timer fires when conditions met", async () => {
     const safeStorage = vi.mocked(
       (await import("@/lib/safeStorage")).safeStorage,
     );
@@ -59,7 +59,7 @@ describe("NPSWidget", () => {
     // Component may show — checking nothing crashes at minimum
   });
 
-  it("shows score buttons 0-10 when visible", async () => {
+  it("shows score buttons 0-10 when visible — no crash check", async () => {
     const { safeStorage } = await import("@/lib/safeStorage");
     vi.mocked(safeStorage.getString).mockReturnValue(null);
     vi.mocked(safeStorage.getJSON).mockReturnValue([{ id: "p1" }] as any);
