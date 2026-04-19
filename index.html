@@ -4,36 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://browser.sentry-cdn.com; connect-src 'self' https://*.supabase.co https://graph.facebook.com https://www.google-analytics.com https://*.ingest.sentry.io; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
-    <meta name="description" content="FunnelForge - Build a personalized marketing funnel for your business in minutes. Smart analysis, channel recommendations, and budget planning.">
-    <title>FunnelForge – Marketing Funnel Planner</title>
+    <meta name="description" content="FunnelForge - בניית פאנל שיווקי מותאם אישית לעסק שלך תוך דקות. ניתוח חכם, המלצות ערוצים, ותכנון תקציב.">
+    <title>FunnelForge – תכנון פאנל שיווקי</title>
 
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dd3b2ea4-120b-43a5-90a4-5a1d2dec7466/id-preview-a975a732--b1315b99-f8a9-405f-805a-4a229d8c5859.lovable.app-1773014150335.png">
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dd3b2ea4-120b-43a5-90a4-5a1d2dec7466/id-preview-a975a732--b1315b99-f8a9-405f-805a-4a229d8c5859.lovable.app-1773014150335.png">
-    <meta property="og:title" content="FunnelForge – Marketing Funnel Planner">
-  <meta name="twitter:title" content="FunnelForge – Marketing Funnel Planner">
-  <meta property="og:description" content="FunnelForge - Build a personalized marketing funnel for your business in minutes. Smart analysis, channel recommendations, and budget planning.">
-  <meta name="twitter:description" content="FunnelForge - Build a personalized marketing funnel for your business in minutes. Smart analysis, channel recommendations, and budget planning.">
+    <meta property="og:title" content="FunnelForge – תכנון פאנל שיווקי">
+  <meta name="twitter:title" content="FunnelForge – תכנון פאנל שיווקי">
+  <meta property="og:description" content="FunnelForge - בניית פאנל שיווקי מותאם אישית לעסק שלך תוך דקות. ניתוח חכם, המלצות ערוצים, ותכנון תקציב.">
+  <meta name="twitter:description" content="FunnelForge - בניית פאנל שיווקי מותאם אישית לעסק שלך תוך דקות. ניתוח חכם, המלצות ערוצים, ותכנון תקציב.">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
-  <!-- GA4 — configured via VITE_GA4_ID env var; completely skipped if unset -->
-  <script>
-    (function(){
-      var id='%VITE_GA4_ID%';
-      if(!id)return;
-      var s=document.createElement('script');
-      s.async=true;
-      s.src='https://www.googletagmanager.com/gtag/js?id='+id;
-      document.head.appendChild(s);
-      window.dataLayer=window.dataLayer||[];
-      window.gtag=function(){window.dataLayer.push(arguments);};
-      window.gtag('js',new Date());
-      window.gtag('config',id,{send_page_view:false});
-    })();
-  </script>
+  <!-- GA4 is initialised in src/main.tsx via initGA4() -->
 
   <!-- PWA manifest -->
   <link rel="manifest" href="/manifest.json" />

@@ -305,7 +305,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // a fresh local account. Surface the failure so they can retry.
           logger.error(
             "AuthContext.bootstrap",
-            "Supabase unreachable and VITE_ALLOW_LOCAL_AUTH is false — refusing to fall back to local auth in production.",
+            "Supabase unreachable and VITE_ALLOW_LOCAL_AUTH is false. Refusing to fall back to local auth in production.",
           );
           setIsLocalAuth(false);
           setUser(null);
@@ -315,7 +315,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!import.meta.env.DEV) {
           logger.warn(
             "AuthContext.bootstrap",
-            "Supabase unreachable — falling back to local auth (VITE_ALLOW_LOCAL_AUTH=true).",
+            "Supabase unreachable. Falling back to local auth (VITE_ALLOW_LOCAL_AUTH=true).",
           );
         }
         setIsLocalAuth(true);
