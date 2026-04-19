@@ -101,7 +101,7 @@ export function createLLMAgent(config: LLMAgentConfig): AsyncAgentDefinition {
       const model = getModelForTier(config.modelTier);
       const maxTokens = config.maxTokens ?? 2048;
 
-      const response = await fetch("/api/growth/agent-executor", {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

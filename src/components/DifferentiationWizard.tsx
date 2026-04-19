@@ -61,7 +61,7 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
     setAiInsights([]);
 
     try {
-      const _resp = await fetch("/api/growth/differentiation-agent", {
+      const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/differentiation-agent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phase: phaseName, formData, previousResults: aiResults }),
