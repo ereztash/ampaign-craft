@@ -51,6 +51,9 @@ export type AARRREventName =
   | "aarrr.retention.reactivated"
   | "aarrr.retention.pulse_opened"
   | "aarrr.retention.blind_spot_nudge_clicked"
+  | "aarrr.retention.cadence_hint_shown"
+  | "aarrr.retention.loop_continued"
+  | "aarrr.retention.loop_new_move"
   // Revenue
   | "aarrr.revenue.paywall_viewed"
   | "aarrr.revenue.checkout_started"
@@ -197,6 +200,22 @@ export const Analytics = {
     track("aarrr.retention.reactivated", { daysSilent }, { userId }),
   pulseOpened: (userId: string) =>
     track("aarrr.retention.pulse_opened", {}, { userId }),
+
+  // Weekly-loop cadence — fires once per state entry when the cadence text
+  // is rendered in WeeklyActionCard. Paired with later commit/report events
+  // to measure whether exposure to the cadence language correlates with
+  // staying in the loop.
+  cadenceHintShown: (userId: string, loopState: string) =>
+    track("aarrr.retention.cadence_hint_shown", { loopState }, { userId }),
+
+  // Fired when a user in between_weeks chooses to run another cycle on the
+  // same action. Complementary to loopNewMove — ratio tells us whether the
+  // loop is a real cadence or just a one-shot wizard dressed as a loop.
+  loopContinued: (userId: string, module: string) =>
+    track("aarrr.retention.loop_continued", { module }, { userId }),
+
+  loopNewMove: (userId: string, module: string) =>
+    track("aarrr.retention.loop_new_move", { module }, { userId }),
 
   // Revenue
   paywallViewed: (feature: string, tier: string, userId: string) =>

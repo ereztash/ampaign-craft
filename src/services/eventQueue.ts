@@ -38,6 +38,9 @@ export type EventType =
   | "aarrr.retention.reactivated"
   | "aarrr.retention.pulse_opened"
   | "aarrr.retention.blind_spot_nudge_clicked"
+  | "aarrr.retention.cadence_hint_shown"
+  | "aarrr.retention.loop_continued"
+  | "aarrr.retention.loop_new_move"
   // ── AARRR: Revenue ──────────────────────────────
   | "aarrr.revenue.paywall_viewed"
   | "aarrr.revenue.checkout_started"
