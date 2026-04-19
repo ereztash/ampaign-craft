@@ -16,7 +16,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain, Sparkles } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain, Sparkles, TrendingUp } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
@@ -201,6 +201,18 @@ const AppSidebar = () => {
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={isHe ? "דשבורד AARRR" : "AARRR Dashboard"}
+                        isActive={isActive("/admin/aarrr", true)}
+                      >
+                        <NavLink to="/admin/aarrr">
+                          <TrendingUp className="text-amber-600 dark:text-amber-400" />
+                          <span>{isHe ? "דשבורד AARRR" : "AARRR Dashboard"}</span>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         onClick={() => setDebugOpen(true)}
