@@ -57,6 +57,7 @@ const Support = lazy(() => import("./pages/Support"));
 const Contact = lazy(() => import("./pages/Contact"));
 const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
 const UseCases = lazy(() => import("./pages/UseCases"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -90,6 +91,7 @@ const AnimatedRoutes = () => {
         <Routes location={location}>
           <Route path="/legacy" element={<Index />} />
           <Route path="/quote/:token" element={<SharedQuote />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route element={<AppShell />}>
             <Route index element={<CommandCenter />} />
             <Route path="data/:sourceId?" element={<DataHub />} />

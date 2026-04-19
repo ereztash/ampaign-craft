@@ -38,6 +38,8 @@ interface AuthContextValue {
   signUp: (email: string, password: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: string | null }>;
+  signInWithProvider: (provider: "google" | "github" | "facebook") => Promise<{ error: string | null }>;
   isLocalAuth: boolean; // true = local fallback, false = Supabase
 }
 
@@ -435,6 +437,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   }, [isLocalAuth]);
 
+  // ═══ Reset Password (email link) ═══
+  const resetPassword = useCallback(async (email: string): Promise<{ error: string | null }> => {
+    if (isLocalAuth) return { error: "Password reset requires Supabase." };
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) return { error: error.message };
+      return { error: null };
+    } catch (err) {
+      return { error: String(err) };
+    }
+  }, [isLocalAuth]);
+
+  // ═══ OAuth / Social Sign In ═══
+  const signInWithProvider = useCallback(async (provider: "google" | "github" | "facebook"): Promise<{ error: string | null }> => {
+    if (isLocalAuth) return { error: "Social login requires Supabase." };
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: window.location.origin },
+      });
+      if (error) return { error: error.message };
+      return { error: null };
+    } catch (err) {
+      return { error: String(err) };
+    }
+  }, [isLocalAuth]);
+
   // ═══ Sign Out ═══
   const signOut = useCallback(async () => {
     if (!isLocalAuth) {
@@ -449,7 +482,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [isLocalAuth]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, tier, setTier, refreshTier, canUse, canPerform, signUp, signIn, signOut, isLocalAuth }}>
+    <AuthContext.Provider value={{ user, loading, tier, setTier, refreshTier, canUse, canPerform, signUp, signIn, signOut, resetPassword, signInWithProvider, isLocalAuth }}>
       {children}
     </AuthContext.Provider>
   );
