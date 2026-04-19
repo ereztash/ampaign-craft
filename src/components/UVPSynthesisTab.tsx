@@ -16,10 +16,10 @@ interface UVPSynthesisTabProps {
 }
 
 const DISC_TONE_LABELS = {
-  roi: { he: "ROI — ממוקד תוצאות", en: "ROI — Results-focused" },
-  social: { he: "חברתי — ממוקד קהילה", en: "Social — Community-focused" },
-  stability: { he: "יציבות — ממוקד בטחון", en: "Stability — Certainty-focused" },
-  precision: { he: "דיוק — ממוקד נתונים", en: "Precision — Data-focused" },
+  roi: { he: "ROI. ממוקד תוצאות", en: "ROI. Results-focused" },
+  social: { he: "חברתי. ממוקד קהילה", en: "Social. Community-focused" },
+  stability: { he: "יציבות. ממוקד בטחון", en: "Stability. Certainty-focused" },
+  precision: { he: "דיוק. ממוקד נתונים", en: "Precision. Data-focused" },
 } as const;
 
 const SCORE_COLOR = (score: number) => {

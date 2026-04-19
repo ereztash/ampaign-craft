@@ -194,7 +194,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
               </h1>
               <p className="text-muted-foreground text-center mb-6" dir="auto">
                 {tx(
-                  { he: "בחר/י מה הכי קרוב — או כתוב/י במילים שלך", en: "Pick the closest — or write it in your own words" },
+                  { he: "בחר/י מה הכי קרוב, או כתוב/י במילים שלך", en: "Pick the closest, or write it in your own words" },
                   language,
                 )}
               </p>
@@ -244,7 +244,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
 
               <p className="text-xs text-muted-foreground text-center mt-4" dir="auto">
                 {tx(
-                  { he: "אפשר גם לדלג — נשאל שאלות מהירות ונחזור לזה", en: "You can skip — we'll ask quick questions and come back to this" },
+                  { he: "אפשר גם לדלג, נשאל שאלות מהירות ונחזור לזה", en: "You can skip, we'll ask quick questions and come back to this" },
                   language,
                 )}
               </p>
@@ -366,7 +366,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
                 {tx({ he: "ה-DNA העסקי שלך", en: "Your Business DNA" }, language)}
               </h1>
               <p className="text-muted-foreground text-center mb-6" dir="auto">
-                {tx({ he: "כוונן את הסליידרים — הם כבר מכוילים לפי התחום שלך", en: "Fine-tune the sliders — they're pre-calibrated to your industry" }, language)}
+                {tx({ he: "כוונן את הסליידרים. הם כבר מכוילים לפי התחום שלך", en: "Fine-tune the sliders. They're pre-calibrated to your industry" }, language)}
               </p>
 
               <div className="space-y-5">
@@ -459,7 +459,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
                 {tx({ he: "הפרופיל שלך מוכן", en: "Your Profile is Ready" }, language)}
               </h1>
               <p className="text-muted-foreground text-center mb-6" dir="auto">
-                {tx({ he: "ככה המערכת רואה את העסק שלך — נכון?", en: "This is how the system sees your business — look right?" }, language)}
+                {tx({ he: "ככה המערכת רואה את העסק שלך. נכון?", en: "This is how the system sees your business. Look right?" }, language)}
               </p>
 
               <BusinessDNACard fingerprint={fingerprint} />

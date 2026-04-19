@@ -62,8 +62,8 @@ const Privacy = () => {
             <li>
               {tx(
                 {
-                  he: "Supabase (ספק מסד נתונים, ארה\"ב) — חשבונות, תוכניות שמורות, פידבק.",
-                  en: 'Supabase (database provider, US region) — accounts, saved plans, feedback.',
+                  he: "Supabase (ספק מסד נתונים, ארה\"ב): חשבונות, תוכניות שמורות, פידבק.",
+                  en: 'Supabase (database provider, US region): accounts, saved plans, feedback.',
                 },
                 language,
               )}
@@ -71,8 +71,8 @@ const Privacy = () => {
             <li>
               {tx(
                 {
-                  he: "localStorage בדפדפן שלך — טיוטות, טופס אחרון, העדפות שפה.",
-                  en: "Browser localStorage — drafts, last form data, language preference.",
+                  he: "localStorage בדפדפן שלך: טיוטות, טופס אחרון, העדפות שפה.",
+                  en: "Browser localStorage: drafts, last form data, language preference.",
                 },
                 language,
               )}
@@ -80,8 +80,8 @@ const Privacy = () => {
             <li>
               {tx(
                 {
-                  he: "sessionStorage — token חיבור ל-Meta Ads. נמחק בסגירת הדפדפן.",
-                  en: "sessionStorage — Meta Ads connection token. Cleared when browser closes.",
+                  he: "sessionStorage: token חיבור ל-Meta Ads. נמחק בסגירת הדפדפן.",
+                  en: "sessionStorage: Meta Ads connection token. Cleared when browser closes.",
                 },
                 language,
               )}
@@ -91,13 +91,13 @@ const Privacy = () => {
           <h2>{tx({ he: "שיתוף עם צדדים שלישיים", en: "Third-party sharing" }, language)}</h2>
           <ul>
             <li>
-              Meta (Facebook) Graph API — {tx({ he: "לצורך קריאת נתוני פרסום בלבד (scope: ads_read).", en: "for reading ad performance only (scope: ads_read)." }, language)}
+              Meta (Facebook) Graph API: {tx({ he: "לצורך קריאת נתוני פרסום בלבד (scope: ads_read).", en: "for reading ad performance only (scope: ads_read)." }, language)}
             </li>
             <li>
-              Google Analytics 4 — {tx({ he: "שימוש אנונימי באתר (בכפוף להסכמתך).", en: "anonymous site usage (subject to your consent)." }, language)}
+              Google Analytics 4: {tx({ he: "שימוש אנונימי באתר (בכפוף להסכמתך).", en: "anonymous site usage (subject to your consent)." }, language)}
             </li>
             <li>
-              Sentry — {tx({ he: "דיווח שגיאות בפרודקשן. מידע אישי מסוטר לפני שליחה.", en: "production error reporting. PII is stripped before transmission." }, language)}
+              Sentry: {tx({ he: "דיווח שגיאות בפרודקשן. מידע אישי מסוטר לפני שליחה.", en: "production error reporting. PII is stripped before transmission." }, language)}
             </li>
           </ul>
 

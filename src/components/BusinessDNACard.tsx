@@ -57,7 +57,7 @@ const RadarChart = ({ dimensions }: { dimensions: FingerprintDimensions }) => {
   );
   const topKey = sorted[0];
   const bottomKey = sorted[sorted.length - 1];
-  const chartLabel = tx({ he: "טביעת אצבע עסקית — מפת מאפיינים", en: "Business DNA — dimension radar chart" }, language);
+  const chartLabel = tx({ he: "טביעת אצבע עסקית: מפת מאפיינים", en: "Business DNA: dimension radar chart" }, language);
   const chartDesc = isHe
     ? `ממד חזק: ${DIMENSION_LABELS[topKey].he} (${Math.round(dimensions[topKey] * 100)}%). ממד חלש: ${DIMENSION_LABELS[bottomKey].he} (${Math.round(dimensions[bottomKey] * 100)}%).`
     : `Strongest: ${DIMENSION_LABELS[topKey].en} (${Math.round(dimensions[topKey] * 100)}%). Weakest: ${DIMENSION_LABELS[bottomKey].en} (${Math.round(dimensions[bottomKey] * 100)}%).`;

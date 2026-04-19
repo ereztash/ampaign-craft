@@ -130,11 +130,11 @@ export default function WeeklyActionCard({
         kind: "cold-start",
         title: tx({ he: "המהלך הראשון: תוכנית שיווק ראשונה", en: "First move: your first marketing plan" }, language),
         why: tx(
-          { he: "אין עדיין תוכנית. נתחיל מהר — 2 לחיצות מספיקות כדי לקבל הצעת מהלך.", en: "No plan yet. Quick start — 2 clicks give you a first move to run." },
+          { he: "אין עדיין תוכנית. נתחיל מהר, 2 לחיצות מספיקות כדי לקבל הצעת מהלך.", en: "No plan yet. Quick start: 2 clicks give you a first move to run." },
           language,
         ),
         firstTactic: tx(
-          { he: "בנה תוכנית מהירה וראינו מה להריץ השבוע", en: "Build a quick plan — see what to run this week" },
+          { he: "בנה תוכנית מהירה וראינו מה להריץ השבוע", en: "Build a quick plan. See what to run this week" },
           language,
         ),
         ctaRoute: "/wizard",
@@ -439,10 +439,10 @@ export default function WeeklyActionCard({
           <h2 className="text-xl sm:text-2xl font-bold text-foreground leading-tight" dir="auto">
             {tx(
               c.outcome === "done"
-                ? { he: "כל הכבוד. דיווחת — המערכת לומדת.", en: "Nicely done. You reported — the system learns." }
+                ? { he: "כל הכבוד. דיווחת. המערכת לומדת.", en: "Nicely done. You reported. The system learns." }
                 : c.outcome === "partial"
                   ? { he: "התקדמות חלקית זה עדיין התקדמות.", en: "Partial progress is still progress." }
-                  : { he: "לא כל שבוע מצליח — זה בסדר. נתחיל חדש.", en: "Not every week works out — that's fine. Fresh start." },
+                  : { he: "לא כל שבוע מצליח. זה בסדר. נתחיל חדש.", en: "Not every week works out. That's fine. Fresh start." },
               language,
             )}
           </h2>
@@ -460,8 +460,8 @@ export default function WeeklyActionCard({
               <span className="text-foreground/80">
                 {tx(
                   {
-                    he: `${cohortPriors.sampleSize} עסקים דומים לשלך דיווחו — הדפוסים המובילים בארכיטיפ שלך זמינים ב"בחר מהלך חדש".`,
-                    en: `${cohortPriors.sampleSize} similar businesses reported — top patterns for your archetype are available in "Pick a new move".`,
+                    he: `${cohortPriors.sampleSize} עסקים דומים לשלך דיווחו. הדפוסים המובילים בארכיטיפ שלך זמינים ב"בחר מהלך חדש".`,
+                    en: `${cohortPriors.sampleSize} similar businesses reported. Top patterns for your archetype are available in "Pick a new move".`,
                   },
                   language,
                 )}

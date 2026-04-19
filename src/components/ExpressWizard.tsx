@@ -73,7 +73,7 @@ const ExpressWizard = ({ onComplete }: ExpressWizardProps) => {
             {isRTL ? "מה התחום שלך?" : "What's your field?"}
           </h2>
           <p className="text-sm text-muted-foreground mb-4" dir="auto">
-            {isRTL ? "בחר אחד — השאר ייבחר אוטומטית" : "Pick one — we'll handle the rest"}
+            {isRTL ? "בחר אחד, השאר ייבחר אוטומטית" : "Pick one. We'll handle the rest"}
           </p>
           <div className={`grid gap-2 ${isMobile ? "grid-cols-2" : "grid-cols-5"}`}>
             {FIELDS.map((f) => {

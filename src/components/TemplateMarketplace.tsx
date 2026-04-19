@@ -63,7 +63,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
             {tx({ he: "שוק תבניות", en: "Template Marketplace" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {tx({ he: "משפכים מוכנים לשימוש — פרסם או השתמש בתבנית של אחרים", en: "Ready-to-use funnels — publish or use others' templates" }, language)}
+            {tx({ he: "משפכים מוכנים לשימוש. פרסם או השתמש בתבנית של אחרים", en: "Ready-to-use funnels. Publish or use others' templates" }, language)}
           </p>
         </div>
       </div>
@@ -104,7 +104,7 @@ const TemplateMarketplace = ({ onUseTemplate }: TemplateMarketplaceProps) => {
           <CardContent className="text-center py-12">
             <Store className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
-              {tx({ he: "אין תבניות עדיין — היה הראשון לפרסם!", en: "No templates yet — be the first to publish!" }, language)}
+              {tx({ he: "אין תבניות עדיין. היה הראשון לפרסם!", en: "No templates yet. Be the first to publish!" }, language)}
             </p>
           </CardContent>
         </Card>

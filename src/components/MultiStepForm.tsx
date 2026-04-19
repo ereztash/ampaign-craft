@@ -469,8 +469,8 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
             <span className="text-lg" role="img" aria-hidden="true">🎯</span>
             <p className="text-sm text-foreground">
               {isRTL
-                ? "הבידול שלך מזין את הטופס — כמה שדות כבר מלאים מראש"
-                : "Your differentiation is feeding the form — some fields are pre-filled"}
+                ? "הבידול שלך מזין את הטופס. כמה שדות כבר מלאים מראש"
+                : "Your differentiation is feeding the form. Some fields are pre-filled"}
             </p>
           </div>
         )}

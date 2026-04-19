@@ -75,7 +75,7 @@ const PricingWizardResults = ({ rec }: Props) => {
                   {tx({ he: "טווח מקובל (PSM):", en: "Acceptable range (PSM):" }, language)}
                 </span>
                 <span className="font-medium">
-                  {formatNIS(rec.acceptableRange.low)} — {formatNIS(rec.acceptableRange.high)}
+                  {formatNIS(rec.acceptableRange.low)} עד {formatNIS(rec.acceptableRange.high)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -166,8 +166,8 @@ const PricingWizardResults = ({ rec }: Props) => {
           </div>
           <p className="text-xs text-muted-foreground mt-3 text-center" dir="auto">
             {isHe
-              ? "Tier 1 (עוגן נמוך) עושה את Tier 2 לבחירה ה'הגיונית' — Ariely Decoy Effect"
-              : "Tier 1 (low anchor) makes Tier 2 the 'obvious' choice — Ariely Decoy Effect"}
+              ? "Tier 1 (עוגן נמוך) עושה את Tier 2 לבחירה ה'הגיונית'. Ariely Decoy Effect"
+              : "Tier 1 (low anchor) makes Tier 2 the 'obvious' choice. Ariely Decoy Effect"}
           </p>
         </CardContent>
       </Card>
@@ -184,12 +184,12 @@ const PricingWizardResults = ({ rec }: Props) => {
           {[
             {
               key: "primary",
-              label: { he: "פריים ראשי — Daily Breakdown", en: "Primary frame — Daily Breakdown" },
+              label: { he: "פריים ראשי: Daily Breakdown", en: "Primary frame: Daily Breakdown" },
               text: rec.primaryFrame[language],
             },
             {
               key: "coi",
-              label: { he: "Cost of Inaction — מה הלקוח מפסיד?", en: "Cost of Inaction — what does the customer lose?" },
+              label: { he: "Cost of Inaction: מה הלקוח מפסיד?", en: "Cost of Inaction: what does the customer lose?" },
               text: rec.costOfInactionFrame[language],
             },
           ].map((frame) => (

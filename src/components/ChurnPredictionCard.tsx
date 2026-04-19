@@ -50,9 +50,9 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
   // Group interventions by stage
   const stages = [1, 2, 3];
   const stageNames: Record<number, { he: string; en: string }> = {
-    1: { he: "פעיל — מניעה", en: "Active — Prevention" },
-    2: { he: "מתנתק — שיקום", en: "Disengaging — Re-engagement" },
-    3: { he: "שקט — Win-Back", en: "Silent — Win-Back" },
+    1: { he: "פעיל: מניעה", en: "Active: Prevention" },
+    2: { he: "מתנתק: שיקום", en: "Disengaging: Re-engagement" },
+    3: { he: "שקט: Win-Back", en: "Silent: Win-Back" },
   };
 
   return (

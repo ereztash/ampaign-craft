@@ -50,7 +50,7 @@ const RefundPolicy = () => {
           <p>
             {tx(
               {
-                he: "תקנון זה מנוסח בהתאם לחוק הגנת הצרכן, התשמ\"א-1981, ולתקנות הגנת הצרכן (ביטול עסקה), התשע\"א-2010. במקרה של סתירה בין התקנון להוראות הדין — יגברו הוראות הדין.",
+                he: "תקנון זה מנוסח בהתאם לחוק הגנת הצרכן, התשמ\"א-1981, ולתקנות הגנת הצרכן (ביטול עסקה), התשע\"א-2010. במקרה של סתירה בין התקנון להוראות הדין, יגברו הוראות הדין.",
                 en: "This policy is based on the Israeli Consumer Protection Law, 1981 and the Consumer Protection (Cancellation of Transaction) Regulations, 2010. In case of conflict, the law prevails.",
               },
               language,
@@ -83,7 +83,7 @@ const RefundPolicy = () => {
           <p>
             {tx(
               {
-                he: "בהתאם לחוק, ייתכנו דמי ביטול בשיעור 5% מערך העסקה או ₪100, הנמוך מבין השניים. בביטול עקב פגם או אי-התאמה — לא ייגבו דמי ביטול.",
+                he: "בהתאם לחוק, ייתכנו דמי ביטול בשיעור 5% מערך העסקה או ₪100, הנמוך מבין השניים. בביטול עקב פגם או אי-התאמה לא ייגבו דמי ביטול.",
                 en: "Per law, cancellation fees may apply at 5% of the transaction value or ILS 100, whichever is lower. No fees apply for cancellations due to defect or non-conformity.",
               },
               language,
@@ -140,7 +140,7 @@ const RefundPolicy = () => {
           <p>
             {tx(
               {
-                he: "במקרה של פגם בשירות או אי-התאמה לתיאור — נחזיר את מלוא הסכום ששולם, ללא ניכוי דמי ביטול, תוך 14 ימי עסקים.",
+                he: "במקרה של פגם בשירות או אי-התאמה לתיאור, נחזיר את מלוא הסכום ששולם, ללא ניכוי דמי ביטול, תוך 14 ימי עסקים.",
                 en: "In case of a defect or material non-conformity, we will refund the full amount paid, without deducting cancellation fees, within 14 business days.",
               },
               language,
@@ -151,7 +151,7 @@ const RefundPolicy = () => {
           <p>
             {tx(
               {
-                he: "דיני מדינת ישראל חלים על תקנון זה. סמכות שיפוט ייחודית — בתי המשפט המוסמכים בתל אביב-יפו.",
+                he: "דיני מדינת ישראל חלים על תקנון זה. סמכות שיפוט ייחודית: בתי המשפט המוסמכים בתל אביב-יפו.",
                 en: "Israeli law governs this policy. Exclusive jurisdiction lies with the competent courts in Tel Aviv-Yafo.",
               },
               language,

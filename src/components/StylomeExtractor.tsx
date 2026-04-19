@@ -171,8 +171,8 @@ const StylomeExtractor = () => {
                 value={currentText}
                 onChange={(e) => setCurrentText(e.target.value)}
                 placeholder={isHe
-                  ? "הדבק כאן דגימת כתיבה — הודעת וואטסאפ, פוסט, מייל, כל דבר שכתבת..."
-                  : "Paste a writing sample — WhatsApp message, post, email, anything you wrote..."}
+                  ? "הדבק כאן דגימת כתיבה: הודעת וואטסאפ, פוסט, מייל, כל דבר שכתבת..."
+                  : "Paste a writing sample: WhatsApp message, post, email, anything you wrote..."}
                 className="min-h-[120px] text-sm"
                 dir="auto"
               />

@@ -374,7 +374,7 @@ export function McpIntegrationPanel() {
                 <li>
                   בשיחה עם Claude, כתוב:{" "}
                   <em>
-                    &quot;השתמש ב-FunnelForge — הצג לי את התוכניות שלי&quot;
+                    &quot;השתמש ב-FunnelForge, הצג לי את התוכניות שלי&quot;
                   </em>
                 </li>
               </>
@@ -394,7 +394,7 @@ export function McpIntegrationPanel() {
                 <li>
                   In Claude, type:{" "}
                   <em>
-                    &quot;Use FunnelForge — show me my saved plans&quot;
+                    &quot;Use FunnelForge, show me my saved plans&quot;
                   </em>
                 </li>
               </>

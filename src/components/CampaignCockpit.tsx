@@ -56,7 +56,7 @@ const CampaignCockpit = () => {
         <BarChart3 className="h-5 w-5 text-primary" />
         <div>
           <h3 className="text-lg font-semibold text-foreground">
-            {tx({ he: "לוח בקרה — Campaign Cockpit", en: "Campaign Cockpit" }, language)}
+            {tx({ he: "לוח בקרה: Campaign Cockpit", en: "Campaign Cockpit" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground">
             {tx({ he: "עקוב אחרי ביצועים בפועל מול תחזיות FunnelForge", en: "Track actual performance vs FunnelForge projections" }, language)}

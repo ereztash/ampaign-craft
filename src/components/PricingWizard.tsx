@@ -190,8 +190,8 @@ const PricingWizard = ({
         icon={Zap}
         title={tx({ he: "מה הלקוח מרוויח?", en: "What does your customer gain?" }, language)}
         subtitle={isHe
-          ? "לא שואלים את המחיר — גוזרים אותו מהערך"
-          : "We don't ask your price — we derive it from value"}
+          ? "לא שואלים את המחיר. גוזרים אותו מהערך"
+          : "We don't ask your price. We derive it from value"}
       />
 
       <div className="space-y-3">
@@ -205,29 +205,29 @@ const PricingWizard = ({
               id: "transformative" as DreamOutcomeLevel,
               he: "טרנספורמציה",
               en: "Transformative",
-              subHe: "שינוי חיים / עסק — תוצאה שמשנה הכל",
-              subEn: "Life/business change — outcome that changes everything",
+              subHe: "שינוי חיים / עסק. תוצאה שמשנה הכל",
+              subEn: "Life/business change. Outcome that changes everything",
             },
             {
               id: "significant" as DreamOutcomeLevel,
               he: "משמעותי",
               en: "Significant",
-              subHe: "שיפור גדול ניתן למדידה — הכנסות, זמן, לקוחות",
-              subEn: "Large measurable improvement — revenue, time, clients",
+              subHe: "שיפור גדול ניתן למדידה: הכנסות, זמן, לקוחות",
+              subEn: "Large measurable improvement: revenue, time, clients",
             },
             {
               id: "moderate" as DreamOutcomeLevel,
               he: "בינוני",
               en: "Moderate",
-              subHe: "עזרה ממוקדת — תוצאה ברורה אבל מוגבלת",
-              subEn: "Focused help — clear but limited outcome",
+              subHe: "עזרה ממוקדת. תוצאה ברורה אבל מוגבלת",
+              subEn: "Focused help. Clear but limited outcome",
             },
             {
               id: "incremental" as DreamOutcomeLevel,
               he: "שיפור קטן",
               en: "Incremental",
-              subHe: "שיפור הדרגתי — ניסוי ולמידה",
-              subEn: "Gradual improvement — trial and learning",
+              subHe: "שיפור הדרגתי. ניסוי ולמידה",
+              subEn: "Gradual improvement. Trial and learning",
             },
           ] as const
         ).map((opt) => (
@@ -281,16 +281,16 @@ const PricingWizard = ({
         icon={BarChart2}
         title={tx({ he: "מה הרגישות של הלקוח למחיר?", en: "What is your customer's price sensitivity?" }, language)}
         subtitle={isHe
-          ? "שתי שאלות — מגדירות את טווח ה-WTP (Van Westendorp PSM)"
-          : "Two questions — define the WTP range (Van Westendorp PSM)"}
+          ? "שתי שאלות שמגדירות את טווח ה-WTP (Van Westendorp PSM)"
+          : "Two questions that define the WTP range (Van Westendorp PSM)"}
       />
 
       <div className="rounded-xl border bg-muted/30 p-3 flex items-start gap-2">
         <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
         <p className="text-xs text-muted-foreground" dir="auto">
           {isHe
-            ? "חשוב: ענה מנקודת מבט הלקוח שלך — כמה הוא ישלם, לא כמה העלות שלך."
-            : "Important: answer from your customer's perspective — what they'd pay, not your cost."}
+            ? "חשוב: ענה מנקודת מבט הלקוח שלך. כמה הוא ישלם, לא כמה העלות שלך."
+            : "Important: answer from your customer's perspective. What they'd pay, not your cost."}
         </p>
       </div>
 
@@ -298,8 +298,8 @@ const PricingWizard = ({
       <div className="space-y-2">
         <label htmlFor="psm-too-cheap" className="text-sm font-medium" dir="auto">
           {isHe
-            ? "🟡 מחיר שמרגיש זול מדי — לקוח יתחיל לפקפק באיכות:"
-            : "🟡 Price that feels too cheap — customer starts doubting quality:"}
+            ? "🟡 מחיר שמרגיש זול מדי. לקוח יתחיל לפקפק באיכות:"
+            : "🟡 Price that feels too cheap. Customer starts doubting quality:"}
         </label>
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-muted-foreground" aria-hidden="true">₪</span>
@@ -325,8 +325,8 @@ const PricingWizard = ({
       <div className="space-y-2">
         <label className="text-sm font-medium" dir="auto">
           {isHe
-            ? "🔴 מחיר שמרגיש יקר אבל שווה — לקוח יהסס אבל ישלם:"
-            : "🔴 Price that feels expensive but worth it — customer hesitates but pays:"}
+            ? "🔴 מחיר שמרגיש יקר אבל שווה. לקוח יהסס אבל ישלם:"
+            : "🔴 Price that feels expensive but worth it. Customer hesitates but pays:"}
         </label>
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-muted-foreground">₪</span>
@@ -359,7 +359,7 @@ const PricingWizard = ({
               {tx({ he: "טווח מחיר מקובל:", en: "Acceptable price range:" }, language)}
             </span>
             <Badge>
-              {formatNIS(tooChcapPrice)} — {formatNIS(stretchPrice)}
+              {formatNIS(tooChcapPrice)} עד {formatNIS(stretchPrice)}
             </Badge>
           </div>
           <div className="flex items-center justify-between text-sm">
@@ -397,10 +397,10 @@ const PricingWizard = ({
         <div {...radioGroup("effort-level-label")} className="grid grid-cols-2 gap-2">
           {(
             [
-              { id: "zero"   as EffortLevel, he: "אפס — הכל מוכן",        en: "Zero — fully done-for-you" },
-              { id: "low"    as EffortLevel, he: "נמוך — ניהול קל",        en: "Low — light management" },
-              { id: "medium" as EffortLevel, he: "בינוני — צריך לתרגל",    en: "Medium — requires practice" },
-              { id: "high"   as EffortLevel, he: "גבוה — תהליך ארוך",      en: "High — lengthy process" },
+              { id: "zero"   as EffortLevel, he: "אפס. הכל מוכן",        en: "Zero. Fully done-for-you" },
+              { id: "low"    as EffortLevel, he: "נמוך. ניהול קל",         en: "Low. Light management" },
+              { id: "medium" as EffortLevel, he: "בינוני. צריך לתרגל",    en: "Medium. Requires practice" },
+              { id: "high"   as EffortLevel, he: "גבוה. תהליך ארוך",       en: "High. Lengthy process" },
             ] as const
           ).map((opt) => (
             <button

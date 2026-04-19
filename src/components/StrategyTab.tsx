@@ -350,7 +350,7 @@ const StrategyTab = ({
               {marketEvents.length > 0 && (
                 <div className="pt-2 border-t border-muted/30">
                   <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                    📅 {tx({ he: "לוח שיווק ישראלי — אירועים קרובים", en: "Israeli Marketing Calendar — Upcoming Events" }, language)}
+                    📅 {tx({ he: "לוח שיווק ישראלי: אירועים קרובים", en: "Israeli Marketing Calendar: Upcoming Events" }, language)}
                   </h4>
                   <div className="space-y-2">
                     {marketEvents.slice(0, 3).map((event) => (

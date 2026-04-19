@@ -261,8 +261,8 @@ const InsightFeed = ({
         {visibleItems.length === 0 && (
           <p className="text-xs text-muted-foreground text-center py-4" dir="auto">
             {language === "he"
-              ? "כל התובנות טופלו — כל הכבוד!"
-              : "All insights addressed — great work!"}
+              ? "כל התובנות טופלו. כל הכבוד!"
+              : "All insights addressed. Great work!"}
           </p>
         )}
       </div>

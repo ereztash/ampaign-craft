@@ -39,7 +39,7 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
           {tx({ he: "תבניות WhatsApp מוכנות לשימוש", en: "Ready-to-Use WhatsApp Templates" }, language)}
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          {tx({ he: "6 תבניות הודעות בעברית לכל שלב במשפך — העתק והדבק ב-WhatsApp Business", en: "6 Hebrew message templates for every funnel stage — copy and paste to WhatsApp Business" }, language)}
+          {tx({ he: "6 תבניות הודעות בעברית לכל שלב במשפך. העתק והדבק ב-WhatsApp Business", en: "6 Hebrew message templates for every funnel stage. Copy and paste to WhatsApp Business" }, language)}
         </p>
       </CardHeader>
       <CardContent className="space-y-3">

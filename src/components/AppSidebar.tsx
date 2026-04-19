@@ -160,8 +160,8 @@ const AppSidebar = () => {
                   className="inline-flex"
                   title={
                     isRTL
-                      ? `מסודר עבור ${uiConfig.label.he} — ${uiConfig.adaptationDescription.he}`
-                      : `Ordered for ${uiConfig.label.en} — ${uiConfig.adaptationDescription.en}`
+                      ? `מסודר עבור ${uiConfig.label.he}: ${uiConfig.adaptationDescription.he}`
+                      : `Ordered for ${uiConfig.label.en}: ${uiConfig.adaptationDescription.en}`
                   }
                 >
                   <Info

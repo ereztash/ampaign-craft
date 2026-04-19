@@ -227,12 +227,12 @@ const CommandCenter = () => {
           ) : showExpressWizard ? (
             <>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground md:text-4xl" dir="auto">
-                {tx({ he: "בוא נתחיל — 2 לחיצות ויש לך מהלך", en: "Let's start — 2 clicks and you have a move" }, language)}
+                {tx({ he: "בוא נתחיל. 2 לחיצות ויש לך מהלך", en: "Let's start. 2 clicks and you have a move" }, language)}
               </h1>
               <p className="text-muted-foreground max-w-xl mx-auto" dir="auto">
                 {isHe
-                  ? `${totalUsers.toLocaleString()}+ בעלי עסקים כבר בפנים.`
-                  : `${totalUsers.toLocaleString()}+ business owners inside.`}
+                  ? "פאנל שיווקי בנוי על נתונים אמיתיים מ-GA4, Meta, ו-Google Ads."
+                  : "Marketing funnel built on real data from GA4, Meta, and Google Ads."}
               </p>
             </>
           ) : (
@@ -242,8 +242,8 @@ const CommandCenter = () => {
               </h1>
               <p className="text-muted-foreground max-w-xl mx-auto" dir="auto">
                 {isHe
-                  ? `${totalUsers.toLocaleString()}+ בעלי עסקים כבר בפנים. תגיד לנו מה תקוע — נחזיר לך את המהלך לעשות.`
-                  : `${totalUsers.toLocaleString()}+ business owners inside. Tell us what's stuck — we'll give you the move to make.`}
+                  ? `${totalUsers.toLocaleString()}+ בעלי עסקים כבר בפנים. תגיד לנו מה תקוע, נחזיר לך את המהלך לעשות.`
+                  : `${totalUsers.toLocaleString()}+ business owners inside. Tell us what's stuck. We'll give you the move to make.`}
               </p>
             </>
           )}

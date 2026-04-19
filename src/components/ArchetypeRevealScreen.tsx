@@ -126,8 +126,8 @@ export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeReve
           <p className="text-sm text-muted-foreground max-w-md mx-auto" dir="auto">
             {tx(
               {
-                he: "זיהינו את הדפוסים בתשובות שלך. זה לא אבחון אישיות — זה תיאור של נטיות שימוש בכלים כמו FunnelForge בקרב אנשים עם פרופיל דומה לשלך.",
-                en: "We identified patterns in your answers. This is not a personality diagnosis — it describes usage tendencies in tools like FunnelForge among people with a profile similar to yours.",
+                he: "זיהינו את הדפוסים בתשובות שלך. זה לא אבחון אישיות. זה תיאור של נטיות שימוש בכלים כמו FunnelForge בקרב אנשים עם פרופיל דומה לשלך.",
+                en: "We identified patterns in your answers. This is not a personality diagnosis. It describes usage tendencies in tools like FunnelForge among people with a profile similar to yours.",
               },
               language,
             )}
@@ -177,9 +177,9 @@ export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeReve
           </h2>
           <ul className="space-y-1.5 text-sm text-muted-foreground list-none">
             {[
-              tx({ he: "סדר הניווט — מוצגות הכלים שהכי רלוונטיים עבורך קודם", en: "Navigation order — the most relevant tools for you appear first" }, language),
-              tx({ he: "גווני צבע — פלטה שמתאימה לסגנון העבודה שלך", en: "Colour palette — a palette matched to your work style" }, language),
-              tx({ he: "עוצמת אנימציות — מותאמת לקצב שלך", en: "Animation intensity — matched to your pace" }, language),
+              tx({ he: "סדר הניווט: מוצגות הכלים שהכי רלוונטיים עבורך קודם", en: "Navigation order: the most relevant tools for you appear first" }, language),
+              tx({ he: "גווני צבע: פלטה שמתאימה לסגנון העבודה שלך", en: "Colour palette: a palette matched to your work style" }, language),
+              tx({ he: "עוצמת אנימציות: מותאמת לקצב שלך", en: "Animation intensity: matched to your pace" }, language),
             ].map((item, i) => (
               <li key={i} className="flex items-start gap-2">
                 <ChevronIcon className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" aria-hidden="true" />

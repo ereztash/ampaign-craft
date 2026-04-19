@@ -132,8 +132,8 @@ const PageComponent = () => {
               </h1>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto" dir="auto">
                 {isHe
-                  ? "4 שאלות מבוססות מדע — נגזור את המחיר האופטימלי עבורך"
-                  : "4 science-based questions — we derive your optimal price"}
+                  ? "4 שאלות מבוססות מדע. נגזור את המחיר האופטימלי עבורך"
+                  : "4 science-based questions. We derive your optimal price"}
               </p>
             </div>
             <PricingWizard

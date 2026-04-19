@@ -54,7 +54,7 @@ const Terms = () => {
           <p>
             {tx(
               {
-                he: "באפשרותך לסגור את חשבונך בכל עת. אנו רשאים לסיים את השירות עם הודעה של 30 יום מראש, למעט מקרי הפרה — אשר יכולים להוביל להשעיה מיידית. לפרטי ביטול עסקה והחזרים כספיים, ראה ",
+                he: "באפשרותך לסגור את חשבונך בכל עת. אנו רשאים לסיים את השירות עם הודעה של 30 יום מראש, למעט מקרי הפרה שיכולים להוביל להשעיה מיידית. לפרטי ביטול עסקה והחזרים כספיים, ראה ",
                 en: "You may close your account at any time. We may terminate with 30 days' notice, except in cases of breach where immediate suspension may apply. For cancellation and refund details, see our ",
               },
               language,

@@ -52,8 +52,8 @@ export function IntelligenceSynthesisDashboard({
         </CardTitle>
         <CardDescription>
           {t(
-            "ארבעה מנועים ב-dashboard אחד — EPS, Cross-Domain, Predictive Score, Behavioral Cohort",
-            "Four engines in one dashboard — EPS, Cross-Domain, Predictive Score, Behavioral Cohort",
+            "ארבעה מנועים ב-dashboard אחד: EPS, Cross-Domain, Predictive Score, Behavioral Cohort",
+            "Four engines in one dashboard: EPS, Cross-Domain, Predictive Score, Behavioral Cohort",
           )}
         </CardDescription>
       </CardHeader>

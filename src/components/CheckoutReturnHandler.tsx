@@ -35,7 +35,7 @@ const CheckoutReturnHandler = () => {
       void poll();
 
       toast.success(
-        isHe ? "התשלום התקבל — תודה!" : "Payment received — thank you!",
+        isHe ? "התשלום התקבל. תודה!" : "Payment received. Thank you!",
         {
           description: isHe
             ? "החשבון שלך משודרג. אם התוכנית לא מעודכנת בתוך דקה, רענן את הדף."

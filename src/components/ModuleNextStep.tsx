@@ -96,25 +96,25 @@ const NEXT_COPY: Record<
 > = {
   // After module 1 → going to 2
   1: {
-    heading: { he: "הבידול מוכן — עכשיו בנה את תוכנית השיווק", en: "Positioning ready — now build the marketing plan" },
+    heading: { he: "הבידול מוכן. עכשיו בנה את תוכנית השיווק", en: "Positioning ready. Now build the marketing plan" },
     body: { he: "כל הסקריפטים, הכותרות וה-hooks ישתמשו בבידול שגילינו כאן.", en: "All scripts, headlines, and hooks will leverage the positioning we just uncovered." },
     cta: { he: "בנה תוכנית שיווק →", en: "Build marketing plan →" },
   },
   // After module 2 → going to 3
   2: {
-    heading: { he: "התוכנית מוכנה — עכשיו הכן סקריפטי מכירה", en: "Plan ready — now build your sales scripts" },
+    heading: { he: "התוכנית מוכנה. עכשיו הכן סקריפטי מכירה", en: "Plan ready. Now build your sales scripts" },
     body: { he: "מגלים את פרופיל ה-DISC של הלקוח שלך ובונים סקריפטים שמותאמים לאישיותו.", en: "We'll detect your prospect's DISC profile and build scripts tailored to their personality." },
     cta: { he: "עבור למכירות →", en: "Go to Sales →" },
   },
   // After module 3 → going to 4
   3: {
-    heading: { he: "סקריפטים מוכנים — עכשיו תכנן את המחיר הנכון", en: "Scripts ready — now set the right price" },
+    heading: { he: "סקריפטים מוכנים. עכשיו תכנן את המחיר הנכון", en: "Scripts ready. Now set the right price" },
     body: { he: "בונים מבנה 3 שכבות עם Decoy Tier, ומחשבים את ה-LTV:CAC האידאלי.", en: "We'll build a 3-tier structure with a Decoy Tier and calculate the ideal LTV:CAC ratio." },
     cta: { he: "עבור לתמחור →", en: "Go to Pricing →" },
   },
   // After module 4 → going to 5
   4: {
-    heading: { he: "התמחור מוכן — עכשיו תכנן שימור וצמיחה", en: "Pricing ready — now plan retention and growth" },
+    heading: { he: "התמחור מוכן. עכשיו תכנן שימור וצמיחה", en: "Pricing ready. Now plan retention and growth" },
     body: { he: "מגדירים אסטרטגיית קליטה, מזהים אותות נטישה, ובונים לולאת צמיחה.", en: "We'll define your onboarding sequence, detect churn signals, and build a growth loop." },
     cta: { he: "עבור לשימור →", en: "Go to Retention →" },
   },
@@ -210,8 +210,8 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
               </h3>
               <p className="text-sm text-muted-foreground" dir="auto">
                 {isHe
-                  ? "בנית בידול, תוכנית שיווק, מכירות, תמחור ושימור — מערכת צמיחה מלאה."
-                  : "You've built differentiation, marketing, sales, pricing, and retention — a complete growth system."}
+                  ? "בנית בידול, תוכנית שיווק, מכירות, תמחור ושימור. מערכת צמיחה מלאה."
+                  : "You've built differentiation, marketing, sales, pricing, and retention. A complete growth system."}
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-3 pt-1">
@@ -273,7 +273,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
             {/* Text */}
             <div className="flex-1 min-w-0 space-y-1">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide" dir="auto">
-                {tx({ he: `מודול ${next} מתוך 5 — ${nextMeta.label.he}`, en: `Module ${next} of 5 — ${nextMeta.label.en}` }, language)}
+                {tx({ he: `מודול ${next} מתוך 5: ${nextMeta.label.he}`, en: `Module ${next} of 5: ${nextMeta.label.en}` }, language)}
               </p>
               <h3 className="font-bold text-foreground leading-snug" dir="auto">
                 {copy.heading[language]}
