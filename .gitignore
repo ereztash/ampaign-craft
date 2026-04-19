@@ -31,3 +31,6 @@ load-tests/results/
 *.njsproj
 *.sln
 *.sw?
+
+# Supabase CLI temp files
+supabase/.temp/
