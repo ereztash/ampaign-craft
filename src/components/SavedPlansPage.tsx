@@ -240,8 +240,8 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
             >
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-foreground">{t("comparePlans")}</h2>
-                <Button variant="ghost" size="icon" onClick={() => setShowCompare(false)}>
-                  <X className="h-5 w-5" />
+                <Button variant="ghost" size="icon" onClick={() => setShowCompare(false)} aria-label="Close comparison">
+                  <X className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </div>
 

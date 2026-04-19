@@ -312,8 +312,9 @@ export default function QuoteBuilder({
                         variant="ghost"
                         className="h-7 w-7"
                         onClick={() => removeLineItem(item.id)}
+                        aria-label="Remove line item"
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" aria-hidden="true" />
                       </Button>
                     </td>
                   </tr>
