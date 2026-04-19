@@ -1558,11 +1558,7 @@ create policy "admins can read feedback"
   on public.feedback
   for select
   using (
-    exists (
-      select 1
-      from public.admins
-      where admins.user_id = auth.uid()
-    )
+    public.has_role(auth.uid(), 'admin')
   );
 
 -- ========== 20260417_002_stripe_customer_columns.sql ==========
