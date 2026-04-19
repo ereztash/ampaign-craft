@@ -28,8 +28,8 @@ const OnboardingOverlay = () => {
       bg: "bg-destructive/10",
       title: { he: "ספר לנו על העסק שלך", en: "Tell us about your business" },
       desc: {
-        he: "תענה על כמה שאלות פשוטות — אנחנו נבנה לך תוכנית שיווק מותאמת אישית",
-        en: "Answer a few simple questions — we'll build you a personalized marketing plan",
+        he: "תענה על כמה שאלות פשוטות. אנחנו נבנה לך תוכנית שיווק מותאמת אישית",
+        en: "Answer a few simple questions. We'll build you a personalized marketing plan",
       },
     },
     {
@@ -63,7 +63,7 @@ const OnboardingOverlay = () => {
 
   return (
     <Dialog open={!dismissed} onOpenChange={(open) => { if (!open) handleDismiss(); }}>
-      <DialogContent className="max-w-md text-center p-8">
+      <DialogContent className="max-w-md text-center p-8" aria-describedby={undefined}>
         <button
           onClick={handleDismiss}
           className="absolute top-3 end-3 text-muted-foreground hover:text-foreground"

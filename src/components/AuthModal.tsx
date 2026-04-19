@@ -53,7 +53,7 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="text-center">
             {tx({ he: "התחברות ל-FunnelForge", en: "Sign in to FunnelForge" }, language)}
@@ -114,8 +114,8 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
 
         <p className="text-center text-xs text-muted-foreground mt-2">
           {isHe
-            ? "לא חובה — ניתן להשתמש באפליקציה גם כאורח"
-            : "Optional — you can use the app as a guest too"}
+            ? "לא חובה. ניתן להשתמש באפליקציה גם כאורח"
+            : "Optional. You can use the app as a guest too"}
         </p>
       </DialogContent>
     </Dialog>
