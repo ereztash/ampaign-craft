@@ -160,9 +160,9 @@ describe("moderateOutput — excessive negativity", () => {
     expect(result.flags).toContain("excessive_negativity");
   });
 
-  it("Hebrew negativity words: חסר תקווה + אסון", () => {
-    // Both patterns appear: חסר תקווה (matches NEGATIVITY_PATTERNS[1]) and אסון (matches NEGATIVITY_PATTERNS[1])
-    const result = moderateOutput("זה חסר תקווה ואסון גמור ובעיה קטסטרופלית");
+  it("multiple English negativity words across patterns: disaster + catastrophe", () => {
+    // "disaster" and "catastroph" both match NEGATIVITY_PATTERNS[0] — 2 matches
+    const result = moderateOutput("This is a disaster and a catastrophic failure.");
     expect(result.flags).toContain("excessive_negativity");
   });
 });

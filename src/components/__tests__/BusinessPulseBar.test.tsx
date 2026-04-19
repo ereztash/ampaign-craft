@@ -62,11 +62,11 @@ describe("BusinessPulseBar", () => {
 
   it("shows streak when positive", () => {
     render(<BusinessPulseBar {...defaultProps} />);
-    expect(screen.getByText("week streak")).toBeInTheDocument();
-    // "4" appears in the streak row (streakWeeks=4)
-    const streakEl = screen.getByText("week streak");
-    const parent = streakEl.parentElement;
-    expect(parent?.textContent).toContain("4");
+    // The streak div contains the streak count and label text concatenated
+    const streakDiv = document.querySelector(".text-amber-600");
+    expect(streakDiv).toBeInTheDocument();
+    expect(streakDiv?.textContent).toContain("4");
+    expect(streakDiv?.textContent).toMatch(/week streak/);
   });
 
   it("handles null healthTotal", () => {
