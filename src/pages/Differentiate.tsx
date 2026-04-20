@@ -156,7 +156,7 @@ const PageComponent = () => {
                 {crossDomainIntro.topLift && (
                   <div className="text-xs text-amber-800 mt-1" dir="auto">
                     {tx({ he: "לקחי תעשייה צולבים", en: "Cross-industry lesson" }, language)}:{" "}
-                    <strong>{crossDomainIntro.topLift.expectedLift}</strong> —{" "}
+                    <strong>{crossDomainIntro.topLift.expectedLift}</strong>:{" "}
                     {tx(crossDomainIntro.topLift.transferableStrategy, language)}
                   </div>
                 )}

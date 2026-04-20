@@ -237,12 +237,12 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         {graph.derived.coldStartMode && (
           <motion.div {...motionProps} className="mb-6 rounded-xl border border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-700/40 dark:bg-emerald-900/20 p-4 text-start space-y-2">
             <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200" dir="auto">
-              {tx({ he: "נקודת התחלה — כך תשפרו את התוכנית:", en: "Starting point — here's how to improve your plan:" }, language)}
+              {tx({ he: "נקודת התחלה: כך תשפרו את התוכנית:", en: "Starting point: here's how to improve your plan:" }, language)}
             </p>
             <ul className="text-xs text-emerald-800 dark:text-emerald-300 space-y-1 list-disc list-inside" dir="auto">
               <li>{tx({ he: "חברו מקור נתונים (Meta Ads, CSV) לקבלת תובנות מבוססות מספרים אמיתיים", en: "Connect a data source (Meta Ads, CSV) for insights based on real numbers" }, language)}</li>
               <li>{tx({ he: "הריצו ניתוח סגנון כתיבה כדי שהקופי יתאים לקול שלכם", en: "Run a writing style analysis so copy matches your voice" }, language)}</li>
-              <li>{tx({ he: "נסו את המאמן השיווקי — כל שיחה מחדדת את האסטרטגיה", en: "Try the AI Coach — every conversation sharpens the strategy" }, language)}</li>
+              <li>{tx({ he: "נסו את המאמן השיווקי. כל שיחה מחדדת את האסטרטגיה", en: "Try the AI Coach. Every conversation sharpens the strategy" }, language)}</li>
             </ul>
           </motion.div>
         )}
@@ -330,7 +330,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
                   {tx({ he: "רוצה סקריפטים עם שמות המתחרים שלך והבידול האמיתי?", en: "Want scripts with your competitor names and real differentiation?" }, language)}
                 </p>
                 <p className="text-xs text-muted-foreground" dir="auto">
-                  {tx({ he: "10 דקות שישדרגו את כל התוצאות — hooks, קופי, סקריפטי מכירה", en: "10 minutes that will upgrade all results — hooks, copy, sales scripts" }, language)}
+                  {tx({ he: "10 דקות שישדרגו את כל התוצאות: hooks, קופי, סקריפטי מכירה", en: "10 minutes that will upgrade all results: hooks, copy, sales scripts" }, language)}
                 </p>
               </div>
               <a href="/differentiate" className="shrink-0">

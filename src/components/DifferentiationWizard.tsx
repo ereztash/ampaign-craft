@@ -8,6 +8,7 @@ import { generateDifferentiation, AiResults } from "@/engine/differentiationEngi
 import { canProceedPhase, getPhaseColor } from "@/lib/differentiationFormRules";
 import DifferentiationPhaseCard from "@/components/DifferentiationPhaseCard";
 import { supabase } from "@/integrations/supabase/client";
+import { authFetch } from "@/lib/authFetch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,7 +62,7 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
     setAiInsights([]);
 
     try {
-      const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/differentiation-agent`, {
+      const _resp = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/differentiation-agent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phase: phaseName, formData, previousResults: aiResults }),

@@ -178,7 +178,7 @@ function ActionChecklist({ items, language }: { items: ActionItem[]; language: s
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
               <span className={`text-xs font-bold ${PRIORITY_COLOR[item.priority]}`}>
-                P{item.priority} — {PRIORITY_LABEL[item.priority]}
+                P{item.priority}: {PRIORITY_LABEL[item.priority]}
               </span>
               <Badge variant="outline" className="text-xs py-0">{item.timeframe}</Badge>
             </div>

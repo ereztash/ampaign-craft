@@ -20,9 +20,9 @@ const FLOW_LABELS: { from: string; to: string; label: { he: string; en: string }
 ];
 
 const MODULE_DESCRIPTIONS: Record<string, { he: string; en: string }> = {
-  differentiation: { he: "גלה מה באמת מבדל אותך — מנגנונים, לא תיאורים", en: "Discover what truly sets you apart — mechanisms, not adjectives" },
+  differentiation: { he: "גלה מה באמת מבדל אותך. מנגנונים, לא תיאורים", en: "Discover what truly sets you apart. Mechanisms, not adjectives" },
   marketing: { he: "משפך 5 שלבים + ערוצים + תקציב + hooks מותאמים", en: "5-stage funnel + channels + budget + personalized hooks" },
-  sales: { he: "סקריפטים, התנגדויות, neuro-closing — מוכנים להעתקה", en: "Scripts, objections, neuro-closing — ready to copy" },
+  sales: { he: "סקריפטים, התנגדויות, neuro-closing. מוכנים להעתקה", en: "Scripts, objections, neuro-closing. Ready to copy" },
   pricing: { he: "מבנה tiers, offer stack, אחריות, מסגור מחיר", en: "Tier structure, offer stack, guarantee, price framing" },
   retention: { he: "Onboarding, churn prevention, referral, loyalty", en: "Onboarding, churn prevention, referral, loyalty" },
 };
@@ -48,7 +48,7 @@ const ModulePipeline = ({ showLabels = true }: ModulePipelineProps) => {
         <Card
           role="button"
           tabIndex={0}
-          aria-label={`${mod.label[language]} — ${mod.completed ? (tx({ he: "הושלם", en: "completed" }, language)) : (tx({ he: "התחל", en: "start" }, language))}`}
+          aria-label={`${mod.label[language]}, ${mod.completed ? (tx({ he: "הושלם", en: "completed" }, language)) : (tx({ he: "התחל", en: "start" }, language))}`}
           className={`cursor-pointer transition-all hover:shadow-lg hover:translate-y-[-2px] border-2 focus:outline-none focus:ring-2 focus:ring-primary ${
             mod.completed ? "border-accent/40 bg-accent/5" : "border-border hover:border-primary/50"
           }`}

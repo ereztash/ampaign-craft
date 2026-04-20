@@ -242,7 +242,7 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
       <section className="container mx-auto px-4 pb-12 text-center">
         <Button size="lg" onClick={onStart} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
           <Sparkles className="h-5 w-5" />
-          {tx({ he: "בנה את התוכנית שלי — בחינם", en: "Build My Plan — Free" }, language)}
+          {tx({ he: "בנה את התוכנית שלי. בחינם", en: "Build My Plan. Free" }, language)}
         </Button>
         <p className="text-xs text-muted-foreground mt-2">
           {tx({ he: "ללא כרטיס אשראי · 2 דקות · שאלון הבידול זמין בפנים", en: "No credit card · 2 min · Differentiation available inside" }, language)}

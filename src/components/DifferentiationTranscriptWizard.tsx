@@ -128,7 +128,7 @@ function buildDraftFromScan(
     : `${oneSentence} ${topQuotes.join(" ")}`.trim();
 
   const marketCheck = approved.length >= 3
-    ? `Strong differentiation signal across ${approved.length} principles — ready for market positioning.`
+    ? `Strong differentiation signal across ${approved.length} principles. Ready for market positioning.`
     : `Partial signal (${approved.length} approved principles). Consider strengthening evidence before market positioning.`;
 
   return { oneSentence, paragraph, marketCheck };
@@ -661,8 +661,8 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
       <p className="text-xs text-muted-foreground" dir="auto">
         {tx(
           {
-            he: "הטקסט נוצר אוטומטית מהעקרונות שאישרת — ערוך לפי הצורך",
-            en: "Text generated from approved principles — edit as needed",
+            he: "הטקסט נוצר אוטומטית מהעקרונות שאישרת. ערוך לפי הצורך",
+            en: "Text generated from approved principles. Edit as needed",
           },
           language,
         )}

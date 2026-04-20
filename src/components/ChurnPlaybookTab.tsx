@@ -267,7 +267,7 @@ const ChurnPlaybookTab = ({ result }: ChurnPlaybookTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {tx({ he: "תוכנית 4 שבועות — Win-Back", en: "4-Week Win-Back Plan" }, language)}
+            {tx({ he: "תוכנית 4 שבועות: Win-Back", en: "4-Week Win-Back Plan" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>

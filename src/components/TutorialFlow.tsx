@@ -61,8 +61,8 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
       },
       {
         title: { he: "איך להתחיל?", en: "How to start?" },
-        body: { he: "מלא את הטופס שמאל — עסק, קהל, מטרה, תקציב. ה-AI יבנה לך את המשפך תוך 30 שניות.", en: "Fill the form on the left — business, audience, goal, budget. The AI will build your funnel in 30 seconds." },
-        tip: { he: "התחל פשוט — תמיד תוכל לחזור ולחדד", en: "Start simple — you can always come back and refine" },
+        body: { he: "מלא את הטופס שמאל: עסק, קהל, מטרה, תקציב. ה-AI יבנה לך את המשפך תוך 30 שניות.", en: "Fill the form on the left: business, audience, goal, budget. The AI will build your funnel in 30 seconds." },
+        tip: { he: "התחל פשוט. תמיד תוכל לחזור ולחדד", en: "Start simple. You can always come back and refine" },
       },
     ],
   },
@@ -81,7 +81,7 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
       },
       {
         title: { he: "איך לבחור זווית?", en: "How to pick an angle?" },
-        body: { he: "הזווית הכי טובה היא זו שאתה גם מצטיין בה וגם החברה לא — והקהל שלך אכפת לו ממנה.", en: "The best angle is one you excel at that competitors don't — and that your audience cares about." },
+        body: { he: "הזווית הכי טובה היא זו שאתה גם מצטיין בה וגם החברה לא, והקהל שלך אכפת לו ממנה.", en: "The best angle is one you excel at that competitors don't, and that your audience cares about." },
       },
     ],
   },
@@ -92,11 +92,11 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
     steps: [
       {
         title: { he: "מה מנוע ה-QA בודק?", en: "What the QA engine checks" },
-        body: { he: "קורטיזול, אמון, reactance, התאמת פרסונה, CTA, הוכחה חברתית — ו-SOTA² stylometry לזיהוי AI.", en: "Cortisol, trust, reactance, persona fit, CTA, social proof — and SOTA² stylometry for AI detection." },
+        body: { he: "קורטיזול, אמון, reactance, התאמת פרסונה, CTA, הוכחה חברתית, ו-SOTA² stylometry לזיהוי AI.", en: "Cortisol, trust, reactance, persona fit, CTA, social proof, and SOTA² stylometry for AI detection." },
       },
       {
         title: { he: "איך לפרש את הציון?", en: "How to read the score" },
-        body: { he: "85+ מוכן לפרסום. 70-84 טוב. 55-69 דרוש שיפור. מתחת ל-55 — שכתב.", en: "85+ ready to publish. 70-84 good. 55-69 needs work. Below 55 — rewrite." },
+        body: { he: "85+ מוכן לפרסום. 70-84 טוב. 55-69 דרוש שיפור. מתחת ל-55: שכתב.", en: "85+ ready to publish. 70-84 good. 55-69 needs work. Below 55: rewrite." },
       },
     ],
   },
@@ -107,12 +107,12 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
     steps: [
       {
         title: { he: "מה זה EPS?", en: "What is EPS?" },
-        body: { he: "Emotional Performance Score — ציון 0-100 המשקף את הבריאות הרגשית של המשפך שלך.", en: "Emotional Performance Score — a 0-100 score reflecting your funnel's emotional health." },
+        body: { he: "Emotional Performance Score: ציון 0-100 המשקף את הבריאות הרגשית של המשפך שלך.", en: "Emotional Performance Score: a 0-100 score reflecting your funnel's emotional health." },
         glossaryTerm: "eps",
       },
       {
         title: { he: "Cross-Domain Insights", en: "Cross-Domain Insights" },
-        body: { he: "אסטרטגיות מוצלחות מתעשיות אחרות שניתן להעביר לשלך — לדוגמה, gamification מ-EdTech ל-SaaS.", en: "Successful strategies from other industries transferable to yours — e.g., gamification from EdTech to SaaS." },
+        body: { he: "אסטרטגיות מוצלחות מתעשיות אחרות שניתן להעביר לשלך. לדוגמה, gamification מ-EdTech ל-SaaS.", en: "Successful strategies from other industries transferable to yours. E.g., gamification from EdTech to SaaS." },
       },
       {
         title: { he: "Behavioral Cohorts", en: "Behavioral Cohorts" },
@@ -123,11 +123,11 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
   pricing: {
     module: "pricing",
     name: { he: "אסטרטגיית תמחור", en: "Pricing Strategy" },
-    description: { he: "תמחר נכון — נפשית ואסטרטגית", en: "Price right — psychologically and strategically" },
+    description: { he: "תמחר נכון. נפשית ואסטרטגית", en: "Price right. Psychologically and strategically" },
     steps: [
       {
         title: { he: "3 מודלי תמחור מרכזיים", en: "3 core pricing models" },
-        body: { he: "Value-based, Competition-based, Cost-plus. הטוב ביותר? Value-based — מחבר מחיר לתוצאה.", en: "Value-based, Competition-based, Cost-plus. The best? Value-based — connects price to outcome." },
+        body: { he: "Value-based, Competition-based, Cost-plus. הטוב ביותר? Value-based: מחבר מחיר לתוצאה.", en: "Value-based, Competition-based, Cost-plus. The best? Value-based: connects price to outcome." },
       },
       {
         title: { he: "עוגנים פסיכולוגיים", en: "Psychological anchoring" },
@@ -142,11 +142,11 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
     steps: [
       {
         title: { he: "עלות שימור < עלות רכישה", en: "Retention cost < acquisition cost" },
-        body: { he: "שימור לקוח קיים עולה פי 5-7 פחות מרכישת לקוח חדש. תעדוף — חובה.", en: "Retaining a customer costs 5-7x less than acquiring one. Prioritize — it's mandatory." },
+        body: { he: "שימור לקוח קיים עולה פי 5-7 פחות מרכישת לקוח חדש. תעדוף, חובה.", en: "Retaining a customer costs 5-7x less than acquiring one. Prioritize. It's mandatory." },
       },
       {
         title: { he: "3 מנועי שימור", en: "3 retention engines" },
-        body: { he: "Onboarding מצוין, ערך מצטבר לאורך זמן, קהילה. בלי אלה — דליפה.", en: "Excellent onboarding, cumulative value over time, community. Without these — leaks." },
+        body: { he: "Onboarding מצוין, ערך מצטבר לאורך זמן, קהילה. בלי אלה: דליפה.", en: "Excellent onboarding, cumulative value over time, community. Without these: leaks." },
       },
     ],
   },
@@ -168,7 +168,7 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
   competitive_intel: {
     module: "competitive_intel",
     name: { he: "מודיעין תחרותי", en: "Competitive Intelligence" },
-    description: { he: "דע מה מתחריך עושים — ונצל את הפערים", en: "Know what competitors do — and exploit the gaps" },
+    description: { he: "דע מה מתחריך עושים. נצל את הפערים", en: "Know what competitors do. Exploit the gaps" },
     steps: [
       {
         title: { he: "למה זה חשוב?", en: "Why it matters" },
@@ -176,11 +176,11 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
       },
       {
         title: { he: "מה למדוד?", en: "What to measure" },
-        body: { he: "Positioning, pricing, ערוצים, מסרים, קהל. אל תעתיק — זהה פערים.", en: "Positioning, pricing, channels, messaging, audience. Don't copy — spot gaps." },
+        body: { he: "Positioning, pricing, ערוצים, מסרים, קהל. אל תעתיק. זהה פערים.", en: "Positioning, pricing, channels, messaging, audience. Don't copy. Spot gaps." },
       },
       {
         title: { he: "כלי המודיעין שלנו", en: "Our intel tools" },
-        body: { he: "Radar chart, Industry Benchmarks, Differentiation Engine — שלושתם יחד נותנים תמונה שלמה.", en: "Radar chart, Industry Benchmarks, Differentiation Engine — all three together give a full picture." },
+        body: { he: "Radar chart, Industry Benchmarks, Differentiation Engine. שלושתם יחד נותנים תמונה שלמה.", en: "Radar chart, Industry Benchmarks, Differentiation Engine. All three together give a full picture." },
       },
     ],
   },

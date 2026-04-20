@@ -2,10 +2,11 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { validateEnv } from "./lib/validateEnv";
-import { captureUTM, track } from "./lib/analytics";
+import { captureUTM, track, initGA4 } from "./lib/analytics";
 import { notifyReferralClicked } from "./lib/notificationQueue";
 
 validateEnv();
+initGA4();
 
 // ─── Sentry — load from CDN so the SDK doesn't inflate the main bundle.
 // window.Sentry is already checked by src/lib/logger.ts (getSentry()).

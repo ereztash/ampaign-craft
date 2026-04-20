@@ -244,7 +244,7 @@ export default function AARRRDashboard() {
           </div>
         </div>
         <h1 className="text-3xl font-bold">דשבורד AARRR Growth</h1>
-        <p className="text-zinc-400 mt-1">מדדי פיראטים פנימיים — FunnelForge</p>
+        <p className="text-zinc-400 mt-1">מדדי פיראטים פנימיים | FunnelForge</p>
       </div>
 
       {/* ★ North Star Metric Hero */}
@@ -340,7 +340,7 @@ export default function AARRRDashboard() {
       {/* Daily trend */}
       {daily.length > 0 && (
         <div className="rounded-2xl border border-white/10 p-6 bg-white/5 mb-8">
-          <h2 className="text-lg font-bold mb-4">טרנד יומי — 14 ימים אחרונים</h2>
+          <h2 className="text-lg font-bold mb-4">טרנד יומי: 14 ימים אחרונים</h2>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={daily}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
@@ -375,7 +375,7 @@ export default function AARRRDashboard() {
             </FunnelChart>
           </ResponsiveContainer>
           {ahaFunnel.every((s) => s.value === 0) && (
-            <p className="text-center text-zinc-600 text-xs mt-2">Sample — populates after first activated users</p>
+            <p className="text-center text-zinc-600 text-xs mt-2">Sample: populates after first activated users</p>
           )}
         </div>
       )}
@@ -385,7 +385,7 @@ export default function AARRRDashboard() {
         <h2 className="text-lg font-bold mb-1">Cohort Retention</h2>
         <p className="text-zinc-500 text-xs mb-4">
           {nsmValue === 0
-            ? "Sample data — live cohorts populate after first users activate"
+            ? "Sample data: live cohorts populate after first users activate"
             : "Week-over-week retention by signup cohort"}
         </p>
         <div className="overflow-x-auto">
@@ -402,9 +402,9 @@ export default function AARRRDashboard() {
             <tbody>
               {(nsmValue === 0
                 ? [
-                    { cohort: "Sample — Apr W1", w0: 100, w1: 62, w2: 48, w4: 35 },
-                    { cohort: "Sample — Apr W2", w0: 100, w1: 58, w2: 44, w4: null },
-                    { cohort: "Sample — Apr W3", w0: 100, w1: 55, w2: null, w4: null },
+                    { cohort: "Sample Apr W1", w0: 100, w1: 62, w2: 48, w4: 35 },
+                    { cohort: "Sample Apr W2", w0: 100, w1: 58, w2: 44, w4: null },
+                    { cohort: "Sample Apr W3", w0: 100, w1: 55, w2: null, w4: null },
                   ]
                 : []
               ).map((row) => (

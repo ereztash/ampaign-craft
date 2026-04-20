@@ -6,6 +6,7 @@
 
 import { parseLLMJson } from "@/engine/blackboard/llmAgent";
 import { supabase } from "@/integrations/supabase/client";
+import { authFetch } from "@/lib/authFetch";
 import { runRegulatoryResearch } from "./subAgents/regulatoryAgent";
 import { runMarketResearch } from "./subAgents/marketAgent";
 import { runMarketingResearch } from "./subAgents/marketingAgent";
@@ -27,7 +28,7 @@ async function invokeLLM(
   userPrompt: string,
   model = "claude-sonnet-4-6"
 ): Promise<string> {
-  const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
+  const _resp = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

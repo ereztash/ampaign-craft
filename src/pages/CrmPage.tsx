@@ -331,7 +331,7 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, isHe, language }: LeadC
           <p className={`flex items-center gap-1.5 text-[11px] ${isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
             <Calendar className="h-2.5 w-2.5 shrink-0" />
             {new Date(lead.nextFollowup).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
-            {isOverdue && (tx({ he: " — פגה!", en: " — overdue!" }, language))}
+            {isOverdue && (tx({ he: " (פגה!)", en: " (overdue!)" }, language))}
           </p>
         )}
       </div>

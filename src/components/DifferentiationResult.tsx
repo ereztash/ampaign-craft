@@ -233,7 +233,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
       <Card className="border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-transparent">
         <CardContent className="p-6 text-center space-y-3">
           <h3 className="text-lg font-bold" dir="auto">
-            {tx({ he: "הבידול שלך מוכן — בוא נבנה תוכנית שיווק מותאמת", en: "Your differentiation is ready — let's build a tailored marketing plan" }, language)}
+            {tx({ he: "הבידול שלך מוכן. בוא נבנה תוכנית שיווק מותאמת", en: "Your differentiation is ready. Let's build a tailored marketing plan" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground" dir="auto">
             {isHe

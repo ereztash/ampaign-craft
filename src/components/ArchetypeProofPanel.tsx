@@ -264,9 +264,9 @@ export function ArchetypeProofPanel() {
             <p>
               {l === "he"
                 ? `${ARCHETYPE_ICONS[myArchetype]} ${myLabel} מקבל ${differentCount} המלצות שונות מ-${ARCHETYPE_ICONS[contrastArchetype]} ${theirLabel}. ` +
-                  "זה לא עיצוב — זה שינוי בתוכן, בסדר המודולים, ובמסרי ה-CTA."
+                  "זה לא עיצוב. זה שינוי בתוכן, בסדר המודולים, ובמסרי ה-CTA."
                 : `${ARCHETYPE_ICONS[myArchetype]} ${myLabel} receives ${differentCount} different recommendations than ${ARCHETYPE_ICONS[contrastArchetype]} ${theirLabel}. ` +
-                  "This is not styling — it's a change in content, module order, and CTA messaging."}
+                  "This is not styling. It's a change in content, module order, and CTA messaging."}
             </p>
           </div>
         )}

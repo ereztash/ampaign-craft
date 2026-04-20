@@ -27,7 +27,7 @@ const ComingSoon = ({ featureName = DEFAULT_FEATURE, eta = DEFAULT_ETA }: Coming
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">
-            {tx({ he: `${featureName.he} — בקרוב`, en: `${featureName.en} — Coming Soon` }, language)}
+            {tx({ he: `${featureName.he}: בקרוב`, en: `${featureName.en}: Coming Soon` }, language)}
           </h1>
           <p className="text-muted-foreground">
             {tx(

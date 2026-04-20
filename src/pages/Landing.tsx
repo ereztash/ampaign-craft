@@ -30,9 +30,9 @@ const PageComponent = () => {
   const mp = reducedMotion ? {} : { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true } };
 
   const modules = [
-    { icon: Crosshair, color: "text-amber-500", title: tx({ he: "בידול", en: "Differentiation" }, language), desc: tx({ he: "גלה מה באמת מבדל אותך — לא תיאורים, מנגנונים", en: "Discover what truly differentiates you — mechanisms, not adjectives" }, language) },
+    { icon: Crosshair, color: "text-amber-500", title: tx({ he: "בידול", en: "Differentiation" }, language), desc: tx({ he: "גלה מה באמת מבדל אותך. לא תיאורים, מנגנונים", en: "Discover what truly differentiates you. Mechanisms, not adjectives" }, language) },
     { icon: BarChart3, color: "text-primary", title: tx({ he: "שיווק", en: "Marketing" }, language), desc: tx({ he: "משפך 5 שלבים + ערוצים + תקציב + hooks מותאמים", en: "5-stage funnel + channels + budget + personalized hooks" }, language) },
-    { icon: TrendingUp, color: "text-accent", title: tx({ he: "מכירות", en: "Sales" }, language), desc: tx({ he: "סקריפטים, התנגדויות, neuro-closing — מוכנים להעתקה", en: "Scripts, objections, neuro-closing — ready to copy" }, language) },
+    { icon: TrendingUp, color: "text-accent", title: tx({ he: "מכירות", en: "Sales" }, language), desc: tx({ he: "סקריפטים, התנגדויות, neuro-closing. מוכנים להעתקה", en: "Scripts, objections, neuro-closing. Ready to copy" }, language) },
     { icon: DollarSign, color: "text-emerald-500", title: tx({ he: "תמחור", en: "Pricing" }, language), desc: tx({ he: "מבנה tiers, offer stack, אחריות, מסגור מחיר", en: "Tier structure, offer stack, guarantee, price framing" }, language) },
     { icon: Heart, color: "text-pink-500", title: tx({ he: "שימור", en: "Retention" }, language), desc: tx({ he: "Onboarding, churn prevention, referral, loyalty", en: "Onboarding, churn prevention, referral, loyalty" }, language) },
   ];
@@ -63,15 +63,15 @@ const PageComponent = () => {
           {/* Oxytocin — trust/empathy */}
           <p className="mb-6 text-lg text-muted-foreground sm:text-xl max-w-xl mx-auto" dir="auto">
             {isHe
-              ? `אנחנו מבינים. ${totalUsers.toLocaleString()}+ בעלי עסקים ישראליים הרגישו בדיוק ככה — ובנו תוכנית שעובדת.`
-              : `We get it. ${totalUsers.toLocaleString()}+ Israeli business owners felt exactly the same — and built a plan that works.`}
+              ? `אנחנו מבינים. ${totalUsers.toLocaleString()}+ בעלי עסקים ישראליים הרגישו בדיוק ככה, ובנו תוכנית שעובדת.`
+              : `We get it. ${totalUsers.toLocaleString()}+ Israeli business owners felt exactly the same, and built a plan that works.`}
           </p>
 
           {/* Dopamine — CTA (single, warm orange) */}
           <div className="flex flex-col items-center gap-2">
             <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
               <Sparkles className="h-5 w-5" />
-              {tx({ he: "בנה את התוכנית שלי — בחינם", en: "Build My Plan — Free" }, language)}
+              {tx({ he: "בנה את התוכנית שלי - חינם", en: "Build My Plan - Free" }, language)}
             </Button>
             <p className="text-xs text-muted-foreground" dir="auto">
               {isHe
@@ -157,7 +157,7 @@ const PageComponent = () => {
                 <li>{tx({ he: "תוכנית שיווק מותאמת לתעשייה שלך", en: "Marketing plan tailored to your industry" }, language)}</li>
                 <li>{tx({ he: "סקריפטי מכירה מוכנים להעתקה", en: "Copy-paste sales scripts" }, language)}</li>
                 <li>{tx({ he: "תמחור מבוסס על דאטה ישראלי", en: "Pricing based on Israeli market data" }, language)}</li>
-                <li>{tx({ he: "לקוחות שחוזרים — עם תוכנית שימור", en: "Returning customers — with retention plan" }, language)}</li>
+                <li>{tx({ he: "לקוחות שחוזרים, עם תוכנית שימור", en: "Returning customers, with retention plan" }, language)}</li>
               </ul>
             </CardContent>
           </Card>
@@ -217,7 +217,7 @@ const PageComponent = () => {
         </h2>
         <Button size="lg" onClick={() => navigate("/wizard")} className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg">
           <Sparkles className="h-5 w-5" />
-          {tx({ he: "בנה את התוכנית שלי — בחינם", en: "Build My Plan — Free" }, language)}
+          {tx({ he: "בנה את התוכנית שלי - חינם", en: "Build My Plan - Free" }, language)}
         </Button>
       </section>
     </main>

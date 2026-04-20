@@ -6,8 +6,8 @@
 export const BUSINESS_INFO = {
   // Legal name — placeholder until provided
   legalName: {
-    he: "[שם עסק רשמי]",
-    en: "[Legal Business Name]",
+    he: "FunnelForge",
+    en: "FunnelForge",
   },
   // Brand / display name
   brandName: "FunnelForge",

@@ -8,6 +8,7 @@ import type { Blackboard, BlackboardState, BoardSection } from "./blackboardStor
 import type { WriteEventContext } from "./blackboardStore";
 import type { AsyncAgentDefinition, LLMAgentConfig } from "./agentTypes";
 import { selectModel, type ModelTier } from "@/services/llmRouter";
+import { authFetch } from "@/lib/authFetch";
 
 // ═══════════════════════════════════════════════
 // MODEL TIER MAP
@@ -101,7 +102,7 @@ export function createLLMAgent(config: LLMAgentConfig): AsyncAgentDefinition {
       const model = getModelForTier(config.modelTier);
       const maxTokens = config.maxTokens ?? 2048;
 
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
+      const response = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -180,7 +180,7 @@ const ContentTab = ({ result, isSimplified, diffResult = null }: ContentTabProps
               {tx({ he: "בדיקת איכות קופי + אופטימיזציה לעברית", en: "Copy Quality Audit + Hebrew Optimization" }, language)}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              {tx({ he: "הדבק את הטקסט השיווקי שלך — נבדוק אותו מול 6 מדדים נוירו-פסיכולוגיים + 8 כללי עברית", en: "Paste your marketing copy — we'll audit it against 6 neuro-psychological metrics + 8 Hebrew rules" }, language)}
+              {tx({ he: "הדבק את הטקסט השיווקי שלך. נבדוק אותו מול 6 מדדים נוירו-פסיכולוגיים + 8 כללי עברית", en: "Paste your marketing copy. We'll audit it against 6 neuro-psychological metrics + 8 Hebrew rules" }, language)}
             </p>
           </CardHeader>
           <CardContent className="space-y-4">

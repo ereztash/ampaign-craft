@@ -365,7 +365,7 @@ export default function AdminArchetypeDebugPanel({ open, onOpenChange }: AdminAr
             {profile.overrideByUser && (
               <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                {tx({ he: "עקיפה ידנית פעילה — הסיווג האוטומטי מושהה", en: "Manual override active — automatic classification paused" }, language)}
+                {tx({ he: "עקיפה ידנית פעילה. הסיווג האוטומטי מושהה", en: "Manual override active. Automatic classification paused" }, language)}
               </div>
             )}
             <div className="flex items-center gap-2">

@@ -267,3 +267,17 @@ export function captureUTM(userId?: string): void {
 export function getUTM(): Record<string, string> {
   return safeSessionStorage.getJSON<Record<string, string>>("funnelforge_utm", {});
 }
+
+/** Load GA4 SDK and configure it. No-op when VITE_GA4_ID is unset. */
+export function initGA4(): void {
+  const id = import.meta.env.VITE_GA4_ID as string | undefined;
+  if (!id || typeof window === "undefined") return;
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+  document.head.appendChild(script);
+  window.dataLayer = window.dataLayer ?? [];
+  window.gtag = function (...args: unknown[]) { window.dataLayer!.push(args); };
+  window.gtag("js", new Date());
+  window.gtag("config", id, { send_page_view: false });
+}

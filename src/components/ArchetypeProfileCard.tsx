@@ -40,24 +40,24 @@ const ARCHETYPE_LABELS: Record<ArchetypeId, { he: string; en: string }> = {
 
 const ARCHETYPE_DESCRIPTIONS: Record<ArchetypeId, { he: string; en: string }> = {
   strategist: {
-    he: "אתה בונה מתוך נתונים — סידרנו לך את הכלים בהתאם",
-    en: "You build from data — we've arranged your tools accordingly",
+    he: "אתה בונה מתוך נתונים. סידרנו לך את הכלים בהתאם",
+    en: "You build from data. We've arranged your tools accordingly",
   },
   optimizer: {
-    he: "אתה מוכוון שיפור — הדאשבורד שלך מחדד לנתונים הכי רלוונטיים",
-    en: "You're improvement-focused — your dashboard is tuned to the most relevant data",
+    he: "אתה מוכוון שיפור. הדאשבורד שלך מחדד לנתונים הכי רלוונטיים",
+    en: "You're improvement-focused. Your dashboard is tuned to the most relevant data",
   },
   pioneer: {
-    he: "אתה בונה משהו חדש — הובלנו אותך ישר לבנייה",
-    en: "You're building something new — we took you straight to building mode",
+    he: "אתה בונה משהו חדש. הובלנו אותך ישר לבנייה",
+    en: "You're building something new. We took you straight to building mode",
   },
   connector: {
-    he: "הלקוחות שלך הם הלב — שמנו retention בקדמת הבמה",
-    en: "Your customers are your heart — we put retention front and center",
+    he: "הלקוחות שלך הם הלב. שמנו retention בקדמת הבמה",
+    en: "Your customers are your heart. We put retention front and center",
   },
   closer: {
-    he: "אתה סוגר עסקאות — חישלנו לך את הנתיב הכי ישיר",
-    en: "You close deals — we sharpened the most direct path for you",
+    he: "אתה סוגר עסקאות. חישלנו לך את הנתיב הכי ישיר",
+    en: "You close deals. We sharpened the most direct path for you",
   },
 };
 

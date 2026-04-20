@@ -19,7 +19,7 @@ const ConnectDataModal = ({ open, onOpenChange, initialPlatform, onOpenImport }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle dir="auto">{tx({ he: "חיבור מקור נתונים", en: "Connect a data source" }, language)}</DialogTitle>
         </DialogHeader>

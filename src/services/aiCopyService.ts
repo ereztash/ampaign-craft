@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════
 
 import { supabase } from "@/integrations/supabase/client";
+import { authFetch } from "@/lib/authFetch";
 import { selectModel, trackUsage, isOverMonthlyBudget, getMonthlyUsage, getMonthlyCap, wouldExceedCostCap, type CopyTask, type ModelSelection, type PricingTier } from "./llmRouter";
 import type { FunnelResult, FormData } from "@/types/funnel";
 import { analyzeAIDetection } from "@/engine/perplexityBurstiness";
@@ -176,7 +177,7 @@ export async function generateCopy(
 
   const systemPrompt = buildSystemPrompt(enrichedRequest);
 
-  const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-copy`, {
+  const _resp = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-copy`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

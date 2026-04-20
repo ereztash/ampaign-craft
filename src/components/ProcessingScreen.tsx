@@ -66,7 +66,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           </h2>
           <p className="text-lg text-muted-foreground" dir="auto">
             {fieldName
-              ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan — let's see the results` }, language))
+              ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName}, בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan. Let's see the results` }, language))
               : (tx({ he: "בוא נראה מה בנינו", en: "Let's see what we built" }, language))}
           </p>
           <div className="mt-4 flex gap-2">
@@ -105,7 +105,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           </h2>
           <p className="text-lg text-muted-foreground" dir="auto">
             {fieldName
-              ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName} — בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan — let's see the results` }, language))
+              ? (tx({ he: `תוכנית שיווק מותאמת ל${fieldName}, בוא נראה את התוצאות`, en: `Personalized ${fieldName} marketing plan. Let's see the results` }, language))
               : (tx({ he: "בוא נראה מה בנינו", en: "Let's see what we built" }, language))}
           </p>
           <div className="mt-4 flex gap-2">
@@ -153,7 +153,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
             aria-valuenow={progress}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label={tx({ he: `עיבוד — ${progress}%`, en: `Processing — ${progress}%` }, language)}
+            aria-label={tx({ he: `עיבוד: ${progress}%`, en: `Processing: ${progress}%` }, language)}
             className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted"
           >
             <div className="h-full funnel-gradient" style={{ width: `${progress}%` }} aria-hidden="true" />
@@ -173,8 +173,8 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
       >
         {/* Animated Funnel with neuro-spectrum gradient */}
         <div className="relative mb-8 h-32 w-32">
-          <svg viewBox="0 0 100 100" className="h-full w-full" role="img" aria-label={tx({ he: `התקדמות — ${progress}%`, en: `Progress — ${progress}%` }, language)}>
-            <title>{tx({ he: `התקדמות — ${progress}%`, en: `Progress — ${progress}%` }, language)}</title>
+          <svg viewBox="0 0 100 100" className="h-full w-full" role="img" aria-label={tx({ he: `התקדמות: ${progress}%`, en: `Progress: ${progress}%` }, language)}>
+            <title>{tx({ he: `התקדמות: ${progress}%`, en: `Progress: ${progress}%` }, language)}</title>
             <defs>
               <clipPath id="funnelClip">
                 <path d="M15 10 L85 10 L65 45 L65 80 L35 90 L35 45 Z" />
@@ -213,7 +213,7 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={tx({ he: `עיבוד — ${progress}%`, en: `Processing — ${progress}%` }, language)}
+          aria-label={tx({ he: `עיבוד: ${progress}%`, en: `Processing: ${progress}%` }, language)}
           className="mb-4 h-2 w-64 overflow-hidden rounded-full bg-muted"
         >
           <motion.div

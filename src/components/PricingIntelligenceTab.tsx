@@ -43,7 +43,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           <p className="text-sm text-muted-foreground mb-3" dir="auto">{pricing.pricingModel.rationale[language]}</p>
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline">{tx({ he: "מדד ערך:", en: "Value metric:" }, language)} {pricing.pricingModel.valueMetric[language]}</Badge>
-            <Badge>₪{pricing.pricingModel.recommendedRange.low} — ₪{pricing.pricingModel.recommendedRange.high}</Badge>
+            <Badge>₪{pricing.pricingModel.recommendedRange.low}-₪{pricing.pricingModel.recommendedRange.high}</Badge>
             <Badge variant="outline">{tx({ he: "עיגון:", en: "Anchor:" }, language)} ₪{pricing.pricingModel.anchorPrice}</Badge>
           </div>
         </CardContent>

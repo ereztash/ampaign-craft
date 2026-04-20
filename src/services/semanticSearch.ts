@@ -6,6 +6,7 @@
 
 import { supabaseLoose as db } from "@/integrations/supabase/loose";
 import type { FunnelResult } from "@/types/funnel";
+import { authFetch } from "@/lib/authFetch";
 
 // ═══════════════════════════════════════════════
 // TYPES
@@ -115,7 +116,7 @@ export async function embedPlanContent(
     return { embedded: 0 };
   }
 
-  const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/embed-content`, {
+  const _resp = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/embed-content`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items, userId, planId: planId || result.id }),
@@ -148,7 +149,7 @@ export async function searchSimilarContent(
   } = {}
 ): Promise<{ results: SearchResult[]; error?: string }> {
   // Generate query embedding via Edge Function
-  const _embedResp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/embed-content`, {
+  const _embedResp = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/embed-content`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

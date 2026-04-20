@@ -23,7 +23,7 @@ const USE_CASES: UseCase[] = [
     icon: <ShoppingCart className="h-6 w-6" />,
     industry: { he: "מסחר אלקטרוני", en: "E-commerce" },
     title: { he: "הגדלת יחס המרה בחנות Shopify", en: "Boosting Shopify Conversion Rate" },
-    challenge: { he: "גולשים נכנסים אך לא קונים — יחס המרה של 0.8% בלבד", en: "High traffic, low conversion — stuck at 0.8% CVR" },
+    challenge: { he: "גולשים נכנסים אך לא קונים. יחס המרה של 0.8% בלבד", en: "High traffic, low conversion. Stuck at 0.8% CVR" },
     result: { he: "אסטרטגיית ריטרגטינג + הצעה עם urgency העלתה CVR ל-2.1% תוך 30 יום", en: "Retargeting strategy + urgency offer raised CVR to 2.1% in 30 days" },
     tags: [{ he: "ריטרגטינג", en: "Retargeting" }, { he: "המרה", en: "Conversion" }, { he: "Meta Ads", en: "Meta Ads" }],
     route: "/wizard",
@@ -33,7 +33,7 @@ const USE_CASES: UseCase[] = [
     icon: <Cpu className="h-6 w-6" />,
     industry: { he: "SaaS", en: "SaaS" },
     title: { he: "הפחתת Churn ב-B2B SaaS", en: "Reducing B2B SaaS Churn" },
-    challenge: { he: "לקוחות מגיעים לחודש 3 ונוטשים — onboarding חלש ו-value gap", en: "Customers churn at month 3 — weak onboarding and value gap" },
+    challenge: { he: "לקוחות מגיעים לחודש 3 ונוטשים. onboarding חלש ו-value gap", en: "Customers churn at month 3. Weak onboarding and value gap" },
     result: { he: "ריצה של 4-שלבי onboarding אוטומטי הפחיתה churn ב-40% תוך Q1", en: "4-step automated onboarding reduced churn by 40% in Q1" },
     tags: [{ he: "Churn", en: "Churn" }, { he: "Retention", en: "Retention" }, { he: "Email", en: "Email" }],
     route: "/retention",
@@ -43,7 +43,7 @@ const USE_CASES: UseCase[] = [
     icon: <GraduationCap className="h-6 w-6" />,
     industry: { he: "חינוך / Online Courses", en: "Education / Online Courses" },
     title: { he: "מכירת קורס דיגיטלי ראשון", en: "Selling Your First Digital Course" },
-    challenge: { he: "קהל קיים ב-Instagram אך אין מנגנון מכירה — השקה ידנית", en: "Existing Instagram audience, no sales mechanism — manual launch" },
+    challenge: { he: "קהל קיים ב-Instagram אך אין מנגנון מכירה. השקה ידנית", en: "Existing Instagram audience, no sales mechanism. Manual launch" },
     result: { he: "Funnel מבוסס webinar + downsell הניב 200K ₪ בשבוע הפתיחה", en: "Webinar-based funnel + downsell generated ₪200K in launch week" },
     tags: [{ he: "Launch", en: "Launch" }, { he: "Webinar", en: "Webinar" }, { he: "Email", en: "Email" }],
     route: "/sales",
@@ -53,7 +53,7 @@ const USE_CASES: UseCase[] = [
     icon: <Briefcase className="h-6 w-6" />,
     industry: { he: "שירותים מקצועיים", en: "Professional Services" },
     title: { he: "ייצור לידים לעורך דין / יועץ", en: "Lead Gen for Lawyer / Consultant" },
-    challenge: { he: "תלות בהמלצות בלבד — אין ערוץ נכנס צפוי", en: "Dependent on referrals only — no predictable inbound channel" },
+    challenge: { he: "תלות בהמלצות בלבד. אין ערוץ נכנס צפוי", en: "Dependent on referrals only. No predictable inbound channel" },
     result: { he: "Google Search + landing page + consultation funnel → 25 לידים חמים/חודש", en: "Google Search + landing page + consultation funnel → 25 warm leads/month" },
     tags: [{ he: "Lead Gen", en: "Lead Gen" }, { he: "Google Ads", en: "Google Ads" }, { he: "B2B", en: "B2B" }],
     route: "/differentiate",
@@ -63,7 +63,7 @@ const USE_CASES: UseCase[] = [
     icon: <Rss className="h-6 w-6" />,
     industry: { he: "תוכן / Creator", en: "Content / Creator" },
     title: { he: "מניטיזציה של ערוץ יוטיוב", en: "Monetising a YouTube Channel" },
-    challenge: { he: "50K מנויים אך הכנסה מפרסום בלבד — תנודתי ונמוך", en: "50K subscribers but ad revenue only — volatile and low" },
+    challenge: { he: "50K מנויים אך הכנסה מפרסום בלבד. תנודתי ונמוך", en: "50K subscribers but ad revenue only. Volatile and low" },
     result: { he: "Membership + digital product + brand deals → הכפלת הכנסה תוך 6 חודשים", en: "Membership + digital product + brand deals → doubled revenue in 6 months" },
     tags: [{ he: "Creator", en: "Creator" }, { he: "Membership", en: "Membership" }, { he: "Sponsorship", en: "Sponsorship" }],
     route: "/pricing",
@@ -73,7 +73,7 @@ const USE_CASES: UseCase[] = [
     icon: <MapPin className="h-6 w-6" />,
     industry: { he: "עסק מקומי", en: "Local Business" },
     title: { he: "מילוי יומן ספא / קליניקה", en: "Filling the Calendar for Spa / Clinic" },
-    challenge: { he: "40% מהמקומות ריקים — ביטולים ללא החלפה", en: "40% empty slots — cancellations without replacements" },
+    challenge: { he: "40% מהמקומות ריקים. ביטולים ללא החלפה", en: "40% empty slots. Cancellations without replacements" },
     result: { he: "WhatsApp re-engagement + loyalty program → 95% תפוסה תוך חודש", en: "WhatsApp re-engagement + loyalty program → 95% occupancy in one month" },
     tags: [{ he: "Local", en: "Local" }, { he: "Retention", en: "Retention" }, { he: "WhatsApp", en: "WhatsApp" }],
     route: "/retention",
@@ -89,7 +89,7 @@ export default function UseCases() {
     <div className="container mx-auto px-4 py-8 max-w-5xl" dir={isHe ? "rtl" : "ltr"}>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground mb-2">
-          {tx({ he: "סיפורי הצלחה — מה שאחרים בנו", en: "Success Stories — What Others Built" }, language)}
+          {tx({ he: "סיפורי הצלחה: מה שאחרים בנו", en: "Success Stories: What Others Built" }, language)}
         </h1>
         <p className="text-muted-foreground">
           {tx(

@@ -148,8 +148,8 @@ const MetaConnect = ({
               <AlertCircle className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-xs text-amber-800 dark:text-amber-300">
                 {isHe
-                  ? `הנתונים עודכנו לאחרונה ב-${staleDate} — ייתכן שאינם מעודכנים`
-                  : `Data last synced on ${staleDate} — may be stale`}
+                  ? `הנתונים עודכנו לאחרונה ב-${staleDate}. ייתכן שאינם מעודכנים`
+                  : `Data last synced on ${staleDate}. May be stale`}
               </AlertDescription>
             </Alert>
           )}

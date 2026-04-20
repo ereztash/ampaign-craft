@@ -92,7 +92,7 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 justify-center">
             <Lock className="h-5 w-5 text-primary" />

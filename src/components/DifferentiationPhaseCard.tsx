@@ -226,8 +226,8 @@ function HiddenValueSliders({ formData, onUpdate }: { formData: DifferentiationF
       {/* Progress hint */}
       <p className="text-xs text-muted-foreground text-center" dir="auto">
         {isHe
-          ? `${ratedCount}/${HIDDEN_VALUES.length} דורגו — לחצו על הרמה המתאימה`
-          : `${ratedCount}/${HIDDEN_VALUES.length} rated — tap the right level`}
+          ? `${ratedCount}/${HIDDEN_VALUES.length} דורגו. לחצו על הרמה המתאימה`
+          : `${ratedCount}/${HIDDEN_VALUES.length} rated. Tap the right level`}
       </p>
 
       {HIDDEN_VALUES.map((hv) => {
