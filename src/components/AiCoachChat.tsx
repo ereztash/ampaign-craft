@@ -1,24 +1,35 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
 import { authFetch } from "@/lib/authFetch";
-import { FunnelResult } from "@/types/funnel";
+import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
-import { useFeatureGate } from "@/hooks/useFeatureGate";
 import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
 import { safeStorage } from "@/lib/safeStorage";
-import PaywallModal from "@/components/PaywallModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { tx } from "@/i18n/tx";
-import { Bot, Send, Loader2, Sparkles, Lock } from "lucide-react";
+import { Bot, Send, Loader2, Sparkles } from "lucide-react";
 
 interface AiCoachChatProps {
-  result: FunnelResult;
+  result: FunnelResult | null;
   healthScore?: number;
   stylomePrompt?: string;
 }
+
+const EMPTY_FORM_DATA: FormData = {
+  businessField: "",
+  audienceType: "",
+  ageRange: [25, 55],
+  interests: "",
+  productDescription: "",
+  averagePrice: 0,
+  salesModel: "",
+  budgetRange: "",
+  mainGoal: "",
+  existingChannels: [],
+  experienceLevel: "",
+};
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -93,7 +104,6 @@ function buildCoachContext(graph: UserKnowledgeGraph, healthScore?: number, styl
 const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
-  const { checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
   const [messages, setMessages] = useState<ChatMessage[]>(() =>
     safeStorage.getJSON<ChatMessage[]>("funnelforge-coach-messages", []),
   );
@@ -102,7 +112,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Build knowledge graph for rich context
+  // Build knowledge graph for rich context (or a minimal graph if no plan yet)
   const diffResult = useMemo<DifferentiationResult | null>(
     () => safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null),
     [],
@@ -111,7 +121,8 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
     [],
   );
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
+  const formData = result?.formData ?? EMPTY_FORM_DATA;
+  const graph = useMemo(() => buildUserKnowledgeGraph(formData, diffResult, stylomeVoice), [formData, diffResult, stylomeVoice]);
   const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe, language), [graph, isHe, language]);
 
   useEffect(() => {
@@ -124,7 +135,6 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || loading) return;
-    if (!checkAccess("aiCoachMessages", "pro")) return;
 
     const userMsg: ChatMessage = { role: "user", content: text.trim() };
     setMessages((prev) => [...prev, userMsg]);
@@ -251,7 +261,6 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         </div>
       </CardContent>
     </Card>
-    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} />
     </>
   );
 };

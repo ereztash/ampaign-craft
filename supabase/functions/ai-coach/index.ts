@@ -122,6 +122,8 @@ Deno.serve(async (req) => {
       systemParts.push("כשאתה כותב תוכן בשם המשתמש — חקה את הסגנון הזה.");
     }
 
+    const systemPrompt = systemParts.join("\n") + "\n\nיש לך כלי חיפוש באינטרנט (web_search). השתמש בו כשצריך מידע עדכני: מחירים, מתחרים, טרנדים, חדשות, סטטיסטיקות.";
+
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -131,14 +133,14 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1024,
-        system: systemParts.join("\n"),
+        max_tokens: 2048,
+        system: systemPrompt,
+        tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }],
         messages: [{ role: "user", content: message }],
       }),
     });
 
     const data = await response.json();
-
     if (!response.ok) {
       return new Response(JSON.stringify({ error: data.error?.message || "API error" }), {
         status: response.status,
@@ -146,7 +148,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    const reply = data.content?.[0]?.text || "";
+    const contentBlocks: Array<{ type: string; text?: string }> = data.content ?? [];
+    const reply = contentBlocks
+      .filter((b) => b.type === "text")
+      .map((b) => b.text || "")
+      .join("\n")
+      .trim();
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
