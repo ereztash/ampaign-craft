@@ -392,12 +392,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isLocalAuth) {
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error, data } = await supabase.auth.signUp({ email, password });
         if (error) return { error: error.message };
-        const { data: { user: newUser } } = await supabase.auth.getUser();
+        const newUser = data?.user ?? null;
         if (newUser) {
           await profilesDb(supabase).from("profiles").upsert({ id: newUser.id, display_name: email.split("@")[0], visit_count: 1 });
           void trackReferralSignup(newUser.id);
+          // Eagerly hydrate state when Supabase returns a session on sign-up
+          // (happens when email confirmation is disabled).
+          if (data?.session) {
+            try {
+              const built = await buildSupabaseUser(supabase, newUser);
+              setUser(built.user);
+              if (isPricingTier(built.tier)) setTierState(built.tier);
+            } catch { /* onAuthStateChange will handle it */ }
+          }
         }
         return { error: null };
       } catch (err) {
@@ -437,8 +446,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let supabaseError: string | null = null;
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (!error) return { error: null };
+        const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+        if (!error) {
+          // Eagerly hydrate — don't rely solely on onAuthStateChange firing in time.
+          if (data?.user) {
+            try {
+              const built = await buildSupabaseUser(supabase, data.user);
+              setUser(built.user);
+              if (isPricingTier(built.tier)) setTierState(built.tier);
+            } catch { /* onAuthStateChange will catch any remaining updates */ }
+          }
+          return { error: null };
+        }
         supabaseError = error.message;
       } catch (err) {
         supabaseError = String(err);
