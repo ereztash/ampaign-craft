@@ -109,8 +109,9 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
     const result = mode === "login" ? await signIn(email, password) : await signUp(email, password);
     setLoading(false);
     if (result.error) {
+      // Keep the modal open so the user can actually read the error.
+      // Previously the inline error was cleared by reset() on close.
       setError(result.error);
-      // Persistent toast so the error is visible even if the modal is closed.
       toast({
         title: tx({ he: "שגיאת התחברות", en: "Sign-in error" }, language),
         description: result.error,
@@ -120,10 +121,8 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
       setSuccess(tx({ he: "נרשמת בהצלחה!", en: "Registered successfully!" }, language));
       setTimeout(() => handleOpenChange(false), 1000);
     } else {
-      toast({
-        title: tx({ he: "מתחבר...", en: "Signing in..." }, language),
-        description: tx({ he: "הדף יתרענן תוך שנייה", en: "Page will refresh momentarily" }, language),
-      });
+      // Successful email sign-in. Auth state is already updated synchronously
+      // by AuthContext.signIn (makeMinimalUser), so the topbar flips immediately.
       handleOpenChange(false);
     }
   };
@@ -153,29 +152,44 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
     }
   };
 
+  const googleLabel = tx({ he: "המשך עם Google", en: "Continue with Google" }, language);
+  const googleBusy = socialLoading === "google";
+
   const socialButtons = (
     <div className="space-y-2">
-      {(["google", "github", "facebook"] as const).map((provider) => {
-        const icon = provider === "google" ? <GoogleIcon /> : provider === "github" ? <GitHubIcon /> : <FacebookIcon />;
-        const label = {
-          google: tx({ he: "המשך עם Google", en: "Continue with Google" }, language),
-          github: tx({ he: "המשך עם GitHub", en: "Continue with GitHub" }, language),
-          facebook: tx({ he: "המשך עם Facebook", en: "Continue with Facebook" }, language),
-        }[provider];
-        const busy = socialLoading === provider;
-        return (
-          <Button
-            key={provider}
-            variant="outline"
-            className="w-full gap-2"
-            onClick={() => handleSocial(provider)}
-            disabled={!!socialLoading || loading}
-          >
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
-            {label}
-          </Button>
-        );
-      })}
+      {/* Google is the recommended path: one-click, no password required. */}
+      <Button
+        className="w-full gap-2 h-11 text-base font-medium bg-white text-zinc-900 border border-zinc-300 hover:bg-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow-sm"
+        variant="outline"
+        onClick={() => handleSocial("google")}
+        disabled={!!socialLoading || loading}
+      >
+        {googleBusy ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
+        <span>{googleLabel}</span>
+      </Button>
+      <div className="grid grid-cols-2 gap-2">
+        {(["github", "facebook"] as const).map((provider) => {
+          const icon = provider === "github" ? <GitHubIcon /> : <FacebookIcon />;
+          const label = {
+            github: tx({ he: "GitHub", en: "GitHub" }, language),
+            facebook: tx({ he: "Facebook", en: "Facebook" }, language),
+          }[provider];
+          const busy = socialLoading === provider;
+          return (
+            <Button
+              key={provider}
+              variant="outline"
+              size="sm"
+              className="w-full gap-1.5"
+              onClick={() => handleSocial(provider)}
+              disabled={!!socialLoading || loading}
+            >
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
+              {label}
+            </Button>
+          );
+        })}
+      </div>
     </div>
   );
 

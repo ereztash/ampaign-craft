@@ -17,6 +17,7 @@ import {
 import { supabaseLoose as db } from "@/integrations/supabase/loose";
 import { NORTH_STAR_METRIC } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
+import { isAdminRole } from "@/lib/roles";
 
 // ─── Types ──────────────────────────────────────
 
@@ -131,8 +132,8 @@ export default function AARRRDashboard() {
   const [nsmValue, setNsmValue] = useState(0);
   const [ahaFunnel, setAhaFunnel] = useState<{ name: string; value: number; fill: string }[]>([]);
 
-  // Guard: admin only
-  const isAdmin = isLocalAuth || (user as { role?: string } | null)?.role === "admin";
+  // Guard: admin or owner. Matches AdminRoute in App.tsx via shared helper.
+  const isAdmin = isLocalAuth || isAdminRole((user as { role?: string } | null)?.role);
   if (!isAdmin) return <Navigate to="/" replace />;
 
   // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -22,6 +22,7 @@ import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
 import { tx } from "@/i18n/tx";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
+import { isAdminRole } from "@/lib/roles";
 
 const AdminArchetypeDebugPanel = lazy(() => import("@/components/AdminArchetypeDebugPanel"));
 
@@ -67,7 +68,7 @@ const AppSidebar = () => {
   const side = isRTL ? "right" : "left";
   const isHe = isRTL;
 
-  const isOwner = user?.role === "owner" || user?.role === "admin";
+  const isOwner = isAdminRole(user?.role);
   const [debugOpen, setDebugOpen] = useState(false);
 
   const isActive = (to: string, end = false) =>
