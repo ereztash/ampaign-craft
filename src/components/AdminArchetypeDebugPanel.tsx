@@ -87,9 +87,9 @@ export default function AdminArchetypeDebugPanel({ open, onOpenChange }: AdminAr
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        side={tx({ he: "left", en: "right" }, language)}
+        side={language === "he" ? "left" : "right"}
         className="w-[480px] max-w-full overflow-y-auto"
-        dir={tx({ he: "rtl", en: "ltr" }, language)}
+        dir={language === "he" ? "rtl" : "ltr"}
       >
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 text-base">
