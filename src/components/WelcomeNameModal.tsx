@@ -38,7 +38,12 @@ export default function WelcomeNameModal() {
   useEffect(() => {
     if (!user || isLocalAuth) return;
     const seenKey = `${SEEN_KEY_PREFIX}${user.id}`;
-    if (safeStorage.getString(seenKey) === "1") return;
+    if (safeStorage.getString(seenKey) === "1") {
+      // Already answered/skipped previously in this browser. Ensure modal is
+      // closed if it somehow got opened.
+      setOpen(false);
+      return;
+    }
 
     const current = user.displayName?.trim() ?? "";
     const emailPrefix = emailLocalPart(user.email);
@@ -49,7 +54,11 @@ export default function WelcomeNameModal() {
       setName("");
       setOpen(true);
     } else {
+      // buildSupabaseUser hydration arrived with a real profiles.display_name.
+      // If we had preemptively opened the modal based on the minimal user,
+      // close it now so the user is not prompted needlessly.
       safeStorage.setString(seenKey, "1");
+      setOpen(false);
     }
   }, [user, isLocalAuth]);
 
@@ -106,8 +115,21 @@ export default function WelcomeNameModal() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleSkip(); else setOpen(v); }}>
-      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        // Ignore close attempts while a save is in flight so a failed upsert
+        // can't silently mark the user as "seen" and suppress future prompts.
+        if (saving) return;
+        if (!v) handleSkip(); else setOpen(v);
+      }}
+    >
+      <DialogContent
+        className="sm:max-w-md"
+        aria-describedby={undefined}
+        onEscapeKeyDown={(e) => { if (saving) e.preventDefault(); }}
+        onPointerDownOutside={(e) => { if (saving) e.preventDefault(); }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Sparkles className="h-5 w-5 text-primary" />
