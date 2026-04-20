@@ -16,6 +16,7 @@ import {
   aggregatePrincipleOutputs,
 } from "./principles";
 import { filterOutputTree } from "./edgeFilter";
+import { authFetch } from "@/lib/authFetch";
 
 export interface PrincipleScanInput {
   transcript: string;
@@ -58,7 +59,7 @@ interface SingleAgentRequest {
 async function runSinglePrincipleAgent(
   principle: PrincipleDefinition,
   input: PrincipleScanInput,
-  fetcher: typeof fetch = fetch,
+  fetcher: typeof fetch = authFetch,
 ): Promise<PrincipleAgentOutput> {
   const body: SingleAgentRequest = {
     phase: "principles_scan",

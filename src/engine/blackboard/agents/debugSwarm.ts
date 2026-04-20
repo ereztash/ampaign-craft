@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════
 
 import { createLLMAgent, parseLLMJson } from "../llmAgent";
+import { authFetch } from "@/lib/authFetch";
 import { CircuitBreaker } from "../circuitBreaker";
 import type { Blackboard } from "../blackboardStore";
 import type { AsyncAgentDefinition } from "../agentTypes";
@@ -215,7 +216,7 @@ Respond in this exact JSON:
 }`;
 
   // Call the LLM via the agent's internal mechanism
-  const _resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
+  const _resp = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -279,7 +280,7 @@ Respond in this exact JSON:
   "confidence": 0.0-1.0
 }`;
 
-  const _resp2 = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
+  const _resp2 = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -349,7 +350,7 @@ Respond in this exact JSON:
   "verdict": "brief summary of evaluation"
 }`;
 
-  const _resp3 = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
+  const _resp3 = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-executor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
