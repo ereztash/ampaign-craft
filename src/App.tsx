@@ -23,6 +23,7 @@ import { NPSWidget } from "@/components/NPSWidget";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 import { isAdminRole } from "@/lib/roles";
 import AuthDebugPanel from "@/components/AuthDebugPanel";
+import WelcomeNameModal from "@/components/WelcomeNameModal";
 
 /** Guard: redirects non-owner/admin users to home with a login-required hint. */
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -158,6 +159,7 @@ const App = () => (
                   <ConsentBanner />
                   <PMFSurveyModal />
                   <NPSWidget />
+                  <WelcomeNameModal />
                   <AuthDebugPanel />
                 </ErrorBoundary>
               </BrowserRouter>
