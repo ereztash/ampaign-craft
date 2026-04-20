@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import { tx } from "@/i18n/tx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,14 +26,10 @@ const ResetPassword = () => {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    let unsub: (() => void) | null = null;
-    import("@/integrations/supabase/client").then(({ supabase }) => {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-        if (event === "PASSWORD_RECOVERY") setReady(true);
-      });
-      unsub = () => subscription.unsubscribe();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setReady(true);
     });
-    return () => { unsub?.(); };
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async () => {
@@ -47,7 +44,6 @@ const ResetPassword = () => {
     }
     setLoading(true);
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
       const { error: err } = await supabase.auth.updateUser({ password });
       if (err) {
         setError(err.message);

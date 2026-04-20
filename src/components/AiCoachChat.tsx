@@ -148,7 +148,15 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
       const reply = data?.reply || (tx({ he: "לא הצלחתי לענות. נסה שוב.", en: "Couldn't respond. Try again." }, language));
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
-      setError(tx({ he: "שגיאה בחיבור למאמן AI. ודא שה-Edge Function מוגדר.", en: "Error connecting to AI coach. Ensure Edge Function is configured." }, language));
+      const msg = err instanceof Error ? err.message : String(err);
+      const display = msg.includes("ANTHROPIC_API_KEY")
+        ? tx({ he: "שירות ה-AI לא מוגדר (חסר ANTHROPIC_API_KEY בסוד Supabase).", en: "AI service not configured (missing ANTHROPIC_API_KEY in Supabase secrets)." }, language)
+        : msg.includes("Unauthorized") || msg.includes("401")
+          ? tx({ he: "נא להתחבר לחשבון כדי להשתמש במאמן.", en: "Please sign in to use the AI coach." }, language)
+          : msg.includes("Origin not allowed") || msg.includes("403")
+            ? tx({ he: "שגיאת CORS: הדומיין לא מורשה. הוסף אותו ל-ALLOWED_ORIGINS ב-Supabase.", en: "CORS error: domain not allowed. Add it to ALLOWED_ORIGINS in Supabase." }, language)
+            : tx({ he: "שגיאה: ", en: "Error: " }, language) + msg;
+      setError(display);
     } finally {
       setLoading(false);
     }
