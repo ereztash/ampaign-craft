@@ -41,11 +41,36 @@ const PageComponent = () => {
   const isHe = language === "he";
 
   const [displayName, setDisplayName] = useState("");
+  const [headline, setHeadline] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [integrationState] = useState<IntegrationState>(() => createEmptyIntegrationState());
   const [webhookBusy, setWebhookBusy] = useState<"dispatch" | "receive" | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
+
+  const handleAvatarChange = async (file: File) => {
+    if (!user || isLocalAuth) return;
+    if (file.size > 4 * 1024 * 1024) {
+      toast({ title: tx({ he: "התמונה גדולה מדי (מקס׳ 4MB)", en: "Image too large (max 4MB)" }, language), variant: "destructive" });
+      return;
+    }
+    setAvatarUploading(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      setAvatarUrl(data.publicUrl);
+      toast({ title: tx({ he: "תמונה הועלתה — לחץ שמירה", en: "Image uploaded — click save" }, language) });
+    } catch (e) {
+      toast({ title: tx({ he: "העלאה נכשלה", en: "Upload failed" }, language), variant: "destructive" });
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
 
   // Opens the Stripe Billing Portal so the user can update their card, change
   // plan, or cancel without contacting support. Only shown for paid tiers —
@@ -142,13 +167,15 @@ const PageComponent = () => {
 
       // Supabase auth
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
         const { data } = await supabase
           .from("profiles")
-          .select("display_name")
+          .select("display_name, avatar_url, headline")
           .eq("id", user.id)
           .single();
         if (data?.display_name) setDisplayName(data.display_name);
+        else setDisplayName(user.displayName || user.email.split("@")[0]);
+        setAvatarUrl(data?.avatar_url || user.avatarUrl);
+        setHeadline(data?.headline || user.headline || "");
       } catch { /* ignore */ }
       setLoading(false);
     };
@@ -175,10 +202,14 @@ const PageComponent = () => {
 
     // Supabase save
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
       const { error } = await supabase
         .from("profiles")
-        .update({ display_name: displayName, updated_at: new Date().toISOString() })
+        .update({
+          display_name: displayName,
+          avatar_url: avatarUrl ?? null,
+          headline: headline || null,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", user.id);
       setSaving(false);
 
@@ -214,11 +245,40 @@ const PageComponent = () => {
 
         <Card>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <User className="h-8 w-8 text-primary" />
+            <div className="relative mx-auto mb-3">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="h-20 w-20 rounded-full object-cover ring-2 ring-primary/20"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                  <User className="h-10 w-10 text-primary" />
+                </div>
+              )}
+              {!isLocalAuth && (
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute -bottom-1 -end-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow hover:bg-primary/90"
+                  aria-label={tx({ he: "העלה תמונת פרופיל", en: "Upload profile picture" }, language)}
+                >
+                  {avatarUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span className="text-xs font-bold">+</span>}
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={avatarUploading}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarChange(f); e.target.value = ""; }}
+                  />
+                </label>
+              )}
             </div>
-            <CardTitle>{tx({ he: "הפרופיל שלי", en: "My Profile" }, language)}</CardTitle>
-            <CardDescription>{tx({ he: "ערוך את הפרטים האישיים שלך", en: "Edit your personal details" }, language)}</CardDescription>
+            <CardTitle>{displayName || tx({ he: "הפרופיל שלי", en: "My Profile" }, language)}</CardTitle>
+            {headline && <CardDescription dir="auto">{headline}</CardDescription>}
+            {!headline && <CardDescription>{tx({ he: "ערוך את הפרטים האישיים שלך", en: "Edit your personal details" }, language)}</CardDescription>}
           </CardHeader>
           <CardContent className="space-y-5">
             {/* Email (read-only) */}
@@ -235,6 +295,19 @@ const PageComponent = () => {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={tx({ he: "הכנס שם תצוגה", en: "Enter display name" }, language)}
+              />
+            </div>
+
+            {/* Headline */}
+            <div className="space-y-2">
+              <Label htmlFor="headline">{tx({ he: "כותרת/תפקיד", en: "Headline / Title" }, language)}</Label>
+              <Input
+                id="headline"
+                value={headline}
+                onChange={(e) => setHeadline(e.target.value)}
+                placeholder={tx({ he: "למשל: יועץ שיווק דיגיטלי", en: "e.g. Digital marketing consultant" }, language)}
+                dir="auto"
+                maxLength={120}
               />
             </div>
 

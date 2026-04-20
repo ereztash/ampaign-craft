@@ -83,8 +83,12 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full p-0" aria-label={tx({ he: "תפריט משתמש", en: "User menu" }, language)}>
-                  <UserCircle className="h-5 w-5" />
+                <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full p-0 overflow-hidden" aria-label={tx({ he: "תפריט משתמש", en: "User menu" }, language)}>
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt="" className="h-full w-full rounded-full object-cover" referrerPolicy="no-referrer" />
+                  ) : (
+                    <UserCircle className="h-5 w-5" />
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align={tx({ he: "start", en: "end" }, language)} className="w-48">
