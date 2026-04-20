@@ -163,7 +163,7 @@ export default function AdminAgentMonitor() {
         <div className="flex items-center gap-3">
           <Brain className="h-6 w-6 text-amber-500" />
           <h1 className="text-xl font-semibold">
-            {tx({ he: "ניטור סוכנים — למידה משותפת", en: "Agent Monitor — Shared Learning" }, language)}
+            {tx({ he: "ניטור סוכנים: למידה משותפת", en: "Agent Monitor: Shared Learning" }, language)}
           </h1>
           <Badge variant="outline" className="text-amber-600 border-amber-400 text-xs">Owner Only</Badge>
         </div>
@@ -257,7 +257,7 @@ export default function AdminAgentMonitor() {
           ) : agentRows.length === 0 ? (
             <div className="flex items-center gap-2 text-muted-foreground text-sm py-6 justify-center">
               <AlertTriangle className="h-4 w-4" />
-              {tx({ he: "אין נתוני סוכנים עדיין — הרץ pipeline כדי לאכלס את הלוח", en: "No agent data yet — run a pipeline to populate the board" }, language)}
+              {tx({ he: "אין נתוני סוכנים עדיין. הרץ pipeline כדי לאכלס את הלוח", en: "No agent data yet. Run a pipeline to populate the board" }, language)}
             </div>
           ) : (
             <div className="overflow-x-auto -mx-2">
@@ -373,8 +373,8 @@ export default function AdminAgentMonitor() {
       {/* Footer note */}
       <p className="text-xs text-muted-foreground text-center pb-4">
         {tx({
-          he: "נתוני זיכרון (MetaMetrics, J-gradient, EDP) חיים רק בזמן ריצת pipeline — שורות אלו מבוססות על shared_context ו-training_pairs ב-Supabase.",
-          en: "In-memory metrics (MetaMetrics, J-gradient, EDP) live only during a pipeline run — these rows are sourced from shared_context and training_pairs in Supabase.",
+          he: "נתוני זיכרון (MetaMetrics, J-gradient, EDP) חיים רק בזמן ריצת pipeline. שורות אלו מבוססות על shared_context ו-training_pairs ב-Supabase.",
+          en: "In-memory metrics (MetaMetrics, J-gradient, EDP) live only during a pipeline run. These rows are sourced from shared_context and training_pairs in Supabase.",
         }, language)}
       </p>
     </main>
