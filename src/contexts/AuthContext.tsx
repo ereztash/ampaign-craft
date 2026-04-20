@@ -243,24 +243,13 @@ async function seedAdminUser() {
 }
 
 // ═══ Supabase availability check ═══
-
-let supabaseAvailable: boolean | null = null;
-
-async function checkSupabase(): Promise<boolean> {
-  if (supabaseAvailable !== null) return supabaseAvailable;
-  try {
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    if (!url) { supabaseAvailable = false; return false; }
-    const resp = await fetch(`${url}/rest/v1/`, {
-      method: "HEAD",
-      headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "" },
-      signal: AbortSignal.timeout(3000),
-    });
-    supabaseAvailable = resp.ok;
-  } catch {
-    supabaseAvailable = false;
-  }
-  return supabaseAvailable;
+// We used to make a HEAD request to /rest/v1/ as a health check, but the
+// newer sb_publishable_* key format is not accepted by that endpoint (returns
+// 401), which caused the entire Supabase init path to be skipped.
+// Simply checking for the URL env var is sufficient — if the URL is set the
+// Supabase client will handle any actual connectivity errors at call time.
+function checkSupabase(): boolean {
+  return !!import.meta.env.VITE_SUPABASE_URL;
 }
 
 // ═══ Provider ═══
@@ -321,7 +310,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const hasSupabase = await checkSupabase();
+      const hasSupabase = checkSupabase();
 
       if (hasSupabase && !cancelled) {
         // Dynamic import to avoid hard dependency
