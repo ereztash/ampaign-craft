@@ -24,6 +24,8 @@ interface AppUser {
   email: string;
   displayName: string;
   role: UserRole;
+  avatarUrl?: string;
+  headline?: string;
 }
 
 interface AuthContextValue {
@@ -125,7 +127,7 @@ function migrateLocalAuthIfNeeded() {
 // The generated client doesn't have runtime types for custom tables,
 // so we wrap with a minimal typed interface instead of using `as any`.
 
-type ProfileRecord = { display_name?: string; tier?: string };
+type ProfileRecord = { display_name?: string; tier?: string; avatar_url?: string; headline?: string };
 type ProfilesClient = {
   from: (table: string) => {
     select: (cols: string) => {
@@ -142,6 +144,57 @@ function profilesDb(supa: unknown): ProfilesClient {
 
 function isPricingTier(value: unknown): value is PricingTier {
   return value === "free" || value === "pro" || value === "business";
+}
+
+// Reads the user_roles row for a Supabase user. Maps DB enum (admin/user)
+// to the app's UserRole. Defaults to "owner" so existing UI gates (which
+// check for owner|admin) keep working for everyone — only AARRRDashboard
+// and other admin-strict gates require the explicit "admin" role.
+async function fetchSupabaseRole(supa: unknown, userId: string): Promise<UserRole> {
+  try {
+    const client = supa as { from: (t: string) => { select: (c: string) => { eq: (k: string, v: string) => { maybeSingle: () => Promise<{ data: { role?: string } | null }> } } } };
+    const { data } = await client.from("user_roles").select("role").eq("user_id", userId).maybeSingle();
+    if (data?.role === "admin") return "admin";
+  } catch { /* ignore — fall through to owner */ }
+  return "owner";
+}
+
+// Builds the AppUser from a Supabase session user, hydrating role + profile
+// fields (display_name, avatar_url, headline) and seeding profile defaults
+// from OAuth provider metadata (Google's full_name + avatar_url) on first login.
+type SupaUser = { id: string; email?: string | null; user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string } };
+async function buildSupabaseUser(supa: unknown, su: SupaUser): Promise<{ user: AppUser; tier: string | undefined }> {
+  const role = await fetchSupabaseRole(supa, su.id);
+  const meta = su.user_metadata ?? {};
+  const oauthName = meta.full_name || meta.name;
+  const oauthAvatar = meta.avatar_url || meta.picture;
+
+  let displayName = oauthName || su.email?.split("@")[0] || "";
+  let avatarUrl: string | undefined = oauthAvatar;
+  let headline: string | undefined;
+  let tier: string | undefined;
+
+  try {
+    const client = supa as { from: (t: string) => { select: (c: string) => { eq: (k: string, v: string) => { maybeSingle: () => Promise<{ data: ProfileRecord | null }> } } } };
+    const { data: prof } = await client.from("profiles").select("display_name,tier,avatar_url,headline").eq("id", su.id).maybeSingle();
+    if (prof?.display_name) displayName = prof.display_name;
+    if (prof?.avatar_url) avatarUrl = prof.avatar_url;
+    if (prof?.headline) headline = prof.headline;
+    tier = prof?.tier;
+
+    // Seed profile from OAuth on first login when columns are empty
+    const seed: Record<string, unknown> = { id: su.id };
+    if (!prof?.display_name && oauthName) seed.display_name = oauthName;
+    if (!prof?.avatar_url && oauthAvatar) seed.avatar_url = oauthAvatar;
+    if (Object.keys(seed).length > 1) {
+      await profilesDb(supa).from("profiles").upsert(seed);
+    }
+  } catch { /* ignore */ }
+
+  return {
+    user: { id: su.id, email: su.email || "", displayName, role, avatarUrl, headline },
+    tier,
+  };
 }
 
 // ═══ Admin seed ═══
@@ -259,24 +312,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           const { data: { session: s } } = await supabase.auth.getSession();
           if (s?.user && !cancelled) {
-            setUser({ id: s.user.id, email: s.user.email || "", displayName: s.user.email?.split("@")[0] || "", role: "owner" });
-            // Fetch tier from the dedicated tier column. The Stripe webhook
-            // writes to this column on checkout.session.completed.
-            const { data: profile } = await profilesDb(supabase).from("profiles").select("tier").eq("id", s.user.id).single();
-            if (isPricingTier(profile?.tier)) {
-              setTierState(profile.tier);
-            }
+            const built = await buildSupabaseUser(supabase, s.user);
+            setUser(built.user);
+            if (isPricingTier(built.tier)) setTierState(built.tier);
           }
 
           // Listen for auth changes
           const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, sess) => {
             if (cancelled) return;
             if (sess?.user) {
-              setUser({ id: sess.user.id, email: sess.user.email || "", displayName: sess.user.email?.split("@")[0] || "", role: "owner" });
-              const { data: prof } = await profilesDb(supabase).from("profiles").select("tier").eq("id", sess.user.id).single();
-              if (isPricingTier(prof?.tier)) {
-                setTierState(prof.tier);
-              }
+              const built = await buildSupabaseUser(supabase, sess.user);
+              setUser(built.user);
+              if (isPricingTier(built.tier)) setTierState(built.tier);
               // Flush any buffered training pairs captured while unauthenticated
               try {
                 const { flushTrainingBuffer } = await import("@/engine/trainingDataEngine");
