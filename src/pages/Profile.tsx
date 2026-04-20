@@ -64,7 +64,7 @@ const PageComponent = () => {
       if (upErr) throw upErr;
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
       setAvatarUrl(data.publicUrl);
-      toast({ title: tx({ he: "תמונה הועלתה — לחץ שמירה", en: "Image uploaded — click save" }, language) });
+      toast({ title: tx({ he: "תמונה הועלתה. לחץ שמירה", en: "Image uploaded. Click save" }, language) });
     } catch (e) {
       toast({ title: tx({ he: "העלאה נכשלה", en: "Upload failed" }, language), variant: "destructive" });
     } finally {
