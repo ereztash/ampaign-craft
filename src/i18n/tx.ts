@@ -21,9 +21,13 @@ export interface BilingualStr {
 /**
  * Select the correct language string from a bilingual object.
  * Falls back to `en` if the requested language string is empty.
+ *
+ * Accepts `string` for `lang` so callers don't need to narrow first;
+ * any value other than "he" is treated as "en".
  */
-export function tx(text: BilingualStr, lang: "he" | "en"): string {
-  return text[lang] || text.en || text.he || "";
+export function tx<T extends string = string>(text: { he: T; en: T }, lang: string): T {
+  const key: "he" | "en" = lang === "he" ? "he" : "en";
+  return (text[key] || text.en || text.he || ("" as T));
 }
 
 /**
