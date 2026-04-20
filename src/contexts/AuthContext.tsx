@@ -163,6 +163,25 @@ async function fetchSupabaseRole(supa: unknown, userId: string): Promise<UserRol
 // fields (display_name, avatar_url, headline) and seeding profile defaults
 // from OAuth provider metadata (Google's full_name + avatar_url) on first login.
 type SupaUser = { id: string; email?: string | null; user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string } };
+
+/**
+ * Synchronous minimal AppUser derived from the session user alone.
+ * Used to update UI state the moment sign-in returns, without waiting
+ * on any DB query. buildSupabaseUser is still called afterwards to
+ * enrich the user with role + profile data.
+ */
+function makeMinimalUser(su: SupaUser): AppUser {
+  const meta = su.user_metadata ?? {};
+  const name = meta.full_name || meta.name || su.email?.split("@")[0] || "";
+  return {
+    id: su.id,
+    email: su.email || "",
+    displayName: name,
+    role: "owner",
+    avatarUrl: meta.avatar_url || meta.picture,
+  };
+}
+
 async function buildSupabaseUser(supa: unknown, su: SupaUser): Promise<{ user: AppUser; tier: string | undefined }> {
   const role = await fetchSupabaseRole(supa, su.id);
   const meta = su.user_metadata ?? {};
@@ -398,14 +417,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (newUser) {
           await profilesDb(supabase).from("profiles").upsert({ id: newUser.id, display_name: email.split("@")[0], visit_count: 1 });
           void trackReferralSignup(newUser.id);
-          // Eagerly hydrate state when Supabase returns a session on sign-up
-          // (happens when email confirmation is disabled).
+          // When Supabase returns a session (email confirmation disabled),
+          // flip UI immediately via a minimal user, then enrich in background.
           if (data?.session) {
-            try {
-              const built = await buildSupabaseUser(supabase, newUser);
-              setUser(built.user);
-              if (isPricingTier(built.tier)) setTierState(built.tier);
-            } catch { /* onAuthStateChange will handle it */ }
+            setUser(makeMinimalUser(newUser));
+            void (async () => {
+              try {
+                const built = await buildSupabaseUser(supabase, newUser);
+                setUser(built.user);
+                if (isPricingTier(built.tier)) setTierState(built.tier);
+              } catch { /* minimal state already set */ }
+            })();
           }
         }
         return { error: null };
@@ -448,13 +470,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { supabase } = await import("@/integrations/supabase/client");
         const { error, data } = await supabase.auth.signInWithPassword({ email, password });
         if (!error) {
-          // Eagerly hydrate — don't rely solely on onAuthStateChange firing in time.
           if (data?.user) {
-            try {
-              const built = await buildSupabaseUser(supabase, data.user);
-              setUser(built.user);
-              if (isPricingTier(built.tier)) setTierState(built.tier);
-            } catch { /* onAuthStateChange will catch any remaining updates */ }
+            // Update UI immediately with a minimal user derived from the session.
+            // This guarantees the sign-in button flips to the avatar even if
+            // the profile/role DB queries below are slow or fail.
+            const minimal = makeMinimalUser(data.user);
+            setUser(minimal);
+            // Enrich with role + profile from DB (non-blocking).
+            const supaUser = data.user;
+            void (async () => {
+              try {
+                const built = await buildSupabaseUser(supabase, supaUser);
+                setUser(built.user);
+                if (isPricingTier(built.tier)) setTierState(built.tier);
+              } catch { /* minimal state already set */ }
+            })();
           }
           return { error: null };
         }
