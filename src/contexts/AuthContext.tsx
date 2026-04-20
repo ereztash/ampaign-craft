@@ -5,6 +5,7 @@ import { safeStorage } from "@/lib/safeStorage";
 import { logger } from "@/lib/logger";
 import { ALLOW_LOCAL_AUTH } from "@/lib/validateEnv";
 import { Analytics, getUTM } from "@/lib/analytics";
+import { recordAuthEvent } from "@/lib/authDiagnostic";
 
 // Fire signup_from_share if the user arrived via a referral link (?ref=CODE)
 async function trackReferralSignup(userId: string): Promise<void> {
@@ -311,6 +312,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const hasSupabase = checkSupabase();
+      recordAuthEvent({ phase: "init.start", ok: true, meta: { hasSupabase } });
 
       if (hasSupabase && !cancelled) {
         // Dynamic import to avoid hard dependency
@@ -319,28 +321,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsLocalAuth(false);
 
           const { data: { session: s } } = await supabase.auth.getSession();
+          recordAuthEvent({ phase: "init.getSession", ok: true, meta: { hasSession: !!s?.user } });
           if (s?.user && !cancelled) {
-            const built = await buildSupabaseUser(supabase, s.user);
-            setUser(built.user);
-            if (isPricingTier(built.tier)) setTierState(built.tier);
+            const sessionUser = s.user;
+            // Critical invariant: if a session exists we MUST set a user.
+            // Set minimal user synchronously first so the UI flips, then enrich.
+            setUser(makeMinimalUser(sessionUser));
+            try {
+              const built = await buildSupabaseUser(supabase, sessionUser);
+              if (!cancelled) {
+                setUser(built.user);
+                if (isPricingTier(built.tier)) setTierState(built.tier);
+                recordAuthEvent({ phase: "init.buildSupabaseUser", ok: true, meta: { role: built.user.role, tier: built.tier } });
+              }
+            } catch (err) {
+              recordAuthEvent({ phase: "init.buildSupabaseUser", ok: false, message: String(err) });
+              // Minimal user already set above — UI stays signed-in.
+            }
           }
 
           // Listen for auth changes
-          const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, sess) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, sess) => {
             if (cancelled) return;
+            recordAuthEvent({ phase: "onAuthStateChange", ok: true, meta: { event, hasSession: !!sess?.user } });
             if (sess?.user) {
-              const built = await buildSupabaseUser(supabase, sess.user);
-              setUser(built.user);
-              if (isPricingTier(built.tier)) setTierState(built.tier);
+              const sessionUser = sess.user;
+              // Same invariant: flip UI immediately via minimal user, then enrich.
+              setUser(makeMinimalUser(sessionUser));
+              try {
+                const built = await buildSupabaseUser(supabase, sessionUser);
+                if (!cancelled) {
+                  setUser(built.user);
+                  if (isPricingTier(built.tier)) setTierState(built.tier);
+                }
+              } catch (err) {
+                recordAuthEvent({ phase: "onAuthStateChange.buildSupabaseUser", ok: false, message: String(err) });
+              }
               // Flush any buffered training pairs captured while unauthenticated
               try {
                 const { flushTrainingBuffer } = await import("@/engine/trainingDataEngine");
-                void flushTrainingBuffer(sess.user.id).catch(() => {});
+                void flushTrainingBuffer(sessionUser.id).catch(() => {});
               } catch { /* ignore */ }
               // Flush buffered outcome-loop events
               try {
                 const { flushOutcomeBuffer } = await import("@/engine/outcomeLoopEngine");
-                void flushOutcomeBuffer(sess.user.id).catch(() => {});
+                void flushOutcomeBuffer(sessionUser.id).catch(() => {});
               } catch { /* ignore */ }
             } else {
               setUser(null);
@@ -350,7 +375,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           if (!cancelled) setLoading(false);
           return () => { cancelled = true; subscription.unsubscribe(); };
-        } catch {
+        } catch (err) {
+          recordAuthEvent({ phase: "init.supabaseImport", ok: false, message: String(err) });
           // Supabase import failed, fall through to local
         }
       }
@@ -454,37 +480,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ═══ Sign In ═══
   const signIn = useCallback(async (email: string, password: string): Promise<{ error: string | null }> => {
     if (!isLocalAuth) {
+      // Do not include the submitted email in the payload. The phase is
+      // enough signal; avoids client-side PII persistence.
+      recordAuthEvent({ phase: "signIn.start", ok: true });
       let supabaseError: string | null = null;
       try {
         const { supabase } = await import("@/integrations/supabase/client");
         const { error, data } = await supabase.auth.signInWithPassword({ email, password });
         if (!error) {
+          recordAuthEvent({ phase: "signIn.supabaseResult", ok: true, meta: { hasUser: !!data?.user, hasSession: !!data?.session } });
           if (data?.user) {
             // Update UI immediately with a minimal user derived from the session.
-            // This guarantees the sign-in button flips to the avatar even if
-            // the profile/role DB queries below are slow or fail.
-            const minimal = makeMinimalUser(data.user);
-            setUser(minimal);
-            // Enrich with role + profile from DB (non-blocking).
+            // onAuthStateChange also fires and will refine the user further.
+            setUser(makeMinimalUser(data.user));
             const supaUser = data.user;
             void (async () => {
               try {
                 const built = await buildSupabaseUser(supabase, supaUser);
                 setUser(built.user);
                 if (isPricingTier(built.tier)) setTierState(built.tier);
-              } catch { /* minimal state already set */ }
+                recordAuthEvent({ phase: "signIn.buildSupabaseUser", ok: true, meta: { role: built.user.role, tier: built.tier } });
+              } catch (err) {
+                recordAuthEvent({ phase: "signIn.buildSupabaseUser", ok: false, message: String(err) });
+                // Minimal user already set — UI stays signed-in.
+              }
             })();
           }
-          // Reliable fallback: force a full page reload after the modal closes.
-          // If any state-propagation issue prevents the topbar from re-rendering,
-          // the reload makes init() re-read the fresh session from localStorage.
-          // 250ms is long enough for the modal's close animation to start.
-          setTimeout(() => { window.location.reload(); }, 250);
           return { error: null };
         }
         supabaseError = error.message;
+        recordAuthEvent({
+          phase: "signIn.supabaseResult",
+          ok: false,
+          message: error.message,
+          meta: { status: (error as { status?: number }).status, name: error.name },
+        });
       } catch (err) {
         supabaseError = String(err);
+        recordAuthEvent({ phase: "signIn.exception", ok: false, message: String(err) });
       }
 
       // DEV fallback: if Supabase auth failed, try the local user store.

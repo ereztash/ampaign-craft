@@ -21,13 +21,15 @@ import CheckoutReturnHandler from "@/components/CheckoutReturnHandler";
 import { PMFSurveyModal } from "@/components/PMFSurveyModal";
 import { NPSWidget } from "@/components/NPSWidget";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
+import { isAdminRole } from "@/lib/roles";
+import AuthDebugPanel from "@/components/AuthDebugPanel";
 
 /** Guard: redirects non-owner/admin users to home with a login-required hint. */
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();
   if (loading) return <LoadingFallback />;
-  if (!user || (user.role !== "owner" && user.role !== "admin")) {
+  if (!isAdminRole(user?.role)) {
     return <Navigate to="/" state={{ openAuth: true, returnTo: location.pathname }} replace />;
   }
   return <>{children}</>;
@@ -156,6 +158,7 @@ const App = () => (
                   <ConsentBanner />
                   <PMFSurveyModal />
                   <NPSWidget />
+                  <AuthDebugPanel />
                 </ErrorBoundary>
               </BrowserRouter>
             </TooltipProvider>

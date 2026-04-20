@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { Separator } from "@/components/ui/separator";
+import { isAdminRole } from "@/lib/roles";
 
 const AdminArchetypeDebugPanel = lazy(() => import("@/components/AdminArchetypeDebugPanel"));
 
@@ -41,7 +42,7 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
   const isHe = language === "he";
-  const isOwner = user?.role === "owner" || user?.role === "admin";
+  const isOwner = isAdminRole(user?.role);
 
   return (
     <>

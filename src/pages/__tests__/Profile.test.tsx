@@ -86,13 +86,15 @@ describe("Profile — local auth user", () => {
     expect(document.body).toBeTruthy();
   });
 
-  it("shows the My Profile heading", () => {
+  it("shows the user displayName as the profile heading", () => {
     render(
       <MemoryRouter>
         <Profile />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/my profile/i)).toBeInTheDocument();
+    // Profile.tsx renders displayName when set, falling back to "My Profile"
+    // only when displayName is empty. The mock user has displayName "Test User".
+    expect(screen.getByText("Test User")).toBeInTheDocument();
   });
 
   it("shows the email input with user email", () => {
