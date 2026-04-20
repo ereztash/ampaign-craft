@@ -46,7 +46,7 @@ describe("AuthModal", () => {
   it("shows optional guest usage message", () => {
     render(<AuthModal open={true} onOpenChange={vi.fn()} />);
     expect(
-      screen.getByText("Optional — you can use the app as a guest too")
+      screen.getByText("Optional. You can use the app as a guest too")
     ).toBeInTheDocument();
   });
 

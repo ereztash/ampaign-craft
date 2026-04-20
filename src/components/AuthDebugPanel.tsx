@@ -47,19 +47,28 @@ export default function AuthDebugPanel() {
   const [sessionKey, setSessionKey] = useState<string | null>(() => findSupabaseSessionKey());
 
   useEffect(() => {
-    setEvents(readAuthEvents());
+    // Only wire up listeners + polling when the panel is actually enabled,
+    // otherwise every user session would do continuous background work
+    // for a hidden UI. Re-runs when `enabled` flips from on/off controls.
+    if (!enabled) return;
+    let cancelled = false;
+    const refreshEvents = () => {
+      void readAuthEvents().then((e) => { if (!cancelled) setEvents(e); });
+    };
+    refreshEvents();
     setSessionKey(findSupabaseSessionKey());
     const onUpdate = () => {
-      setEvents(readAuthEvents());
+      refreshEvents();
       setSessionKey(findSupabaseSessionKey());
     };
     window.addEventListener("funnelforge:auth-debug", onUpdate);
     const interval = setInterval(() => setSessionKey(findSupabaseSessionKey()), 2000);
     return () => {
+      cancelled = true;
       window.removeEventListener("funnelforge:auth-debug", onUpdate);
       clearInterval(interval);
     };
-  }, []);
+  }, [enabled]);
 
   if (!enabled || dismissed) {
     if (enabled && dismissed) {
@@ -104,7 +113,7 @@ export default function AuthDebugPanel() {
             copy
           </button>
           <button
-            onClick={() => { clearAuthEvents(); setEvents([]); }}
+            onClick={() => { void clearAuthEvents(); setEvents([]); }}
             className="px-1.5 py-0.5 bg-white/20 hover:bg-white/30 rounded"
             title="Clear event log"
           >

@@ -60,7 +60,7 @@ describe("ArchetypeProfileCard", () => {
 
   it("shows archetype description", () => {
     render(<ArchetypeProfileCard />);
-    expect(screen.getByText("You build from data — we've arranged your tools accordingly")).toBeInTheDocument();
+    expect(screen.getByText("You build from data. We've arranged your tools accordingly")).toBeInTheDocument();
   });
 
   it("shows change manually link", () => {

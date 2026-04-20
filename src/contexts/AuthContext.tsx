@@ -480,7 +480,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ═══ Sign In ═══
   const signIn = useCallback(async (email: string, password: string): Promise<{ error: string | null }> => {
     if (!isLocalAuth) {
-      recordAuthEvent({ phase: "signIn.start", ok: true, meta: { email } });
+      // Do not include the submitted email in the payload. The phase is
+      // enough signal; avoids client-side PII persistence.
+      recordAuthEvent({ phase: "signIn.start", ok: true });
       let supabaseError: string | null = null;
       try {
         const { supabase } = await import("@/integrations/supabase/client");
