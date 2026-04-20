@@ -475,6 +475,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               } catch { /* minimal state already set */ }
             })();
           }
+          // Reliable fallback: force a full page reload after the modal closes.
+          // If any state-propagation issue prevents the topbar from re-rendering,
+          // the reload makes init() re-read the fresh session from localStorage.
+          // 250ms is long enough for the modal's close animation to start.
+          setTimeout(() => { window.location.reload(); }, 250);
           return { error: null };
         }
         supabaseError = error.message;
