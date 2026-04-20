@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { tx } from "@/i18n/tx";
 import { Loader2, ArrowLeft, Mail } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthModalProps {
   open: boolean;
@@ -67,6 +68,7 @@ type View = "auth" | "forgot";
 const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
   const { signIn, signUp, resetPassword, signInWithProvider } = useAuth();
   const { language } = useLanguage();
+  const { toast } = useToast();
   const isHe = language === "he";
 
   const [view, setView] = useState<View>("auth");
@@ -108,10 +110,20 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
     setLoading(false);
     if (result.error) {
       setError(result.error);
+      // Persistent toast so the error is visible even if the modal is closed.
+      toast({
+        title: tx({ he: "שגיאת התחברות", en: "Sign-in error" }, language),
+        description: result.error,
+        variant: "destructive",
+      });
     } else if (mode === "register") {
       setSuccess(tx({ he: "נרשמת בהצלחה!", en: "Registered successfully!" }, language));
       setTimeout(() => handleOpenChange(false), 1000);
     } else {
+      toast({
+        title: tx({ he: "מתחבר...", en: "Signing in..." }, language),
+        description: tx({ he: "הדף יתרענן תוך שנייה", en: "Page will refresh momentarily" }, language),
+      });
       handleOpenChange(false);
     }
   };
