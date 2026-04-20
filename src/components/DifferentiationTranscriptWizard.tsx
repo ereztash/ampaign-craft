@@ -789,7 +789,7 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
         <motion.div
           key={state.step}
           custom={direction}
-          variants={reducedMotion ? {} : variants}
+          variants={reducedMotion ? undefined : variants}
           initial="enter"
           animate="center"
           exit="exit"

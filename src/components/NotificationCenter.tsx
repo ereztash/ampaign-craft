@@ -76,9 +76,8 @@ export function NotificationCenter() {
       <DropdownMenuContent
         align={language === "he" ? "start" : "end"}
         className="w-80 p-0 overflow-hidden"
-        dir={language === "he" ? "rtl" : "ltr"}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div dir={language === "he" ? "rtl" : "ltr"} className="flex items-center justify-between px-4 py-3 border-b border-border">
           <span className="text-sm font-semibold">
             {tx({ he: "התראות", en: "Notifications" }, language)}
           </span>

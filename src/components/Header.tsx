@@ -52,7 +52,7 @@ const Header = ({ onSavedPlans }: HeaderProps) => {
                     <UserCircle className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={tx({ he: "start", en: "end" }, language)} className="w-48">
+                <DropdownMenuContent align={language === "he" ? "start" : "end"} className="w-48">
                   <DropdownMenuItem onClick={() => navigate("/")}>
                     <Home className="h-4 w-4 me-2" />
                     {tx({ he: "מרכז מודולים", en: "Module Hub" }, language)}

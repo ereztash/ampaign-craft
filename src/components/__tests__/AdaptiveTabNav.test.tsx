@@ -16,10 +16,10 @@ vi.mock("@/hooks/use-mobile", () => ({
 }));
 
 const mockTabs = [
-  { id: "analytics", labelKey: "tabAnalytics", group: "strategy" as const, badge: null },
-  { id: "content", labelKey: "tabContent", group: "content" as const, badge: null },
-  { id: "growth", labelKey: "tabGrowth", group: "growth" as const, badge: null },
-  { id: "hooks", labelKey: "tabHooks", group: "content" as const, badge: { he: "חדש", en: "New" } },
+  { id: "analytics", labelKey: "tabAnalytics", group: "strategy" as const, visible: true, priority: 10 },
+  { id: "content", labelKey: "tabContent", group: "content" as const, visible: true, priority: 20 },
+  { id: "growth", labelKey: "tabGrowth", group: "growth" as const, visible: true, priority: 30 },
+  { id: "hooks", labelKey: "tabHooks", group: "content" as const, visible: true, priority: 40, badge: { he: "חדש", en: "New" } },
 ];
 
 describe("AdaptiveTabNav", () => {
