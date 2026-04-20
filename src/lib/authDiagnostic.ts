@@ -1,8 +1,9 @@
-// Visible auth diagnostic log. Records auth-related events to sessionStorage
-// so they survive reloads, and mirrors them to console for DevTools users.
-// Keeps only the last MAX_EVENTS entries so the ring buffer never grows.
+// Visible auth diagnostic log. Records auth-related events to session
+// storage (via safeSessionStorage) so they survive reloads, and mirrors
+// failures to the central logger. Bounded ring buffer of MAX_EVENTS.
 
 import { safeSessionStorage } from "./safeStorage";
+import { logger } from "./logger";
 
 const STORAGE_KEY = "funnelforge.auth.debug";
 const MAX_EVENTS = 20;
@@ -20,13 +21,8 @@ export function recordAuthEvent(event: Omit<AuthEvent, "t">): void {
   const existing = safeSessionStorage.getJSON<AuthEvent[]>(STORAGE_KEY, []);
   const next = [...existing, entry].slice(-MAX_EVENTS);
   safeSessionStorage.setJSON(STORAGE_KEY, next);
-  const prefix = `[AUTH] ${entry.phase} ${entry.ok ? "ok" : "FAIL"}`;
-  if (entry.ok) {
-    // eslint-disable-next-line no-console
-    console.info(prefix, entry.message ?? "", entry.meta ?? "");
-  } else {
-    // eslint-disable-next-line no-console
-    console.warn(prefix, entry.message ?? "", entry.meta ?? "");
+  if (!entry.ok) {
+    logger.warn(`auth.${entry.phase}`, entry.message ?? "failed");
   }
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("funnelforge:auth-debug"));

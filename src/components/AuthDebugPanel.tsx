@@ -1,38 +1,35 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { readAuthEvents, clearAuthEvents, type AuthEvent } from "@/lib/authDiagnostic";
+import { safeStorage, safeSessionStorage } from "@/lib/safeStorage";
 
 // Visible on-screen auth diagnostic panel. Toggled via either:
 //   - URL flag: ?debug=auth
-//   - localStorage flag: localStorage.setItem("ff.debug.auth", "1")
+//   - persisted flag: set "ff.debug.auth"=1 via safeStorage
 // so we can turn it on in production without redeploying.
 
 const ENABLE_KEY = "ff.debug.auth";
 const DISMISS_KEY = "ff.debug.auth.dismissed";
+const SUPA_TOKEN_PREFIX = "sb-";
 
 function isEnabled(): boolean {
   if (typeof window === "undefined") return false;
   try {
     const url = new URL(window.location.href);
     if (url.searchParams.get("debug") === "auth") {
-      window.localStorage.setItem(ENABLE_KEY, "1");
+      safeStorage.setString(ENABLE_KEY, "1");
       return true;
     }
-    return window.localStorage.getItem(ENABLE_KEY) === "1";
+    return safeStorage.getString(ENABLE_KEY) === "1";
   } catch {
     return false;
   }
 }
 
 function findSupabaseSessionKey(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const k = window.localStorage.key(i);
-      if (k && k.startsWith("sb-") && k.endsWith("-auth-token")) return k;
-    }
-  } catch { /* ignore */ }
-  return null;
+  const keys = safeStorage.keysWithPrefix(SUPA_TOKEN_PREFIX);
+  const match = keys.find((k) => k.endsWith("-auth-token"));
+  return match ?? null;
 }
 
 function shortTime(t: number): string {
@@ -43,10 +40,9 @@ function shortTime(t: number): string {
 export default function AuthDebugPanel() {
   const { user, loading, tier, isLocalAuth } = useAuth();
   const [enabled, setEnabled] = useState<boolean>(() => isEnabled());
-  const [dismissed, setDismissed] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    try { return window.sessionStorage.getItem(DISMISS_KEY) === "1"; } catch { return false; }
-  });
+  const [dismissed, setDismissed] = useState<boolean>(
+    () => safeSessionStorage.getJSON<string>(DISMISS_KEY, "") === "1",
+  );
   const [events, setEvents] = useState<AuthEvent[]>([]);
   const [sessionKey, setSessionKey] = useState<string | null>(() => findSupabaseSessionKey());
 
@@ -70,7 +66,7 @@ export default function AuthDebugPanel() {
       return (
         <button
           onClick={() => {
-            try { window.sessionStorage.removeItem(DISMISS_KEY); } catch { /* ignore */ }
+            safeSessionStorage.remove(DISMISS_KEY);
             setDismissed(false);
           }}
           className="fixed bottom-2 right-2 z-[9999] bg-amber-500 text-white text-xs font-mono px-2 py-1 rounded shadow-lg opacity-70 hover:opacity-100"
@@ -116,9 +112,7 @@ export default function AuthDebugPanel() {
           </button>
           <button
             onClick={() => {
-              try {
-                window.localStorage.removeItem(ENABLE_KEY);
-              } catch { /* ignore */ }
+              safeStorage.remove(ENABLE_KEY);
               setEnabled(false);
             }}
             className="px-1.5 py-0.5 bg-white/20 hover:bg-white/30 rounded"
@@ -128,7 +122,7 @@ export default function AuthDebugPanel() {
           </button>
           <button
             onClick={() => {
-              try { window.sessionStorage.setItem(DISMISS_KEY, "1"); } catch { /* ignore */ }
+              safeSessionStorage.setJSON(DISMISS_KEY, "1");
               setDismissed(true);
             }}
             className="px-1.5 py-0.5 bg-white/20 hover:bg-white/30 rounded"
