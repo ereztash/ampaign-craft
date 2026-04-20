@@ -27,12 +27,17 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
   const location = useLocation();
   const [authOpen, setAuthOpen] = useState(false);
 
-  // Auto-open auth modal when redirected from a protected route
+  // Auto-open auth modal when redirected from a protected route;
+  // once logged in, navigate back to the intended destination.
   useEffect(() => {
-    if ((location.state as { openAuth?: boolean } | null)?.openAuth && !user) {
+    const state = location.state as { openAuth?: boolean; returnTo?: string } | null;
+    if (!state?.openAuth) return;
+    if (!user) {
       setAuthOpen(true);
+    } else if (state.returnTo) {
+      navigate(state.returnTo, { replace: true, state: {} });
     }
-  }, [location.state, user]);
+  }, [location.state, user, navigate]);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
   const isHe = language === "he";

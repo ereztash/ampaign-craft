@@ -25,9 +25,10 @@ import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 /** Guard: redirects non-owner/admin users to home with a login-required hint. */
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <LoadingFallback />;
   if (!user || (user.role !== "owner" && user.role !== "admin")) {
-    return <Navigate to="/" state={{ openAuth: true }} replace />;
+    return <Navigate to="/" state={{ openAuth: true, returnTo: location.pathname }} replace />;
   }
   return <>{children}</>;
 }
