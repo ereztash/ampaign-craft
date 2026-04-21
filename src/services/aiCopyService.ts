@@ -6,6 +6,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { authFetch } from "@/lib/authFetch";
+import { LlmError } from "@/lib/llmErrorMessages";
 import { selectModel, trackUsage, isOverMonthlyBudget, getMonthlyUsage, getMonthlyCap, wouldExceedCostCap, type CopyTask, type ModelSelection, type PricingTier } from "./llmRouter";
 import type { FunnelResult, FormData } from "@/types/funnel";
 import { analyzeAIDetection } from "@/engine/perplexityBurstiness";
@@ -188,10 +189,16 @@ export async function generateCopy(
     }),
       });
   const data = await _resp.json();
-  const error = _resp.ok ? null : (data?.error || _resp.statusText);
 
-  if (error) {
-    throw new Error(`AI copy generation failed: ${error}`);
+  if (!_resp.ok) {
+    throw new LlmError(
+      {
+        error: data?.error || _resp.statusText || "AI copy generation failed",
+        code: data?.code,
+        hint: data?.hint,
+      },
+      _resp.status,
+    );
   }
 
   const text = data?.text || "";

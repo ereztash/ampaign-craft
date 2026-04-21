@@ -15,6 +15,12 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import {
+  classifyAnthropicError,
+  errorResponse,
+  internalError,
+  unauthorizedError,
+} from "../_shared/anthropicError.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -238,7 +244,10 @@ async function executeTool(
       });
 
       const aiData = await resp.json();
-      if (!resp.ok) throw new Error(aiData.error?.message || "Copy generation failed");
+      if (!resp.ok) {
+        const classified = classifyAnthropicError(resp, aiData);
+        throw new Error(`[${classified.code}] ${classified.error}`);
+      }
       return aiData.content?.[0]?.text || "No copy generated.";
     }
 
@@ -300,7 +309,10 @@ async function runAgentLoop(
     });
 
     const data: AnthropicResponse = await resp.json();
-    if (!resp.ok) throw new Error((data as unknown as { error: { message: string } }).error?.message || "Anthropic API error");
+    if (!resp.ok) {
+      const classified = classifyAnthropicError(resp, data);
+      throw new Error(`[${classified.code}] ${classified.error}`);
+    }
 
     // Append assistant's response to history
     messages.push({ role: "assistant", content: data.content });
@@ -358,10 +370,7 @@ Deno.serve(async (req) => {
   } = await supabase.auth.getUser(token);
 
   if (!user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return errorResponse(unauthorizedError(), corsHeaders);
   }
 
   try {
@@ -390,9 +399,15 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("claude-agent error:", err);
-    return new Response(
-      JSON.stringify({ error: String(err) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    // Preserve classified codes when runAgentLoop threw "[code] message".
+    const msg = String(err);
+    const codeMatch = msg.match(/^Error: \[(\w+)\] (.*)$/) || msg.match(/^\[(\w+)\] (.*)$/);
+    if (codeMatch) {
+      return new Response(
+        JSON.stringify({ error: codeMatch[2], code: codeMatch[1] }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+    return errorResponse(internalError(err), corsHeaders);
   }
 });

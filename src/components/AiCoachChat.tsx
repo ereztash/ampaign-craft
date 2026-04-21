@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { authFetch } from "@/lib/authFetch";
+import { translateLlmError, LlmError } from "@/lib/llmErrorMessages";
 import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
 import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
@@ -152,20 +153,26 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         }),
       });
       const data = await _resp.json();
-      const fnError = _resp.ok ? null : (data?.error || _resp.statusText);
 
-      if (fnError) throw new Error(fnError);
+      if (!_resp.ok) {
+        throw new LlmError(
+          { error: data?.error || _resp.statusText, code: data?.code, hint: data?.hint },
+          _resp.status,
+        );
+      }
       const reply = data?.reply || (tx({ he: "לא הצלחתי לענות. נסה שוב.", en: "Couldn't respond. Try again." }, language));
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      const display = msg.includes("ANTHROPIC_API_KEY")
-        ? tx({ he: "שירות ה-AI לא מוגדר (חסר ANTHROPIC_API_KEY בסוד Supabase).", en: "AI service not configured (missing ANTHROPIC_API_KEY in Supabase secrets)." }, language)
-        : msg.includes("Unauthorized") || msg.includes("401")
-          ? tx({ he: "נא להתחבר לחשבון כדי להשתמש במאמן.", en: "Please sign in to use the AI coach." }, language)
-          : msg.includes("Origin not allowed") || msg.includes("403")
-            ? tx({ he: "שגיאת CORS: הדומיין לא מורשה. הוסף אותו ל-ALLOWED_ORIGINS ב-Supabase.", en: "CORS error: domain not allowed. Add it to ALLOWED_ORIGINS in Supabase." }, language)
-            : tx({ he: "שגיאה: ", en: "Error: " }, language) + msg;
+      const fallback = err instanceof Error ? err.message : String(err);
+      let display: string;
+      if (err instanceof LlmError) {
+        display = translateLlmError(err.code, fallback, language);
+      } else if (fallback.includes("Origin not allowed") || fallback.includes("403")) {
+        // Legacy fallback: CORS errors are not LLM errors but may still surface here.
+        display = tx({ he: "שגיאת CORS: הדומיין לא מורשה. הוסף אותו ל-ALLOWED_ORIGINS ב-Supabase.", en: "CORS error: domain not allowed. Add it to ALLOWED_ORIGINS in Supabase." }, language);
+      } else {
+        display = tx({ he: "שגיאה: ", en: "Error: " }, language) + fallback;
+      }
       setError(display);
     } finally {
       setLoading(false);

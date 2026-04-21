@@ -16,7 +16,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain, Sparkles, TrendingUp, Activity } from "lucide-react";
+import { LayoutDashboard, Database, Map, Bot, BarChart3, FileText, UserCircle, Users, Info, Brain, Sparkles, TrendingUp, Activity, Stethoscope } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { reorderNavItems } from "@/lib/archetypeUIConfig";
 import type { NavItemId } from "@/types/archetype";
@@ -223,6 +223,18 @@ const AppSidebar = () => {
                         <NavLink to="/admin/agents">
                           <Activity className="text-amber-600 dark:text-amber-400" />
                           <span>{isHe ? "ניטור סוכנים" : "Agent Monitor"}</span>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={isHe ? "אבחון LLM" : "LLM Diagnostics"}
+                        isActive={isActive("/admin/diagnostics", true)}
+                      >
+                        <NavLink to="/admin/diagnostics">
+                          <Stethoscope className="text-amber-600 dark:text-amber-400" />
+                          <span>{isHe ? "אבחון LLM" : "LLM Diagnostics"}</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

@@ -19,6 +19,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { classifyAnthropicError } from "../_shared/anthropicError.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -375,7 +376,8 @@ async function handleTool(
 
       const aiData = await resp.json();
       if (!resp.ok) {
-        throw new Error(aiData.error?.message || "AI call failed");
+        const classified = classifyAnthropicError(resp, aiData);
+        throw new Error(`[${classified.code}] ${classified.error}`);
       }
       return aiData.content?.[0]?.text || "No response from coach.";
     }
@@ -461,7 +463,8 @@ Use conversational yet professional language. Avoid clichés.`;
 
       const aiData = await resp.json();
       if (!resp.ok) {
-        throw new Error(aiData.error?.message || "AI call failed");
+        const classified = classifyAnthropicError(resp, aiData);
+        throw new Error(`[${classified.code}] ${classified.error}`);
       }
       return aiData.content?.[0]?.text || "No copy generated.";
     }

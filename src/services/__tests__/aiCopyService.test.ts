@@ -3,7 +3,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // ── External dep mocks ────────────────────────────────────────────────────
 
 vi.mock("@/integrations/supabase/client", () => ({
-  supabase: { from: vi.fn(), auth: { getUser: vi.fn() } },
+  supabase: {
+    from: vi.fn(),
+    auth: {
+      getUser: vi.fn(),
+      getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
+    },
+  },
 }));
 
 vi.mock("../llmRouter", () => ({
@@ -153,10 +159,15 @@ describe("aiCopyService", () => {
       );
     });
 
-    it("throws when fetch response is not ok", async () => {
-      mockFetch({ error: "server error" }, false, 500);
+    it("throws LlmError when fetch response is not ok", async () => {
+      mockFetch({ error: "server error", code: "upstream_error", hint: "h" }, false, 500);
 
-      await expect(generateCopy(baseRequest)).rejects.toThrow("AI copy generation failed");
+      await expect(generateCopy(baseRequest)).rejects.toMatchObject({
+        name: "LlmError",
+        message: "server error",
+        code: "upstream_error",
+        status: 500,
+      });
     });
 
     it("throws when over monthly budget", async () => {
