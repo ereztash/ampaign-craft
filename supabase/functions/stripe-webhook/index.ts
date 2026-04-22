@@ -83,6 +83,24 @@ Deno.serve(async (req) => {
     const event = JSON.parse(body);
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+    // Idempotency: Stripe retries on timeout/5xx. Skip duplicate event IDs
+    // so a retry can't re-apply a tier change (especially dangerous when
+    // checkout.session.completed and customer.subscription.deleted interleave).
+    if (typeof event.id === "string" && event.id.length > 0) {
+      const { error: dedupErr } = await supabase
+        .from("stripe_events_processed")
+        .insert({ event_id: event.id, event_type: event.type });
+      if (dedupErr) {
+        // 23505 = unique_violation → already processed, ack and stop.
+        if (dedupErr.code === "23505") {
+          return new Response(JSON.stringify({ received: true, duplicate: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        throw dedupErr;
+      }
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       const userId = session.metadata?.user_id ?? session.client_reference_id;

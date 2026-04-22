@@ -374,6 +374,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    // plan_id is interpolated into the user message below. Enforce a strict
+    // UUID shape so an attacker can't break out of the bracket syntax and
+    // inject instructions into the model's context.
+    const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (plan_id !== undefined && plan_id !== null && (typeof plan_id !== "string" || !UUID_RE.test(plan_id))) {
+      return new Response(JSON.stringify({ error: "plan_id must be a UUID" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Build messages: prior history + current user message (with optional plan context)
     const messages: MessageParam[] = [...history];
     const userContent = plan_id

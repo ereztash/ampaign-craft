@@ -8,6 +8,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { assertPublicHttpsUrl } from "../_shared/urlGuard.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -81,6 +82,16 @@ Deno.serve(async (req) => {
       const secret = integration.tokens?.webhook_secret || "";
 
       if (!webhookUrl) continue;
+
+      // SSRF guard: reject URLs that resolve to private/loopback ranges
+      // before we hand the URL to fetch(). This is defense against a
+      // malicious (or compromised) user configuring a webhook that points
+      // at internal Supabase infra or cloud metadata endpoints.
+      const guard = await assertPublicHttpsUrl(webhookUrl);
+      if (!guard.allowed) {
+        results.push({ url: webhookUrl, success: false, skipped: guard.reason });
+        continue;
+      }
 
       const signature = secret ? await computeHMAC(secret, payload) : "";
 
