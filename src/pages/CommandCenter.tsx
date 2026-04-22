@@ -14,36 +14,33 @@ import { computeGaps } from "@/engine/gapEngine";
 import { generateGuidance } from "@/engine/guidanceEngine";
 import { predictSuccess } from "@/engine/predictiveEngine";
 import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
-import { assignVariant, createABExperiment } from "@/engine/abTestEngine";
 import { inferDISCProfile } from "@/engine/discProfileEngine";
 import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
 import type { MetaInsights } from "@/types/meta";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { getTotalUsers } from "@/lib/socialProofData";
+import { Analytics } from "@/lib/analytics";
 import BusinessPulseBar from "@/components/BusinessPulseBar";
 import WeeklyActionCard from "@/components/WeeklyActionCard";
 import IdentityStrip from "@/components/IdentityStrip";
 import InsightFeed from "@/components/InsightFeed";
 import { NudgeBanner } from "@/components/NudgeBanner";
 import { ProgressMomentum } from "@/components/ProgressMomentum";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import type { SavedPlan } from "@/types/funnel";
 import { tx } from "@/i18n/tx";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { Database, Wand2, Compass, Map, Users } from "lucide-react";
 import ExpressWizard from "@/components/ExpressWizard";
+import { ArrowRight } from "lucide-react";
 import { InsightsCard } from "@/components/InsightsCard";
 import { AnalyticsConnectCard } from "@/components/AnalyticsConnectCard";
 import { useArchetype } from "@/contexts/ArchetypeContext";
-import { getPrimaryCtaVerbs } from "@/engine/behavioralHeuristicEngine";
 import ArchetypePipelineGuide from "@/components/ArchetypePipelineGuide";
 import { snapshotEngineOutputs, captureContentSnapshot } from "@/engine/outcomeLoopEngine";
 
 const CommandCenter = () => {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const isHe = language === "he";
   const { user } = useAuth();
   const { profile } = useUserProfile();
@@ -131,17 +128,6 @@ const CommandCenter = () => {
     return predictSuccess(profile.lastFormData, latestPlan.result, analyticsResult.benchmarks);
   }, [latestPlan, profile.lastFormData, analyticsResult]);
 
-  // Deterministic A/B assignment for the command-center CTA. This makes
-  // the abTestEngine a real runtime consumer of pages/components.
-  const ctaExperiment = useMemo(
-    () => createABExperiment("command_center_cta", "Command Center CTA"),
-    [],
-  );
-  const ctaVariant = useMemo(
-    () => assignVariant(user?.id ?? "anon", ctaExperiment),
-    [ctaExperiment, user?.id],
-  );
-
   const completedModules = modules.filter((m) => m.completed).length;
 
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
@@ -169,8 +155,14 @@ const CommandCenter = () => {
   }, [latestPlan, profile, modules, completedModules, streak, graph]);
 
   const { effectiveArchetypeId, confidenceTier } = useArchetype();
-  const ctaVerbs = getPrimaryCtaVerbs(effectiveArchetypeId);
-  const hasArchetype = confidenceTier !== "none";
+
+  // A "focused" mode is used when the user is new and hasn't yet filled
+  // the express wizard. We hide every other surface (WeeklyActionCard,
+  // pulse bar, guidance, InsightFeed, sidebar) so the only thing visible
+  // is the wizard. Research (Userpilot/Appcues) consistently shows that
+  // multi-surface home dashboards kill activation; the single-next-action
+  // framing is the lever that moves the needle in the first 72 hours.
+  const isFocusedStart = isNewUser && showExpressWizard;
 
   // ── MOAT Flywheel: engine output snapshot (time-series history) ──────
   useEffect(() => {
@@ -251,141 +243,132 @@ const CommandCenter = () => {
 
         <IdentityStrip />
 
-        <WeeklyActionCard
-          bottlenecks={bottlenecks}
-          guidance={guidanceItems}
-          hasPlan={plans.length > 0}
-          hasAnyConnection={connectedCount > 0}
-          stuckPoint={
-            // Prefer the dedicated signal key (persists after onboarding completion).
-            // Fall back to the live draft for users mid-onboarding.
-            safeStorage.getJSON<string | null>("funnelforge-signal-stuck-point", null) ??
-            safeStorage.getJSON<{ currentStuckPoint?: string } | null>(
-              "funnelforge-onboarding-draft",
-              null,
-            )?.currentStuckPoint ??
-            undefined
-          }
-        />
-
-        <details className="group">
-          <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground select-none list-none flex items-center gap-2" dir="auto">
-            <span className="group-open:rotate-90 transition-transform">›</span>
-            {tx({ he: "מצב העסק ומדדים", en: "Business status & metrics" }, language)}
-          </summary>
-          <div className="mt-3">
-            <BusinessPulseBar
-              healthTotal={healthTotal}
-              connectedSources={connectedCount}
-              bottleneckCount={bottlenecks.filter((b) => b.severity === "critical" || b.severity === "warning").length}
-              planCount={plans.length}
-              streakWeeks={streak.currentStreak}
-              completedModules={completedModules}
-              totalModules={modules.length}
-            />
-          </div>
-        </details>
-
-        {isNewUser && showExpressWizard && (
-          <div className="space-y-2">
+        {/* Focused start: a new user sees ONLY the express wizard. Every
+            other surface on the Command Center is suppressed below. */}
+        {isFocusedStart && (
+          <section className="space-y-3" aria-label={tx({ he: "התחל כאן", en: "Start here" }, language)}>
             <ExpressWizard onComplete={(data) => {
               safeStorage.setJSON("funnelforge-last-form", data);
+              // Fire the activation event: completing the express wizard is
+              // the shortest path to first value (a tailored plan). Without
+              // this, the AARRR dashboard can't measure time-to-activation
+              // for the fast path — only for the full wizard.
+              if (user?.id) Analytics.onboardingCompleted(user.id, "express");
               setShowExpressWizard(false);
               navigate("/wizard", { state: { expressData: data } });
             }} />
-            <p className="text-center text-xs text-muted-foreground" dir="auto">
-              <button className="underline hover:text-foreground" onClick={() => { setShowExpressWizard(false); navigate("/wizard"); }}>
+            <div className="text-center space-y-2">
+              <p className="text-xs text-muted-foreground" dir="auto">
+                {tx({
+                  he: "אחרי השלב הזה: פאנל מלא מותאם, קופי לשלושה ערוצים, וצעד שימור ראשון.",
+                  en: "After this step: a tailored funnel, copy for three channels, and your first retention move.",
+                }, language)}
+              </p>
+              <button
+                className="text-xs text-muted-foreground underline hover:text-foreground inline-flex items-center gap-1"
+                onClick={() => { setShowExpressWizard(false); navigate("/wizard"); }}
+              >
                 {tx({ he: "מעדיף שליטה מלאה? עבור לאשף המלא", en: "Prefer full control? Switch to full wizard" }, language)}
+                <ArrowRight className="h-3 w-3 rtl:rotate-180" aria-hidden="true" />
               </button>
-            </p>
-          </div>
+            </div>
+          </section>
         )}
 
-        {!nudgeDismissed && motivationState.nudge && (
-          <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />
-        )}
-
-        {(guidanceItems.length > 0 || successForecast) && (
-          <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 dark:border-blue-700/40 dark:bg-blue-900/20 p-4 text-start space-y-1">
-            {guidanceItems.length > 0 && (
-              <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
-                {tx({ he: "הדרכה", en: "Guidance" }, language)}: {guidanceItems.length} {tx({ he: "פעולות מומלצות", en: "recommended actions" }, language)}
-              </p>
-            )}
-            {successForecast && (
-              <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
-                {tx({ he: "הסתברות הצלחה חזויה", en: "Predicted success" }, language)}:{" "}
-                <strong>{successForecast.successProbability}%</strong>
-                {" "}· {successForecast.riskFactors.length} {tx({ he: "סיכונים", en: "risks" }, language)}
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="grid gap-8 lg:grid-cols-5">
-          <div className="lg:col-span-3">
-            <InsightFeed
+        {!isFocusedStart && (
+          <>
+            <WeeklyActionCard
               bottlenecks={bottlenecks}
-              pulse={pulse}
-              graph={graph}
-              hasDiff={hasDiff}
-              planCount={plans.length}
-              masteryFeatures={masteryFeatures}
-              healthScore={healthTotal}
-              connectedSources={connectedCount}
+              guidance={guidanceItems}
+              hasPlan={plans.length > 0}
+              hasAnyConnection={connectedCount > 0}
+              stuckPoint={
+                // Prefer the dedicated signal key (persists after onboarding completion).
+                // Fall back to the live draft for users mid-onboarding.
+                safeStorage.getJSON<string | null>("funnelforge-signal-stuck-point", null) ??
+                safeStorage.getJSON<{ currentStuckPoint?: string } | null>(
+                  "funnelforge-onboarding-draft",
+                  null,
+                )?.currentStuckPoint ??
+                undefined
+              }
             />
-          </div>
-          <div className="lg:col-span-2 space-y-3">
-            {hasArchetype ? (
-              // Archetype pipeline guide replaces static quick actions (H5: Choice Architecture)
-              <ArchetypePipelineGuide />
-            ) : (
-              // Cold-start fallback: static quick actions
-              <>
-                <h2 className="text-lg font-bold text-foreground px-1" dir="auto">
-                  {tx({ he: "פעולות מהירות", en: "Quick actions" }, language)}
-                </h2>
-                <Card>
-                  <CardContent className="p-4 grid gap-2">
-                    <Button className="w-full justify-start gap-2" variant={ctaVariant.id.endsWith("_treatment") ? "default" : "outline"} onClick={() => navigate("/data")}>
-                      <Database className="h-4 w-4" />
-                      {tx({ he: "חבר מקור נתונים", en: "Connect data source" }, language)}
-                    </Button>
-                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/wizard")}>
-                      <Wand2 className="h-4 w-4" />
-                      {tx({ he: "תוכנית חדשה", en: "New plan" }, language)}
-                    </Button>
-                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/differentiate")}>
-                      <Compass className="h-4 w-4" />
-                      {tx({ he: "בידול", en: "Differentiation" }, language)}
-                    </Button>
-                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate(plans.length ? `/strategy/${latestPlan?.id}` : "/strategy")}>
-                      <Map className="h-4 w-4" />
-                      {t("navStrategyCanvas")}
-                    </Button>
-                    <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate("/crm")}>
-                      <Users className="h-4 w-4" />
-                      {tx({ he: "ניהול לידים (CRM)", en: "Lead Management (CRM)" }, language)}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </>
+
+            <details className="group">
+              <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground select-none list-none flex items-center gap-2" dir="auto">
+                <span className="group-open:rotate-90 transition-transform">›</span>
+                {tx({ he: "מצב העסק ומדדים", en: "Business status & metrics" }, language)}
+              </summary>
+              <div className="mt-3">
+                <BusinessPulseBar
+                  healthTotal={healthTotal}
+                  connectedSources={connectedCount}
+                  bottleneckCount={bottlenecks.filter((b) => b.severity === "critical" || b.severity === "warning").length}
+                  planCount={plans.length}
+                  streakWeeks={streak.currentStreak}
+                  completedModules={completedModules}
+                  totalModules={modules.length}
+                />
+              </div>
+            </details>
+
+            {!nudgeDismissed && motivationState.nudge && (
+              <NudgeBanner nudge={motivationState.nudge} onDismiss={() => setNudgeDismissed(true)} />
             )}
-            <InsightsCard />
-            <AnalyticsConnectCard />
-            <ProgressMomentum
-              modules={modules}
-              streakWeeks={streak.currentStreak}
-              investmentMinutes={profile.investment.totalSessionsMinutes}
-              plansCreated={profile.investment.plansCreated}
-            />
-            {connectedCount === 0 && plans.length === 0 && (
-              <p className="text-xs text-muted-foreground px-1 text-center" dir="auto">
-                {tx({ he: "חבר את המקור הראשון כדי לפתוח תובנות מותאמות.", en: "Connect your first source to unlock tailored insights." }, language)}
-              </p>
+
+            {(guidanceItems.length > 0 || successForecast) && (
+              <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 dark:border-blue-700/40 dark:bg-blue-900/20 p-4 text-start space-y-1">
+                {guidanceItems.length > 0 && (
+                  <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
+                    {tx({ he: "הדרכה", en: "Guidance" }, language)}: {guidanceItems.length} {tx({ he: "פעולות מומלצות", en: "recommended actions" }, language)}
+                  </p>
+                )}
+                {successForecast && (
+                  <p className="text-xs text-blue-900 dark:text-blue-200" dir="auto">
+                    {tx({ he: "הסתברות הצלחה חזויה", en: "Predicted success" }, language)}:{" "}
+                    <strong>{successForecast.successProbability}%</strong>
+                    {" "}· {successForecast.riskFactors.length} {tx({ he: "סיכונים", en: "risks" }, language)}
+                  </p>
+                )}
+              </div>
             )}
-          </div>
-        </div>
+
+            <div className="grid gap-8 lg:grid-cols-5">
+              <div className="lg:col-span-3">
+                <InsightFeed
+                  bottlenecks={bottlenecks}
+                  pulse={pulse}
+                  graph={graph}
+                  hasDiff={hasDiff}
+                  planCount={plans.length}
+                  masteryFeatures={masteryFeatures}
+                  healthScore={healthTotal}
+                  connectedSources={connectedCount}
+                />
+              </div>
+              <div className="lg:col-span-2 space-y-3">
+                {/* Pipeline guide is the single directed next-step surface.
+                    It runs on the cold-start archetype when confidenceTier
+                    is "none" so a user who has filled the express wizard
+                    but not yet been classified still sees "do X next". */}
+                <ArchetypePipelineGuide />
+                <InsightsCard />
+                <AnalyticsConnectCard />
+                <ProgressMomentum
+                  modules={modules}
+                  streakWeeks={streak.currentStreak}
+                  investmentMinutes={profile.investment.totalSessionsMinutes}
+                  plansCreated={profile.investment.plansCreated}
+                />
+                {connectedCount === 0 && plans.length === 0 && (
+                  <p className="text-xs text-muted-foreground px-1 text-center" dir="auto">
+                    {tx({ he: "חבר את המקור הראשון כדי לפתוח תובנות מותאמות.", en: "Connect your first source to unlock tailored insights." }, language)}
+                  </p>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </main>
   );
