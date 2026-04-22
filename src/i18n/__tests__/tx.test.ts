@@ -20,8 +20,8 @@ describe("tx()", () => {
     expect(tx({ he: "גיבוי", en: "" }, "en")).toBe("גיבוי");
   });
 
-  it("returns empty string when both values are empty", () => {
-    expect(tx({ he: "", en: "" }, "en")).toBe("");
+  it("returns a visible marker when both values are empty (surfaces drift)", () => {
+    expect(tx({ he: "", en: "" }, "en")).toBe("⟨missing⟩");
   });
 
   it("tx.b builds a BilingualStr identity", () => {

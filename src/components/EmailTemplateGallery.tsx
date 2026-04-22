@@ -14,7 +14,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { downloadExport } from "@/engine/exportEngine";
 import type { ExportResult } from "@/engine/exportEngine";
-import * as XLSX from "xlsx";
+// xlsx is loaded on-demand inside exportTemplate (dynamic import below) to
+// keep it out of the main bundle.
 
 // ───────────────────────────────────────────────
 // Types
@@ -239,7 +240,7 @@ export function EmailTemplateGallery() {
     copyToClipboard(allText);
   }
 
-  function exportTemplate(format: "mailchimp" | "hubspot") {
+  async function exportTemplate(format: "mailchimp" | "hubspot") {
     const rows = template.steps.map((step) => ({
       "Day Offset": step.dayOffset,
       Subject: step.subject[language],
@@ -250,6 +251,7 @@ export function EmailTemplateGallery() {
       "From Name": "Campaign Craft",
     }));
 
+    const XLSX = await import("xlsx");
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(rows);
     XLSX.utils.book_append_sheet(wb, ws, format === "mailchimp" ? "Mailchimp" : "HubSpot");
