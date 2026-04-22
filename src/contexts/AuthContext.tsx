@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from "react";
 import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
 import { UserRole, canPerform as canPerformAction } from "@/types/governance";
 import { safeStorage } from "@/lib/safeStorage";
@@ -260,6 +260,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [tier, setTierState] = useState<PricingTier>("free");
   const [isLocalAuth, setIsLocalAuth] = useState(true);
+  // Tracks the access_token of the session we're currently enriching. When
+  // onAuthStateChange fires rapidly (e.g. SIGNED_IN followed by TOKEN_REFRESHED),
+  // the awaited buildSupabaseUser of an earlier event can resolve AFTER a later
+  // event has already updated state, overwriting fresh data with stale. We
+  // gate every setUser(built.user) on this ref still matching the session.
+  const latestTokenRef = useRef<string | null>(null);
 
   const canUse = useCallback((feature: Feature) => canAccess(tier, feature), [tier]);
   const canPerform = useCallback((action: string) => canPerformAction(user?.role ?? "viewer", action), [user?.role]);
@@ -324,12 +330,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           recordAuthEvent({ phase: "init.getSession", ok: true, meta: { hasSession: !!s?.user } });
           if (s?.user && !cancelled) {
             const sessionUser = s.user;
+            const sessionToken = s.access_token ?? null;
+            latestTokenRef.current = sessionToken;
             // Critical invariant: if a session exists we MUST set a user.
             // Set minimal user synchronously first so the UI flips, then enrich.
             setUser(makeMinimalUser(sessionUser));
             try {
               const built = await buildSupabaseUser(supabase, sessionUser);
-              if (!cancelled) {
+              if (!cancelled && latestTokenRef.current === sessionToken) {
                 setUser(built.user);
                 if (isPricingTier(built.tier)) setTierState(built.tier);
                 recordAuthEvent({ phase: "init.buildSupabaseUser", ok: true, meta: { role: built.user.role, tier: built.tier } });
@@ -346,11 +354,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             recordAuthEvent({ phase: "onAuthStateChange", ok: true, meta: { event, hasSession: !!sess?.user } });
             if (sess?.user) {
               const sessionUser = sess.user;
+              const sessionToken = sess.access_token ?? null;
+              latestTokenRef.current = sessionToken;
               // Same invariant: flip UI immediately via minimal user, then enrich.
               setUser(makeMinimalUser(sessionUser));
               try {
                 const built = await buildSupabaseUser(supabase, sessionUser);
-                if (!cancelled) {
+                // Guard: if a later event (TOKEN_REFRESHED, another SIGNED_IN)
+                // bumped the token while we were awaiting, discard our result.
+                if (!cancelled && latestTokenRef.current === sessionToken) {
                   setUser(built.user);
                   if (isPricingTier(built.tier)) setTierState(built.tier);
                 }
@@ -368,6 +380,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 void flushOutcomeBuffer(sessionUser.id).catch(() => {});
               } catch { /* ignore */ }
             } else {
+              latestTokenRef.current = null;
               setUser(null);
               setTierState("free");
             }

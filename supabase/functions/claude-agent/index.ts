@@ -262,7 +262,26 @@ type AnthropicResponse = {
   content: ContentBlock[];
   stop_reason: "end_turn" | "tool_use" | "max_tokens";
   error?: { message: string };
+  usage?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    cache_creation_input_tokens?: number;
+    cache_read_input_tokens?: number;
+  };
 };
+
+// Opus 4.x pricing per 1M tokens (USD → NIS at ~3.6 FX).
+// These don't need to be exact — they exist to bound runaway spend within a
+// single agent session. Keep them slightly high so the cap is conservative.
+const PRICE_PER_INPUT_TOKEN_NIS = 15 / 1_000_000 * 3.6;
+const PRICE_PER_OUTPUT_TOKEN_NIS = 75 / 1_000_000 * 3.6;
+const SESSION_COST_CAP_NIS = 0.5;
+
+function estimateCostNIS(usage: NonNullable<AnthropicResponse["usage"]>): number {
+  const input = (usage.input_tokens ?? 0) + (usage.cache_creation_input_tokens ?? 0);
+  const output = usage.output_tokens ?? 0;
+  return input * PRICE_PER_INPUT_TOKEN_NIS + output * PRICE_PER_OUTPUT_TOKEN_NIS;
+}
 
 // ─── Agentic Loop ─────────────────────────────────────────────────────────────
 
@@ -273,6 +292,7 @@ async function runAgentLoop(
 ): Promise<{ response: string; toolsUsed: string[]; iterations: number }> {
   const toolsUsed: string[] = [];
   let iterations = 0;
+  let cumulativeCostNIS = 0;
 
   while (iterations < MAX_ITERATIONS) {
     iterations++;
@@ -305,6 +325,11 @@ async function runAgentLoop(
     // Append assistant's response to history
     messages.push({ role: "assistant", content: data.content });
 
+    // Track spend per iteration. Without this, a confused agent can burn ~10x
+    // the budget of a normal call before MAX_ITERATIONS trips. If we're over
+    // the cap we return the text we have so far instead of another round.
+    if (data.usage) cumulativeCostNIS += estimateCostNIS(data.usage);
+
     if (data.stop_reason === "end_turn") {
       const textBlocks = data.content.filter((b): b is TextBlock => b.type === "text");
       const response = textBlocks.map((b) => b.text).join("\n");
@@ -313,6 +338,17 @@ async function runAgentLoop(
 
     if (data.stop_reason !== "tool_use") {
       throw new Error(`Unexpected stop_reason: ${data.stop_reason}`);
+    }
+
+    if (cumulativeCostNIS >= SESSION_COST_CAP_NIS) {
+      const textBlocks = data.content.filter((b): b is TextBlock => b.type === "text");
+      const partial = textBlocks.map((b) => b.text).join("\n");
+      console.warn("claude_agent.cost_cap_reached", { iterations, cumulativeCostNIS });
+      return {
+        response: partial || "⚠️ הסוכן עצר — חרג מהתקציב לסשן הזה. נסה בקשה יותר ממוקדת.",
+        toolsUsed,
+        iterations,
+      };
     }
 
     // Execute all tool calls and collect results
