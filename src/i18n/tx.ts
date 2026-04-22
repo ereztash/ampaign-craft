@@ -27,7 +27,16 @@ export interface BilingualStr {
  */
 export function tx<T extends string = string>(text: { he: T; en: T }, lang: string): T {
   const key: "he" | "en" = lang === "he" ? "he" : "en";
-  return (text[key] || text.en || text.he || ("" as T));
+  const resolved = text[key] || text.en || text.he;
+  if (resolved) return resolved;
+  // Both sides missing — surface loudly in dev so QA can spot the drift,
+  // and return a visible marker instead of "" (which silently disappears
+  // into buttons/labels and hides the bug in prod).
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.warn("[tx] missing bilingual text for both languages", text);
+  }
+  return "⟨missing⟩" as T;
 }
 
 /**

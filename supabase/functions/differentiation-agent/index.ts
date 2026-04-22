@@ -3,7 +3,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -42,6 +42,9 @@ Deno.serve(async (req) => {
     });
   }
 
+  const userRl = checkUserRateLimit(user.id, "differentiation-agent", 10, 60_000);
+  if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
+
   try {
     const reqBody = await req.json();
     const { phase, formData, previousResults } = reqBody;
@@ -67,7 +70,15 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 4096,
-        system: systemPrompt,
+        // Cache the full system prompt. Within the 5-minute TTL, repeat
+        // invocations for the same user+business+phase (common in the
+        // wizard flow) read the prefix at ~0.1x cost instead of paying
+        // full input price. For the dynamic middle of the prompt to
+        // benefit more, a future refactor should split buildSystemPrompt
+        // into a stable preamble + dynamic context.
+        system: [
+          { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
+        ],
         messages: [{ role: "user", content: userMessage }],
       }),
     });

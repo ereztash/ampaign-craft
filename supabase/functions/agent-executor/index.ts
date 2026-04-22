@@ -8,7 +8,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -46,6 +46,11 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  // Per-user cap: a 13-agent blackboard run is ~13 calls, so allow 20/min
+  // per user to give headroom for one run plus a few retries.
+  const userRl = checkUserRateLimit(user.id, "agent-executor", 20, 60_000);
+  if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
 
   try {
     const { systemPrompt, prompt, model, maxTokens, temperature } = await req.json();

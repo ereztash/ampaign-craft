@@ -60,6 +60,36 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Block duplicate subscriptions. A user who double-clicks "upgrade" or
+    // who returns after an interrupted checkout could otherwise spawn a
+    // second active subscription. If we know their Stripe customer ID,
+    // check for an active sub and send them to the portal instead.
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("id", user.id)
+      .maybeSingle();
+    const customerId = profile?.stripe_customer_id;
+    if (customerId) {
+      const subsResp = await fetch(
+        `https://api.stripe.com/v1/subscriptions?customer=${encodeURIComponent(customerId)}&status=active&limit=1`,
+        { headers: { "Authorization": `Bearer ${STRIPE_SECRET_KEY}` } },
+      );
+      const subs = await subsResp.json();
+      if (Array.isArray(subs.data) && subs.data.length > 0) {
+        return new Response(
+          JSON.stringify({
+            error: "already_subscribed",
+            message: "כבר יש לך מנוי פעיל. נהל אותו דרך פורטל הלקוחות.",
+          }),
+          {
+            status: 409,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
+      }
+    }
+
     // Create Stripe Checkout Session
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",

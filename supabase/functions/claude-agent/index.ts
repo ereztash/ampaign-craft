@@ -14,7 +14,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -262,7 +262,33 @@ type AnthropicResponse = {
   content: ContentBlock[];
   stop_reason: "end_turn" | "tool_use" | "max_tokens";
   error?: { message: string };
+  usage?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    cache_creation_input_tokens?: number;
+    cache_read_input_tokens?: number;
+  };
 };
+
+// Opus 4.x pricing per 1M tokens (USD → NIS at ~3.6 FX).
+// These don't need to be exact — they exist to bound runaway spend within a
+// single agent session. Keep them slightly high so the cap is conservative.
+const PRICE_PER_INPUT_TOKEN_NIS = 15 / 1_000_000 * 3.6;
+const PRICE_PER_OUTPUT_TOKEN_NIS = 75 / 1_000_000 * 3.6;
+const SESSION_COST_CAP_NIS = 0.5;
+
+function estimateCostNIS(usage: NonNullable<AnthropicResponse["usage"]>): number {
+  const base = usage.input_tokens ?? 0;
+  const cacheWrite = usage.cache_creation_input_tokens ?? 0;
+  const cacheRead = usage.cache_read_input_tokens ?? 0;
+  const output = usage.output_tokens ?? 0;
+  // Cache writes cost ~1.25x base input; cache reads cost ~0.1x.
+  const inputCost =
+    base * PRICE_PER_INPUT_TOKEN_NIS
+    + cacheWrite * PRICE_PER_INPUT_TOKEN_NIS * 1.25
+    + cacheRead * PRICE_PER_INPUT_TOKEN_NIS * 0.1;
+  return inputCost + output * PRICE_PER_OUTPUT_TOKEN_NIS;
+}
 
 // ─── Agentic Loop ─────────────────────────────────────────────────────────────
 
@@ -273,6 +299,7 @@ async function runAgentLoop(
 ): Promise<{ response: string; toolsUsed: string[]; iterations: number }> {
   const toolsUsed: string[] = [];
   let iterations = 0;
+  let cumulativeCostNIS = 0;
 
   while (iterations < MAX_ITERATIONS) {
     iterations++;
@@ -288,12 +315,22 @@ async function runAgentLoop(
         model: MODEL,
         max_tokens: MAX_TOKENS,
         thinking: { type: "adaptive" },
-        system:
-          "אתה מאמן שיווק ועסקים AI של FunnelForge — מערכת צמיחה עסקית המבוססת על מדע התנהגותי. " +
-          "יש לך גישה לנתוני העסק של המשתמש, תוכניות שיווק, ציוני בריאות, ותוצרי סוכנים. " +
-          "ענה בעברית כברירת מחדל אלא אם המשתמש פונה באנגלית. " +
-          "השתמש בכלים כדי לאסוף מידע רלוונטי לפני שאתה מסכם המלצות. " +
-          "תן תשובות מעשיות, ספציפיות, וכלול דוגמאות קונקרטיות.",
+        // The system prompt + tools definitions are identical across every
+        // request (tools render at position 0, system right after). Wrap the
+        // last system block with cache_control: ephemeral so tools+system are
+        // cached together; subsequent requests read the prefix at ~0.1x cost.
+        system: [
+          {
+            type: "text",
+            text:
+              "אתה מאמן שיווק ועסקים AI של FunnelForge — מערכת צמיחה עסקית המבוססת על מדע התנהגותי. " +
+              "יש לך גישה לנתוני העסק של המשתמש, תוכניות שיווק, ציוני בריאות, ותוצרי סוכנים. " +
+              "ענה בעברית כברירת מחדל אלא אם המשתמש פונה באנגלית. " +
+              "השתמש בכלים כדי לאסוף מידע רלוונטי לפני שאתה מסכם המלצות. " +
+              "תן תשובות מעשיות, ספציפיות, וכלול דוגמאות קונקרטיות.",
+            cache_control: { type: "ephemeral" },
+          },
+        ],
         tools: TOOLS,
         messages,
       }),
@@ -305,6 +342,11 @@ async function runAgentLoop(
     // Append assistant's response to history
     messages.push({ role: "assistant", content: data.content });
 
+    // Track spend per iteration. Without this, a confused agent can burn ~10x
+    // the budget of a normal call before MAX_ITERATIONS trips. If we're over
+    // the cap we return the text we have so far instead of another round.
+    if (data.usage) cumulativeCostNIS += estimateCostNIS(data.usage);
+
     if (data.stop_reason === "end_turn") {
       const textBlocks = data.content.filter((b): b is TextBlock => b.type === "text");
       const response = textBlocks.map((b) => b.text).join("\n");
@@ -313,6 +355,17 @@ async function runAgentLoop(
 
     if (data.stop_reason !== "tool_use") {
       throw new Error(`Unexpected stop_reason: ${data.stop_reason}`);
+    }
+
+    if (cumulativeCostNIS >= SESSION_COST_CAP_NIS) {
+      const textBlocks = data.content.filter((b): b is TextBlock => b.type === "text");
+      const partial = textBlocks.map((b) => b.text).join("\n");
+      console.warn("claude_agent.cost_cap_reached", { iterations, cumulativeCostNIS });
+      return {
+        response: partial || "⚠️ הסוכן עצר — חרג מהתקציב לסשן הזה. נסה בקשה יותר ממוקדת.",
+        toolsUsed,
+        iterations,
+      };
     }
 
     // Execute all tool calls and collect results
@@ -364,11 +417,28 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Per-user rate limit runs after JWT verification. The earlier per-IP
+  // check is still in place — the per-user cap is the tight one because
+  // a single user can burn meaningful money regardless of their IP.
+  const userRl = checkUserRateLimit(user.id, "claude-agent", 10, 60_000);
+  if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
+
   try {
     const { message, plan_id, history = [] } = await req.json();
 
     if (!message?.trim()) {
       return new Response(JSON.stringify({ error: "message is required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // plan_id is interpolated into the user message below. Enforce a strict
+    // UUID shape so an attacker can't break out of the bracket syntax and
+    // inject instructions into the model's context.
+    const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (plan_id !== undefined && plan_id !== null && (typeof plan_id !== "string" || !UUID_RE.test(plan_id))) {
+      return new Response(JSON.stringify({ error: "plan_id must be a UUID" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

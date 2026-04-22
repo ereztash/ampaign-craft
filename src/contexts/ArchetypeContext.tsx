@@ -5,7 +5,7 @@
 // Follows the same dual-mode (Supabase / localStorage) pattern as AuthContext.
 // ═══════════════════════════════════════════════
 
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from "react";
 import type { BlackboardState } from "@/engine/blackboard/blackboardStore";
 import type {
   ArchetypeId,
@@ -334,8 +334,11 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
   const adaptationsEnabled = profile.adaptationsEnabled === true;
   const revealSeen = profile.revealSeen === true;
 
-  return (
-    <ArchetypeContext.Provider value={{
+  // Memoise so consumers only re-render when something actually changes.
+  // Without this, every provider render rebuilds the object literal and
+  // every `useArchetype()` consumer re-renders even on unrelated state.
+  const value = useMemo(
+    () => ({
       profile,
       uiConfig,
       effectiveArchetypeId,
@@ -349,10 +352,25 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
       revealSeen,
       markRevealSeen,
       recordVariantPick,
-    }}>
-      {children}
-    </ArchetypeContext.Provider>
+    }),
+    [
+      profile,
+      uiConfig,
+      effectiveArchetypeId,
+      confidenceTier,
+      loading,
+      updateFromBlackboard,
+      setOverride,
+      clearProfile,
+      adaptationsEnabled,
+      setAdaptationsEnabled,
+      revealSeen,
+      markRevealSeen,
+      recordVariantPick,
+    ],
   );
+
+  return <ArchetypeContext.Provider value={value}>{children}</ArchetypeContext.Provider>;
 }
 
 // ═══════════════════════════════════════════════

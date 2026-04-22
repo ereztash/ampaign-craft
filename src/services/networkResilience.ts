@@ -30,7 +30,11 @@ export async function withRetry<T>(
     } catch (err) {
       lastError = err;
       if (attempt < maxRetries) {
-        const delay = Math.min(baseDelayMs * Math.pow(2, attempt), 10_000);
+        // Full jitter: spread simultaneous retries across the window so
+        // an upstream outage doesn't trigger a thundering herd when N
+        // clients all retry at exactly t=1s, 2s, 4s...
+        const cap = Math.min(baseDelayMs * Math.pow(2, attempt), 10_000);
+        const delay = Math.random() * cap;
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }

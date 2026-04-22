@@ -29,7 +29,25 @@ export function checkRateLimit(
   limit: number,
   windowMs: number,
 ): RateLimitResult {
-  const key = `${endpoint}:${getClientKey(req)}`;
+  return checkKeyedRateLimit(`${endpoint}:${getClientKey(req)}`, limit, windowMs);
+}
+
+/**
+ * Per-user rate limit for authenticated endpoints. Use this in addition to
+ * checkRateLimit on endpoints that can burn real money (LLM calls) — a
+ * shared corporate NAT pool can absorb per-IP limits, and a single user
+ * rotating IPs can bypass them entirely. Call after verifying the JWT.
+ */
+export function checkUserRateLimit(
+  userId: string,
+  endpoint: string,
+  limit: number,
+  windowMs: number,
+): RateLimitResult {
+  return checkKeyedRateLimit(`user:${endpoint}:${userId}`, limit, windowMs);
+}
+
+function checkKeyedRateLimit(key: string, limit: number, windowMs: number): RateLimitResult {
   const now = Date.now();
   const cutoff = now - windowMs;
   const hits = (windows.get(key) ?? []).filter((t) => t > cutoff);

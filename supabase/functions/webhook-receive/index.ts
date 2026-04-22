@@ -11,6 +11,12 @@ import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+async function sha256Hex(input: string): Promise<string> {
+  const bytes = new TextEncoder().encode(input);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 // Kept as wildcard — this is a public inbound webhook endpoint called by
 // third-party services (Zapier, Make, n8n) that don't send an Origin header.
 const corsHeaders = {
@@ -39,13 +45,16 @@ Deno.serve(async (req) => {
   let userId: string | null = null;
 
   if (apiKey) {
-    // Look up API key in user_integrations
+    // Constant-time index lookup by SHA-256 of the API key. This replaces a
+    // JSONB `.contains()` scan that was both a DoS vector on this public
+    // endpoint and a timing side-channel.
+    const apiKeyHash = await sha256Hex(apiKey);
     const { data: integration } = await supabase
       .from("user_integrations")
       .select("user_id")
       .eq("platform", "webhook")
       .eq("status", "connected")
-      .contains("tokens", { api_key: apiKey })
+      .eq("api_key_hash", apiKeyHash)
       .single();
 
     if (integration) {

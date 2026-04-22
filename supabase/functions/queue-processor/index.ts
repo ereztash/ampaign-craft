@@ -92,10 +92,16 @@ Deno.serve(async (req) => {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
 
+        // Exponential backoff capped at 1h. Earlier code multiplied attempts
+        // linearly (30 * attempts), so a poison message kept retrying every
+        // ~2-3 min and starved healthy jobs. attempts=1 → 60s, 2 → 120s,
+        // 3 → 240s, 4 → 480s, 5 → 960s, ... ≤ 3600s. The RPC moves the row
+        // to dead_letter once attempts >= max_attempts.
+        const retryDelaySeconds = Math.min(30 * Math.pow(2, event.attempts), 3600);
         await supabase.rpc("fail_event", {
           event_id: event.id,
           error_message: errorMessage,
-          retry_delay_seconds: 30 * event.attempts, // exponential-ish backoff
+          retry_delay_seconds: retryDelaySeconds,
         });
 
         results.push({ id: event.id, status: "failed", error: errorMessage });

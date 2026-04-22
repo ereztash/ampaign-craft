@@ -83,6 +83,24 @@ Deno.serve(async (req) => {
     const event = JSON.parse(body);
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+    // Idempotency: Stripe retries on timeout/5xx. Skip duplicate event IDs
+    // so a retry can't re-apply a tier change (especially dangerous when
+    // checkout.session.completed and customer.subscription.deleted interleave).
+    if (typeof event.id === "string" && event.id.length > 0) {
+      const { error: dedupErr } = await supabase
+        .from("stripe_events_processed")
+        .insert({ event_id: event.id, event_type: event.type });
+      if (dedupErr) {
+        // 23505 = unique_violation → already processed, ack and stop.
+        if (dedupErr.code === "23505") {
+          return new Response(JSON.stringify({ received: true, duplicate: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        throw dedupErr;
+      }
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       const userId = session.metadata?.user_id ?? session.client_reference_id;
@@ -106,16 +124,36 @@ Deno.serve(async (req) => {
       const customerId = typeof subscription.customer === "string" ? subscription.customer : null;
 
       // Prefer metadata; fall back to customer-id lookup if metadata was lost.
+      let affected: number | null = null;
       if (userId) {
-        await supabase.from("profiles").update({
-          tier: "free",
-          stripe_subscription_id: null,
-        }).eq("id", userId);
+        const { count } = await supabase
+          .from("profiles")
+          .update({ tier: "free", stripe_subscription_id: null }, { count: "exact" })
+          .eq("id", userId);
+        affected = count;
       } else if (customerId) {
-        await supabase.from("profiles").update({
-          tier: "free",
-          stripe_subscription_id: null,
-        }).eq("stripe_customer_id", customerId);
+        const { count } = await supabase
+          .from("profiles")
+          .update({ tier: "free", stripe_subscription_id: null }, { count: "exact" })
+          .eq("stripe_customer_id", customerId);
+        affected = count;
+      }
+
+      // If we couldn't resolve a user, flag the event for reconciliation so
+      // a cancelled subscription doesn't silently leave a paying-tier ghost.
+      if (!affected) {
+        const reason = !userId && !customerId
+          ? "no_user_id_and_no_customer_id"
+          : userId
+            ? `user_id_not_found:${userId}`
+            : `customer_id_not_found:${customerId}`;
+        console.error("stripe_webhook.unresolved", { eventId: event.id, reason });
+        if (typeof event.id === "string" && event.id.length > 0) {
+          await supabase
+            .from("stripe_events_processed")
+            .update({ unresolved: true, unresolved_reason: reason })
+            .eq("event_id", event.id);
+        }
       }
     }
 
