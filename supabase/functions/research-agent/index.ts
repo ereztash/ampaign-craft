@@ -74,7 +74,12 @@ Deno.serve(async (req) => {
         model: selectedModel,
         max_tokens: maxTokens,
         temperature: 0.1,
-        system: systemPrompt,
+        // Cache the system prompt. Research queries often share the same
+        // (domain, context) pair within a single session, so subsequent
+        // calls within the 5-minute TTL read the prefix at ~0.1x cost.
+        system: [
+          { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
+        ],
         messages: [{ role: "user", content: userPrompt }],
       }),
     });

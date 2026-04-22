@@ -14,7 +14,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -278,9 +278,16 @@ const PRICE_PER_OUTPUT_TOKEN_NIS = 75 / 1_000_000 * 3.6;
 const SESSION_COST_CAP_NIS = 0.5;
 
 function estimateCostNIS(usage: NonNullable<AnthropicResponse["usage"]>): number {
-  const input = (usage.input_tokens ?? 0) + (usage.cache_creation_input_tokens ?? 0);
+  const base = usage.input_tokens ?? 0;
+  const cacheWrite = usage.cache_creation_input_tokens ?? 0;
+  const cacheRead = usage.cache_read_input_tokens ?? 0;
   const output = usage.output_tokens ?? 0;
-  return input * PRICE_PER_INPUT_TOKEN_NIS + output * PRICE_PER_OUTPUT_TOKEN_NIS;
+  // Cache writes cost ~1.25x base input; cache reads cost ~0.1x.
+  const inputCost =
+    base * PRICE_PER_INPUT_TOKEN_NIS
+    + cacheWrite * PRICE_PER_INPUT_TOKEN_NIS * 1.25
+    + cacheRead * PRICE_PER_INPUT_TOKEN_NIS * 0.1;
+  return inputCost + output * PRICE_PER_OUTPUT_TOKEN_NIS;
 }
 
 // ─── Agentic Loop ─────────────────────────────────────────────────────────────
@@ -308,12 +315,22 @@ async function runAgentLoop(
         model: MODEL,
         max_tokens: MAX_TOKENS,
         thinking: { type: "adaptive" },
-        system:
-          "אתה מאמן שיווק ועסקים AI של FunnelForge — מערכת צמיחה עסקית המבוססת על מדע התנהגותי. " +
-          "יש לך גישה לנתוני העסק של המשתמש, תוכניות שיווק, ציוני בריאות, ותוצרי סוכנים. " +
-          "ענה בעברית כברירת מחדל אלא אם המשתמש פונה באנגלית. " +
-          "השתמש בכלים כדי לאסוף מידע רלוונטי לפני שאתה מסכם המלצות. " +
-          "תן תשובות מעשיות, ספציפיות, וכלול דוגמאות קונקרטיות.",
+        // The system prompt + tools definitions are identical across every
+        // request (tools render at position 0, system right after). Wrap the
+        // last system block with cache_control: ephemeral so tools+system are
+        // cached together; subsequent requests read the prefix at ~0.1x cost.
+        system: [
+          {
+            type: "text",
+            text:
+              "אתה מאמן שיווק ועסקים AI של FunnelForge — מערכת צמיחה עסקית המבוססת על מדע התנהגותי. " +
+              "יש לך גישה לנתוני העסק של המשתמש, תוכניות שיווק, ציוני בריאות, ותוצרי סוכנים. " +
+              "ענה בעברית כברירת מחדל אלא אם המשתמש פונה באנגלית. " +
+              "השתמש בכלים כדי לאסוף מידע רלוונטי לפני שאתה מסכם המלצות. " +
+              "תן תשובות מעשיות, ספציפיות, וכלול דוגמאות קונקרטיות.",
+            cache_control: { type: "ephemeral" },
+          },
+        ],
         tools: TOOLS,
         messages,
       }),
@@ -399,6 +416,12 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  // Per-user rate limit runs after JWT verification. The earlier per-IP
+  // check is still in place — the per-user cap is the tight one because
+  // a single user can burn meaningful money regardless of their IP.
+  const userRl = checkUserRateLimit(user.id, "claude-agent", 10, 60_000);
+  if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
 
   try {
     const { message, plan_id, history = [] } = await req.json();
