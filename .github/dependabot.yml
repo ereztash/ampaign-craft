@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Jerusalem
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - security
+    groups:
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+      testing:
+        patterns:
+          - vitest
+          - "@testing-library/*"
+          - jsdom
+      types:
+        patterns:
+          - "@types/*"
+    ignore:
+      # xlsx has known HIGH CVEs with no upstream fix. Pinned and tracked
+      # via the security audit; migration to exceljs planned separately.
+      - dependency-name: xlsx
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - ci
+      - security
