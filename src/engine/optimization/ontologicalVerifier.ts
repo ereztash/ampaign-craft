@@ -1,8 +1,9 @@
 // ═══════════════════════════════════════════════
 // M6 — Ontological Verifier
 //
-// Single write-gate for every blackboard (shared_context) write.
-// Pure, synchronous, zero I/O. Callers decide what to do on rejection.
+// Single write-gate for every blackboard (shared_context) write AND for
+// every knowledge_facts insert (M7 overlay). Pure, synchronous, zero
+// I/O. Callers decide what to do on rejection.
 //
 // The verifier is the only place that enforces the write contract:
 //   - namespace prefix
@@ -13,8 +14,26 @@
 //   - optional schema validator
 //   - coherence vs previous write on the same concept_key
 //
-// Zero dependencies on React, Supabase, or any SDK.
+// verifyFact (added for M7) applies:
+//   - Zod schema (extractedFactSchema)
+//   - Cross-field contract (checkContract from graosOntology)
+//   - Anti-injection check: canonical after sanitization must equal the
+//     canonical before sanitization, else the input carried disallowed
+//     content (OWASP LLM01 indirect injection).
+//   - Regime-aware confidence floor: crisis demands 0.75, transitional
+//     0.6, stable 0.5.
+//
+// Zero dependencies on React, Supabase, or any SDK. Zod is already in
+// the client bundle so importing it costs nothing extra.
 // ═══════════════════════════════════════════════
+
+import {
+  canonicalize,
+  checkContract,
+  extractedFactSchema,
+  type ExtractedFact,
+  type Regime,
+} from "./graosOntology";
 
 export type VerificationResult =
   | { ok: true }
@@ -193,3 +212,87 @@ export function verifyWrite(
 
   return { ok: true };
 }
+
+// ───────────────────────────────────────────────
+// verifyFact — M7 knowledge-extraction write gate
+// ───────────────────────────────────────────────
+
+/**
+ * Confidence floor per behavioral regime. A fact extracted while the
+ * user's metrics are in "crisis" has higher priors for being wrong
+ * (noisier input, stressed behavior) so we demand stronger evidence
+ * before letting it land. "stable" keeps the normal 0.5 floor.
+ */
+const REGIME_CONFIDENCE_FLOOR: Record<Regime, number> = {
+  stable: 0.5,
+  transitional: 0.6,
+  crisis: 0.75,
+};
+
+export interface VerifyFactOptions {
+  /** Pass true only from the DP-aggregation job. Default false rejects
+   *  predicates flagged as cross-tenant by the ontology. */
+  allowCrossTenant?: boolean;
+}
+
+/**
+ * Validates an extracted fact before it is written to knowledge_facts.
+ *
+ * Fail-fast order (cheapest → most expensive):
+ *   1. Zod schema (shape, ranges, enums)
+ *   2. Cross-field semantic contract (predicate accepts subject type,
+ *      object kind matches, etc.)
+ *   3. Anti-injection canonical equality (defence in depth — the
+ *      extractor is supposed to have canonicalized already, but if the
+ *      canonical form changes again after canonicalize() it means the
+ *      input still carries disallowed chars / injection payload)
+ *   4. Regime-aware confidence floor
+ */
+export function verifyFact(
+  candidate: unknown,
+  options: VerifyFactOptions = {},
+): VerificationResult {
+  const parsed = extractedFactSchema.safeParse(candidate);
+  if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0];
+    return fail(
+      `fact schema validation failed: ${firstIssue?.message ?? "invalid"}`,
+      firstIssue?.path?.join(".") ?? undefined,
+    );
+  }
+  const fact: ExtractedFact = parsed.data;
+
+  const violation = checkContract(
+    fact.subject,
+    fact.predicate,
+    fact.object,
+    options.allowCrossTenant === true,
+  );
+  if (violation) {
+    return fail(violation.message, "contract");
+  }
+
+  // Anti-injection canonical equality. After canonicalize() the string
+  // should be a no-op (the extractor must have canonicalized already).
+  // If it changes, the extractor leaked raw content — treat as attack.
+  if (canonicalize(fact.subject.canonical) !== fact.subject.canonical) {
+    return fail("subject.canonical not pre-canonicalized", "subject.canonical");
+  }
+  if ("type" in fact.object) {
+    if (canonicalize(fact.object.canonical) !== fact.object.canonical) {
+      return fail("object.canonical not pre-canonicalized", "object.canonical");
+    }
+  }
+
+  // Regime-aware confidence floor.
+  const floor = fact.regime ? REGIME_CONFIDENCE_FLOOR[fact.regime] : 0.5;
+  if (fact.confidence < floor) {
+    return fail(
+      `confidence ${fact.confidence.toFixed(2)} below floor ${floor} for regime '${fact.regime ?? "stable"}'`,
+      "confidence",
+    );
+  }
+
+  return { ok: true };
+}
+
