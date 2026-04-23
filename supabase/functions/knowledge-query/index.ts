@@ -184,9 +184,13 @@ Deno.serve(async (req) => {
       }, 422, corsHeaders);
     }
 
-    // Mark cited facts as referenced (engagement telemetry).
-    for (const id of validatedRefs) {
-      await supabase.rpc("kg_mark_fact_referenced", { p_fact_id: id, p_user_id: user.id });
+    // Mark cited facts as referenced (engagement telemetry) in a
+    // single batch RPC instead of one round-trip per cited fact.
+    if (validatedRefs.length > 0) {
+      await supabase.rpc("kg_mark_facts_referenced_batch", {
+        p_fact_ids: validatedRefs,
+        p_user_id: user.id,
+      });
     }
 
     const response: QueryResponse = {
