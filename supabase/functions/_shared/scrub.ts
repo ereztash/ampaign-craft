@@ -21,7 +21,7 @@
 //   6. Detect-mode returns whether the input looked suspicious so the
 //      caller can drop the fact, not just sanitize it.
 
-const ZERO_WIDTH_RE = /[​-‏ - ﻿]/g;
+const ZERO_WIDTH_RE = /[\u200B-\u200F\u2028-\u202F\uFEFF]/g;
 // eslint-disable-next-line no-control-regex -- stripping control chars is the point
 const CONTROL_CHARS_RE = /[\x00-\x1f\x7f]/g;
 const ROLE_MARKER_RE = /(#+\s*(system|assistant|user|developer|tool)\b)/gi;

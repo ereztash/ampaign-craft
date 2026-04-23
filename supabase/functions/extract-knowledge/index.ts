@@ -48,6 +48,21 @@ const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+// Lazy Supabase.ai embedding session (gte-small, 384-dim). Used to
+// populate knowledge_entities.embedding so seed-entity retrieval in
+// knowledge-query can find this tenant's entities via HNSW.
+interface SupabaseAiSession {
+  run(input: string, opts?: { mean_pool?: boolean; normalize?: boolean }): Promise<number[]>;
+}
+let embeddingSession: SupabaseAiSession | null = null;
+function getEmbeddingSession(): SupabaseAiSession {
+  if (!embeddingSession) {
+    // @ts-expect-error Supabase global provided by the Edge Runtime
+    embeddingSession = new Supabase.ai.Session("gte-small") as SupabaseAiSession;
+  }
+  return embeddingSession;
+}
+
 // Hard caps on how much a single call can extract.
 const MAX_INPUTS_PER_CALL = 10;
 const MAX_INPUT_LENGTH = 4000;
@@ -315,8 +330,21 @@ async function persistFacts(userId: string, facts: ExtractedFact[]): Promise<Per
     }
   }
 
-  // Upsert entities. ON CONFLICT with the unique index bumps mention_count.
-  const entityRows = [...entityMap.values()].map((e) => ({
+  // Generate embeddings for every entity so they land in the HNSW
+  // index and become retrievable by knowledge-query. Without this,
+  // entities exist in the graph but match_kg_entities_v1 filters them
+  // out via "WHERE embedding IS NOT NULL" and the synthesizer gets
+  // nothing to cite. The embedding text is "type: canonical_name" so
+  // it carries both the category and the specific name.
+  const session = getEmbeddingSession();
+  const entityValues = [...entityMap.values()];
+  const embeddings = await Promise.all(
+    entityValues.map((e) =>
+      session.run(`${e.type}: ${e.canonical}`, { mean_pool: true, normalize: true })
+    )
+  );
+
+  const entityRows = entityValues.map((e, i) => ({
     user_id: userId,
     entity_type: e.type,
     canonical_name: e.canonical,
@@ -324,6 +352,7 @@ async function persistFacts(userId: string, facts: ExtractedFact[]): Promise<Per
     source_user_id: userId,
     extractor_version: EXTRACTOR_VERSION,
     mention_count: 1,
+    embedding: embeddings[i],
   }));
 
   const { data: upserted, error: entErr } = await supabase
