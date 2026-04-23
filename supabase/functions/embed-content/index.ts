@@ -32,16 +32,21 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Verify JWT
+  // Verify JWT. Allow service-role callers (queue-processor dispatching
+  // background embedding work) to skip user auth by presenting the service
+  // role key; they still have to supply a valid userId in the body.
   const authHeader = req.headers.get("Authorization");
   const token = authHeader?.replace("Bearer ", "");
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-  const { data: { user } } = await supabase.auth.getUser(token);
-  if (!user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  const isServiceRole = !!token && token === SUPABASE_SERVICE_KEY;
+  if (!isServiceRole) {
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
   }
 
   try {

@@ -2,6 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { classifyReliability, detectLanguage, domainFromUrl, sha256Hex } from "../_shared/webSearchClassify.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -148,12 +149,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    const contentBlocks: Array<{ type: string; text?: string }> = data.content ?? [];
+    const contentBlocks: WebSearchBlock[] = data.content ?? [];
     const reply = contentBlocks
       .filter((b) => b.type === "text")
       .map((b) => b.text || "")
       .join("\n")
       .trim();
+
+    // Fire-and-forget: persist any web_search results so they land in the
+    // vector store. Failures here must not block the chat reply.
+    persistWebSearchResults(supabase, user.id, contentBlocks, context).catch((err) => {
+      console.error("ai-coach.persistWebSearch", err);
+    });
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -165,3 +172,115 @@ Deno.serve(async (req) => {
     });
   }
 });
+
+type WebSearchBlock = {
+  type: string;
+  text?: string;
+  id?: string;
+  name?: string;
+  input?: { query?: string };
+  tool_use_id?: string;
+  content?: Array<{ type?: string; url?: string; title?: string; page_age?: string | null }>;
+};
+
+// Extracts web_search queries and results from an Anthropic response,
+// writes each unique (user, query) pair to shared_context, and enqueues an
+// embedding job so the content_embeddings table stays populated.
+async function persistWebSearchResults(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  blocks: WebSearchBlock[],
+  context: Record<string, unknown> | undefined,
+): Promise<void> {
+  const toolUseById = new Map<string, string>(); // tool_use_id -> query
+  for (const b of blocks) {
+    if (b.type === "server_tool_use" && b.name === "web_search" && b.id && b.input?.query) {
+      toolUseById.set(b.id, b.input.query);
+    }
+  }
+
+  for (const b of blocks) {
+    if (b.type !== "web_search_tool_result" || !b.tool_use_id) continue;
+    const query = toolUseById.get(b.tool_use_id);
+    if (!query) continue;
+
+    const rawResults = (b.content ?? []).filter((r) => r?.type === "web_search_result" && r.url && r.title);
+    if (rawResults.length === 0) continue;
+
+    const normalizedQuery = query.toLowerCase().trim();
+    const queryHash = (await sha256Hex(normalizedQuery)).slice(0, 32);
+    const conceptKey = `WEB_SEARCH-${queryHash}`;
+
+    // Skip if we already have results for this query (plan_id IS NULL path
+    // requires an explicit .is() filter because the UNIQUE constraint treats
+    // NULLs as distinct).
+    const { data: existing } = await supabase
+      .from("shared_context")
+      .select("id")
+      .eq("user_id", userId)
+      .is("plan_id", null)
+      .eq("concept_key", conceptKey)
+      .maybeSingle();
+    if (existing) continue;
+
+    const industry = typeof context?.businessField === "string" ? context.businessField : undefined;
+    const audience = typeof context?.audienceType === "string" ? context.audienceType : undefined;
+
+    const classifiedResults = rawResults.map((r) => ({
+      url: r.url!,
+      title: r.title!,
+      page_age: r.page_age ?? null,
+      reliability: classifyReliability(r.url!),
+      domain: domainFromUrl(r.url!),
+      language: detectLanguage(r.title!),
+    }));
+
+    const payload = {
+      query,
+      results: classifiedResults,
+      source: "anthropic_web_search_20250305",
+      query_context: { industry, audience },
+      captured_at: new Date().toISOString(),
+    };
+
+    const { error: insertError } = await supabase.from("shared_context").insert({
+      user_id: userId,
+      plan_id: null,
+      concept_key: conceptKey,
+      stage: "discover",
+      payload,
+      written_by: "ai-coach.web_search",
+    });
+
+    if (insertError) {
+      console.error("ai-coach.shared_context.insert", insertError);
+      continue;
+    }
+
+    // Hand off to the event queue so embedding cost does not block the chat
+    // response. The queue-processor's handleWebSearchEmbed handler calls
+    // embed-content with this payload.
+    const embedItems = classifiedResults.map((r) => ({
+      text: `${r.title} (${r.domain ?? ""})`,
+      contentType: "web_search_result",
+      metadata: {
+        query,
+        query_hash: queryHash,
+        url: r.url,
+        domain: r.domain,
+        reliability: r.reliability,
+        language: r.language,
+        page_age: r.page_age,
+        industry,
+        audience,
+      },
+    }));
+
+    await supabase.rpc("publish_event", {
+      p_event_type: "web_search.embed",
+      p_payload: { userId, items: embedItems },
+      p_user_id: userId,
+      p_priority: 8, // low — embedding is background work
+    });
+  }
+}

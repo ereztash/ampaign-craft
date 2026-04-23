@@ -26,6 +26,7 @@ const EVENT_HANDLERS: Record<string, EventHandler> = {
   "plan.qa_requested": handleQARequested,
   "research.requested": handleResearchRequested,
   "embedding.requested": handleEmbeddingRequested,
+  "web_search.embed": handleWebSearchEmbed,
   "benchmark.update": handleBenchmarkUpdate,
   "notification.send": handleNotificationSend,
 };
@@ -227,6 +228,28 @@ async function handleEmbeddingRequested(
   // Call embed-content Edge Function
   // In a real deployment, this would be an internal function call
   return { planId, userId, status: "embedding_queued" };
+}
+
+async function handleWebSearchEmbed(
+  payload: Record<string, unknown>,
+  supabase: SupabaseClient
+): Promise<Record<string, unknown>> {
+  const userId = payload.userId as string | undefined;
+  const items = payload.items as Array<Record<string, unknown>> | undefined;
+
+  if (!userId || !items || items.length === 0) {
+    return { status: "skipped", reason: "missing_fields" };
+  }
+
+  const { data, error } = await supabase.functions.invoke("embed-content", {
+    body: { items, userId, planId: null },
+  });
+
+  if (error) {
+    throw new Error(`embed-content failed: ${error.message}`);
+  }
+
+  return { status: "embedded", count: items.length, data };
 }
 
 async function handleBenchmarkUpdate(
