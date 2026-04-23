@@ -91,10 +91,20 @@ Deno.serve(async (req) => {
           p_new_tier: tier,
           p_stripe_customer_id: typeof session.customer === "string" ? session.customer : null,
           p_stripe_subscription_id: typeof session.subscription === "string" ? session.subscription : null,
+          p_new_subscription_status: "active",
         });
         if (error) throw error;
         if (result === "duplicate") {
           return new Response(JSON.stringify({ received: true, duplicate: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        if (result === "stale_upgrade_rejected") {
+          // Late-arriving upgrade for a subscription that has since been
+          // cancelled. Return 200 so Stripe stops retrying, and log it
+          // for ops visibility.
+          console.warn("stripe_webhook.stale_upgrade_rejected", { eventId: event.id, userId });
+          return new Response(JSON.stringify({ received: true, stale: true }), {
             headers: { "Content-Type": "application/json" },
           });
         }
@@ -126,6 +136,7 @@ Deno.serve(async (req) => {
           p_new_tier: "free",
           p_stripe_customer_id: null,
           p_stripe_subscription_id: null,
+          p_new_subscription_status: "canceled",
         });
         if (error) throw error;
         if (result === "duplicate") {

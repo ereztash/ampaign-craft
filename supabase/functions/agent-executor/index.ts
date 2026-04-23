@@ -53,6 +53,24 @@ Deno.serve(async (req) => {
   const userRl = checkUserRateLimit(user.id, "agent-executor", 20, 60_000);
   if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
 
+  // Daily cap is the second wall. The minute-level limit can be sat on
+  // by a patient attacker; the daily RPC returns over_cap=true once the
+  // user crossed the token/cost threshold for today.
+  {
+    const { data: capCheck } = await supabase.rpc("bump_user_daily_cost", {
+      p_user_id: user.id,
+      p_tokens: 0,
+      p_cost_usd_millis: 0,
+    });
+    const over = Array.isArray(capCheck) && capCheck[0]?.over_cap;
+    if (over) {
+      return new Response(JSON.stringify({ error: "Daily quota exhausted" }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   // Allowlist of models the client may request. Without this an
   // authenticated user could drive our Anthropic bill through the
   // most-expensive Opus tier.
@@ -121,6 +139,30 @@ Deno.serve(async (req) => {
     const inputTokens = data.usage?.input_tokens || 0;
     const outputTokens = data.usage?.output_tokens || 0;
     const tokensUsed = inputTokens + outputTokens;
+
+    // Approximate USD cost in millis (1/1000 USD) so we can track with
+    // integer arithmetic. Input/output rates per 1M tokens from Anthropic
+    // public pricing, clamped to the allowlisted models.
+    const MODEL_RATE_PER_MTOK: Record<string, { in: number; out: number }> = {
+      "claude-haiku-4-5-20251001": { in: 800, out: 4000 },
+      "claude-sonnet-4-6": { in: 3000, out: 15000 },
+      "claude-sonnet-4-20250514": { in: 3000, out: 15000 },
+      "claude-opus-4-7": { in: 15000, out: 75000 },
+      "claude-opus-4-6": { in: 15000, out: 75000 },
+    };
+    const rate = MODEL_RATE_PER_MTOK[selectedModel] ?? { in: 3000, out: 15000 };
+    const costMillis = Math.ceil((inputTokens * rate.in + outputTokens * rate.out) / 1000);
+
+    // Fire-and-forget: missing cost accounting should not fail the
+    // caller, but a dropped increment would let a single call evade the
+    // daily cap so we log loudly when the RPC errors.
+    supabase.rpc("bump_user_daily_cost", {
+      p_user_id: user.id,
+      p_tokens: tokensUsed,
+      p_cost_usd_millis: costMillis,
+    }).then(({ error }: { error: unknown }) => {
+      if (error) console.error("agent-executor.cost_bump_failed", error);
+    });
 
     return new Response(
       JSON.stringify({
