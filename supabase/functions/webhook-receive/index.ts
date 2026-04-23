@@ -8,6 +8,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { sanitizeClientError } from "../_shared/errors.ts";
+import { requireEnum, requireObject, ValidationError } from "../_shared/validate.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -75,15 +76,20 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { type, data } = body;
-
-    // Validate event type
-    const validTypes = ["lead", "conversion", "metric", "contact", "custom"];
-    if (!validTypes.includes(type)) {
-      return new Response(
-        JSON.stringify({ error: `Invalid type. Valid types: ${validTypes.join(", ")}` }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const parsed = requireObject(body, "body");
+    const type = requireEnum(parsed.type, "type", [
+      "lead", "conversion", "metric", "contact", "custom",
+    ] as const);
+    // data is passed through verbatim (opaque integration payload) but
+    // its top-level shape is validated. The JSONB column has no size cap
+    // at the schema level; guard here at 128KB so a giant payload cannot
+    // clog the queue.
+    const data = parsed.data;
+    if (data !== undefined && data !== null) {
+      const serialized = JSON.stringify(data);
+      if (serialized.length > 128 * 1024) {
+        throw new ValidationError("data too large (max 128KB)");
+      }
     }
 
     // Store inbound event in event queue for processing
@@ -98,6 +104,12 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
+    if (err instanceof ValidationError) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     return sanitizeClientError(err, "webhook-receive.exception", "Bad request", 400, { ...corsHeaders });
   }
 });

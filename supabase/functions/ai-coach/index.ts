@@ -3,6 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
 import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { classifyReliability, detectLanguage, domainFromUrl, sha256Hex } from "../_shared/webSearchClassify.ts";
+import { requireString, ValidationError } from "../_shared/validate.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -46,7 +47,9 @@ Deno.serve(async (req) => {
   if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
 
   try {
-    const { message, context } = await req.json();
+    const body = await req.json();
+    const message = requireString(body?.message, "message", 8000);
+    const context = body?.context;
 
     // Prompt-injection guard. The context dict carries user-authored text
     // (businessField, productDescription, stylomePrompt, etc.) that we
@@ -203,6 +206,12 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
+    if (err instanceof ValidationError) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

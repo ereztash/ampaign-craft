@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
         const handler = EVENT_HANDLERS[event.event_type];
 
         if (!handler) {
-          // Unknown event type — mark as failed
+          // Unknown event type - mark as failed
           await supabase.rpc("fail_event", {
             event_id: event.id,
             error_message: `Unknown event type: ${event.event_type}`,
@@ -82,7 +82,31 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        const result = await handler(event.payload, supabase);
+        // Authorization cross-check. The row-level event.user_id is set
+        // by publish_event (service role) and reflects the caller's JWT
+        // at submit time. Handlers historically read payload.userId,
+        // which is attacker-controlled if an authenticated client ever
+        // publishes an event. Force the two to agree so a crafted
+        // payload cannot redirect a handler at another user's data.
+        const payload = (event.payload ?? {}) as Record<string, unknown>;
+        const payloadUserId = typeof payload.userId === "string" ? payload.userId : undefined;
+        const rowUserId = typeof event.user_id === "string" ? event.user_id : undefined;
+        if (payloadUserId && rowUserId && payloadUserId !== rowUserId) {
+          await supabase.rpc("fail_event", {
+            event_id: event.id,
+            error_message: `payload.userId (${payloadUserId}) mismatches event.user_id (${rowUserId})`,
+            retry_delay_seconds: 0,
+          });
+          results.push({ id: event.id, status: "userid_mismatch" });
+          continue;
+        }
+        // If the payload didn't include a userId, inject the row-level
+        // value so handlers always work with the authenticated identity.
+        if (!payloadUserId && rowUserId) {
+          payload.userId = rowUserId;
+        }
+
+        const result = await handler(payload, supabase);
 
         await supabase.rpc("complete_event", {
           event_id: event.id,
