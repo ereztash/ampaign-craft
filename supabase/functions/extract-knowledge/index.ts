@@ -337,42 +337,48 @@ async function persistFacts(userId: string, facts: ExtractedFact[]): Promise<Per
     idLookup.set(keyFor(row.entity_type, row.canonical_name), row.id);
   }
 
-  // Build fact rows, resolving entity ids.
-  const factRows = facts.map((f) => {
+  // Insert facts one at a time via the reconciliation RPC so the
+  // Graphiti-style supersede logic runs atomically per fact. Per-fact
+  // cost is a single RPC round-trip; the queue-processor calls this
+  // function for at most MAX_INPUTS_PER_CALL items so total latency
+  // stays bounded.
+  const factIds: string[] = [];
+  let inserted = 0;
+  for (const f of facts) {
     const subjectId = idLookup.get(keyFor(f.subject.type, f.subject.canonical));
+    if (!subjectId) continue;
     const objectId = "type" in f.object
-      ? idLookup.get(keyFor(f.object.type, f.object.canonical))
+      ? (idLookup.get(keyFor(f.object.type, f.object.canonical)) ?? null)
       : null;
     const objectLiteral = !("type" in f.object) ? { value: f.object.literal } : null;
-    return {
-      user_id: userId,
-      subject_id: subjectId,
-      predicate: f.predicate,
-      object_id: objectId,
-      object_literal: objectLiteral,
-      confidence: f.confidence,
-      evidence_source_table: f.evidence.source_table,
-      evidence_source_id: f.evidence.source_id,
-      evidence_quote: f.evidence.quote,
-      extracted_by: f.extracted_by,
-      extractor_version: f.extractor_version,
-      dapl_snapshot: f.dapl_snapshot ?? null,
-      regime: f.regime ?? null,
-    };
-  }).filter((r) => r.subject_id != null);
 
-  if (factRows.length === 0) return { inserted: 0, entityCount: entityMap.size, factIds: [] };
+    const { data: rpcRes, error: rpcErr } = await supabase.rpc("kg_reconcile_and_insert_fact", {
+      p_user_id: userId,
+      p_subject_id: subjectId,
+      p_predicate: f.predicate,
+      p_object_id: objectId,
+      p_object_literal: objectLiteral,
+      p_confidence: f.confidence,
+      p_evidence_source_table: f.evidence.source_table,
+      p_evidence_source_id: f.evidence.source_id,
+      p_evidence_quote: f.evidence.quote,
+      p_extracted_by: f.extracted_by,
+      p_extractor_version: f.extractor_version,
+      p_dapl_snapshot: f.dapl_snapshot ?? null,
+      p_regime: f.regime ?? null,
+      p_mode: "auto",
+    });
 
-  const { data: factInsert, error: factErr } = await supabase
-    .from("knowledge_facts")
-    .insert(factRows)
-    .select("id");
+    if (rpcErr) throw new Error(`reconcile rpc failed: ${rpcErr.message}`);
+    const row = Array.isArray(rpcRes) ? rpcRes[0] : rpcRes;
+    if (row?.outcome === "new" || row?.outcome === "update") {
+      inserted += 1;
+      if (row.fact_id) factIds.push(row.fact_id);
+    } else if (row?.outcome === "duplicate" && row.fact_id) {
+      // still useful to surface ids so the caller can correlate.
+      factIds.push(row.fact_id);
+    }
+  }
 
-  if (factErr) throw new Error(`fact insert failed: ${factErr.message}`);
-
-  return {
-    inserted: factInsert?.length ?? 0,
-    entityCount: entityMap.size,
-    factIds: (factInsert ?? []).map((r) => r.id),
-  };
+  return { inserted, entityCount: entityMap.size, factIds };
 }
