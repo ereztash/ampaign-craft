@@ -7,6 +7,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { sanitizeClientError } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -69,10 +70,7 @@ Deno.serve(async (req) => {
   }
 
   if (!userId) {
-    return new Response(JSON.stringify({ error: "Invalid API key or token" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return sanitizeClientError("no matching api key or jwt", "webhook-receive.auth", "Unauthorized", 401, { ...corsHeaders });
   }
 
   try {
@@ -100,9 +98,6 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return sanitizeClientError(err, "webhook-receive.exception", "Bad request", 400, { ...corsHeaders });
   }
 });

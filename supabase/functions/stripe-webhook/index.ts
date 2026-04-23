@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { sanitizeClientError } from "../_shared/errors.ts";
 
 const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -66,18 +67,12 @@ Deno.serve(async (req) => {
     const sigHeader = req.headers.get("stripe-signature");
 
     if (!sigHeader) {
-      return new Response(JSON.stringify({ error: "Missing stripe-signature header" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return sanitizeClientError("missing stripe-signature header", "stripe-webhook.sig", "Unauthorized", 401);
     }
 
     const isValid = await verifyStripeSignature(body, sigHeader, STRIPE_WEBHOOK_SECRET);
     if (!isValid) {
-      return new Response(JSON.stringify({ error: "Invalid signature" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return sanitizeClientError("invalid stripe signature", "stripe-webhook.sig", "Unauthorized", 401);
     }
 
     const event = JSON.parse(body);
@@ -161,9 +156,6 @@ Deno.serve(async (req) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return sanitizeClientError(err, "stripe-webhook.exception", "Bad request", 400);
   }
 });

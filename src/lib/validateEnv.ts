@@ -18,6 +18,16 @@ export function validateEnv(): void {
       `Copy .env.example to .env and fill in the values.`
     );
   }
+
+  // Refuse to boot a production build that allows localStorage-only auth.
+  // A Supabase outage would otherwise silently drop real users into a fresh
+  // local account and hide their saved plans.
+  if (import.meta.env.PROD && import.meta.env.VITE_ALLOW_LOCAL_AUTH === "true") {
+    throw new Error(
+      "VITE_ALLOW_LOCAL_AUTH=true is disallowed in production builds. " +
+      "Remove the variable or set it to false before deploying."
+    );
+  }
 }
 
 // Kill-switch: disable Meta integration via env var without redeploying code.
