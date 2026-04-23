@@ -3,7 +3,15 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // ── External dep mocks ────────────────────────────────────────────────────
 
 vi.mock("@/integrations/supabase/client", () => ({
-  supabase: { from: vi.fn(), auth: { getUser: vi.fn() } },
+  supabase: {
+    from: vi.fn(),
+    auth: {
+      getUser: vi.fn(),
+      // authFetch reads the bearer token from getSession — stub it so the
+      // wrapper doesn't crash before the fetch mock is consulted.
+      getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+    },
+  },
 }));
 
 vi.mock("../llmRouter", () => ({

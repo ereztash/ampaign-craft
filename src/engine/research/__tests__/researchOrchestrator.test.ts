@@ -9,6 +9,11 @@ vi.mock("@/integrations/supabase/client", () => ({
       insert: vi.fn(() => Promise.resolve({ data: null, error: null })),
       select: vi.fn(() => Promise.resolve({ data: [], error: null })),
     })),
+    auth: {
+      // authFetch probes getSession for a bearer token — provide a stub
+      // that resolves to "no session" so the wrapper proceeds to fetch().
+      getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+    },
   },
 }));
 

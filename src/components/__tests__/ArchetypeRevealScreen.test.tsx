@@ -21,6 +21,10 @@ vi.mock("@/i18n/tx", () => ({
   tx: (obj: { he: string; en: string }, lang: string) => (lang === "he" ? obj.he : obj.en),
 }));
 
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: null, tier: "free", isLocalAuth: false }),
+}));
+
 vi.mock("@/contexts/ArchetypeContext", () => ({
   useArchetype: () => ({
     effectiveArchetypeId: "strategist",

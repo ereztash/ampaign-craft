@@ -54,13 +54,13 @@ function format(level: LogLevel, context: string, errorOrMessage: unknown): void
       : String(errorOrMessage);
   const msg = redact(rawMsg);
 
-  // Only the redacted message is printed to console. The original Error
-  // object still carries its stack for stack traces, but string-form
-  // secrets never land in the log stream.
+  // Emit the redacted message plus the raw payload as a third argument so
+  // devtools still surfaces the Error stack (or the raw object) while the
+  // string-form secrets stay out of the redacted message.
   if (level === "error") {
-    console.error(`[${context}]`, msg);
+    console.error(`[${context}]`, msg, errorOrMessage);
   } else {
-    console.warn(`[${context}]`, msg);
+    console.warn(`[${context}]`, msg, errorOrMessage);
   }
 
   const sentry = getSentry();

@@ -203,12 +203,14 @@ describe("CommandCenter", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("renders the weekly action card stub", () => {
+  it("renders the express wizard for new users without a plan", () => {
+    // The empty-profile mock above pushes the page into the focused-start
+    // branch, which swaps WeeklyActionCard for the ExpressWizard stub.
     render(
       <MemoryRouter>
         <CommandCenter />
       </MemoryRouter>,
     );
-    expect(screen.getByTestId("weekly-action-card")).toBeInTheDocument();
+    expect(screen.getByTestId("express-wizard")).toBeInTheDocument();
   });
 });
