@@ -282,14 +282,21 @@ describe("metaApi", () => {
 
   describe("parseTokenFromHash", () => {
     afterEach(() => {
-      // Reset hash
+      // Reset hash and any residual OAuth state
       window.location.hash = "";
+      sessionStorage.clear();
     });
 
-    it("returns token from hash fragment", () => {
-      // Simulate hash
+    // CRIT-05: parseTokenFromHash now requires a matching CSRF state that
+    // was written to sessionStorage by buildMetaOAuthUrl before redirect.
+    const seedState = (state: string) => {
+      sessionStorage.setItem("meta_oauth_state", JSON.stringify(state));
+    };
+
+    it("returns token from hash fragment when state matches", () => {
+      seedState("s1");
       Object.defineProperty(window, "location", {
-        value: { ...window.location, hash: "#access_token=abc123&expires_in=3600" },
+        value: { ...window.location, hash: "#access_token=abc123&expires_in=3600&state=s1" },
         writable: true,
       });
 
@@ -297,6 +304,28 @@ describe("metaApi", () => {
       expect(result).not.toBeNull();
       expect(result!.access_token).toBe("abc123");
       expect(result!.expires_in).toBe("3600");
+    });
+
+    it("returns null when state is missing from callback", () => {
+      seedState("s1");
+      Object.defineProperty(window, "location", {
+        value: { ...window.location, hash: "#access_token=abc123&expires_in=3600" },
+        writable: true,
+      });
+
+      const result = parseTokenFromHash();
+      expect(result).toBeNull();
+    });
+
+    it("returns null when state does not match", () => {
+      seedState("expected");
+      Object.defineProperty(window, "location", {
+        value: { ...window.location, hash: "#access_token=abc123&state=attacker" },
+        writable: true,
+      });
+
+      const result = parseTokenFromHash();
+      expect(result).toBeNull();
     });
 
     it("returns null when hash is empty", () => {
@@ -319,9 +348,10 @@ describe("metaApi", () => {
       expect(result).toBeNull();
     });
 
-    it("defaults expires_in to 3600 when missing", () => {
+    it("defaults expires_in to 3600 when missing and state matches", () => {
+      seedState("s2");
       Object.defineProperty(window, "location", {
-        value: { ...window.location, hash: "#access_token=tok123" },
+        value: { ...window.location, hash: "#access_token=tok123&state=s2" },
         writable: true,
       });
 
