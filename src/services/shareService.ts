@@ -21,12 +21,14 @@ export interface SharedPlanSnapshot {
   viewCount: number;
 }
 
+// 128-bit CSPRNG-derived hex token. Math.random seeds are observable and
+// the 12-char alphanumeric generator it replaced was enumerable in practice
+// once paired with the old permissive quotes RLS. See CRIT-04.
 function generateShareId(): string {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
   let id = "";
-  for (let i = 0; i < 12; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+  for (const b of bytes) id += b.toString(16).padStart(2, "0");
   return id;
 }
 
