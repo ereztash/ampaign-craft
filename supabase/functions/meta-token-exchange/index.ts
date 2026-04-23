@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { sanitizeClientError } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -43,6 +43,11 @@ serve(async (req) => {
   if (!user) {
     return sanitizeClientError("invalid jwt", "meta-token-exchange.auth", "Unauthorized", 401, { ...corsHeaders });
   }
+
+  // Per-user cap as well as per-IP. Token exchange is low-frequency for a
+  // legitimate flow; 3/min is more than enough for manual reconnects.
+  const userRl = checkUserRateLimit(user.id, "meta-token-exchange", 3, 60_000);
+  if (!userRl.allowed) return rateLimitResponse(userRl, { ...corsHeaders });
 
   try {
     const { shortLivedToken } = await req.json();

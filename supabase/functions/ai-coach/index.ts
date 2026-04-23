@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { classifyReliability, detectLanguage, domainFromUrl, sha256Hex } from "../_shared/webSearchClassify.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
@@ -38,6 +38,12 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  // Per-user cap is the real budget guard. IP-based limits can be evaded
+  // by rotating X-Forwarded-For in environments where the platform doesn't
+  // rewrite it; per-user is tied to a verified JWT and hard to rotate.
+  const userRl = checkUserRateLimit(user.id, "ai-coach", 15, 60_000);
+  if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
 
   try {
     const { message, context } = await req.json();
