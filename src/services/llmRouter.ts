@@ -27,7 +27,18 @@ export type CopyTask =
   | "strategy"
   | "qa-analysis"
   | "research"
-  | "agent-task";
+  | "agent-task"
+  // M7 knowledge-extraction overlay — default to Haiku; FrugalGPT
+  // cascade promotes to Sonnet on low confidence via
+  // selectModelWithFallback (qualityPriority='quality' flip).
+  | "extract-entity"
+  | "extract-relation"
+  | "extract-summary"
+  | "reconcile-fact"
+  // Query-router stages
+  | "classify-query"
+  | "synthesize-answer"
+  | "synthesize-reason";
 
 export interface ModelSelection {
   model: string;
@@ -55,6 +66,18 @@ const TASK_COMPLEXITY: Record<CopyTask, { baseTier: ModelTier; maxTokens: number
   "qa-analysis": { baseTier: "standard", maxTokens: 2048 },
   "research": { baseTier: "deep", maxTokens: 4096 },
   "agent-task": { baseTier: "standard", maxTokens: 2048 },
+  // M7 extraction tasks. Token caps are deliberately tight: every fact
+  // is a small JSON object, and batch extraction groups 5-20 at a time.
+  // FrugalGPT (arXiv:2305.05176) shows Haiku handles 70-85% of
+  // closed-ontology extraction correctly; Sonnet escalation is reserved
+  // for the confidence gate in selectModelWithFallback.
+  "extract-entity":     { baseTier: "fast",     maxTokens: 300 },
+  "extract-relation":   { baseTier: "fast",     maxTokens: 500 },
+  "extract-summary":    { baseTier: "standard", maxTokens: 1000 },
+  "reconcile-fact":     { baseTier: "fast",     maxTokens: 200 },
+  "classify-query":     { baseTier: "fast",     maxTokens: 64 },
+  "synthesize-answer":  { baseTier: "standard", maxTokens: 1500 },
+  "synthesize-reason":  { baseTier: "standard", maxTokens: 3000 },
 };
 
 // ═══════════════════════════════════════════════
