@@ -102,6 +102,11 @@ Deno.serve(async (req) => {
       const tier = session.metadata?.tier;
 
       if (userId && tier) {
+        const { data: oldProfile } = await supabase
+          .from("profiles")
+          .select("tier")
+          .eq("id", userId)
+          .maybeSingle();
         await supabase.from("profiles").update({
           tier,
           // Store Stripe IDs so the Customer Portal can open without a lookup
@@ -110,6 +115,13 @@ Deno.serve(async (req) => {
           stripe_customer_id: typeof session.customer === "string" ? session.customer : null,
           stripe_subscription_id: typeof session.subscription === "string" ? session.subscription : null,
         }).eq("id", userId);
+        await supabase.from("tier_audit_log").insert({
+          user_id: userId,
+          old_tier: oldProfile?.tier ?? null,
+          new_tier: tier,
+          stripe_event_id: typeof event.id === "string" ? event.id : null,
+          stripe_event_type: event.type,
+        });
       }
     }
 
@@ -119,19 +131,32 @@ Deno.serve(async (req) => {
       const customerId = typeof subscription.customer === "string" ? subscription.customer : null;
 
       // Prefer metadata; fall back to customer-id lookup if metadata was lost.
-      let affected: number | null = null;
+      let resolvedUserId: string | null = null;
+      let oldTier: string | null = null;
       if (userId) {
-        const { count } = await supabase
-          .from("profiles")
-          .update({ tier: "free", stripe_subscription_id: null }, { count: "exact" })
-          .eq("id", userId);
-        affected = count;
+        const { data } = await supabase
+          .from("profiles").select("id, tier").eq("id", userId).maybeSingle();
+        if (data) { resolvedUserId = data.id; oldTier = data.tier; }
       } else if (customerId) {
-        const { count } = await supabase
+        const { data } = await supabase
+          .from("profiles").select("id, tier").eq("stripe_customer_id", customerId).maybeSingle();
+        if (data) { resolvedUserId = data.id; oldTier = data.tier; }
+      }
+
+      let affected: number | null = null;
+      if (resolvedUserId) {
+        await supabase
           .from("profiles")
-          .update({ tier: "free", stripe_subscription_id: null }, { count: "exact" })
-          .eq("stripe_customer_id", customerId);
-        affected = count;
+          .update({ tier: "free", stripe_subscription_id: null })
+          .eq("id", resolvedUserId);
+        await supabase.from("tier_audit_log").insert({
+          user_id: resolvedUserId,
+          old_tier: oldTier,
+          new_tier: "free",
+          stripe_event_id: typeof event.id === "string" ? event.id : null,
+          stripe_event_type: event.type,
+        });
+        affected = 1;
       }
 
       // If we couldn't resolve a user, flag the event for reconciliation so
