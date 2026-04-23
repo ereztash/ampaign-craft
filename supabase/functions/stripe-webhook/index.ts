@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { sanitizeClientError } from "../_shared/errors.ts";
 
 const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -66,40 +67,16 @@ Deno.serve(async (req) => {
     const sigHeader = req.headers.get("stripe-signature");
 
     if (!sigHeader) {
-      return new Response(JSON.stringify({ error: "Missing stripe-signature header" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return sanitizeClientError("missing stripe-signature header", "stripe-webhook.sig", "Unauthorized", 401);
     }
 
     const isValid = await verifyStripeSignature(body, sigHeader, STRIPE_WEBHOOK_SECRET);
     if (!isValid) {
-      return new Response(JSON.stringify({ error: "Invalid signature" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return sanitizeClientError("invalid stripe signature", "stripe-webhook.sig", "Unauthorized", 401);
     }
 
     const event = JSON.parse(body);
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-    // Idempotency: Stripe retries on timeout/5xx. Skip duplicate event IDs
-    // so a retry can't re-apply a tier change (especially dangerous when
-    // checkout.session.completed and customer.subscription.deleted interleave).
-    if (typeof event.id === "string" && event.id.length > 0) {
-      const { error: dedupErr } = await supabase
-        .from("stripe_events_processed")
-        .insert({ event_id: event.id, event_type: event.type });
-      if (dedupErr) {
-        // 23505 = unique_violation → already processed, ack and stop.
-        if (dedupErr.code === "23505") {
-          return new Response(JSON.stringify({ received: true, duplicate: true }), {
-            headers: { "Content-Type": "application/json" },
-          });
-        }
-        throw dedupErr;
-      }
-    }
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
@@ -107,14 +84,30 @@ Deno.serve(async (req) => {
       const tier = session.metadata?.tier;
 
       if (userId && tier) {
-        await supabase.from("profiles").update({
-          tier,
-          // Store Stripe IDs so the Customer Portal can open without a lookup
-          // and so customer.subscription.deleted can resolve the user even if
-          // subscription metadata is stripped.
-          stripe_customer_id: typeof session.customer === "string" ? session.customer : null,
-          stripe_subscription_id: typeof session.subscription === "string" ? session.subscription : null,
-        }).eq("id", userId);
+        const { data: result, error } = await supabase.rpc("process_stripe_tier_change", {
+          p_event_id: typeof event.id === "string" ? event.id : null,
+          p_event_type: event.type,
+          p_user_id: userId,
+          p_new_tier: tier,
+          p_stripe_customer_id: typeof session.customer === "string" ? session.customer : null,
+          p_stripe_subscription_id: typeof session.subscription === "string" ? session.subscription : null,
+          p_new_subscription_status: "active",
+        });
+        if (error) throw error;
+        if (result === "duplicate") {
+          return new Response(JSON.stringify({ received: true, duplicate: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        if (result === "stale_upgrade_rejected") {
+          // Late-arriving upgrade for a subscription that has since been
+          // cancelled. Return 200 so Stripe stops retrying, and log it
+          // for ops visibility.
+          console.warn("stripe_webhook.stale_upgrade_rejected", { eventId: event.id, userId });
+          return new Response(JSON.stringify({ received: true, stale: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        }
       }
     }
 
@@ -124,24 +117,37 @@ Deno.serve(async (req) => {
       const customerId = typeof subscription.customer === "string" ? subscription.customer : null;
 
       // Prefer metadata; fall back to customer-id lookup if metadata was lost.
-      let affected: number | null = null;
+      let resolvedUserId: string | null = null;
       if (userId) {
-        const { count } = await supabase
-          .from("profiles")
-          .update({ tier: "free", stripe_subscription_id: null }, { count: "exact" })
-          .eq("id", userId);
-        affected = count;
+        const { data } = await supabase
+          .from("profiles").select("id").eq("id", userId).maybeSingle();
+        if (data) resolvedUserId = data.id;
       } else if (customerId) {
-        const { count } = await supabase
-          .from("profiles")
-          .update({ tier: "free", stripe_subscription_id: null }, { count: "exact" })
-          .eq("stripe_customer_id", customerId);
-        affected = count;
+        const { data } = await supabase
+          .from("profiles").select("id").eq("stripe_customer_id", customerId).maybeSingle();
+        if (data) resolvedUserId = data.id;
       }
 
-      // If we couldn't resolve a user, flag the event for reconciliation so
-      // a cancelled subscription doesn't silently leave a paying-tier ghost.
-      if (!affected) {
+      if (resolvedUserId) {
+        const { data: result, error } = await supabase.rpc("process_stripe_tier_change", {
+          p_event_id: typeof event.id === "string" ? event.id : null,
+          p_event_type: event.type,
+          p_user_id: resolvedUserId,
+          p_new_tier: "free",
+          p_stripe_customer_id: null,
+          p_stripe_subscription_id: null,
+          p_new_subscription_status: "canceled",
+        });
+        if (error) throw error;
+        if (result === "duplicate") {
+          return new Response(JSON.stringify({ received: true, duplicate: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+      } else {
+        // Unresolved: couldn't find a user for this cancellation. Record it
+        // so a reconciliation job can clean up later without the webhook
+        // silently leaving a paying-tier ghost.
         const reason = !userId && !customerId
           ? "no_user_id_and_no_customer_id"
           : userId
@@ -151,8 +157,12 @@ Deno.serve(async (req) => {
         if (typeof event.id === "string" && event.id.length > 0) {
           await supabase
             .from("stripe_events_processed")
-            .update({ unresolved: true, unresolved_reason: reason })
-            .eq("event_id", event.id);
+            .upsert({
+              event_id: event.id,
+              event_type: event.type,
+              unresolved: true,
+              unresolved_reason: reason,
+            }, { onConflict: "event_id" });
         }
       }
     }
@@ -161,9 +171,6 @@ Deno.serve(async (req) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return sanitizeClientError(err, "stripe-webhook.exception", "Bad request", 400);
   }
 });

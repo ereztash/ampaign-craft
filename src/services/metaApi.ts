@@ -6,6 +6,7 @@ import {
   metaTokenExchangeSchema,
 } from "@/schemas/metaApi";
 import { logger } from "@/lib/logger";
+import { safeSessionStorage } from "@/lib/safeStorage";
 
 const GRAPH_URL = "https://graph.facebook.com/v19.0";
 
@@ -109,19 +110,49 @@ export const exchangeForLongLivedToken = async (
   return { access_token: parsed.data.access_token, expires_in: parsed.data.expires_in };
 };
 
+// Key used to persist the CSRF state across the OAuth redirect.
+const META_OAUTH_STATE_KEY = "meta_oauth_state";
+
+// Generates a CSRF state, persists it to sessionStorage, and returns the
+// OAuth URL with the state parameter included. Required by Meta (and the
+// OAuth 2.0 spec) to defend against the return of an attacker-chosen token
+// to the victim's session. See CRIT-05 in the security audit.
 export const buildMetaOAuthUrl = (): string => {
   const appId = import.meta.env.VITE_META_APP_ID;
   const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
   const scope = encodeURIComponent("ads_read");
-  return `https://www.facebook.com/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
+
+  const stateBytes = new Uint8Array(16);
+  crypto.getRandomValues(stateBytes);
+  const state = Array.from(stateBytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const stored = safeSessionStorage.setJSON(META_OAUTH_STATE_KEY, state);
+  if (!stored) {
+    // sessionStorage unavailable (private mode, SSR). Without it the
+    // callback cannot validate state, so refuse to start the flow.
+    throw new Error("sessionStorage unavailable; cannot start OAuth flow safely");
+  }
+
+  return `https://www.facebook.com/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}&state=${state}`;
 };
 
+// Parses and validates the OAuth hash. Returns the token only when the
+// state parameter matches the value we stored before redirect. A mismatched
+// or missing state is treated as a CSRF attempt and the token is dropped.
 export const parseTokenFromHash = (): { access_token: string; expires_in: string } | null => {
   const hash = window.location.hash.substring(1);
   if (!hash) return null;
   const params = new URLSearchParams(hash);
   const access_token = params.get("access_token");
   const expires_in = params.get("expires_in");
+  const returnedState = params.get("state");
   if (!access_token) return null;
+
+  const expectedState = safeSessionStorage.getJSON<string | null>(META_OAUTH_STATE_KEY, null);
+  safeSessionStorage.remove(META_OAUTH_STATE_KEY);
+
+  if (!expectedState || !returnedState || expectedState !== returnedState) {
+    return null;
+  }
+
   return { access_token, expires_in: expires_in ?? "3600" };
 };

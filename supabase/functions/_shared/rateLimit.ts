@@ -11,10 +11,25 @@
 
 const windows = new Map<string, number[]>();
 
+// The original helper took the FIRST entry from X-Forwarded-For, which is
+// the value the client sent before any proxy hit it. A determined attacker
+// could rotate that header freely and never hit a rate limit. Prefer the
+// trust-anchored `cf-connecting-ip` header (set by Supabase's Cloudflare
+// ingress and not forwarded from the client), and fall back to the LAST
+// entry of X-Forwarded-For since the trusted proxy appends its view of
+// the real client IP. Spoofing the IP now requires spoofing a header the
+// platform itself rewrites, not a header the client controls.
 export function getClientKey(req: Request): string {
+  const cf = req.headers.get("cf-connecting-ip");
+  if (cf) return cf.trim();
+
   const fwd = req.headers.get("x-forwarded-for") ?? "";
-  const ip = fwd.split(",")[0]?.trim() || "unknown";
-  return ip;
+  if (fwd) {
+    const parts = fwd.split(",").map((p) => p.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
+
+  return "unknown";
 }
 
 export interface RateLimitResult {

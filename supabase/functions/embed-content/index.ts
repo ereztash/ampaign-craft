@@ -7,7 +7,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -32,20 +32,41 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Verify JWT
+  // Verify JWT. Allow service-role callers (queue-processor dispatching
+  // background embedding work) to skip user auth by presenting the service
+  // role key; they still have to supply a valid userId in the body.
   const authHeader = req.headers.get("Authorization");
   const token = authHeader?.replace("Bearer ", "");
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-  const { data: { user } } = await supabase.auth.getUser(token);
-  if (!user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  const isServiceRole = !!token && token === SUPABASE_SERVICE_KEY;
+  let authedUserId: string | null = null;
+  if (!isServiceRole) {
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    authedUserId = user.id;
+    // Per-user cap on OpenAI embedding calls. Each request can batch up to
+    // 2048 items so IP-only limits let a single user drain tokens fast.
+    const userRl = checkUserRateLimit(user.id, "embed-content", 10, 60_000);
+    if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
   }
 
   try {
     const { items, userId, planId } = await req.json();
+
+    // When the caller is a user JWT (not service role), force their own
+    // userId onto the payload so they can't accidentally or maliciously
+    // embed content under another user's account.
+    if (authedUserId && userId && userId !== authedUserId) {
+      return new Response(JSON.stringify({ error: "userId mismatch" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return new Response(JSON.stringify({ error: "items array is required" }), {

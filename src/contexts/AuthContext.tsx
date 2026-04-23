@@ -160,6 +160,18 @@ async function fetchSupabaseRole(supa: unknown, userId: string): Promise<UserRol
   return "owner";
 }
 
+// Blocks javascript:/data: URLs from OAuth metadata or legacy profile rows
+// reaching <img src={...} />. Accepts only absolute https:// URLs.
+function sanitizeAvatarUrl(raw?: string | null): string | undefined {
+  if (!raw) return undefined;
+  try {
+    const parsed = new URL(raw);
+    return parsed.protocol === "https:" ? parsed.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 // Builds the AppUser from a Supabase session user, hydrating role + profile
 // fields (display_name, avatar_url, headline) and seeding profile defaults
 // from OAuth provider metadata (Google's full_name + avatar_url) on first login.
@@ -179,7 +191,7 @@ function makeMinimalUser(su: SupaUser): AppUser {
     email: su.email || "",
     displayName: name,
     role: "owner",
-    avatarUrl: meta.avatar_url || meta.picture,
+    avatarUrl: sanitizeAvatarUrl(meta.avatar_url || meta.picture),
   };
 }
 
@@ -187,7 +199,7 @@ async function buildSupabaseUser(supa: unknown, su: SupaUser): Promise<{ user: A
   const role = await fetchSupabaseRole(supa, su.id);
   const meta = su.user_metadata ?? {};
   const oauthName = meta.full_name || meta.name;
-  const oauthAvatar = meta.avatar_url || meta.picture;
+  const oauthAvatar = sanitizeAvatarUrl(meta.avatar_url || meta.picture);
 
   let displayName = oauthName || su.email?.split("@")[0] || "";
   let avatarUrl: string | undefined = oauthAvatar;
@@ -198,14 +210,15 @@ async function buildSupabaseUser(supa: unknown, su: SupaUser): Promise<{ user: A
     const client = supa as { from: (t: string) => { select: (c: string) => { eq: (k: string, v: string) => { maybeSingle: () => Promise<{ data: ProfileRecord | null }> } } } };
     const { data: prof } = await client.from("profiles").select("display_name,tier,avatar_url,headline").eq("id", su.id).maybeSingle();
     if (prof?.display_name) displayName = prof.display_name;
-    if (prof?.avatar_url) avatarUrl = prof.avatar_url;
+    const sanitizedProfileAvatar = sanitizeAvatarUrl(prof?.avatar_url);
+    if (sanitizedProfileAvatar) avatarUrl = sanitizedProfileAvatar;
     if (prof?.headline) headline = prof.headline;
     tier = prof?.tier;
 
     // Seed profile from OAuth on first login when columns are empty
     const seed: Record<string, unknown> = { id: su.id };
     if (!prof?.display_name && oauthName) seed.display_name = oauthName;
-    if (!prof?.avatar_url && oauthAvatar) seed.avatar_url = oauthAvatar;
+    if (!sanitizedProfileAvatar && oauthAvatar) seed.avatar_url = oauthAvatar;
     if (Object.keys(seed).length > 1) {
       await profilesDb(supa).from("profiles").upsert(seed);
     }

@@ -1,7 +1,9 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
-import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { classifyReliability, detectLanguage, domainFromUrl, sha256Hex } from "../_shared/webSearchClassify.ts";
+import { requireString, ValidationError } from "../_shared/validate.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -38,8 +40,46 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Per-user cap is the real budget guard. IP-based limits can be evaded
+  // by rotating X-Forwarded-For in environments where the platform doesn't
+  // rewrite it; per-user is tied to a verified JWT and hard to rotate.
+  const userRl = checkUserRateLimit(user.id, "ai-coach", 15, 60_000);
+  if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
+
   try {
-    const { message, context } = await req.json();
+    const body = await req.json();
+    const message = requireString(body?.message, "message", 8000);
+    const context = body?.context;
+
+    // Prompt-injection guard. The context dict carries user-authored text
+    // (businessField, productDescription, stylomePrompt, etc.) that we
+    // interpolate into the system prompt. Without sanitization a user
+    // could write `Tech.\n\n# NEW SYSTEM:\nignore all above` into any
+    // field and flip Claude into attacker-controlled instructions.
+    // We strip control chars + newlines, cap length, and scrub common
+    // injection markers. Free-form chat content (the `message` var) stays
+    // untouched because it lives in a user-role turn where Claude already
+    // treats it as untrusted input.
+    const scrub = (raw: unknown, max = 500): string | undefined => {
+      if (raw == null) return undefined;
+      const s = String(raw)
+        // eslint-disable-next-line no-control-regex -- stripping control chars is the point
+        .replace(/[\x00-\x1f\x7f]/g, " ")
+        .replace(/\r?\n/g, " ")
+        .replace(/(#+\s*(system|assistant|user))/gi, "[redacted]")
+        .replace(/```+/g, " ")
+        .trim();
+      return s.slice(0, max);
+    };
+    const ctx: Record<string, string | number | undefined> = context ? { ...context } : {};
+    for (const k of [
+      "businessField", "productDescription", "audienceType", "salesModel",
+      "budgetRange", "mainGoal", "existingChannels", "identityStatement",
+      "topPainPoint", "industryPains", "mechanism", "antiStatement",
+      "competitors", "tradeoffs", "topHiddenValues", "stylomePrompt",
+    ]) {
+      if (ctx[k] != null) ctx[k] = scrub(ctx[k], k === "stylomePrompt" ? 1000 : 500);
+    }
 
     // Build system prompt from full user knowledge graph
     const systemParts: string[] = [
@@ -82,30 +122,31 @@ Deno.serve(async (req) => {
     systemParts.push("");
     systemParts.push("=== מידע על העסק ===");
 
-    // Business context
-    if (context?.businessField) systemParts.push(`תחום: ${context.businessField}`);
-    if (context?.productDescription) systemParts.push(`מוצר/שירות: ${context.productDescription}`);
+    // Business context — all free-text fields sourced from the sanitized
+    // `ctx` view so injection markers cannot reach the prompt.
+    if (ctx.businessField) systemParts.push(`תחום: ${ctx.businessField}`);
+    if (ctx.productDescription) systemParts.push(`מוצר/שירות: ${ctx.productDescription}`);
     if (context?.averagePrice) systemParts.push(`מחיר ממוצע: ₪${context.averagePrice}`);
-    if (context?.audienceType) systemParts.push(`קהל יעד: ${context.audienceType}`);
-    if (context?.salesModel) systemParts.push(`מודל מכירות: ${context.salesModel}`);
-    if (context?.budgetRange) systemParts.push(`טווח תקציב: ${context.budgetRange}`);
-    if (context?.mainGoal) systemParts.push(`מטרה עיקרית: ${context.mainGoal}`);
-    if (context?.existingChannels) systemParts.push(`ערוצים קיימים: ${context.existingChannels}`);
+    if (ctx.audienceType) systemParts.push(`קהל יעד: ${ctx.audienceType}`);
+    if (ctx.salesModel) systemParts.push(`מודל מכירות: ${ctx.salesModel}`);
+    if (ctx.budgetRange) systemParts.push(`טווח תקציב: ${ctx.budgetRange}`);
+    if (ctx.mainGoal) systemParts.push(`מטרה עיקרית: ${ctx.mainGoal}`);
+    if (ctx.existingChannels) systemParts.push(`ערוצים קיימים: ${ctx.existingChannels}`);
     if (context?.healthScore) systemParts.push(`ציון בריאות שיווקית: ${context.healthScore}/100`);
 
     // Identity & Pain Points
-    if (context?.identityStatement) systemParts.push(`\nזהות המותג: ${context.identityStatement}`);
-    if (context?.topPainPoint) systemParts.push(`כאב עיקרי: ${context.topPainPoint}`);
-    if (context?.industryPains) systemParts.push(`כאבים תעשייתיים: ${context.industryPains}`);
+    if (ctx.identityStatement) systemParts.push(`\nזהות המותג: ${ctx.identityStatement}`);
+    if (ctx.topPainPoint) systemParts.push(`כאב עיקרי: ${ctx.topPainPoint}`);
+    if (ctx.industryPains) systemParts.push(`כאבים תעשייתיים: ${ctx.industryPains}`);
 
     // Differentiation context (if available)
-    if (context?.mechanism) {
+    if (ctx.mechanism) {
       systemParts.push("\n=== בידול (מאומת) ===");
-      systemParts.push(`הצהרת מנגנון: ${context.mechanism}`);
-      if (context.antiStatement) systemParts.push(`מה שאנחנו במודע לא עושים: ${context.antiStatement}`);
-      if (context.competitors) systemParts.push(`מתחרים: ${context.competitors}`);
-      if (context.tradeoffs) systemParts.push(`ויתורים מודעים: ${context.tradeoffs}`);
-      if (context.topHiddenValues) systemParts.push(`ערכים נסתרים מובילים: ${context.topHiddenValues}`);
+      systemParts.push(`הצהרת מנגנון: ${ctx.mechanism}`);
+      if (ctx.antiStatement) systemParts.push(`מה שאנחנו במודע לא עושים: ${ctx.antiStatement}`);
+      if (ctx.competitors) systemParts.push(`מתחרים: ${ctx.competitors}`);
+      if (ctx.tradeoffs) systemParts.push(`ויתורים מודעים: ${ctx.tradeoffs}`);
+      if (ctx.topHiddenValues) systemParts.push(`ערכים נסתרים מובילים: ${ctx.topHiddenValues}`);
       systemParts.push("כשאתה כותב תוכן או סקריפטים — השתמש בבידול הזה. הוא מאומת.");
     }
 
@@ -117,8 +158,8 @@ Deno.serve(async (req) => {
     }
 
     // Stylome
-    if (context?.stylomePrompt) {
-      systemParts.push(`\n=== סגנון כתיבה של המשתמש ===\n${context.stylomePrompt}`);
+    if (ctx.stylomePrompt) {
+      systemParts.push(`\n=== סגנון כתיבה של המשתמש ===\n${ctx.stylomePrompt}`);
       systemParts.push("כשאתה כותב תוכן בשם המשתמש — חקה את הסגנון הזה.");
     }
 
@@ -148,20 +189,144 @@ Deno.serve(async (req) => {
       });
     }
 
-    const contentBlocks: Array<{ type: string; text?: string }> = data.content ?? [];
+    const contentBlocks: WebSearchBlock[] = data.content ?? [];
     const reply = contentBlocks
       .filter((b) => b.type === "text")
       .map((b) => b.text || "")
       .join("\n")
       .trim();
 
+    // Fire-and-forget: persist any web_search results so they land in the
+    // vector store. Failures here must not block the chat reply.
+    persistWebSearchResults(supabase, user.id, contentBlocks, context).catch((err) => {
+      console.error("ai-coach.persistWebSearch", err);
+    });
+
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
+    if (err instanceof ValidationError) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
+
+type WebSearchBlock = {
+  type: string;
+  text?: string;
+  id?: string;
+  name?: string;
+  input?: { query?: string };
+  tool_use_id?: string;
+  content?: Array<{ type?: string; url?: string; title?: string; page_age?: string | null }>;
+};
+
+// Extracts web_search queries and results from an Anthropic response,
+// writes each unique (user, query) pair to shared_context, and enqueues an
+// embedding job so the content_embeddings table stays populated.
+async function persistWebSearchResults(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  blocks: WebSearchBlock[],
+  context: Record<string, unknown> | undefined,
+): Promise<void> {
+  const toolUseById = new Map<string, string>(); // tool_use_id -> query
+  for (const b of blocks) {
+    if (b.type === "server_tool_use" && b.name === "web_search" && b.id && b.input?.query) {
+      toolUseById.set(b.id, b.input.query);
+    }
+  }
+
+  for (const b of blocks) {
+    if (b.type !== "web_search_tool_result" || !b.tool_use_id) continue;
+    const query = toolUseById.get(b.tool_use_id);
+    if (!query) continue;
+
+    const rawResults = (b.content ?? []).filter((r) => r?.type === "web_search_result" && r.url && r.title);
+    if (rawResults.length === 0) continue;
+
+    const normalizedQuery = query.toLowerCase().trim();
+    const queryHash = (await sha256Hex(normalizedQuery)).slice(0, 32);
+    const conceptKey = `WEB_SEARCH-${queryHash}`;
+
+    // Skip if we already have results for this query (plan_id IS NULL path
+    // requires an explicit .is() filter because the UNIQUE constraint treats
+    // NULLs as distinct).
+    const { data: existing } = await supabase
+      .from("shared_context")
+      .select("id")
+      .eq("user_id", userId)
+      .is("plan_id", null)
+      .eq("concept_key", conceptKey)
+      .maybeSingle();
+    if (existing) continue;
+
+    const industry = typeof context?.businessField === "string" ? context.businessField : undefined;
+    const audience = typeof context?.audienceType === "string" ? context.audienceType : undefined;
+
+    const classifiedResults = rawResults.map((r) => ({
+      url: r.url!,
+      title: r.title!,
+      page_age: r.page_age ?? null,
+      reliability: classifyReliability(r.url!),
+      domain: domainFromUrl(r.url!),
+      language: detectLanguage(r.title!),
+    }));
+
+    const payload = {
+      query,
+      results: classifiedResults,
+      source: "anthropic_web_search_20250305",
+      query_context: { industry, audience },
+      captured_at: new Date().toISOString(),
+    };
+
+    const { error: insertError } = await supabase.from("shared_context").insert({
+      user_id: userId,
+      plan_id: null,
+      concept_key: conceptKey,
+      stage: "discover",
+      payload,
+      written_by: "ai-coach.web_search",
+    });
+
+    if (insertError) {
+      console.error("ai-coach.shared_context.insert", insertError);
+      continue;
+    }
+
+    // Hand off to the event queue so embedding cost does not block the chat
+    // response. The queue-processor's handleWebSearchEmbed handler calls
+    // embed-content with this payload.
+    const embedItems = classifiedResults.map((r) => ({
+      text: `${r.title} (${r.domain ?? ""})`,
+      contentType: "web_search_result",
+      metadata: {
+        query,
+        query_hash: queryHash,
+        url: r.url,
+        domain: r.domain,
+        reliability: r.reliability,
+        language: r.language,
+        page_age: r.page_age,
+        industry,
+        audience,
+      },
+    }));
+
+    await supabase.rpc("publish_event", {
+      p_event_type: "web_search.embed",
+      p_payload: { userId, items: embedItems },
+      p_user_id: userId,
+      p_priority: 8, // low — embedding is background work
+    });
+  }
+}

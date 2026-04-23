@@ -25,15 +25,51 @@ export const ENGINE_MANIFEST = {
 // XLSX Parsing
 // ═══════════════════════════════════════════════
 
+// xlsx 0.18.x has two unpatched HIGH advisories (prototype pollution + ReDoS)
+// and SheetJS is no longer on npm, so there is no upstream fix. Until we
+// migrate off xlsx, the next best thing is to refuse obviously hostile
+// inputs: huge files, wrong MIME, non-spreadsheet bytes, and parses that
+// hang for longer than a few seconds. See CRIT-07 in the security audit.
+const MAX_UPLOAD_BYTES = 2 * 1024 * 1024; // 2 MB is plenty for a campaign sheet.
+const PARSE_TIMEOUT_MS = 5_000;
+const ALLOWED_XLSX_MIME = new Set<string>([
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+  "application/vnd.ms-excel",                                          // .xls
+  "text/csv",                                                          // .csv
+  "application/csv",
+  "",                                                                  // Safari sometimes omits type
+]);
+
 export async function parseXlsxFile(
   file: File
 ): Promise<{ sheetName: string; rows: Record<string, unknown>[] }[]> {
-  // Dynamic import keeps xlsx (~85KB gzipped) out of the main bundle —
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error(`File too large (max ${Math.floor(MAX_UPLOAD_BYTES / 1024 / 1024)}MB)`);
+  }
+  if (!ALLOWED_XLSX_MIME.has(file.type)) {
+    throw new Error(`Unsupported file type: ${file.type || "unknown"}`);
+  }
+
+  // Dynamic import keeps xlsx (~85KB gzipped) out of the main bundle;
   // pulled in only when a user actually imports a spreadsheet.
   const XLSX = await import("xlsx");
   const buffer = await file.arrayBuffer();
-  // type: 'array' is required when passing an ArrayBuffer in xlsx 0.18.x
-  const workbook = XLSX.read(new Uint8Array(buffer), { type: "array", cellDates: true });
+
+  // Wrap the synchronous XLSX.read in a timeout race. XLSX.read itself
+  // cannot be aborted, but a runaway ReDoS on a crafted file will block
+  // the main thread past this limit and the UI will surface the error
+  // rather than appearing permanently hung.
+  const parsePromise = new Promise<ReturnType<typeof XLSX.read>>((resolve, reject) => {
+    try {
+      resolve(XLSX.read(new Uint8Array(buffer), { type: "array", cellDates: true }));
+    } catch (e) {
+      reject(e);
+    }
+  });
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error("File parsing timed out")), PARSE_TIMEOUT_MS);
+  });
+  const workbook = await Promise.race([parsePromise, timeoutPromise]);
 
   return workbook.SheetNames.map((sheetName) => {
     const sheet = workbook.Sheets[sheetName];

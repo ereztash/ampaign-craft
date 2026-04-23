@@ -4,6 +4,7 @@ import "./index.css";
 import { validateEnv } from "./lib/validateEnv";
 import { captureUTM, track, initGA4 } from "./lib/analytics";
 import { notifyReferralClicked } from "./lib/notificationQueue";
+import { scrubSentryEvent, scrubSentryBreadcrumb } from "./lib/sentryRedaction";
 
 validateEnv();
 initGA4();
@@ -29,11 +30,15 @@ initGA4();
       dsn,
       environment: (import.meta.env.VITE_ENV as string | undefined) ?? "production",
       tracesSampleRate: 0.1,
-      // Redact request body to avoid PII in Sentry breadcrumbs
+      // Aggressive redaction: the previous beforeSend only deleted
+      // event.request.data and left JWTs in Authorization/Cookie headers,
+      // query strings, and breadcrumb data. We now scrub every known
+      // sensitive surface before the event leaves the browser.
       beforeSend(event: Record<string, unknown>) {
-        const req = event.request as Record<string, unknown> | undefined;
-        if (req) delete req.data;
-        return event;
+        return scrubSentryEvent(event);
+      },
+      beforeBreadcrumb(breadcrumb: Record<string, unknown>) {
+        return scrubSentryBreadcrumb(breadcrumb);
       },
     });
   };

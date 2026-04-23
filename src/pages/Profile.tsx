@@ -56,11 +56,30 @@ const PageComponent = () => {
       toast({ title: tx({ he: "התמונה גדולה מדי (מקס׳ 4MB)", en: "Image too large (max 4MB)" }, language), variant: "destructive" });
       return;
     }
+    // MIME + extension whitelist. Reject svg and anything that could be
+    // served same-origin to fire a script payload (CSP 'unsafe-inline').
+    // The uploaded content-type is forced to match, not echoed from the
+    // client-controlled file.type.
+    const MIME_TO_EXT: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+    };
+    const safeExt = MIME_TO_EXT[file.type];
+    if (!safeExt) {
+      toast({ title: tx({ he: "רק JPEG / PNG / WebP", en: "Only JPEG, PNG, WebP allowed" }, language), variant: "destructive" });
+      return;
+    }
     setAvatarUploading(true);
     try {
-      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+      // Random filename defeats path-guessing of other users' avatars in a
+      // public bucket. The user-id prefix lets a storage policy scope
+      // writes to the owner.
+      const path = `${user.id}/avatar-${crypto.randomUUID()}.${safeExt}`;
+      const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, {
+        upsert: true,
+        contentType: file.type,
+      });
       if (upErr) throw upErr;
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
       setAvatarUrl(data.publicUrl);
