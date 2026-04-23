@@ -1,10 +1,12 @@
 // ═══════════════════════════════════════════════
 // ArchetypePipelineGuide — Friction-reasoned pipeline card
-// Shows the user their recommended work sequence, ordered by
-// their archetype's psychological friction sources.
+// Shows the user their recommended work sequence.
 //
-// Only renders when confidenceTier !== "none".
-// Each step shows the frictionReason so every adaptation is traceable.
+// Always renders a next-step for the user — this is the single point of
+// guidance on the Command Center. At confidenceTier === "none" we fall
+// back to the cold-start archetype's pipeline (optimizer) and suppress
+// the archetype-specific "why this order?" explainer, because the
+// heuristics haven't been validated for this user yet.
 // ═══════════════════════════════════════════════
 
 import { useState } from "react";
@@ -25,19 +27,24 @@ import { CheckCircle2, Circle, ChevronDown, ArrowRight } from "lucide-react";
 
 export default function ArchetypePipelineGuide() {
   const { language } = useLanguage();
-  const isHe = language === "he";
   const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
-  const { effectiveArchetypeId, uiConfig } = useArchetype();
-  const { steps, currentStepIndex, completedCount, isActive } = useArchetypePipeline();
+  const { effectiveArchetypeId, uiConfig, confidenceTier } = useArchetype();
+  const { steps, currentStepIndex, completedCount } = useArchetypePipeline();
   const [whyOpen, setWhyOpen] = useState(false);
 
-  if (!isActive) return null;
+  // At confidenceTier === "none" we're using the cold-start pipeline; the
+  // pipeline itself is valid guidance, but the archetype-specific rationale
+  // isn't yet earned, so hide the explainer.
+  const hasArchetype = confidenceTier !== "none";
 
   const heuristics = deriveHeuristicSet(effectiveArchetypeId).activeHeuristics;
   const ctaVerbs = getPrimaryCtaVerbs(effectiveArchetypeId);
   const { coreMotivation } = uiConfig.personalityProfile;
-  const nextStep = steps[currentStepIndex] ?? null;
+
+  const title = hasArchetype
+    ? tx({ he: "הנתיב המומלץ שלך", en: "Your recommended path" }, language)
+    : tx({ he: "התחל כאן", en: "Start here" }, language);
 
   const mp = reducedMotion
     ? {}
@@ -48,7 +55,7 @@ export default function ArchetypePipelineGuide() {
       <Card className="border-primary/30 bg-gradient-to-b from-primary/4 to-transparent">
         <CardHeader className="pb-2 pt-4 px-4">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center justify-between" dir="auto">
-            <span>{tx({ he: "הנתיב המומלץ שלך", en: "Your recommended path" }, language)}</span>
+            <span>{title}</span>
             {completedCount > 0 && (
               <Badge variant="secondary" className="text-xs font-normal">
                 {completedCount}/{steps.length} {tx({ he: "הושלמו", en: "done" }, language)}
@@ -89,7 +96,7 @@ export default function ArchetypePipelineGuide() {
                   >
                     {step.label[language]}
                   </p>
-                  {isCurrent && (
+                  {isCurrent && hasArchetype && (
                     <p className="text-xs text-muted-foreground mt-0.5 leading-snug" dir="auto">
                       {step.frictionReason[language]}
                     </p>
@@ -121,34 +128,36 @@ export default function ArchetypePipelineGuide() {
             </div>
           )}
 
-          {/* "Why this order?" collapsible */}
-          <Collapsible open={whyOpen} onOpenChange={setWhyOpen}>
-            <CollapsibleTrigger asChild>
-              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 pt-2 border-t border-border/40 w-full">
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform shrink-0 ${whyOpen ? "rotate-180" : ""}`} />
-                <span dir="auto">{tx({ he: "למה הסדר הזה?", en: "Why this order?" }, language)}</span>
-              </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="mt-2 space-y-2">
-                <p className="text-xs text-muted-foreground italic" dir="auto">
-                  {coreMotivation[tx({ he: "he", en: "en" }, language)]}
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {heuristics.map((h) => (
-                    <Badge
-                      key={h.id}
-                      variant="outline"
-                      className="text-xs py-0 px-1.5"
-                      title={h.source}
-                    >
-                      {h.id}: {h.principle}
-                    </Badge>
-                  ))}
+          {/* "Why this order?" collapsible — only when archetype is confirmed. */}
+          {hasArchetype && (
+            <Collapsible open={whyOpen} onOpenChange={setWhyOpen}>
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 pt-2 border-t border-border/40 w-full">
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform shrink-0 ${whyOpen ? "rotate-180" : ""}`} />
+                  <span dir="auto">{tx({ he: "למה הסדר הזה?", en: "Why this order?" }, language)}</span>
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mt-2 space-y-2">
+                  <p className="text-xs text-muted-foreground italic" dir="auto">
+                    {coreMotivation[tx({ he: "he", en: "en" }, language)]}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {heuristics.map((h) => (
+                      <Badge
+                        key={h.id}
+                        variant="outline"
+                        className="text-xs py-0 px-1.5"
+                        title={h.source}
+                      >
+                        {h.id}: {h.principle}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+              </CollapsibleContent>
+            </Collapsible>
+          )}
         </CardContent>
       </Card>
     </motion.div>

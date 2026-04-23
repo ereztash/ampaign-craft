@@ -178,8 +178,14 @@ export const Analytics = {
     track("aarrr.acquisition.utm_captured", utm, { userId }),
 
   // Activation
+  // NOTE: historically there was only `onboardingStarted` wired to the
+  // `onboarding_completed` event (inherited name). Both helpers remain so
+  // existing call sites keep working; prefer `onboardingCompleted` for new
+  // call sites so the intent is readable.
   onboardingStarted: (userId?: string) =>
     track("aarrr.activation.onboarding_completed", {}, { userId }),
+  onboardingCompleted: (userId: string, source?: "express" | "full") =>
+    track("aarrr.activation.onboarding_completed", { source }, { userId }),
   firstPlanGenerated: (planId: string, userId: string, industry?: string) =>
     track("aarrr.activation.first_plan_generated", { planId, industry }, { userId }),
   firstTemplateCopied: (userId: string, channel?: string) =>

@@ -20,6 +20,8 @@ import { useArchetype } from "@/contexts/ArchetypeContext";
 import { getBlindSpotProfile } from "@/lib/archetypeBlindSpots";
 import { emitArchetypeEvent } from "@/lib/archetypeAnalytics";
 import type { RevealSource } from "@/lib/archetypeAnalytics";
+import { Analytics } from "@/lib/analytics";
+import { useAuth } from "@/contexts/AuthContext";
 import { tx } from "@/i18n/tx";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +45,7 @@ interface ArchetypeRevealScreenProps {
 export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeRevealScreenProps) {
   const { language, isRTL } = useLanguage();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     effectiveArchetypeId,
     confidenceTier,
@@ -75,6 +78,11 @@ export default function ArchetypeRevealScreen({ source = "auto" }: ArchetypeReve
       tier: confidenceTier,
       source,
     });
+    // AARRR activation event: opt-in, not just view, is the moment the
+    // personalisation contract is formed. The passive mount-time
+    // archetype_revealed is in archetypeAnalytics; this one feeds the
+    // AARRR funnel.
+    if (user?.id) Analytics.archetypeRevealed(user.id, effectiveArchetypeId);
     navigate(-1);
   };
 
