@@ -9,9 +9,28 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
 import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 
-const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// Supabase built-in embedding model. 384-dim. No external API key.
+// Replaces OpenAI text-embedding-3-small (1536-dim) — see migration
+// 20260423_018_embeddings_dim_384.sql.
+//
+// The Session is created lazily on first use so cold starts don't pay
+// the model-load cost until an actual embed request arrives. The
+// runtime injects a `Supabase.ai` global that isn't typed in any
+// public .d.ts; we model the surface we actually use.
+interface SupabaseAiSession {
+  run(input: string, opts?: { mean_pool?: boolean; normalize?: boolean }): Promise<number[]>;
+}
+let embeddingSession: SupabaseAiSession | null = null;
+function getEmbeddingSession(): SupabaseAiSession {
+  if (!embeddingSession) {
+    // @ts-expect-error Supabase global provided by the Edge Runtime
+    embeddingSession = new Supabase.ai.Session("gte-small") as SupabaseAiSession;
+  }
+  return embeddingSession;
+}
 
 Deno.serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
@@ -24,13 +43,6 @@ Deno.serve(async (req) => {
 
   const rl = checkRateLimit(req, "embed-content", 20, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
-
-  if (!OPENAI_API_KEY) {
-    return new Response(JSON.stringify({ error: "OPENAI_API_KEY not configured" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
 
   // Verify JWT. Allow service-role callers (queue-processor dispatching
   // background embedding work) to skip user auth by presenting the service
@@ -146,28 +158,24 @@ Deno.serve(async (req) => {
 });
 
 async function generateEmbeddings(texts: string[]): Promise<number[][]> {
-  const response = await fetch("https://api.openai.com/v1/embeddings", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "text-embedding-3-small",
-      input: texts,
-      dimensions: 1536,
+  // Supabase.ai.Session processes one input at a time. Batch in a
+  // Promise.all — the model runs inside the edge function process, so
+  // there's no network round-trip per input.
+  const session = getEmbeddingSession();
+  const vectors = await Promise.all(
+    texts.map(async (t) => {
+      const v = await session.run(t, {
+        mean_pool: true,
+        normalize: true,
+      });
+      return v as number[];
     }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error?.message || `Embedding API error: ${response.status}`);
+  );
+  // Defensive: every vector must be 384-dim to match the column type.
+  for (const v of vectors) {
+    if (!Array.isArray(v) || v.length !== 384) {
+      throw new Error(`unexpected embedding shape: len=${Array.isArray(v) ? v.length : "n/a"}`);
+    }
   }
-
-  type OpenAIEmbedding = { index: number; embedding: number[] };
-  const rows = data.data as OpenAIEmbedding[];
-  return rows
-    .sort((a, b) => a.index - b.index)
-    .map((item) => item.embedding);
+  return vectors;
 }

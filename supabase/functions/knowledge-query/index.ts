@@ -52,9 +52,24 @@ import {
 } from "../_shared/queryRouter.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
-const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// Lazy Supabase.ai embedding session (gte-small, 384-dim). Replaces
+// the OpenAI text-embedding-3-small path; no external API key.
+// The runtime injects a `Supabase.ai` global not modeled in any
+// public .d.ts; we describe the surface we consume.
+interface SupabaseAiSession {
+  run(input: string, opts?: { mean_pool?: boolean; normalize?: boolean }): Promise<number[]>;
+}
+let embeddingSession: SupabaseAiSession | null = null;
+function getEmbeddingSession(): SupabaseAiSession {
+  if (!embeddingSession) {
+    // @ts-expect-error Supabase global provided by the Edge Runtime
+    embeddingSession = new Supabase.ai.Session("gte-small") as SupabaseAiSession;
+  }
+  return embeddingSession;
+}
 
 const MAX_QUERY_LENGTH = 1000;
 const MAX_FACTS_PER_QUERY = 25;
@@ -97,8 +112,8 @@ Deno.serve(async (req) => {
   const rl = checkRateLimit(req, "knowledge-query", 30, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-  if (!ANTHROPIC_API_KEY || !OPENAI_API_KEY) {
-    return json({ error: "API keys not configured" }, 500, corsHeaders);
+  if (!ANTHROPIC_API_KEY) {
+    return json({ error: "ANTHROPIC_API_KEY not configured" }, 500, corsHeaders);
   }
 
   const user = await requireAuthedUser(req);
@@ -235,21 +250,15 @@ function json(body: Record<string, unknown>, status: number, cors: Record<string
 // ───────────────────────────────────────────────
 
 async function embedQuery(text: string): Promise<number[]> {
-  const resp = await fetch("https://api.openai.com/v1/embeddings", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "text-embedding-3-small",
-      input: text,
-      dimensions: 1536,
-    }),
-  });
-  if (!resp.ok) throw new Error(`embed failed: ${resp.status}`);
-  const data = await resp.json();
-  return data.data[0].embedding as number[];
+  const session = getEmbeddingSession();
+  const vec = (await session.run(text, {
+    mean_pool: true,
+    normalize: true,
+  })) as number[];
+  if (!Array.isArray(vec) || vec.length !== 384) {
+    throw new Error(`unexpected embedding shape: ${Array.isArray(vec) ? vec.length : "n/a"}`);
+  }
+  return vec;
 }
 
 // ───────────────────────────────────────────────
