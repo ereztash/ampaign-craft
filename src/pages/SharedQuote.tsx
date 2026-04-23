@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { supabaseLoose } from "@/integrations/supabase/loose";
+import { supabase } from "@/integrations/supabase/client";
 import { tx } from "@/i18n/tx";
 import { useLanguage } from "@/i18n/LanguageContext";
 import QuotePreview from "@/components/QuotePreview";
@@ -31,23 +31,34 @@ export default function SharedQuote() {
 
     (async () => {
       try {
-        const { data, error: dbError } = await supabaseLoose
-          .from("quotes")
-          .select("data, status, valid_until")
-          .eq("share_token", token)
-          .maybeSingle();
+        // Share-token lookup goes through the get-quote-by-token edge
+        // function instead of a direct .eq() read on `quotes`. The
+        // previous RLS policy granted SELECT on any row with a non-null
+        // share_token to every authenticated user, which was a
+        // cross-tenant quote leak (CRIT-03). The edge function matches
+        // the exact token with the service role and enforces expiry.
+        const { data, error: fnError } = await supabase.functions.invoke(
+          "get-quote-by-token",
+          { body: { token } },
+        );
 
-        if (dbError || !data) {
+        if (fnError) {
+          const status = (fnError as { status?: number }).status;
+          if (status === 410) {
+            setError(tx({ he: "הצעת מחיר זו פגה תוקף", en: "This quote has expired" }, language));
+          } else {
+            setError(tx({ he: "הצעת מחיר לא נמצאה", en: "Quote not found" }, language));
+          }
+          return;
+        }
+
+        const quoteRow = (data as { quote?: { data?: Quote } } | null)?.quote;
+        if (!quoteRow?.data) {
           setError(tx({ he: "הצעת מחיר לא נמצאה", en: "Quote not found" }, language));
           return;
         }
 
-        if (data.valid_until && new Date(data.valid_until) < new Date()) {
-          setError(tx({ he: "הצעת מחיר זו פגה תוקף", en: "This quote has expired" }, language));
-          return;
-        }
-
-        setQuote(data.data as Quote);
+        setQuote(quoteRow.data);
       } catch {
         setError(tx({ he: "שגיאה בטעינת ההצעה", en: "Error loading quote" }, language));
       } finally {
