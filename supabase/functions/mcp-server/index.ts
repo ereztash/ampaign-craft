@@ -473,11 +473,16 @@ Use conversational yet professional language. Avoid clichés.`;
         status?: string;
       };
 
+      // CRIT-08: the mcp-server Supabase client is constructed with the
+      // service-role key, which bypasses RLS. Without an explicit user_id
+      // filter this query leaks every user's agent task history (cost_nis,
+      // errors, timing) to any authenticated caller. Scope to the JWT user.
       let query = supabase
         .from("agent_tasks")
         .select(
           "id, agent_name, status, created_at, completed_at, tokens_used, cost_nis, error"
         )
+        .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(Math.min(Number(limit), 50));
 
