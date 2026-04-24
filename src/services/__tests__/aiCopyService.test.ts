@@ -3,7 +3,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // ── External dep mocks ────────────────────────────────────────────────────
 
 vi.mock("@/integrations/supabase/client", () => ({
-  supabase: { from: vi.fn(), auth: { getUser: vi.fn() } },
+  supabase: {
+    from: vi.fn(),
+    auth: {
+      getUser: vi.fn(),
+      getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+    },
+  },
 }));
 
 vi.mock("../llmRouter", () => ({

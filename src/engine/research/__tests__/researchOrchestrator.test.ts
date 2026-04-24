@@ -9,6 +9,9 @@ vi.mock("@/integrations/supabase/client", () => ({
       insert: vi.fn(() => Promise.resolve({ data: null, error: null })),
       select: vi.fn(() => Promise.resolve({ data: [], error: null })),
     })),
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+    },
   },
 }));
 

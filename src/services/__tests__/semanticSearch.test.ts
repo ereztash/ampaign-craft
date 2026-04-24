@@ -169,7 +169,7 @@ describe("semanticSearch", () => {
       const out = await embedPlanContent(result, "user-1", "plan-99");
       expect(out.embedded).toBe(3);
       expect(global.fetch).toHaveBeenCalledWith(
-        "/api/growth/embed-content",
+        expect.stringContaining("/functions/v1/embed-content"),
         expect.objectContaining({ method: "POST" }),
       );
     });

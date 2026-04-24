@@ -125,7 +125,7 @@ describe("createLLMAgent", () => {
       await agent.run(board);
 
       expect(fetch).toHaveBeenCalledWith(
-        "/api/growth/agent-executor",
+        expect.stringContaining("/functions/v1/agent-executor"),
         expect.objectContaining({ method: "POST" }),
       );
       const body = JSON.parse((fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body);
