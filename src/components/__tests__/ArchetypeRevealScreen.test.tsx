@@ -45,6 +45,10 @@ vi.mock("@/lib/archetypeAnalytics", () => ({
   emitArchetypeEvent: vi.fn(),
 }));
 
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: { id: "test-user" } }),
+}));
+
 describe("ArchetypeRevealScreen", () => {
   it("renders without crashing", () => {
     render(

@@ -11,15 +11,16 @@ vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ user: null, tier: "free", isLocalAuth: false }),
 }));
 
+const defaultProfile = {
+  profile: {
+    lastFormData: null,
+    savedPlanCount: 0,
+    investment: { totalSessionsMinutes: 0, plansCreated: 0 },
+    unifiedProfile: null,
+  },
+};
 vi.mock("@/contexts/UserProfileContext", () => ({
-  useUserProfile: () => ({
-    profile: {
-      lastFormData: null,
-      savedPlanCount: 0,
-      investment: { totalSessionsMinutes: 0, plansCreated: 0 },
-      unifiedProfile: null,
-    },
-  }),
+  useUserProfile: vi.fn(() => defaultProfile),
 }));
 
 vi.mock("@/contexts/DataSourceContext", () => ({
@@ -203,7 +204,17 @@ describe("CommandCenter", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("renders the weekly action card stub", () => {
+  it("renders the weekly action card once the user is out of focused-start mode", async () => {
+    const { useUserProfile } = await import("@/contexts/UserProfileContext");
+    vi.mocked(useUserProfile).mockReturnValueOnce({
+      profile: {
+        lastFormData: { businessField: "tech" },
+        savedPlanCount: 1,
+        investment: { totalSessionsMinutes: 5, plansCreated: 1 },
+        unifiedProfile: null,
+      },
+    } as unknown as ReturnType<typeof useUserProfile>);
+
     render(
       <MemoryRouter>
         <CommandCenter />

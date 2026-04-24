@@ -24,19 +24,18 @@ describe("logger", () => {
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         "[myContext]",
         "something went wrong",
-        "something went wrong",
       );
     });
 
     it("extracts message from Error objects", () => {
       const err = new Error("error message");
       logger.warn("ctx", err);
-      expect(consoleWarnSpy).toHaveBeenCalledWith("[ctx]", "error message", err);
+      expect(consoleWarnSpy).toHaveBeenCalledWith("[ctx]", "error message");
     });
 
     it("converts non-string non-Error to string", () => {
       logger.warn("ctx", 42);
-      expect(consoleWarnSpy).toHaveBeenCalledWith("[ctx]", "42", 42);
+      expect(consoleWarnSpy).toHaveBeenCalledWith("[ctx]", "42");
     });
 
     it("calls Sentry.captureMessage when Sentry is available", () => {
@@ -71,14 +70,13 @@ describe("logger", () => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "[errCtx]",
         "critical failure",
-        "critical failure",
       );
     });
 
     it("extracts message from Error objects", () => {
       const err = new Error("db failure");
       logger.error("dbCtx", err);
-      expect(consoleErrorSpy).toHaveBeenCalledWith("[dbCtx]", "db failure", err);
+      expect(consoleErrorSpy).toHaveBeenCalledWith("[dbCtx]", "db failure");
     });
 
     it("calls Sentry.captureException when Sentry is available", () => {
@@ -107,7 +105,7 @@ describe("logger", () => {
 
     it("handles null error gracefully", () => {
       expect(() => logger.error("ctx", null)).not.toThrow();
-      expect(consoleErrorSpy).toHaveBeenCalledWith("[ctx]", "null", null);
+      expect(consoleErrorSpy).toHaveBeenCalledWith("[ctx]", "null");
     });
   });
 

@@ -47,6 +47,10 @@ vi.mock("@/contexts/UserProfileContext", () => ({
   useUserProfile: () => ({ profile: { userSegment: "new-beginner", lastFormData: {} } }),
 }));
 
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: { id: "test-user" } }),
+}));
+
 vi.mock("@/engine/behavioralHeuristicEngine", () => ({ getL5CSSVars: () => ({}) }));
 
 vi.mock("@/lib/archetypeBlindSpots", () => ({
