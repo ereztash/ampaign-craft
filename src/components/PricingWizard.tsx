@@ -650,6 +650,20 @@ const PricingWizard = ({
       </div>
 
       {/* Navigation */}
+      {/*
+        On step 1 the Next button stays disabled until both PSM prices are
+        filled and stretch > too-cheap. Without a visible hint users often
+        assume the button is broken; expose the reason inline.
+      */}
+      {step === 1 && !canAdvance() && (
+        <p className="text-xs text-muted-foreground text-center" dir="auto">
+          {tooChcapPrice <= 0
+            ? tx({ he: "מלא/י את שני המחירים כדי להמשיך", en: "Fill both prices to continue" }, language)
+            : stretchPrice <= 0
+              ? tx({ he: "הכנס/י את המחיר היקר כדי להמשיך", en: "Enter the stretch price to continue" }, language)
+              : tx({ he: "המחיר היקר חייב להיות גבוה מהמחיר הזול", en: "Stretch price must be higher than the floor" }, language)}
+        </p>
+      )}
       <div className="flex items-center gap-3">
         <Button
           variant="outline"

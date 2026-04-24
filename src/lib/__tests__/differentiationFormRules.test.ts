@@ -85,6 +85,32 @@ describe("differentiationFormRules", () => {
     it("returns false when competitorOverlap is empty", () => {
       expect(canProceedPhase("contradiction", makeFormData({ competitorOverlap: "" }))).toBe(false);
     });
+
+    it("B2C: proceeds on negativeReviewTheme even when lostDealReason is empty", () => {
+      expect(
+        canProceedPhase(
+          "contradiction",
+          makeFormData({
+            targetMarket: "b2c",
+            lostDealReason: "",
+            negativeReviewTheme: "Shipping was slow.",
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it("B2C: blocks when both lostDealReason and negativeReviewTheme are empty", () => {
+      expect(
+        canProceedPhase(
+          "contradiction",
+          makeFormData({
+            targetMarket: "b2c",
+            lostDealReason: "",
+            negativeReviewTheme: "",
+          }),
+        ),
+      ).toBe(false);
+    });
   });
 
   describe("canProceedPhase - hidden", () => {
@@ -124,6 +150,39 @@ describe("differentiationFormRules", () => {
 
     it("returns false when decisionLatency is falsy", () => {
       expect(canProceedPhase("mapping", makeFormData({ decisionLatency: "" as never }))).toBe(false);
+    });
+
+    it("B2C: proceeds on influenceNetwork + decisionSpeed (ignores B2B fields)", () => {
+      expect(
+        canProceedPhase(
+          "mapping",
+          makeFormData({
+            targetMarket: "b2c",
+            buyingCommitteeMap: [],
+            decisionLatency: "" as never,
+            influenceNetwork: [
+              { role: "self", influence: "high" },
+              { role: "peer_circle", influence: "medium" },
+            ] as never,
+            decisionSpeed: "same_day",
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it("B2C: blocks when influenceNetwork has <2 roles", () => {
+      expect(
+        canProceedPhase(
+          "mapping",
+          makeFormData({
+            targetMarket: "b2c",
+            buyingCommitteeMap: [],
+            decisionLatency: "" as never,
+            influenceNetwork: [{ role: "self", influence: "high" }] as never,
+            decisionSpeed: "same_day",
+          }),
+        ),
+      ).toBe(false);
     });
   });
 
