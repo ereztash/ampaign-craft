@@ -25,9 +25,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # dep-review requires GitHub's Dependency Graph feature to be enabled
+  # in repo Settings → Code security → Dependency graph. Until that's
+  # turned on, the action fails every run with "Dependency review is not
+  # supported on this repository". We mark the job as non-blocking
+  # (continue-on-error) so the check surfaces but doesn't stall merges;
+  # npm-audit below covers the same CVE-gate intent via npm's advisory DB.
+  # When Dependency Graph is enabled in settings, flip continue-on-error
+  # to false so this gate becomes authoritative again.
   dep-review:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v6
         with:
