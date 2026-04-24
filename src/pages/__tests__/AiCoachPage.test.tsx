@@ -57,23 +57,22 @@ describe("AiCoachPage", () => {
     expect(document.body).toBeTruthy();
   });
 
-  it("shows empty state when no plan or profile data exists", () => {
+  it("always renders the AI coach chat (no paywall or empty-state gate)", () => {
     render(
       <MemoryRouter>
         <AiCoachPage />
       </MemoryRouter>,
     );
     expect(screen.getByRole("main")).toBeInTheDocument();
-    // No plan, no lastFormData → shows the "need a plan" prompt
-    expect(screen.getByRole("button", { name: /open wizard/i })).toBeInTheDocument();
+    expect(screen.getByTestId("ai-coach-chat")).toBeInTheDocument();
   });
 
-  it("shows the bot icon in the empty state", () => {
+  it("renders the chat even with no plan or profile data", () => {
     render(
       <MemoryRouter>
         <AiCoachPage />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/need a plan or business profile/i)).toBeInTheDocument();
+    expect(screen.getByTestId("ai-coach-chat")).toBeInTheDocument();
   });
 });

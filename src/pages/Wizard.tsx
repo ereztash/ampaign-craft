@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Analytics } from "@/lib/analytics";
 import { onPlanGenerated, trackFirstPlanGenerated } from "@/services/eventQueue";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +28,10 @@ type WizardState = "onboarding" | "processing";
 
 const Wizard = () => {
   const { language } = useLanguage();
-  const currentLanguage = language as Language;
+  // Narrow once and memoize so the reference is stable across renders —
+  // without useMemo the derived value would churn the identity of any
+  // callback that depends on it, defeating surrounding useCallbacks.
+  const currentLanguage = useMemo(() => language as Language, [language]);
   const isHe = language === "he";
   const { profile, persistFormData, persistUnifiedProfile } = useUserProfile();
   const { user } = useAuth();
@@ -85,7 +88,7 @@ const Wizard = () => {
       }
       return copy;
     },
-    [user?.id, formDataCache?.mainGoal, formDataCache?.businessField, language],
+    [user?.id, formDataCache?.mainGoal, formDataCache?.businessField, currentLanguage],
   );
 
   const handleProfileComplete = useCallback((up: UnifiedProfile) => {
@@ -127,7 +130,7 @@ const Wizard = () => {
 
     // Update archetype profile with available signals from this pipeline run
     updateFromBlackboard({ formData: fd, knowledgeGraph: graph });
-  }, [persistFormData, persistUnifiedProfile, updateFromBlackboard, language, user]);
+  }, [persistFormData, persistUnifiedProfile, updateFromBlackboard, currentLanguage, user]);
 
   const handleProcessingComplete = useCallback(() => {
     if (!result) return;

@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { canProceedPhase, isPhaseComplete, getPhaseColor } from "../differentiationFormRules";
+import {
+  canProceedPhase,
+  describeBlockingField,
+  isPhaseComplete,
+  getPhaseColor,
+} from "../differentiationFormRules";
 import type { DifferentiationFormData } from "@/types/differentiation";
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -137,6 +142,64 @@ describe("differentiationFormRules", () => {
   describe("canProceedPhase - unknown phase", () => {
     it("returns false for an unknown phase", () => {
       expect(canProceedPhase("unknown_phase" as never, makeFormData())).toBe(false);
+    });
+  });
+
+  // ── describeBlockingField ────────────────────────────────────────────
+
+  describe("describeBlockingField", () => {
+    it("returns null when the phase is complete", () => {
+      expect(describeBlockingField("surface", makeFormData())).toBeNull();
+      expect(describeBlockingField("contradiction", makeFormData())).toBeNull();
+      expect(describeBlockingField("hidden", makeFormData())).toBeNull();
+      expect(describeBlockingField("mapping", makeFormData())).toBeNull();
+      expect(describeBlockingField("synthesis", makeFormData())).toBeNull();
+    });
+
+    it("surface: names the first missing field", () => {
+      const hint = describeBlockingField("surface", makeFormData({ businessName: "" }));
+      expect(hint?.he).toContain("שם");
+      expect(hint?.en.toLowerCase()).toContain("business");
+    });
+
+    it("contradiction: names lostDealReason when it is empty", () => {
+      const hint = describeBlockingField(
+        "contradiction",
+        makeFormData({ lostDealReason: "" }),
+      );
+      expect(hint).not.toBeNull();
+      expect(hint?.en.toLowerCase()).toContain("deal");
+    });
+
+    it("mapping: names buying committee when < 2 roles", () => {
+      const hint = describeBlockingField(
+        "mapping",
+        makeFormData({ buyingCommitteeMap: [{ role: "one" }] as never }),
+      );
+      expect(hint).not.toBeNull();
+      expect(hint?.en.toLowerCase()).toContain("committee");
+    });
+
+    it("hidden: names ashamedPains when < 2 entries", () => {
+      const hint = describeBlockingField(
+        "hidden",
+        makeFormData({ ashamedPains: ["only one"] }),
+      );
+      expect(hint).not.toBeNull();
+      expect(hint?.en.toLowerCase()).toContain("pain");
+    });
+
+    it("canProceed false iff describeBlockingField non-null", () => {
+      const cases: Array<[string, DifferentiationFormData]> = [
+        ["surface", makeFormData({ industry: "" })],
+        ["contradiction", makeFormData({ customerQuote: "" })],
+        ["hidden", makeFormData({ ashamedPains: [] })],
+        ["mapping", makeFormData({ competitorArchetypes: [] })],
+      ];
+      for (const [phase, data] of cases) {
+        expect(canProceedPhase(phase as never, data)).toBe(false);
+        expect(describeBlockingField(phase as never, data)).not.toBeNull();
+      }
     });
   });
 

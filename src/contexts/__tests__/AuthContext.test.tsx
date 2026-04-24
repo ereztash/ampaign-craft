@@ -1,6 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { render, screen, act, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
+
+// Force AuthContext.checkSupabase() -> false so init() takes the local-auth
+// path. vitest.config.ts defines a placeholder VITE_SUPABASE_URL so Supabase
+// client instantiation does not throw; this test needs the opposite.
+beforeAll(() => {
+  vi.stubEnv("VITE_SUPABASE_URL", "");
+  vi.stubEnv("VITE_SUPABASE_PUBLISHABLE_KEY", "");
+});
+afterAll(() => {
+  vi.unstubAllEnvs();
+});
+
 import { AuthProvider, useAuth } from "../AuthContext";
 
 // Mock Supabase with a controlled head response

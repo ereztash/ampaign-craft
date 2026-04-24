@@ -4,6 +4,13 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    // Placeholder env for Supabase client instantiation during tests.
+    // Tests that exercise Supabase must mock @/integrations/supabase/client;
+    // these values only prevent the module-load `createClient` validator from throwing.
+    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify("https://test.supabase.co"),
+    "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify("test_anon_key"),
+  },
   test: {
     environment: "jsdom",
     globals: true,
