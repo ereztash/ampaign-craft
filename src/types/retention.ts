@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════
 
 import type { BilingualText } from "./i18n";
+export type { BilingualText } from "./i18n";
 
 export interface RetentionResult {
   onboarding: OnboardingSequence;
