@@ -3,6 +3,7 @@
 // Cross-domain: Behavioral Economics × SaaS Pricing × Offer Architecture
 // ═══════════════════════════════════════════════
 
+import type { BilingualText } from "./i18n";
 export type { BilingualText } from "./i18n";
 
 // === INPUT ===

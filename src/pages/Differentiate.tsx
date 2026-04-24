@@ -21,6 +21,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { generateDifferentiation } from "@/engine/differentiationEngine";
 import { getQuestionsForPhase } from "@/engine/differentiationPhases";
 import { generateCrossDomainInsights, type Industry as CrossDomainIndustry } from "@/engine/crossDomainBenchmarkEngine";
+import type { Tables } from "@/integrations/supabase/types";
 
 type ViewState = "idle" | "wizard" | "results" | "transcript";
 
@@ -45,7 +46,8 @@ const PageComponent = () => {
     loadDifferentiationResults()
       .then((results) => {
         if (results.length > 0) {
-          const lastResult = results[0].result || results[0];
+          const latest = results[0] as Tables<"differentiation_results"> | Record<string, unknown>;
+          const lastResult = "result" in latest ? latest.result : latest;
           setResult(lastResult as DifferentiationResult);
         }
       })

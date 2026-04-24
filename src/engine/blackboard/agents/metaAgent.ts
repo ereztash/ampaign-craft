@@ -176,7 +176,7 @@ function computeAARRRHealth(
   let activation = 0;
   if (state.funnelResult) { activation += 50; signals.push("funnelResult"); }
   if (state.healthScore) {
-    activation += Math.round((state.healthScore.overall / 100) * 40);
+    activation += Math.round((state.healthScore.total / 100) * 40);
     signals.push("healthScore");
   }
   if (state.discProfile) { activation += 20; signals.push("discProfile"); }

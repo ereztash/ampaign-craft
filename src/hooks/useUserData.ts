@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json, TablesInsert } from "@/integrations/supabase/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { safeStorage } from "@/lib/safeStorage";
 import { logger } from "@/lib/logger";
@@ -17,17 +18,16 @@ export function useUserData() {
 
       if (!user) return;
 
+      const payload: TablesInsert<"user_form_data"> = {
+        user_id: user.id,
+        form_type: formType,
+        data: data as Json,
+        updated_at: new Date().toISOString(),
+      };
+
       const { error } = await supabase
         .from("user_form_data")
-        .upsert(
-          {
-            user_id: user.id,
-            form_type: formType,
-            data,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id,form_type" }
-        );
+        .upsert(payload, { onConflict: "user_id,form_type" });
 
       if (error) logger.warn("useUserData.saveFormData", error);
     },
@@ -60,13 +60,15 @@ export function useUserData() {
 
       if (!user) return;
 
+      const payload: TablesInsert<"differentiation_results"> = {
+        user_id: user.id,
+        form_data: formData as Json,
+        result: result as Json,
+      };
+
       const { error } = await supabase
         .from("differentiation_results")
-        .insert({
-          user_id: user.id,
-          form_data: formData,
-          result,
-        });
+        .insert(payload);
 
       if (error) logger.warn("useUserData.saveDifferentiationResult", error);
     },
