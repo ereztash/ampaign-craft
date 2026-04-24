@@ -88,8 +88,8 @@ const PrincipleTraceModal = ({ result }: Props) => {
           </DialogTitle>
           <DialogDescription>
             {isHe
-              ? `ספריית principles גרסה ${libraryVersion()} — המלצות מבוססות מחקר בעל שם.`
-              : `Principle library v${libraryVersion()} — recommendations grounded in named research.`}
+              ? `ספריית principles גרסה ${libraryVersion()} - המלצות מבוססות מחקר בעל שם.`
+              : `Principle library v${libraryVersion()} - recommendations grounded in named research.`}
           </DialogDescription>
         </DialogHeader>
 
