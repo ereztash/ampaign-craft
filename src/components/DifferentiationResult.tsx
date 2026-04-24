@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { Sparkles, ShieldCheck, Map, Users, Scale, BarChart3, FileText, ArrowLeft } from "lucide-react";
+import PrincipleTraceModal from "@/components/moat/PrincipleTraceModal";
 
 interface DifferentiationResultProps {
   result: DiffResult;
@@ -228,6 +229,14 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Research trace (opt-in via VITE_PRINCIPLE_GROUNDING_ENABLED).
+          Flag off = this block renders nothing = zero DOM delta (T5). */}
+      {import.meta.env.VITE_PRINCIPLE_GROUNDING_ENABLED === "true" && (
+        <div className="flex justify-center">
+          <PrincipleTraceModal result={result} />
+        </div>
+      )}
 
       {/* Continue to Marketing Plan — Primary CTA */}
       <Card className="border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-transparent">
