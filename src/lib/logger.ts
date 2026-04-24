@@ -4,9 +4,10 @@
 // when initialised in main.tsx. This file does not import Sentry directly
 // so that the bundle does not depend on it.
 
-type LogLevel = "warn" | "error";
+type LogLevel = "info" | "warn" | "error";
 
 interface Logger {
+  info(context: string, messageOrData?: unknown): void;
   warn(context: string, errorOrMessage: unknown): void;
   error(context: string, errorOrMessage: unknown): void;
 }
@@ -59,6 +60,8 @@ function format(level: LogLevel, context: string, errorOrMessage: unknown): void
   // secrets never land in the log stream.
   if (level === "error") {
     console.error(`[${context}]`, msg);
+  } else if (level === "info") {
+    console.info(`[${context}]`, msg);
   } else {
     console.warn(`[${context}]`, msg);
   }
@@ -73,10 +76,13 @@ function format(level: LogLevel, context: string, errorOrMessage: unknown): void
     sentry.captureException(toSend, { tags: { context } });
   } else if (level === "warn" && sentry.captureMessage) {
     sentry.captureMessage(`[${context}] ${msg}`, "warning");
+  } else if (level === "info" && sentry.captureMessage) {
+    sentry.captureMessage(`[${context}] ${msg}`, "info");
   }
 }
 
 export const logger: Logger = {
+  info: (context, e = "") => format("info", context, e),
   warn: (context, e) => format("warn", context, e),
   error: (context, e) => format("error", context, e),
 };
