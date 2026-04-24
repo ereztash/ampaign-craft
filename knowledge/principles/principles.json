@@ -1,0 +1,596 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-04-24",
+  "pilot_scope": "trauma-intervention courses (שנה א + שנה ב) + ייעוץ ארגוני",
+  "source_doc_count": 65,
+  "principle_count": 16,
+  "principles": [
+    {
+      "id": "P01",
+      "name_he": "פעולה מפחיתה חוסר-אונים",
+      "name_en": "Action Defeats Helplessness",
+      "definition_he": "במצבי דחק, פסיביות מגבירה דומיננטיות של האמיגדלה ומעמיקה תחושת חוסר-אונים. משימות קצרות, מדידות, וברות-השגה מחזירות PFC ותחושת מסוגלות.",
+      "research_backbone": [
+        "פרחי",
+        "Bandura (self-efficacy)"
+      ],
+      "sources": [
+        "D001",
+        "D003",
+        "D011",
+        "D012",
+        "D015",
+        "D017",
+        "D025"
+      ],
+      "frequency": 7,
+      "module_relevance": [
+        "sales",
+        "retention",
+        "pricing"
+      ],
+      "claim_template": "כש-{user_state} נכנס ל-{stress_context}, {generic_support} מעמיק את ה-{drop_signal}. {our_design} נותן {short_task_type} עם {success_marker} בתוך {timeframe}, מחזיר {recovery_metric}.",
+      "market_stance": "אנחנו היחידים שמתכננים UX לפי עקרון שפעילות מועילה יותר מרגיעה. בעוד מתחרים מוסיפים חלונות 'תשומת לב ורוגע', אנחנו שולחים את המשתמש למשימה קצרה שנגמרת בהצלחה.",
+      "ops_signal": [
+        "onboarding שמכיל משימה מוגדרת עם סגירה תוך 10 דקות",
+        "no 'breathe/pause' popups בתוך workflow",
+        "dashboards שמראים progression שלב",
+        "שליחת action-first בכל notification מקוטבת"
+      ],
+      "competitor_scan_keywords": [
+        "take a breath",
+        "calm mode",
+        "mindfulness integration",
+        "step back",
+        "pause feature"
+      ],
+      "defense_pattern": "אם מתחרה יטען 'אנחנו גם דואגים לרווחה', הציטוט מ-Bandura: self-efficacy נבנית דרך mastery experiences, לא דרך reassurance. פסיביות בתוך חווית UX מגבירה helplessness מוכח מחקרית."
+    },
+    {
+      "id": "P02",
+      "name_he": "איום + חוסר-אונים = טראומה",
+      "name_en": "Threat+Helplessness = Trauma",
+      "definition_he": "טראומה איננה רק איום ואיננה רק חוסר אונים. היא צירוף. שבירת אחד משני המרכיבים מונעת היווצרות טראומה.",
+      "research_backbone": [
+        "DSM",
+        "פרחי"
+      ],
+      "sources": [
+        "D001",
+        "D012",
+        "D013",
+        "D017",
+        "D021",
+        "D036"
+      ],
+      "frequency": 6,
+      "module_relevance": [
+        "differentiation",
+        "sales",
+        "retention"
+      ],
+      "claim_template": "מתחרים מתמקדים בהסרת {threat_source}. אנחנו מתמקדים בהסרת {helplessness_source}. התוצאה: {user_segment} יכול לתפקד {even_under_threat_condition}.",
+      "market_stance": "תפעול תחת אי-ודאות הוא לא בעיה של איום, הוא בעיה של חוסר-אונים. חברות שמרגישות 'תקועות' לא פוחדות ממה שקורה בשוק, הן לא יודעות מה לעשות. הפתרון הוא efficacy, לא security.",
+      "ops_signal": [
+        "lost agency signals in current tooling",
+        "decision-paralysis reported",
+        "leadership describes 'fog' or 'stuck'",
+        "client buys reassurance from consultants but not action"
+      ],
+      "competitor_scan_keywords": [
+        "certainty",
+        "predictability",
+        "forecast accuracy",
+        "visibility",
+        "insights dashboard"
+      ],
+      "defense_pattern": "הפרדה מושגית: certainty ≠ agency. אפשר להיות בטוח שמצב רע קורה, וזה לא ישפר מצב. הטיעון חסין כי הוא מבוסס על פירוק DSM של טראומה לשני גורמים מוכחים, לא על אינטואיציה שיווקית."
+    },
+    {
+      "id": "P03",
+      "name_he": "שימור משאבים כמנוע התנהגות",
+      "name_en": "Resource Conservation Drives Behavior (COR)",
+      "definition_he": "אנשים וארגונים פועלים מתוך דחף לשמר משאבים. הפסד כואב פי 2.5 מרווח מקביל. התנהגות נובעת מהגנה על מה שכבר יש, לא מהוספה.",
+      "research_backbone": [
+        "Hobfoll (COR)",
+        "Kahneman & Tversky (Prospect Theory)"
+      ],
+      "sources": [
+        "D020",
+        "D025",
+        "D028",
+        "D031",
+        "D041"
+      ],
+      "frequency": 5,
+      "module_relevance": [
+        "pricing",
+        "retention",
+        "marketing",
+        "sales"
+      ],
+      "claim_template": "ה-ICP שלך לא קונה כי {feature_list}. הוא קונה כי {current_resource_at_risk} מוגן על ידך. כל messaging מנוסח כ-{loss_framing}, לא כ-{gain_framing}.",
+      "market_stance": "SaaS שמדבר על ROI מאבד ICP שעוד לא ראה ROI. SaaS שמדבר על שימור ההשקעה הקיימת (זמן צוות, דאטה, לקוחות קיימים) זוכה ב-ICP ברובו המוחלט של השוק.",
+      "ops_signal": [
+        "customer uses 'חוסכים לנו X', 'מגן על Y'",
+        "onboarding מדגיש transition-safety, לא new-capability",
+        "pricing page בראש העמוד מדבר על הפסד נוכחי, לא רווח עתידי",
+        "churn reasons = 'אי-שימוש של מה שכבר יש', לא 'חסר לנו פיצ'ר'"
+      ],
+      "competitor_scan_keywords": [
+        "grow your revenue",
+        "unlock",
+        "boost",
+        "accelerate",
+        "increase"
+      ],
+      "defense_pattern": "Hobfoll COR (2001) + Kahneman Loss Aversion (1979). אלו תיאוריות מאומתות ב-40 שנות מחקר, 100+ ניסויים חזרים. לא טענה שיווקית, מנגנון נוירו-קוגניטיבי מדיד."
+    },
+    {
+      "id": "P04",
+      "name_he": "התערבות ספציפית-פאזה",
+      "name_en": "Phase-Specific Intervention",
+      "definition_he": "משבר מחולק לשלבים ברורים: חריף, ביניים, ארוך-טווח. כל שלב מחייב פרוטוקול שונה. התערבות גנרית (אותו action בכל שלב) מזיקה.",
+      "research_backbone": [
+        "Lahad (BASIC-PH)",
+        "פרחי (6-C)",
+        "מעש\"ה",
+        "יהל\"ם"
+      ],
+      "sources": [
+        "D001",
+        "D006",
+        "D010",
+        "D015",
+        "D025"
+      ],
+      "frequency": 5,
+      "module_relevance": [
+        "retention",
+        "sales",
+        "marketing"
+      ],
+      "claim_template": "Onboarding לא אחיד. משתמש ב-{phase_identifier} מקבל {phase_specific_flow}. המעבר בין פאזות מזוהה דרך {detection_signal}.",
+      "market_stance": "כולם מדברים על personalization. אנחנו היחידים שמפצלים onboarding לפי מצב המשתמש, לא לפי הרמת פרופיל. מישהו ב-crisis acute onboarding צריך חוויה אחרת ממישהו שעובר lateral move מ-tool אחר.",
+      "ops_signal": [
+        "phase-detection quiz in first 2 minutes",
+        "different UI state for acute-stress users",
+        "no single 'standard onboarding sequence'",
+        "churn differs by entry phase"
+      ],
+      "competitor_scan_keywords": [
+        "personalized onboarding",
+        "role-based onboarding",
+        "use case selection",
+        "tailored experience"
+      ],
+      "defense_pattern": "ההבדל בין personalization ל-phase-specific intervention הוא ההבדל בין UI state machine ל-clinical protocol. Lahad BASIC-PH ו-6-C של פרחי הם מסגרות קליניות מאומתות עם נתוני שטח (ישראל, פליטים, אסונות). לא UX flavoring, protocol-grade."
+    },
+    {
+      "id": "P05",
+      "name_he": "סגירת אירוע מונעת חודרנות",
+      "name_en": "Event Closure Prevents Intrusion",
+      "definition_he": "אירוע ללא נקודת סיום ברורה מייצר חזרתיות. קורטיזול/מצב סימפתטי דורשים closure מפורש תוך חלון של 6-7 שעות, אחרת הזיכרון מתקבע כטראומטי.",
+      "research_backbone": [
+        "פרחי",
+        "מחקרי consolidation זיכרון"
+      ],
+      "sources": [
+        "D001",
+        "D002",
+        "D012",
+        "D015"
+      ],
+      "frequency": 4,
+      "module_relevance": [
+        "retention",
+        "sales",
+        "marketing"
+      ],
+      "claim_template": "כל {interaction_type} ב-{session_count} הראשונים חייב לכלול {closure_mechanism} תוך {time_window}. בלי זה, ה-{user_metric} הופך חזרתי ומייצר {drop_pattern}.",
+      "market_stance": "SaaS רגיל משאיר flows פתוחים. אנחנו סוגרים כל אינטראקציה ב-{explicit_closing} תוך 6-7 דקות מתחילתה. זה מונע 'rumination loops' שמרחיקים משתמשים.",
+      "ops_signal": [
+        "every workflow ends with explicit summary",
+        "'Complete/Done' language throughout",
+        "6-7 minute session rhythm",
+        "post-action confirmation UI"
+      ],
+      "competitor_scan_keywords": [
+        "seamless",
+        "continuous",
+        "always-on",
+        "background sync"
+      ],
+      "defense_pattern": "Memory consolidation של Ribot + נתוני פרחי על חלון 6-7 שעות. ללא closure, pattern הופך חזרתי — זה מנגנון פיזיולוגי, לא UX נוחות."
+    },
+    {
+      "id": "P06",
+      "name_he": "תקשורת קוגניטיבית משמרת PFC",
+      "name_en": "Cognitive Communication Protects PFC",
+      "definition_he": "בזמן דחק, נורמליזציה רגשית ('זה קורה לכולם', 'זה בסדר') מפעילה את האמיגדלה ומורידה PFC. שאלות קוגניטיביות ממוקדות פותחות את ה-PFC ומחזירות יכולת החלטה.",
+      "research_backbone": [
+        "פרחי",
+        "neuroscience of PFC-amygdala"
+      ],
+      "sources": [
+        "D010",
+        "D011",
+        "D012",
+        "D015",
+        "D017"
+      ],
+      "frequency": 5,
+      "module_relevance": [
+        "sales",
+        "retention",
+        "marketing"
+      ],
+      "claim_template": "כשמשתמש ב-{frustration_state}, UI מחזיר {cognitive_question}, לא {empathy_statement}. זה נגד האינטואיציה של UX רגיל.",
+      "market_stance": "Empathy ב-UI הוא consensus. אנחנו הפוך — שואלים את המשתמש שאלה ממוקדת גם במצב frustration. זה מחזיר agency מיידית.",
+      "ops_signal": [
+        "error states ask 'which of these happened' instead of 'we're sorry'",
+        "support chat opens with cognitive question not acknowledgment",
+        "no 'we understand this is frustrating' language",
+        "metrics: time-to-resolution after error < industry average"
+      ],
+      "competitor_scan_keywords": [
+        "we understand",
+        "we're sorry",
+        "that must be frustrating",
+        "we hear you"
+      ],
+      "defense_pattern": "Amygdala activation by emotional normalization הוא ממצא מאומת ב-fMRI studies (Hariri et al., Lieberman). PFC engagement דרך cognitive labeling/questions הוא counter-intuitive אבל מוכח. המתחרה שמגן על empathy-language נופל מול ה-data."
+    },
+    {
+      "id": "P07",
+      "name_he": "דיסוציאציה חלקית כמצב פונקציונלי",
+      "name_en": "Partial Dissociation as Optimal Helper State",
+      "definition_he": "דיסוציאציה מלאה = דיספונקציה. דיסוציאציה חלקית עם PFC דומיננטי = מצב עבודה אופטימלי תחת לחץ. מערכות תמיכה צריכות ללמד מסייעים להישאר שם.",
+      "research_backbone": [
+        "פרחי"
+      ],
+      "sources": [
+        "D010",
+        "D015",
+        "D017"
+      ],
+      "frequency": 3,
+      "module_relevance": [
+        "retention",
+        "sales"
+      ],
+      "claim_template": "נציגי תמיכה/צוות מכירות עובדים תחת stress. לא נלמד אותם לנשום עמוק. נלמד אותם לשמור על {cognitive_marker} תוך {dissociation_indicator}, עם {prevention_of_triggers}.",
+      "market_stance": "מערכת L&D סטנדרטית מלמדת 'self-care'. אנחנו מלמדים שימור partial dissociation — מצב שבו emotion מופחת מכוון, PFC דומיננטי, והעובד פועל יעיל גם תחת שיחת לקוח קשה.",
+      "ops_signal": [
+        "agents trained to use cognitive rephrasing not emotional response",
+        "post-shift debriefing uses structured questions not 'how did it feel'",
+        "burnout metrics tracked via HRV-proxy, not self-report"
+      ],
+      "competitor_scan_keywords": [
+        "wellness program",
+        "employee assistance",
+        "self-care training",
+        "mindfulness at work"
+      ],
+      "defense_pattern": "Functional dissociation הוא מושג קליני מאומת. הוא שונה מ-detachment (שלילי) כי הוא מכוון, זמני, ומאפשר performance. המתחרה שימכור 'empathetic support' יחשף כאדישות לפגיעה הפיזיולוגית של המסייע."
+    },
+    {
+      "id": "P08",
+      "name_he": "חוסן = משאבים × התאמה × יעילות (יע\"ה)",
+      "name_en": "Resilience Triad (Resources × Adaptation × Efficiency)",
+      "definition_he": "כמות משאבים לבדה איננה חוסן. חוסן הוא מכפלה: משאבים × התאמה למצב × יעילות שימוש. שלוש אקסיות בלתי-תלויות.",
+      "research_backbone": [
+        "פרחי",
+        "Hobfoll (COR)",
+        "Kobasa (Hardiness)"
+      ],
+      "sources": [
+        "D020",
+        "D025"
+      ],
+      "frequency": 2,
+      "module_relevance": [
+        "differentiation",
+        "retention"
+      ],
+      "claim_template": "ה-benchmark של {resource_metric} לא מספיק. אנחנו מודדים {fit_metric} ו-{efficiency_metric}. הלקוח שלך מקבל triad, לא scalar.",
+      "market_stance": "Dashboards מראים 'יש לך 100K leads'. זה scalar. אנחנו מראים quality×fit×efficiency. Competitor יטען 'יש לנו גם סינון', אנחנו נענה 'זה עדיין scalar בסינון אחד'.",
+      "ops_signal": [
+        "metrics come in triplets, not singles",
+        "'quality-adjusted' phrasing everywhere",
+        "no raw volume KPIs on main dashboard",
+        "scoring models multiplicative not additive"
+      ],
+      "competitor_scan_keywords": [
+        "more leads",
+        "unlimited",
+        "scale",
+        "volume"
+      ],
+      "defense_pattern": "יע\"ה של פרחי + עבודת Hobfoll על fit-of-resource-to-demand. המתחרה שיטען 'כמות היא הכל' יתקל ב-30 שנות מחקר organizational resilience שמוכיחים את ההפך."
+    },
+    {
+      "id": "P09",
+      "name_he": "רציפות כצורך יסודי",
+      "name_en": "Continuity as Core Psychological Need",
+      "definition_he": "פרט וקהילה נשברים כאשר נקטעת אחת מ-4 הרציפויות: קוגניטיבית, תפקיד/תפקוד, חברתית, היסטורית. התערבות = שחזור רציפות.",
+      "research_backbone": [
+        "Omer & Alon (1994)",
+        "בן חורין (2023)"
+      ],
+      "sources": [
+        "D025"
+      ],
+      "frequency": 1,
+      "module_relevance": [
+        "retention",
+        "marketing",
+        "differentiation"
+      ],
+      "claim_template": "{ICP_transition_event} שובר {continuity_type}. אנחנו משחזרים אותו דרך {continuity_restoration_mechanism}. זה ה-reason to stay.",
+      "market_stance": "מעברים (שינוי CRM, החלפת מנכ\"ל, מיזוג) נראים אצל כולם כ'שינוי'. אצלנו הם קטיעות רציפות זוהות וניתנות לשיקום. 4 תחומים, כל אחד עם פרוטוקול.",
+      "ops_signal": [
+        "product has 'bridge mode' for transitions",
+        "historical data visible from day 1",
+        "role continuity supported even during reorg",
+        "no 'fresh start' UX that erases history"
+      ],
+      "competitor_scan_keywords": [
+        "fresh start",
+        "clean slate",
+        "start over",
+        "new beginning"
+      ],
+      "defense_pattern": "עיקרון הרציפות של עומר ואלון הוא מסגרת קלינית מאומתת ב-30 שנות עבודה עם פונים בישראל, כולל פליטים ועולים. זה לא מטאפורה, זה מבנה צרכים מזוהה."
+    },
+    {
+      "id": "P10",
+      "name_he": "שמירת היררכיה בחירום",
+      "name_en": "Hierarchy Preservation in Crisis",
+      "definition_he": "בחירום, התערבות ישירה של גורם חיצוני בלקוח פוגעת בסיכויי ההחלמה. הגורם החיצוני מדריך את המנהיגות המקומית, שמבצעת. שמירת היררכיה = שימור עצמאות.",
+      "research_backbone": [
+        "פרחי",
+        "בן חורין",
+        "מחקרי community resilience"
+      ],
+      "sources": [
+        "D001",
+        "D003",
+        "D025"
+      ],
+      "frequency": 3,
+      "module_relevance": [
+        "sales",
+        "retention",
+        "marketing"
+      ],
+      "claim_template": "אנחנו לא מתערבים ישירות אצל {end_user}. אנחנו מעצימים את {local_leader} דרך {enablement_mechanism}, והוא מעביר.",
+      "market_stance": "Competitor מוכר לעובד בודד. אנחנו מוכרים למנהל שמעביר לעובד. מי שעוקף היררכיה יוצר תלות במערכת חיצונית. שמירת היררכיה בונה internal capability.",
+      "ops_signal": [
+        "SKU includes leader-enablement licenses",
+        "training includes 'how to deliver to your team' modules",
+        "no direct end-user contact without leader presence",
+        "retention metrics by team-leader activation"
+      ],
+      "competitor_scan_keywords": [
+        "self-service",
+        "direct to user",
+        "bypass IT",
+        "consumerized"
+      ],
+      "defense_pattern": "Community intervention research (Lahad, ICBCR) שם הראה שהתערבות ישירה ברמת הפרט בחירום מקטינה long-term resilience. הדרכת מנהיגים מקומיים מייצרת capability שנשאר. מתחרה שמוכר self-service יקבל קיתון של מחקר קהילתי."
+    },
+    {
+      "id": "P11",
+      "name_he": "מבנה מונע טראומטיזציה משנית",
+      "name_en": "Structure Prevents Secondary Traumatization",
+      "definition_he": "מסייעים במציאות טראומטית משותפת זקוקים למשימות קצרות, מובנות, עם closure — לא למנוחה. מנוחה = רומינציה. מבנה = שיקום.",
+      "research_backbone": [
+        "פרחי",
+        "פרדס",
+        "סטקר (2013)",
+        "גיליאן סטאקר"
+      ],
+      "sources": [
+        "D010",
+        "D015",
+        "D038",
+        "D041"
+      ],
+      "frequency": 4,
+      "module_relevance": [
+        "retention",
+        "sales",
+        "differentiation"
+      ],
+      "claim_template": "צוות {support_team} בסביבה {high_stress_type} מקבל {structured_task_queue}, לא {rest_break}. KPI: {recovery_metric} תוך {timeframe}.",
+      "market_stance": "Workplace wellness הוא rest-first. COR-SYS הוא structure-first. rest ללא structure מגביר rumination ושחיקה. זה counter-intuitive ומבוסס שטח.",
+      "ops_signal": [
+        "no unlimited 'mental health days' policy",
+        "structured post-incident debriefs",
+        "queue-based support work, not 'take a break'",
+        "measurable recovery via task completion not self-report"
+      ],
+      "competitor_scan_keywords": [
+        "mental health days",
+        "unlimited PTO",
+        "wellness breaks",
+        "disconnect policy"
+      ],
+      "defense_pattern": "Straker 2013 על continuous traumatic stress + עבודת פרחי בעזה = הוכחה שטחית שמנוחה לא מובנית מגבירה symptoms. Structure חוזרה להיות intervention ראשונה בצה\"ל ו-ZAKA."
+    },
+    {
+      "id": "P12",
+      "name_he": "איזון מוקד שליטה",
+      "name_en": "Locus of Control Calibration",
+      "definition_he": "מוקד שליטה פנימי מלא = overload. מוקד חיצוני מלא = חוסר-אונים. חוסן אמיתי = יכולת לכייל בין השניים לפי מצב.",
+      "research_backbone": [
+        "Rotter",
+        "Kobasa (Hardiness)",
+        "פרחי"
+      ],
+      "sources": [
+        "D020"
+      ],
+      "frequency": 1,
+      "module_relevance": [
+        "sales",
+        "differentiation"
+      ],
+      "claim_template": "Dashboard הלקוח לא מראה רק 'מה בשליטתך'. הוא מראה {internal_scope} + {external_scope} + {boundary_signal}.",
+      "market_stance": "SaaS רגיל פונה ל-internal locus: 'קח שליטה'. אנחנו פונים לאיזון: 'זה בידך, זה לא, זה הגבול'. CFO מרגיש נראה כשהוא רואה את הלא-בשליטה שלו מוצג במפורש.",
+      "ops_signal": [
+        "UI separates 'actionable' from 'monitorable'",
+        "dashboards include 'outside your control' section",
+        "reports explicitly label causality boundaries",
+        "no false-empowerment language"
+      ],
+      "competitor_scan_keywords": [
+        "take control",
+        "empower",
+        "you drive",
+        "in your hands"
+      ],
+      "defense_pattern": "Kobasa's Hardiness construct (control + commitment + challenge) תמיד דיבר על realistic control, לא על total control. מחקר על אי-יציבות פסיכולוגית של false empowerment (Bandura late career)."
+    },
+    {
+      "id": "P13",
+      "name_he": "מערכת משפחתית ABC-X",
+      "name_en": "System ABC-X Stress Model",
+      "definition_he": "כשל מערכתי הוא פונקציה של: A (אירוע דחק) × B (משאבים) × C (תפיסה). אותו אירוע A לא שובר כל מערכת, כי B ו-C משתנים. תפיסה (C) היא נבואה מגשימת-עצמה.",
+      "research_backbone": [
+        "Hill (1949, 1958)",
+        "McCubbin (Double ABC-X)"
+      ],
+      "sources": [
+        "D023",
+        "D035",
+        "D040"
+      ],
+      "frequency": 3,
+      "module_relevance": [
+        "differentiation",
+        "sales",
+        "marketing"
+      ],
+      "claim_template": "הלקוח שלך לא נשבר מ-{event}. הוא נשבר מ-{event} × {resources_gap} × {perception_of_severity}. אנחנו משנים את ה-C.",
+      "market_stance": "Consultants מזהים אירוע (A) ונותנים משאבים (B). אף אחד לא עובד ישירות על C — התפיסה. שם השינוי הכי זול והכי חזק.",
+      "ops_signal": [
+        "diagnostics include perception survey, not just event log",
+        "reports show how other clients perceived similar events",
+        "reframing language built into module copy",
+        "no 'fix the event' framing"
+      ],
+      "competitor_scan_keywords": [
+        "solve the problem",
+        "fix the issue",
+        "resolve",
+        "mitigate"
+      ],
+      "defense_pattern": "Hill 1949 + 1958 + McCubbin's Double ABC-X — מעל 40 שנה של מחקר משפחתי-ארגוני. הטיעון מגובה ב-meta-analyses על perception-change interventions (Gottman, Minuchin structural therapy)."
+    },
+    {
+      "id": "P14",
+      "name_he": "טראומה עיקשת מעבר ל-DSM",
+      "name_en": "Persistent Trauma Beyond DSM",
+      "definition_he": "DSM מניח אירוע טראומטי בר-גבולות. אבל סטרס פוליטי-חברתי מתמשך הוא 'הרבה מכות קטנות' ללא אירוע מזוהה. דורש פריים אחר: לא שחזור, אלא הסתגלות כרונית.",
+      "research_backbone": [
+        "זיו (2012)",
+        "Straker (2013)",
+        "סטקר"
+      ],
+      "sources": [
+        "D024",
+        "D042",
+        "D045"
+      ],
+      "frequency": 3,
+      "module_relevance": [
+        "retention",
+        "differentiation"
+      ],
+      "claim_template": "אם הלקוח לא חווה {acute_event} אחד, אלא {chronic_friction} מתמשך, אנחנו מזהים את זה. ה-protocol שונה מ-{acute_playbook}.",
+      "market_stance": "כל ה-industry מכין playbooks ל-crises ברורים. אנחנו היחידים עם playbook ל-'למה קשה לנו, אין אירוע אחד'. זה ה-reality של רוב growth-stage companies.",
+      "ops_signal": [
+        "diagnostic distinguishes 'acute event' vs 'chronic friction'",
+        "no 'what's your crisis' as first question",
+        "recurring-friction dashboards",
+        "long-horizon intervention plans, not 90-day sprints"
+      ],
+      "competitor_scan_keywords": [
+        "crisis management",
+        "recover fast",
+        "90-day plan",
+        "rapid turnaround"
+      ],
+      "defense_pattern": "זיו 2012 ו-Straker 2013 שניהם peer-reviewed על persistent/continuous trauma. לא תרגום metaphor — פריים קליני מדיד דרך HPA הריצועי, cortisol markers, ואי-הפרשה של סגירה."
+    },
+    {
+      "id": "P15",
+      "name_he": "משוואת האמון (יועץ)",
+      "name_en": "Trust Equation",
+      "definition_he": "Trust = (Credibility + Reliability + Intimacy) / Self-orientation. ארבעת הפרמטרים ניתנים להנדסה עצמאית. Self-orientation נמוך הוא המכפיל הכי חזק.",
+      "research_backbone": [
+        "Maister, Green, Galford (Trusted Advisor, 2000/2021)"
+      ],
+      "sources": [
+        "D050",
+        "D051"
+      ],
+      "frequency": 2,
+      "module_relevance": [
+        "sales",
+        "marketing"
+      ],
+      "claim_template": "ה-CTA הוא לא 'למד עוד'. הוא {low_self_orientation_action} שאומר 'אני מבין את הבעיה שלך, גם אם אתה לא קונה'.",
+      "market_stance": "SaaS sales pitches גבוהים ב-self-orientation. אצלנו כל touch נבנה כדי להנמיך self-orientation. מוכיחים intimacy דרך עצם ההצגה של ספקות, competitors שעובדים טוב, וקייסים שבהם FunnelForge לא הכי נכון.",
+      "ops_signal": [
+        "sales deck includes 'when not to use us'",
+        "trial includes competitor comparison that doesn't always favor us",
+        "testimonials quote client's own language",
+        "diagnostic-before-demo standard"
+      ],
+      "competitor_scan_keywords": [
+        "why choose us",
+        "we're the best",
+        "unlike our competitors",
+        "industry-leading"
+      ],
+      "defense_pattern": "Maister's Trust Equation בת 25 שנה של adoption בכל big4 consulting. Low self-orientation היא השפה של סוכן הייעוץ הבכיר. המתחרה שמכחיש עובדי 30B$ מ-McKinsey."
+    },
+    {
+      "id": "P16",
+      "name_he": "מבנה פירמידלי ו-MECE",
+      "name_en": "Pyramid Principle & MECE",
+      "definition_he": "תקשורת אפקטיבית: תשובה קודם, תמיכה אחר כך. קטגוריות MECE (mutually exclusive, collectively exhaustive). צמצום cognitive load הוא הפיצ'ר.",
+      "research_backbone": [
+        "Minto (Pyramid Principle, McKinsey)",
+        "MECE methodology"
+      ],
+      "sources": [
+        "D056"
+      ],
+      "frequency": 1,
+      "module_relevance": [
+        "marketing",
+        "sales",
+        "differentiation"
+      ],
+      "claim_template": "כל {output_type} נפתח ב-{single_answer}. אחר כך {3_supporting_points}. הקטגוריות {mutually_exclusive}.",
+      "market_stance": "כולם מפרסמים 'comprehensive solution'. אנחנו מפרסמים תשובה אחת בחתכים MECE. הלקוח יוצא בידיעה ממוקדת, לא בהתלהבות מעורפלת.",
+      "ops_signal": [
+        "homepage answers a single question above the fold",
+        "pricing page: 3 mutually exclusive tiers, no feature overlap",
+        "demos lead with outcome not features",
+        "reports are executive summary first, details later"
+      ],
+      "competitor_scan_keywords": [
+        "comprehensive",
+        "all-in-one",
+        "end-to-end",
+        "complete solution"
+      ],
+      "defense_pattern": "Minto's Pyramid Principle בת 55 שנה ב-McKinsey training. Cognitive load theory (Sweller 1988) מראה שמבנה זה מפחית אי-הבנה. המתחרה שמוכר 'holistic' מפסיד את ה-CFO ICP כי CFOs מחפשים ברור, לא שלם."
+    }
+  ]
+}
