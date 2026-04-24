@@ -96,7 +96,7 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
 ## Modules
 
 ### 1 — Differentiation `/differentiate`
-5-phase wizard with AI enrichment. Claim verification, hidden value discovery, competitor archetype mapping, B2B/B2C unified with market-mode detection.
+5-phase wizard with AI enrichment. Claim verification, hidden value discovery, competitor archetype mapping, B2B/B2C unified with market-mode detection. Opt-in [Principle Grounding Layer](#principle-grounding-layer--g-layer-v1-pilot) attaches research citations to every hidden value and archetype.
 
 ### 2 — Marketing `/plans/:id/strategy`
 5-stage funnel with channel recommendations and budget allocation. Personalized hooks (PAS/AIDA/BAB), Israeli market calendar, Hormozi Value Equation scoring, AI copy generation.
@@ -115,6 +115,31 @@ Outputs: charm price, acceptable range, psychological anchor, 3-tier structure (
 
 ### 5 — Retention `/plans/:id/retention`
 Churn prediction, onboarding sequences, referral mechanics, NRR projections, growth-loop mapping. DISC-personalized re-engagement scripts.
+
+## Principle Grounding Layer — G-Layer (v1 pilot)
+
+A strictly additive, opt-in layer that attaches research citations to every hidden value and competitor archetype surfaced by the Differentiation module. Lives in `src/engine/moat/` and reads the read-only library in `knowledge/` (16 principles synthesized from 65 source docs spanning trauma-intervention research + canonical consulting texts: Hobfoll COR, Lahad BASIC-PH, פרחי 6-C, Omer & Alon continuity, Hill/McCubbin ABC-X, Maister Trust Equation, Minto Pyramid/MECE).
+
+| Module | File | Purpose |
+|---|---|---|
+| Loader | `principleLibrary.ts` | One-time startup load + shape validation of `principles.json` / `sources.json`. Throws on malformed library so version mismatches fail loudly. |
+| Map (values) | `hiddenValuePrincipleMap.ts` | Static `HiddenValueType -> PrincipleId[]` map. 14 HiddenValueTypes, 10 mapped in v1 (B2C empties await v1.1 corpus). |
+| Map (archetypes) | `archetypePrincipleMap.ts` | Static `CompetitorArchetypeId -> PrincipleId[]` map. All 10 archetypes mapped in v1. |
+| Enricher | `principleTraceEnricher.ts` | Pure `DifferentiationResult -> PrincipleTrace[]`. Never mutates, never fabricates, drops zero-citation principles. |
+| UI | `src/components/moat/PrincipleTraceModal.tsx` | Single UI surface — flag-gated trigger + dialog showing principle cards with research_backbone + source docs. |
+
+### G-layer contract
+
+- Zero mutations to `differentiationEngine.ts`, `differentiationKnowledge.ts`, or the five-module engines.
+- Zero LLM calls in v1 (static mapping only).
+- Feature flag: `VITE_PRINCIPLE_GROUNDING_ENABLED`, default `false`. Flag off = `DifferentiationResultView` DOM identical to pre-layer state (no modal trigger, no enricher run, no runtime branch).
+- Read-only `knowledge/` — the layer never writes back; adding a principle is an upstream-only PR.
+- 27 new tests (8 library + 6 hidden-value map + 5 archetype map + 8 enricher), all green.
+- Three principles (P09, P12, P16) carry exactly 1 source doc in library v1.0.0 — documented as `KNOWN_SINGLE_SOURCE_V1_0_0` in `principleTraceEnricher.test.ts`. Literal ≥2-per-principle citation threshold awaits library v1.1 enrichment.
+
+### When flag is on
+
+`DifferentiationResultView` renders a "על מה זה מבוסס" / "Research trace" button below the last tab. Clicking opens a dialog listing every hidden value and archetype in the current result with their mapped principles, research backbones, and resolved source documents. Surfaces without a mapping render an explicit "no research mapping yet" line rather than hiding.
 
 ---
 
@@ -353,6 +378,7 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_AI_COPY_ENABLED=true
 VITE_REFLECTIVE_ENABLED=false   # GRAOS Reflective overlay (or ?reflective=1)
+VITE_PRINCIPLE_GROUNDING_ENABLED=false # G-Layer research trace modal on DifferentiationResult (v1 pilot)
 
 # Edge Function secrets (Supabase Dashboard)
 ANTHROPIC_API_KEY=      # AI Coach, Differentiation, QA, Research
