@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from "react";
 import { FormData, ExperienceLevel, SavedPlan } from "@/types/funnel";
 import { UnifiedProfile, fromFormData, toFormData, INITIAL_UNIFIED_PROFILE } from "@/types/profile";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -263,38 +263,76 @@ export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  const profile: UserProfile = {
-    isReturningUser,
-    visitCount,
-    lastVisitDate,
-    lastFormData,
-    lastPlanSummary,
-    savedPlanCount,
-    currentFormData,
-    experienceLevel,
-    unifiedProfile,
-    isMobile,
-    prefersReducedMotion,
-    userSegment: deriveSegment(isReturningUser, experienceLevel),
-    achievements,
-    investment,
-    milestones,
-  };
+  // Freeze the profile object's identity by its component parts. Without this
+  // memo, every render of UserProfileProvider (incl. the 60s session-ticker)
+  // allocates a new `profile` reference and forces every downstream useMemo
+  // that depends on `profile.lastFormData` (Dashboard, CommandCenter, Wizard
+  // — 16+ sites) to recompute even when no content changed.
+  const profile = useMemo<UserProfile>(
+    () => ({
+      isReturningUser,
+      visitCount,
+      lastVisitDate,
+      lastFormData,
+      lastPlanSummary,
+      savedPlanCount,
+      currentFormData,
+      experienceLevel,
+      unifiedProfile,
+      isMobile,
+      prefersReducedMotion,
+      userSegment: deriveSegment(isReturningUser, experienceLevel),
+      achievements,
+      investment,
+      milestones,
+    }),
+    [
+      isReturningUser,
+      visitCount,
+      lastVisitDate,
+      lastFormData,
+      lastPlanSummary,
+      savedPlanCount,
+      currentFormData,
+      experienceLevel,
+      unifiedProfile,
+      isMobile,
+      prefersReducedMotion,
+      achievements,
+      investment,
+      milestones,
+    ],
+  );
+
+  // Memoize the full context value. All callbacks below are useCallback-ed
+  // with stable deps, so this object only changes when `profile` does.
+  const value = useMemo(
+    () => ({
+      profile,
+      updateFormData,
+      setExperienceLevel,
+      persistFormData,
+      setUnifiedProfile,
+      persistUnifiedProfile,
+      addAchievement,
+      refreshSavedPlanCount,
+      completeMilestone,
+    }),
+    [
+      profile,
+      updateFormData,
+      setExperienceLevel,
+      persistFormData,
+      setUnifiedProfile,
+      persistUnifiedProfile,
+      addAchievement,
+      refreshSavedPlanCount,
+      completeMilestone,
+    ],
+  );
 
   return (
-    <UserProfileContext.Provider
-      value={{
-        profile,
-        updateFormData,
-        setExperienceLevel,
-        persistFormData,
-        setUnifiedProfile,
-        persistUnifiedProfile,
-        addAchievement,
-        refreshSavedPlanCount,
-        completeMilestone,
-      }}
-    >
+    <UserProfileContext.Provider value={value}>
       {children}
     </UserProfileContext.Provider>
   );

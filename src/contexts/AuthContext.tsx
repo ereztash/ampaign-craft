@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useRef, useCallback, ReactNode } from "react";
 import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
 import { UserRole, canPerform as canPerformAction } from "@/types/governance";
 import { safeStorage } from "@/lib/safeStorage";
@@ -652,8 +652,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTierState("free");
   }, []);
 
+  // Freeze value identity so useAuth() consumers don't re-render on every
+  // setUser/setTier tick (and there are many — onAuthStateChange fires 2-3×
+  // as tokens refresh on app load). All callbacks are useCallback-stable.
+  const value = useMemo(
+    () => ({ user, loading, tier, setTier, refreshTier, canUse, canPerform, signUp, signIn, signOut, resetPassword, signInWithProvider, isLocalAuth }),
+    [user, loading, tier, setTier, refreshTier, canUse, canPerform, signUp, signIn, signOut, resetPassword, signInWithProvider, isLocalAuth],
+  );
+
   return (
-    <AuthContext.Provider value={{ user, loading, tier, setTier, refreshTier, canUse, canPerform, signUp, signIn, signOut, resetPassword, signInWithProvider, isLocalAuth }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
