@@ -5,7 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { DifferentiationFormData, DifferentiationResult, initialDifferentiationFormData, AiPhase2Result, AiPhase3Result, AiPhase4Result, AiPhase5Result } from "@/types/differentiation";
 import { PHASES } from "@/engine/differentiationPhases";
 import { generateDifferentiation, AiResults } from "@/engine/differentiationEngine";
-import { canProceedPhase, getPhaseColor } from "@/lib/differentiationFormRules";
+import { canProceedPhase, describeBlockingField, getPhaseColor } from "@/lib/differentiationFormRules";
 import DifferentiationPhaseCard from "@/components/DifferentiationPhaseCard";
 import { supabase } from "@/integrations/supabase/client";
 import { authFetch } from "@/lib/authFetch";
@@ -43,6 +43,7 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
   const currentPhase = PHASES[phaseIndex];
   const progress = ((phaseIndex + 1) / PHASES.length) * 100;
   const canProceed = canProceedPhase(currentPhase.id, formData);
+  const blockingField = canProceed ? null : describeBlockingField(currentPhase.id, formData);
 
   const update = (partial: Partial<DifferentiationFormData>) => {
     setFormData((prev) => ({ ...prev, ...partial }));
@@ -281,7 +282,18 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
 
       {/* Navigation */}
       {!isSynthesisPhase && (
-        <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          {/*
+            The Next / Analyze button disables on !canProceed. Without a
+            visible reason, users assume it's broken — so surface the
+            missing field inline.
+          */}
+          {blockingField && !aiLoading && (
+            <p className="text-xs text-muted-foreground text-center" dir="auto">
+              {tx(blockingField, language)}
+            </p>
+          )}
+          <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={phaseIndex === 0 ? onBack : handlePrev} className="gap-1">
             {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             {t("diffBack")}
@@ -305,6 +317,7 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
               </>
             )}
           </Button>
+          </div>
         </div>
       )}
     </div>
