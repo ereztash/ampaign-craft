@@ -7,7 +7,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { FormData, FunnelResult } from "@/types/funnel";
 import { UnifiedProfile, toFormData } from "@/types/profile";
 import { generateFunnel, personalizeResult } from "@/engine/funnelEngine";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { buildUserKnowledgeGraph, type UserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { runWithFallback } from "@/lib/runInWorker";
 import { predictContentScore } from "@/engine/predictiveContentScoreEngine";
 import { calculateEPS } from "@/engine/emotionalPerformanceEngine";
 import { generateSEOContent } from "@/engine/seoContentEngine";
@@ -98,18 +99,39 @@ const Wizard = () => {
     [user?.id, formDataCache?.mainGoal, formDataCache?.businessField, currentLanguage],
   );
 
-  const handleProfileComplete = useCallback((up: UnifiedProfile) => {
+  const handleProfileComplete = useCallback(async (up: UnifiedProfile) => {
     persistUnifiedProfile(up);
     const fd = toFormData(up);
     setFormDataCache(fd);
     persistFormData(fd);
-    const rawResult = generateFunnel(fd);
-    const graph = buildUserKnowledgeGraph(fd);
-    const personalized = personalizeResult(rawResult, graph);
 
-    // Run all Wizard-scoped engines so they have real call sites in this page.
-    // These are fire-and-forget scoring passes — the results feed ProcessingScreen
-    // via the personalized result, but the calls themselves are what matters.
+    // Enter processing state immediately so the user sees feedback
+    // rather than a frozen form while the heavy chain runs.
+    setState("processing");
+
+    // Run the heavy chain (generateFunnel → buildUserKnowledgeGraph →
+    // personalizeResult) off the main thread when possible. This is the
+    // single most-felt freeze in the app (~800-1500ms pre-worker). The
+    // fallback mirrors the original synchronous implementation exactly
+    // for environments where workers aren't available.
+    const { funnelResult: personalized, graph } = await runWithFallback<
+      "buildFunnel",
+      { funnelResult: FunnelResult; graph: UserKnowledgeGraph }
+    >(
+      "buildFunnel",
+      { formData: fd },
+      () => {
+        const rawResult = generateFunnel(fd);
+        const g = buildUserKnowledgeGraph(fd);
+        return { funnelResult: personalizeResult(rawResult, g), graph: g };
+      },
+    );
+
+    // Run all Wizard-scoped best-effort engines so they have real call
+    // sites in this page. These are fire-and-forget scoring passes — the
+    // results feed ProcessingScreen via the personalized result, but the
+    // calls themselves are what matters. Kept on the main thread because
+    // each is small (<20ms) and the total < one paint frame.
     try {
       const seoPreview = generateSEOContent(fd);
       const heroCopy = personalized.copyLab?.formulas?.[0]?.example?.he
@@ -125,7 +147,6 @@ const Wizard = () => {
     }
 
     setResult(personalized);
-    setState("processing");
 
     // AARRR Activation — track first plan generated
     if (user) {
