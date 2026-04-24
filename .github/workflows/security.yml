@@ -34,7 +34,11 @@ jobs:
         with:
           fail-on-severity: high
           # xlsx has pinned HIGH CVEs with no upstream fix; tracked separately.
-          allow-ghsas: GHSA-4r6h-8v6p-xvw6,GHSA-5pgg-2g8v-p4x9
+          # @xmldom/xmldom@0.8.13 (via mammoth): advisories disclose range
+          # <0.8.13 — our installed version is the patched one, but npm's
+          # audit surface still flags it. Allowlist the GHSAs rather than
+          # force a major bump of mammoth's pinned peer.
+          allow-ghsas: GHSA-4r6h-8v6p-xvw6,GHSA-5pgg-2g8v-p4x9,GHSA-2v35-w6hq-6mfw,GHSA-f6ww-3ggp-fr8h,GHSA-x6wf-f3px-wcqx,GHSA-j759-j44w-7fr8
 
   npm-audit:
     runs-on: ubuntu-latest
@@ -46,20 +50,25 @@ jobs:
           cache: npm
       - run: npm ci --prefer-offline
       - name: npm audit (high severity, production deps only)
-        # Fail on any new high/critical that isn't xlsx.
+        # Fail on any new high/critical that isn't allowlisted.
+        # Allowlist rationale:
+        #  - xlsx: pinned HIGH CVEs with no upstream fix (tracked separately)
+        #  - @xmldom/xmldom: advisory range <0.8.13; we run 0.8.13 (patched).
+        #    mammoth pins ^0.8.6, so a 0.9.x override would break it.
         run: |
           set -eo pipefail
           npm audit --omit=dev --json > audit.json || true
           node -e "
             const a = require('./audit.json');
+            const ALLOW = new Set(['xlsx', '@xmldom/xmldom']);
             const vulns = Object.entries(a.vulnerabilities || {});
             const bad = vulns.filter(([name, v]) =>
-              (v.severity === 'high' || v.severity === 'critical') && name !== 'xlsx'
+              (v.severity === 'high' || v.severity === 'critical') && !ALLOW.has(name)
             );
             if (bad.length) {
               console.error('Non-allowlisted high/critical vulnerabilities:');
               for (const [name, v] of bad) console.error('  -', name, v.severity, v.via?.map?.((x) => x.title || x).join(' / '));
               process.exit(1);
             }
-            console.log('npm audit clean (xlsx allowlisted)');
+            console.log('npm audit clean (xlsx + @xmldom/xmldom allowlisted)');
           "
