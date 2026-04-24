@@ -3,6 +3,7 @@
 // Cross-domain: Hooked Model × Customer Success × Lifecycle Marketing
 // ═══════════════════════════════════════════════
 
+import type { BilingualText } from "./i18n";
 export type { BilingualText } from "./i18n";
 
 export interface RetentionResult {

@@ -7,7 +7,7 @@
 //
 // The view is anonymized + archetype-cohort-keyed. No PII leaves the DB.
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseLoose } from "@/integrations/supabase/loose";
 
 export interface CohortBenchmarkRow {
   archetype_id: string;
@@ -37,7 +37,7 @@ export interface CohortPriors {
 const MIN_SAMPLE_SIZE = 50;
 const TOP_K = 5;
 
-type SupabaseClient = typeof supabase;
+type SupabaseClient = typeof supabaseLoose;
 
 /**
  * Fetch the top-K actions for a given archetype from cohort_benchmarks.
@@ -45,10 +45,26 @@ type SupabaseClient = typeof supabase;
  */
 export async function fetchCohortPriors(
   archetype: string,
-  client: SupabaseClient = supabase,
+  client: SupabaseClient = supabaseLoose,
 ): Promise<CohortPriors | null> {
   try {
-    const { data, error } = await client
+    type BenchRow = Pick<CohortBenchmarkRow, "archetype_id" | "action_id" | "sample_n" | "primary_pick_rate" | "avg_conversion_7d">;
+    type BenchQuery = {
+      from: (table: string) => {
+        select: (cols: string) => {
+          eq: (col: string, value: string) => {
+            gte: (col: string, value: number) => {
+              order: (col: string, opts: { ascending: boolean }) => {
+                limit: (count: number) => Promise<{ data: BenchRow[] | null; error: unknown }>;
+              };
+            };
+          };
+        };
+      };
+    };
+
+    const typed = client as unknown as BenchQuery;
+    const { data, error } = await typed
       .from("cohort_benchmarks")
       .select("archetype_id, action_id, sample_n, primary_pick_rate, avg_conversion_7d")
       .eq("archetype_id", archetype)
@@ -58,7 +74,7 @@ export async function fetchCohortPriors(
 
     if (error || !data || data.length === 0) return null;
 
-    const rows = data as Array<Pick<CohortBenchmarkRow, "archetype_id" | "action_id" | "sample_n" | "primary_pick_rate" | "avg_conversion_7d">>;
+    const rows = data as BenchRow[];
     const totalSample = rows.reduce((sum, r) => sum + r.sample_n, 0);
 
     return {

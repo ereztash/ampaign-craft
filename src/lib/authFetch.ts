@@ -1,9 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /** fetch wrapper that automatically injects the Supabase JWT if available. */
-export async function authFetch(url: string, init: RequestInit = {}): Promise<Response> {
+export async function authFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const { data: { session } } = await supabase.auth.getSession();
-  return fetch(url, {
+  return fetch(input, {
     ...init,
     headers: {
       ...(init.headers as Record<string, string> | undefined),

@@ -22,11 +22,13 @@ import ProcessingScreen from "@/components/ProcessingScreen";
 import { tx } from "@/i18n/tx";
 import { safeStorage } from "@/lib/safeStorage";
 import type { SavedPlan } from "@/types/funnel";
+import type { Language } from "@/i18n/translations";
 
 type WizardState = "onboarding" | "processing";
 
 const Wizard = () => {
   const { language } = useLanguage();
+  const currentLanguage = language as Language;
   const isHe = language === "he";
   const { profile, persistFormData, persistUnifiedProfile } = useUserProfile();
   const { user } = useAuth();
@@ -74,7 +76,7 @@ const Wizard = () => {
           const res = await aiCopyServiceGenerate({
             task: "headline",
             prompt,
-            language: tx({ he: "he", en: "en" }, language),
+            language: currentLanguage,
           });
           copy = res.text;
         } catch {
@@ -105,7 +107,7 @@ const Wizard = () => {
         ?? fd.productDescription
         ?? "";
       if (heroCopy) {
-        predictContentScore(heroCopy, tx({ he: "he", en: "en" }, language));
+        predictContentScore(heroCopy, currentLanguage);
       }
       calculateEPS();
     } catch {
