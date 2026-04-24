@@ -1,0 +1,1068 @@
+{
+  "version": "1.0.0",
+  "count": 65,
+  "sources": [
+    {
+      "id": "D001",
+      "filename": "D001.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "המטרה המיידית של הטיפול בטראומה אינה הפחתת PTSD, אלא החזרת האדם לתפקוד מועיל ומיטיב דרך הפעלה יעילה.",
+      "mechanism": "הפעלת הנפגע באופן יעיל בהקשר האירוע; תפיסת משימות קטנות כהצלחות; הפעלת PFC דרך שאלות קוגניטיביות.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "מעשה",
+        "יהלום",
+        "HPA",
+        "ASR"
+      ],
+      "principles_tagged": [
+        "P01",
+        "P02",
+        "P04",
+        "P05",
+        "P10"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D002",
+      "filename": "D002.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "זיכרון טראומטי תלוי במצב סימפתטי; תפקוד יעיל דורש סידור זיכרון תוך 6-7 שעות.",
+      "mechanism": "קורטיזול מחדד חושים; היעדר נקודת סיום מייצר רפיטיציה; חלון זמנים קריטי לשינוי אחסון.",
+      "researchers": [
+        "פרחי",
+        "אנטונובסקי"
+      ],
+      "named_frameworks": [
+        "ASR",
+        "PTSD",
+        "PFC"
+      ],
+      "principles_tagged": [
+        "P05"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D003",
+      "filename": "D003.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[META]",
+      "mechanism": "[META]",
+      "researchers": [],
+      "named_frameworks": [
+        "ASR",
+        "HRV",
+        "PTSD"
+      ],
+      "principles_tagged": [
+        "P01",
+        "P10"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D004",
+      "filename": "D004.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[META]",
+      "mechanism": "[META]",
+      "researchers": [],
+      "named_frameworks": [
+        "PFA"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D005",
+      "filename": "D005.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[META]",
+      "mechanism": "[META]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D006",
+      "filename": "D006.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "מודל שש-הסי יעיל בהפחתת ASR מעבר לתחקיר פסיכולוגי, בעיקר בהקשרים קשים כמהגרים.",
+      "mechanism": "שלוש אלמנטים: תקשורת קוגניטיבית, שליטה בחירה, אתגר משימות קטנות; שימור היררכיה.",
+      "researchers": [
+        "פרחי",
+        "אנטונובסקי"
+      ],
+      "named_frameworks": [
+        "6-C",
+        "מעשה",
+        "PFA"
+      ],
+      "principles_tagged": [
+        "P04"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D007",
+      "filename": "D007.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[META]",
+      "mechanism": "[META]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D008",
+      "filename": "D008.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[META]",
+      "mechanism": "[META]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D009",
+      "filename": "D009.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[META]",
+      "mechanism": "[META]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D010",
+      "filename": "D010.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "דיסוציאציה חלקית עם PFC דומיננטיות היא מצב הרצוי לשמר יכולת פעילה של המסייע.",
+      "mechanism": "שמירה על PFC דרך תקשורת קוגניטיבית; הימנעות מנרמליזציה רגשית; התערבות בחירום אך לא בתוך פעולה רפואית.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "ASR",
+        "PFC",
+        "HRV",
+        "מעשה"
+      ],
+      "principles_tagged": [
+        "P04",
+        "P06",
+        "P07",
+        "P11"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D011",
+      "filename": "D011.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "פסיביות מאיצה דומיננטיות אמיגדלה; טיפול דורש העברת פעילות קוגניטיבית ובחירה.",
+      "mechanism": "שאלות קוגניטיביות המעודדות בחירה; תרגום גרייה לחושים שונים.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "ASR",
+        "PFC"
+      ],
+      "principles_tagged": [
+        "P01",
+        "P06"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D012",
+      "filename": "D012.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "מודל מעשה משלב סגירת אירוע דרך שחזור כרונולוגי המייצר מסוגלות להמשך.",
+      "mechanism": "30-45 דקות; שחזור אירועים; זיהוי נקודות הצלחה; יצירת מחויבות.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "מעשה",
+        "6-C"
+      ],
+      "principles_tagged": [
+        "P01",
+        "P02",
+        "P05",
+        "P06"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D013",
+      "filename": "D013.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "איום וחוסר אונים יוצרים טראומה; פעילות יעילה משבר את המעגל.",
+      "mechanism": "טראומה = איום + חוסר אונים + פחד; מחזור שבירה דרך פעילות יעילה.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "ASR",
+        "HPA"
+      ],
+      "principles_tagged": [
+        "P02"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D014",
+      "filename": "D014.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "קורטיזול מחדד חושים אך מקשה על סדר; מחשבות טורדניות מהיעדר סיום קונקרטי.",
+      "mechanism": "קורטיזול מכפיל מידע; צפירת נקודת סיום; עקומת ביצוע הפוכה.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "HPA",
+        "PFC"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D015",
+      "filename": "D015.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "מודל ששת הסי מחזק עמידות דרך שליטה, מחויבות ואתגר; מעשה הוא גרסה מקוצרת.",
+      "mechanism": "6 אלמנטים: שליטה, מחויבות, אתגר, קוהרנטיות, חוסן, קהילה.",
+      "researchers": [
+        "פרחי",
+        "קבסה",
+        "אנטונובסקי"
+      ],
+      "named_frameworks": [
+        "6-C",
+        "מעשה",
+        "COR"
+      ],
+      "principles_tagged": [
+        "P01",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P11"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D016",
+      "filename": "D016.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "דיבור ממוקד רגש בטראומה מחריף ASR; תקשורת קוגניטיבית משמרת PFC.",
+      "mechanism": "נורמליזציה רגשית מפעילה אמיגדלה; תקשורת קוגניטיבית מונוטונית משמרת שיח מידע.",
+      "researchers": [
+        "פרחי",
+        "אורטל"
+      ],
+      "named_frameworks": [
+        "ASR",
+        "PFC"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D017",
+      "filename": "D017.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "שלוש טעויות שכיחות בטיפול: נרמול רגשי, הושבה, תן מים; כולן מגביר חוסר אונים.",
+      "mechanism": "נרמול מפעיל אמיגדלה; הושבה מחלישה; מים מפעילים פארא-סימפתטית.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "ASR",
+        "HPA"
+      ],
+      "principles_tagged": [
+        "P01",
+        "P02",
+        "P06",
+        "P07"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D018",
+      "filename": "D018.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "חוסן נבנה בשגרה דרך HRV ובחיבור משאבים להקשר; לא מצבים אלא יכולות דינמיות.",
+      "mechanism": "חוסן = משאבים + התאמה + יעילות; HRV מודד פארא-סימפתטית.",
+      "researchers": [
+        "לחד",
+        "הובפול"
+      ],
+      "named_frameworks": [
+        "COR",
+        "BASIC-PH",
+        "HRV"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D019",
+      "filename": "D019.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "טראומה דורשת אירוע אובייקטיבי המהווה סכנה לחיים; תחקיר פסיכולוגי עלול להגביר PTSD.",
+      "mechanism": "אבחון: סכנה לחיים = טראומה; PFC מנתח איום; בחירה מגביר PFC אוטומטית.",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "PFC",
+        "ASR"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D020",
+      "filename": "D020.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "חוסן תלוי במיקוד שליטה ממוזן; חוסן פיזיולוגי בא לידי ביטוי דרך HRV.",
+      "mechanism": "שליטה פנימית = מסוגלות; חיצונית = תלות; HRV מדד סתגלנות.",
+      "researchers": [],
+      "named_frameworks": [
+        "HRV"
+      ],
+      "principles_tagged": [
+        "P03",
+        "P08",
+        "P12"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D021",
+      "filename": "D021.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [
+        "P02"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D022",
+      "filename": "D022.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [
+        "הרמן"
+      ],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D023",
+      "filename": "D023.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P13"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D024",
+      "filename": "D024.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [
+        "P14"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D025",
+      "filename": "D025.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "ASR"
+      ],
+      "principles_tagged": [
+        "P01",
+        "P03",
+        "P04",
+        "P08",
+        "P09",
+        "P10"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D026",
+      "filename": "D026.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [
+        "הובפול"
+      ],
+      "named_frameworks": [
+        "COR",
+        "PTSD"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D027",
+      "filename": "D027.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "HRV",
+        "PTSD"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D028",
+      "filename": "D028.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P03"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D029",
+      "filename": "D029.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D030",
+      "filename": "D030.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D031",
+      "filename": "D031.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PFC",
+        "PTSD"
+      ],
+      "principles_tagged": [
+        "P03"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D032",
+      "filename": "D032.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D033",
+      "filename": "D033.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [
+        "הרמן"
+      ],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D034",
+      "filename": "D034.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D035",
+      "filename": "D035.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P13"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D036",
+      "filename": "D036.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P02"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D037",
+      "filename": "D037.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [
+        "לחד"
+      ],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D038",
+      "filename": "D038.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [
+        "P11"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D039",
+      "filename": "D039.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D040",
+      "filename": "D040.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P13"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D041",
+      "filename": "D041.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P03",
+        "P11"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D042",
+      "filename": "D042.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PFC"
+      ],
+      "principles_tagged": [
+        "P14"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D043",
+      "filename": "D043.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D044",
+      "filename": "D044.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D045",
+      "filename": "D045.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [
+        "P14"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D046",
+      "filename": "D046.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D047",
+      "filename": "D047.txt",
+      "course": "ייעוץ ארגוני",
+      "folder": "",
+      "cluster": "ייעוץ ארגוני",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D048",
+      "filename": "D048.txt",
+      "course": "ייעוץ ארגוני",
+      "folder": "",
+      "cluster": "ייעוץ ארגוני",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "COR"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D049",
+      "filename": "D049.txt",
+      "course": "ייעוץ ארגוני",
+      "folder": "",
+      "cluster": "ייעוץ ארגוני",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D050",
+      "filename": "D050.txt",
+      "course": "ייעוץ ארגוני",
+      "folder": "",
+      "cluster": "ייעוץ ארגוני",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P15"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D051",
+      "filename": "D051.txt",
+      "course": "ייעוץ ארגוני",
+      "folder": "",
+      "cluster": "ייעוץ ארגוני",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P15"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D052",
+      "filename": "D052.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [
+        "פרחי"
+      ],
+      "named_frameworks": [
+        "ASR",
+        "HPA"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D053",
+      "filename": "D053.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D054",
+      "filename": "D054.txt",
+      "course": "מבוא להתפתחות מצבי דחק וטראומה",
+      "folder": "",
+      "cluster": "מבוא להתפתחות מצבי דחק וטראומה",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D055",
+      "filename": "D055.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D056",
+      "filename": "D056.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [
+        "P16"
+      ],
+      "size_bytes": 0
+    },
+    {
+      "id": "D057",
+      "filename": "D057.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D058",
+      "filename": "D058.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [
+        "הרמן"
+      ],
+      "named_frameworks": [
+        "PTSD"
+      ],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D059",
+      "filename": "D059.txt",
+      "course": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "folder": "",
+      "cluster": "התערבות במצבי אסון ומצבי טראומה מתמשכים",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D060",
+      "filename": "D060.txt",
+      "course": "other",
+      "folder": "",
+      "cluster": "other",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D061",
+      "filename": "D061.txt",
+      "course": "other",
+      "folder": "",
+      "cluster": "other",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D062",
+      "filename": "D062.txt",
+      "course": "other",
+      "folder": "",
+      "cluster": "other",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D063",
+      "filename": "D063.txt",
+      "course": "other",
+      "folder": "",
+      "cluster": "other",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D064",
+      "filename": "D064.txt",
+      "course": "other",
+      "folder": "",
+      "cluster": "other",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    },
+    {
+      "id": "D065",
+      "filename": "D065.txt",
+      "course": "other",
+      "folder": "",
+      "cluster": "other",
+      "core_claim": "[טובה בקריאה]",
+      "mechanism": "[טובה בקריאה]",
+      "researchers": [],
+      "named_frameworks": [],
+      "principles_tagged": [],
+      "size_bytes": 0
+    }
+  ]
+}
