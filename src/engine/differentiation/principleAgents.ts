@@ -56,10 +56,12 @@ interface SingleAgentRequest {
  * Run a single principle agent. Network errors become a `failed: true`
  * output so the caller can still render partial results.
  */
+type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+
 async function runSinglePrincipleAgent(
   principle: PrincipleDefinition,
   input: PrincipleScanInput,
-  fetcher: typeof fetch = authFetch,
+  fetcher: FetchLike = authFetch,
 ): Promise<PrincipleAgentOutput> {
   const body: SingleAgentRequest = {
     phase: "principles_scan",
@@ -154,7 +156,8 @@ export async function runPrincipleScan(
   input: PrincipleScanInput,
   options: {
     onProgress?: (progress: PrincipleScanProgress) => void;
-    fetcher?: typeof fetch;
+    fetcher?: FetchLike;
+    onlyCodes?: PrincipleCode[];
   } = {},
 ): Promise<PrincipleScanResult> {
   const selected = options.onlyCodes

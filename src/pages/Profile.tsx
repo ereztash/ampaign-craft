@@ -188,13 +188,13 @@ const PageComponent = () => {
       try {
         const { data } = await supabase
           .from("profiles")
-          .select("display_name, avatar_url, headline")
+          .select("display_name")
           .eq("id", user.id)
           .single();
         if (data?.display_name) setDisplayName(data.display_name);
         else setDisplayName(user.displayName || user.email.split("@")[0]);
-        setAvatarUrl(data?.avatar_url || user.avatarUrl);
-        setHeadline(data?.headline || user.headline || "");
+        setAvatarUrl(user.avatarUrl);
+        setHeadline(user.headline || "");
       } catch { /* ignore */ }
       setLoading(false);
     };
