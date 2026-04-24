@@ -4,18 +4,21 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useDataSources } from "@/contexts/DataSourceContext";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
-import { calculateHealthScore } from "@/engine/healthScoreEngine";
 import { safeStorage } from "@/lib/safeStorage";
-import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
 import { detectBottlenecks } from "@/engine/bottleneckEngine";
 import { computeGaps } from "@/engine/gapEngine";
 import { generateGuidance } from "@/engine/guidanceEngine";
 import { predictSuccess } from "@/engine/predictiveEngine";
 import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
-import { inferDISCProfile } from "@/engine/discProfileEngine";
 import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
+import {
+  useDerivedStore,
+  selectGraph,
+  selectHealthScore,
+  selectDisc,
+  selectCostOfInaction,
+} from "@/store/derivedStore";
 import type { MetaInsights } from "@/types/meta";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
@@ -95,25 +98,18 @@ const CommandCenter = () => {
     return [...plans].sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())[0];
   }, [plans]);
 
-  const graph = useMemo(() => {
-    if (profile.lastFormData) return buildUserKnowledgeGraph(profile.lastFormData);
-    return buildUserKnowledgeGraph({
-      businessField: "",
-      audienceType: "b2c",
-      ageRange: [25, 55],
-      interests: "",
-      productDescription: "",
-      averagePrice: 0,
-      salesModel: "oneTime",
-      budgetRange: "medium",
-      mainGoal: "sales",
-      existingChannels: [],
-      experienceLevel: "beginner",
-    });
-  }, [profile.lastFormData]);
+  // Graph, healthScore, disc and costOfInaction all come from the derived
+  // store (computed once by DerivedStateSync from profile.lastFormData +
+  // latestPlan). Previously this page called calculateHealthScore twice —
+  // once here (L90) and once inside motivationState (L139). The store
+  // collapses that to one call.
+  const graph = useDerivedStore(selectGraph);
+  const healthScoreFromStore = useDerivedStore(selectHealthScore);
+  const disc = useDerivedStore(selectDisc);
+  const costOfInaction = useDerivedStore(selectCostOfInaction);
 
   const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
-  const healthTotal = latestPlan ? calculateHealthScore(latestPlan.result).total : null;
+  const healthTotal = healthScoreFromStore?.total ?? null;
   const pulse = generateWeeklyPulse(plans);
   const connectedCount = sources.filter((s) => s.status === "connected").length;
 
@@ -161,12 +157,9 @@ const CommandCenter = () => {
   const isNewUser = !profile.lastFormData;
 
   const motivationState = useMemo(() => {
-    const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
-    const healthObj = latestPlan ? calculateHealthScore(latestPlan.result) : undefined;
-    const coi = latestPlan ? calculateCostOfInaction(latestPlan.result) : undefined;
     const baeInput: BAEInput = {
-      healthScore: healthObj,
-      costOfInaction: coi,
+      healthScore: healthScoreFromStore ?? undefined,
+      costOfInaction: costOfInaction ?? undefined,
       discProfile: disc?.distribution,
       investment: profile.investment,
       modulesTotal: modules.length,
@@ -178,7 +171,7 @@ const CommandCenter = () => {
       sessionMinutes: profile.investment.totalSessionsMinutes % 60 || 1,
     };
     return computeMotivationState(baeInput);
-  }, [latestPlan, profile, modules, completedModules, streak, graph]);
+  }, [profile, modules, completedModules, streak, healthScoreFromStore, costOfInaction, disc]);
 
   const { effectiveArchetypeId, confidenceTier } = useArchetype();
 
