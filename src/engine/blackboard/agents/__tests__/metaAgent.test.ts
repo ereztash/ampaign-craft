@@ -33,13 +33,13 @@ function makeFormData() {
   };
 }
 
-function makeHealthScore(overall = 80) {
+function makeHealthScore(total = 80) {
+  // Shape matches HealthScore in src/engine/healthScoreEngine.ts: `total`
+  // (0-100) is the score metaAgent.activation actually reads.
   return {
-    overall,
-    dimensions: { budgetBalance: 80, channelDiversity: 80, kpiRealism: 80, funnelCompleteness: 80 },
-    grade: "B",
-    warnings: [],
-    recommendations: [],
+    total,
+    tier: total >= 80 ? "excellent" : total >= 60 ? "good" : total >= 40 ? "needs-work" : "critical",
+    breakdown: [],
   };
 }
 
