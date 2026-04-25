@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { canPerform, type UserRole } from "@/types/governance";
 import { sanitizeHTML, escapeHTML } from "@/lib/sanitize";
-import { deleteAllUserData, exportUserData } from "@/services/dataGovernance";
+import { deleteAllUserData, exportUserData, clearUserSessionData } from "@/services/dataGovernance";
 import { logAudit, getAuditLog, clearAuditLog } from "@/services/auditLog";
 
 describe("RBAC permission matrix", () => {
@@ -93,6 +93,73 @@ describe("Data governance — right-to-delete", () => {
     expect(data._format).toBe("funnelforge-gdpr-export-v2");
     // Without userId, no Supabase tables should be touched
     expect(data["supabase:training_pairs"]).toBeUndefined();
+  });
+});
+
+describe("clearUserSessionData — sign-out purge", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("removes per-user funnelforge keys (plans, coach, intake, profile, diff)", () => {
+    localStorage.setItem("funnelforge-plans", '["plan1"]');
+    localStorage.setItem("funnelforge-coach-messages", "[]");
+    localStorage.setItem("funnelforge-intake-signal", '{"need":"time"}');
+    localStorage.setItem("funnelforge-intake-telemetry", "{}");
+    localStorage.setItem("funnelforge-differentiation-result", "{}");
+    localStorage.setItem("funnelforge-user-profile", "{}");
+    localStorage.setItem("funnelforge-achievements", "{}");
+    localStorage.setItem("funnelforge-milestones", "[]");
+
+    clearUserSessionData();
+
+    expect(localStorage.getItem("funnelforge-plans")).toBeNull();
+    expect(localStorage.getItem("funnelforge-coach-messages")).toBeNull();
+    expect(localStorage.getItem("funnelforge-intake-signal")).toBeNull();
+    expect(localStorage.getItem("funnelforge-intake-telemetry")).toBeNull();
+    expect(localStorage.getItem("funnelforge-differentiation-result")).toBeNull();
+    expect(localStorage.getItem("funnelforge-user-profile")).toBeNull();
+    expect(localStorage.getItem("funnelforge-achievements")).toBeNull();
+    expect(localStorage.getItem("funnelforge-milestones")).toBeNull();
+  });
+
+  it("preserves device-level keys (lang, dark-mode, users, auth-version)", () => {
+    localStorage.setItem("funnelforge-lang", "he");
+    localStorage.setItem("funnelforge-dark-mode", "true");
+    localStorage.setItem("funnelforge-users", '[{"id":"admin"}]');
+    localStorage.setItem("funnelforge-auth-version", "v2");
+    localStorage.setItem("funnelforge-plans", "[]");
+
+    clearUserSessionData();
+
+    expect(localStorage.getItem("funnelforge-lang")).toBe("he");
+    expect(localStorage.getItem("funnelforge-dark-mode")).toBe("true");
+    expect(localStorage.getItem("funnelforge-users")).toBe('[{"id":"admin"}]');
+    expect(localStorage.getItem("funnelforge-auth-version")).toBe("v2");
+    expect(localStorage.getItem("funnelforge-plans")).toBeNull();
+  });
+
+  it("clears third-party auth state (meta_auth, meta_oauth_state)", () => {
+    localStorage.setItem("meta_auth", '{"token":"abc"}');
+    localStorage.setItem("meta_oauth_state", "xyz");
+
+    clearUserSessionData();
+
+    expect(localStorage.getItem("meta_auth")).toBeNull();
+    expect(localStorage.getItem("meta_oauth_state")).toBeNull();
+  });
+
+  it("leaves non-funnelforge keys untouched", () => {
+    localStorage.setItem("other-app-data", "keep");
+    localStorage.setItem("funnelforge-plans", "[]");
+
+    clearUserSessionData();
+
+    expect(localStorage.getItem("other-app-data")).toBe("keep");
+  });
+
+  it("is idempotent — safe to call on an empty store", () => {
+    expect(() => clearUserSessionData()).not.toThrow();
   });
 });
 

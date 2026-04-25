@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useRef, useCallback, Re
 import { PricingTier, Feature, canAccess } from "@/lib/pricingTiers";
 import { UserRole, canPerform as canPerformAction } from "@/types/governance";
 import { safeStorage } from "@/lib/safeStorage";
+import { clearUserSessionData } from "@/services/dataGovernance";
 import { logger } from "@/lib/logger";
 import { ALLOW_LOCAL_AUTH } from "@/lib/validateEnv";
 import { Analytics, getUTM } from "@/lib/analytics";
@@ -626,6 +627,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch { /* ignore */ }
     }
     setLocalSession(null);
+    // Purge all per-user localStorage data so a subsequent sign-in as a
+    // different user (including the local admin) never sees this session's
+    // plans, coach history, intake signal, profile, etc.
+    clearUserSessionData();
     setUser(null);
     setTierState("free");
   }, [isLocalAuth]);
