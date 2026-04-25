@@ -49,7 +49,7 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
    │  ◆ FunnelForge Pro ($36)                                    │
    │     ▲ HoneyBook Starter ($29)                               │
    │           ▲ Attio Plus ($29/user)                           │
-   │              ◇ Copy.ai ($36)                                │
+   │        ◇ Copy.ai ($29)                                     │
    │                     ▲ Jasper Creator ($49)                  │
    │                             ▲ Jasper Pro ($69)              │
    │                                     ▲ GoHighLevel ($97)     │
@@ -69,14 +69,14 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
 |---|---|---|---|---|---|---|
 | **Copy generation** | ✅ 12+ copy types | ⚠️ Breeze Content | ✅ core product | ⚠️ basic | ❌ | ❌ |
 | **Funnel builder** | ✅ budget-allocated | ⚠️ forms+pages | ❌ | ✅ core product | ❌ | ✅ |
-| **CRM + pipeline** | ⚠️ light (planned) | ✅ | ❌ | ✅ | ✅ core product | ⚠️ |
+| **CRM + pipeline** | ⚠️ built, not routed | ✅ | ❌ | ✅ | ✅ core product | ⚠️ |
 | **Pricing wizard (behavioral)** | ✅ PSM + Hormozi + Decoy | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Sales scripts (personality-based)** | ✅ DISC + neuro-closing | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Retention / churn prediction** | ✅ 3-stage model + NRR | ⚠️ Service Hub | ❌ | ⚠️ | ⚠️ | ❌ |
 | **Multi-agent orchestration** | ✅ 13 agents, write-gated | ⚠️ 4 Breeze agents | ❌ | ❌ | ⚠️ AI Research | ❌ |
 | **Closed feedback loops** | ✅ 6 loops | ⚠️ attribution only | ❌ | ❌ | ❌ | ❌ |
 | **Archetype-adaptive UI** | ✅ 5 archetypes | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Hebrew-native (not translation)** | ✅ 300+ keys, gendered | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Hebrew-native (not translation)** | ✅ 340+ keys, gendered | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **RTL-first architecture** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ### Behavioral-Science Framework Benchmarks
