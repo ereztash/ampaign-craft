@@ -285,7 +285,7 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
         <div className="space-y-2">
           {/*
             The Next / Analyze button disables on !canProceed. Without a
-            visible reason, users assume it's broken — so surface the
+            visible reason, users assume it's broken - so surface the
             missing field inline.
           */}
           {blockingField && !aiLoading && (
