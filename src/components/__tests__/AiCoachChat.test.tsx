@@ -62,11 +62,14 @@ vi.mock("@/engine/userKnowledgeGraph", () => ({
       industryPainPoints: [],
       framingPreference: "value",
       complexityLevel: "medium",
+      realMetrics: { avgCPL: null, avgCTR: null, avgCVR: null, trendDirection: null },
+      dataConfidence: "no_data",
     },
     behavior: { stageOfChange: "action" },
     differentiation: null,
     voice: null,
   }),
+  loadImportedDataSignals: vi.fn().mockReturnValue(null),
 }));
 
 vi.mock("@/components/PaywallModal", () => ({

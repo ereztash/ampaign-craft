@@ -9,6 +9,8 @@
 import type { SavedPlan } from "@/types/funnel";
 import { calculateHealthScore } from "./healthScoreEngine";
 import { safeStorage } from "@/lib/safeStorage";
+import { analyzeTrends } from "./dataImportEngine";
+import type { ImportedDataset } from "@/types/importedData";
 
 export interface BusinessInsight {
   id: string;
@@ -21,6 +23,10 @@ export interface BusinessInsight {
 
 function getPlans(): SavedPlan[] {
   return safeStorage.getJSON<SavedPlan[]>("funnelforge-plans", []);
+}
+
+function getImportedDatasets(): ImportedDataset[] {
+  return safeStorage.getJSON<ImportedDataset[]>("funnelforge-imported-data", []);
 }
 
 function getVisitedModules(): string[] {
@@ -165,6 +171,51 @@ export function generateInsights(): BusinessInsight[] {
       metric: `₪${Math.round(priceAvg)}`,
       confidence: 0.65,
     });
+  }
+
+  // ─── Insights from imported CSV/Excel data ───────────────────
+  const datasets = getImportedDatasets();
+  if (datasets.length > 0) {
+    const latest = datasets[0];
+    const analysis = analyzeTrends(latest);
+    // Only surface high/medium significance trends
+    const notable = analysis.trends.filter((t) => t.significance !== "low" && t.direction !== "stable").slice(0, 2);
+    for (const trend of notable) {
+      const isPositiveMetric = !trend.metric.toLowerCase().match(/cpc|cpl|cpa|cost|עלות|הוצאה/);
+      const isGood = isPositiveMetric ? trend.direction === "up" : trend.direction === "down";
+      const sign = trend.changePercent > 0 ? "+" : "";
+      insights.push({
+        id: `data-${trend.metric.replace(/\s+/g, "-")}`,
+        type: isGood ? "win" : "risk",
+        title: {
+          he: `${trend.metric}: ${sign}${trend.changePercent}%`,
+          en: `${trend.metric}: ${sign}${trend.changePercent}%`,
+        },
+        body: {
+          he: trend.insight.he,
+          en: trend.insight.en,
+        },
+        metric: `${sign}${trend.changePercent}%`,
+        confidence: analysis.summary.confidence,
+      });
+    }
+    // Overall dataset health summary
+    if (analysis.summary.direction !== "stable" && analysis.trends.length > 0) {
+      insights.push({
+        id: "data-summary",
+        type: analysis.summary.direction === "improving" ? "win" : "risk",
+        title: {
+          he: analysis.summary.direction === "improving" ? "הנתונים שלך משתפרים" : "שים לב: מגמה יורדת בנתונים",
+          en: analysis.summary.direction === "improving" ? "Your data is improving" : "Heads up: declining trend in your data",
+        },
+        body: {
+          he: `ניתוח ${latest.rows.length} שורות מ-"${latest.name}" מראה מגמה ${analysis.summary.direction === "improving" ? "חיובית" : "שלילית"} כוללת.`,
+          en: `Analysis of ${latest.rows.length} rows from "${latest.name}" shows an overall ${analysis.summary.direction} trend.`,
+        },
+        metric: latest.name,
+        confidence: analysis.summary.confidence * 0.9,
+      });
+    }
   }
 
   return insights.sort((a, b) => b.confidence - a.confidence).slice(0, 5);

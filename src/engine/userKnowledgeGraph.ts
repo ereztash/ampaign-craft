@@ -13,6 +13,8 @@ import {
   type BlackboardWriteContext,
 } from "./blackboard/contract";
 import { safeStorage } from "@/lib/safeStorage";
+import { analyzeTrends } from "./dataImportEngine";
+import type { ImportedDataset } from "@/types/importedData";
 
 export const ENGINE_MANIFEST = {
   name: "userKnowledgeGraph",
@@ -548,15 +550,29 @@ export function loadChatInsights(): ChatInsights | null {
 }
 
 export function loadImportedDataSignals(): ImportedDataSignals | null {
-  const state = safeStorage.getJSON<{ sources?: { id: string; status: string; recordCount: number }[] } | null>("funnelforge-data-sources", null);
-  const manual = state?.sources?.find((s) => s.id === "manual_import");
-  if (!manual || manual.status !== "connected" || !manual.recordCount) return null;
+  const datasets = safeStorage.getJSON<ImportedDataset[]>("funnelforge-imported-data", []);
+  if (!Array.isArray(datasets) || datasets.length === 0) return null;
+  const latest = datasets[0]; // newest first (DataImportModal prepends)
+  if (!latest?.rows?.length) return null;
+
+  const analysis = analyzeTrends(latest);
+  if (analysis.trends.length === 0 && latest.rows.length < 2) return null;
+
   return {
-    datasetType: "custom",
-    overallDirection: "stable",
-    confidence: manual.recordCount > 30 ? 0.8 : manual.recordCount > 10 ? 0.6 : 0.3,
-    metricHighlights: [],
-    rowCount: manual.recordCount,
+    datasetType: latest.schema.detectedType,
+    overallDirection: analysis.summary.direction === "improving" ? "improving"
+      : analysis.summary.direction === "declining" ? "declining"
+      : "stable",
+    confidence: analysis.summary.confidence,
+    metricHighlights: analysis.trends
+      .filter((t) => t.direction !== "stable")
+      .slice(0, 5)
+      .map((t) => ({
+        metric: t.metric,
+        direction: t.direction as "up" | "down",
+        changePct: t.changePercent,
+      })),
+    rowCount: latest.rows.length,
   };
 }
 
