@@ -138,9 +138,10 @@ function scorePerceivedLikelihood(formData: FormData, graph?: UserKnowledgeGraph
   }
 
   // Existing channels = more touchpoints for proof
-  if (formData.existingChannels.length >= 3) {
+  const channels = formData.existingChannels ?? [];
+  if (channels.length >= 3) {
     score += 10;
-  } else if (formData.existingChannels.length >= 1) {
+  } else if (channels.length >= 1) {
     score += 5;
   }
 
@@ -266,7 +267,7 @@ function scoreEffortSacrifice(formData: FormData): HormoziDimension {
   }
 
   // Channels complexity
-  if (formData.existingChannels.length > 4) {
+  if ((formData.existingChannels ?? []).length > 4) {
     score -= 5; // Managing many channels = more effort
   }
 

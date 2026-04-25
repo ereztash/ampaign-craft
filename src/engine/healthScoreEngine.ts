@@ -30,6 +30,7 @@ export function calculateHealthScore(
   result: FunnelResult,
   ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): HealthScore {
+  if (!result?.formData) throw new Error("calculateHealthScore: result.formData is required");
   const { formData } = result;
   const breakdown: HealthScoreBreakdown[] = [];
 
@@ -58,7 +59,8 @@ export function calculateHealthScore(
   // 2. Channel Diversity (0-25)
   let channelScore = 0;
   const channelTips: { he: string; en: string }[] = [];
-  const channelCount = formData.existingChannels.length;
+  const _hChannels = formData.existingChannels ?? [];
+  const channelCount = _hChannels.length;
 
   if (channelCount >= 4) channelScore = 25;
   else if (channelCount >= 3) channelScore = 20;
@@ -69,10 +71,10 @@ export function calculateHealthScore(
     channelTips.push({ he: "הוסף לפחות 2 ערוצי שיווק", en: "Add at least 2 marketing channels" });
   }
 
-  if (!formData.existingChannels.includes("email")) {
+  if (!_hChannels.includes("email")) {
     channelTips.push({ he: "שקול להוסיף אימייל — ROI הגבוה ביותר", en: "Consider adding email — highest ROI channel" });
   }
-  if (!formData.existingChannels.includes("whatsapp") && formData.audienceType !== "b2b") {
+  if (!_hChannels.includes("whatsapp") && formData.audienceType !== "b2b") {
     channelTips.push({ he: "שקול להוסיף וואטסאפ — 99% מהישראלים משתמשים", en: "Consider adding WhatsApp — 99% of Israelis use it" });
   }
 

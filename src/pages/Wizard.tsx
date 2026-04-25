@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import BackToHub from "@/components/BackToHub";
+import IntakePromiseHeader from "@/components/intake/IntakePromiseHeader";
 import SmartOnboarding from "@/components/SmartOnboarding";
 import ProcessingScreen from "@/components/ProcessingScreen";
 import { tx } from "@/i18n/tx";
@@ -158,8 +159,9 @@ const Wizard = () => {
     <main className="min-h-screen bg-background">
       {state === "onboarding" && (
         <>
-          <div className="container mx-auto px-4 pt-4">
+          <div className="container mx-auto px-4 pt-4 max-w-3xl">
             <BackToHub />
+            <IntakePromiseHeader moduleTarget="/wizard" />
           </div>
           <SmartOnboarding
             onComplete={handleProfileComplete}

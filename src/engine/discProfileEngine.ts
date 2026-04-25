@@ -120,17 +120,18 @@ function inferDistribution(formData: FormData, graph?: UserKnowledgeGraph | null
   }
 
   // === Channel preferences ===
-  if (formData.existingChannels.includes("linkedIn")) {
+  const channels = formData.existingChannels ?? [];
+  if (channels.includes("linkedIn")) {
     dist.C += 5;
     dist.D += 3;
   }
-  if (formData.existingChannels.includes("tikTok")) {
+  if (channels.includes("tikTok")) {
     dist.I += 8;
   }
-  if (formData.existingChannels.includes("email")) {
+  if (channels.includes("email")) {
     dist.C += 5;
   }
-  if (formData.existingChannels.includes("whatsapp")) {
+  if (channels.includes("whatsapp")) {
     dist.S += 5;
     dist.I += 3;
   }

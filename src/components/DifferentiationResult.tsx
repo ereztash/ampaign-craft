@@ -7,6 +7,25 @@ import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { Sparkles, ShieldCheck, Map, Users, Scale, BarChart3, FileText, ArrowLeft } from "lucide-react";
 import PrincipleTraceModal from "@/components/moat/PrincipleTraceModal";
+import { getIntakeSignal } from "@/engine/intake/intakeSignal";
+import type { IntakeNeed } from "@/engine/intake/types";
+
+/**
+ * Pick the most relevant default tab for the user based on intake need.
+ * Each need maps to the tab that best answers their stated pain:
+ *   time      -> mechanism (one-line takeaway, fast to read)
+ *   money     -> claims (gap analysis exposes revenue leak)
+ *   attention -> competitors (counter-strategy = how to stand out)
+ * If no signal, fall back to the historical "mechanism" default.
+ */
+function pickDefaultTab(need: IntakeNeed | undefined): string {
+  switch (need) {
+    case "time":      return "mechanism";
+    case "money":     return "claims";
+    case "attention": return "competitors";
+    default:          return "mechanism";
+  }
+}
 
 interface DifferentiationResultProps {
   result: DiffResult;
@@ -19,6 +38,10 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
 
   const scoreColor = (score: number) =>
     score >= 70 ? "text-accent" : score >= 40 ? "text-amber-500" : "text-destructive";
+
+  // Read the IntakeSignal once per mount; null-safe if user skipped intake.
+  const intakeNeed = getIntakeSignal()?.need;
+  const defaultTab = pickDefaultTab(intakeNeed);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -45,7 +68,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
       </div>
 
       {/* Tabbed Results */}
-      <Tabs defaultValue="mechanism">
+      <Tabs defaultValue={defaultTab}>
         <TabsList className="w-full flex-wrap h-auto gap-1 bg-muted/50 p-1">
           <TabsTrigger value="mechanism" className="text-xs gap-1"><Sparkles className="h-3 w-3" />{t("diffTabMechanism")}</TabsTrigger>
           <TabsTrigger value="claims" className="text-xs gap-1"><ShieldCheck className="h-3 w-3" />{t("diffTabClaims")}</TabsTrigger>
@@ -238,11 +261,17 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
         </div>
       )}
 
-      {/* Continue to Marketing Plan — Primary CTA */}
+      {/* Continue to Marketing Plan — Primary CTA, wording adapts to intake need */}
       <Card className="border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-transparent">
         <CardContent className="p-6 text-center space-y-3">
           <h3 className="text-lg font-bold" dir="auto">
-            {tx({ he: "הבידול שלך מוכן. בוא נבנה תוכנית שיווק מותאמת", en: "Your differentiation is ready. Let's build a tailored marketing plan" }, language)}
+            {intakeNeed === "time"
+              ? tx({ he: "הבידול מוכן. תוכנית מהירה ב-2 דקות", en: "Differentiation ready. A 2-minute plan next" }, language)
+              : intakeNeed === "money"
+                ? tx({ he: "הבידול מוכן. עכשיו נבנה תוכנית שמכוונת לרווחיות", en: "Differentiation ready. Now a plan aimed at profitability" }, language)
+                : intakeNeed === "attention"
+                  ? tx({ he: "הבידול מוכן. עכשיו נבנה Hooks שעוצרים את הקהל הנכון", en: "Differentiation ready. Now hooks that stop the right audience" }, language)
+                  : tx({ he: "הבידול שלך מוכן. בוא נבנה תוכנית שיווק מותאמת", en: "Your differentiation is ready. Let's build a tailored marketing plan" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground" dir="auto">
             {isHe
@@ -251,7 +280,9 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
           </p>
           <Button size="lg" onClick={() => { window.location.href = "/wizard"; }} className="gap-2 funnel-gradient border-0 text-accent-foreground">
             <Sparkles className="h-5 w-5" />
-            {tx({ he: "המשך לתוכנית שיווק →", en: "Continue to Marketing Plan →" }, language)}
+            {intakeNeed === "time"
+              ? tx({ he: "תוכנית ב-2 דקות →", en: "2-min plan →" }, language)
+              : tx({ he: "המשך לתוכנית שיווק →", en: "Continue to Marketing Plan →" }, language)}
           </Button>
         </CardContent>
       </Card>

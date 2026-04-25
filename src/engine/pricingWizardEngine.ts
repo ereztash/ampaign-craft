@@ -361,6 +361,18 @@ function buildRationale(
 export function computePricingWizardRecommendation(
   input: PricingWizardInput,
 ): PricingWizardRecommendation {
+  // Sanitize numeric fields — NaN/Infinity from malformed input produce NaN
+  // prices in the UI. Clamp to sensible defaults before any math.
+  const safeNum = (v: number, fallback: number) =>
+    (typeof v === "number" && isFinite(v) && v >= 0) ? v : fallback;
+  input = {
+    ...input,
+    tooChcapPrice:       safeNum(input.tooChcapPrice, 50),
+    stretchPrice:        safeNum(input.stretchPrice, 500),
+    avgRetentionMonths:  safeNum(input.avgRetentionMonths, 12),
+    revenueGoalMonthly:  safeNum(input.revenueGoalMonthly, 10000),
+  };
+
   // ── 1. Hormozi value score ─────────────────────────────────────────────
   const hormoziScore = computeHormoziScore(input);
 

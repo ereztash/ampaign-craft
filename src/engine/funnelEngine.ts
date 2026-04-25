@@ -1142,6 +1142,12 @@ function getPersonalBrandData(data: FormData): PersonalBrandData | undefined {
 }
 
 export function generateFunnel(data: FormData, blackboardCtx?: BlackboardWriteContext): FunnelResult {
+  // Guard against missing array fields (e.g. plans loaded from old localStorage shape)
+  data = {
+    ...data,
+    existingChannels: data.existingChannels ?? [],
+    ageRange: data.ageRange ?? [25, 55],
+  };
   const weights = getStageWeights(data);
   const budget = getBudgetRange(data.budgetRange);
 
