@@ -34,6 +34,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import ExpressWizard from "@/components/ExpressWizard";
 import { ArrowRight } from "lucide-react";
 import { InsightsCard } from "@/components/InsightsCard";
+import { PipelinePulseCard } from "@/components/PipelinePulseCard";
 import { AnalyticsConnectCard } from "@/components/AnalyticsConnectCard";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import ArchetypePipelineGuide from "@/components/ArchetypePipelineGuide";
@@ -395,6 +396,7 @@ const CommandCenter = () => {
                 }
                 <AchievementShelf />
                 <InsightsCard />
+                <PipelinePulseCard />
                 <AnalyticsConnectCard />
               </div>
             </div>

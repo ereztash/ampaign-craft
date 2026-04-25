@@ -1,12 +1,10 @@
 // ═══════════════════════════════════════════════
-// LeadDetail — per-lead view with the Lead Coach panel.
-//
-// The 3 research-based recommendations come from leadCoachEngine
-// (Approach / Timing / Leverage). This file renders the page;
-// the engine and recommendations UI are added in Phase 4.
+// LeadDetail — per-lead view with the Lead Coach panel + interactions
+// timeline. The 3 research-based recommendations come from
+// leadCoachEngine via the useLeadCoach hook.
 // ═══════════════════════════════════════════════
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,30 +12,52 @@ import BackToHub from "@/components/BackToHub";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { tx } from "@/i18n/tx";
-import { ChevronLeft, ChevronRight, Sparkles, Phone, Mail, Building2, DollarSign, Calendar } from "lucide-react";
-import { getLead, type Lead } from "@/services/leadsService";
+import {
+  ChevronLeft, ChevronRight, Phone, Mail, Building2,
+  DollarSign, Calendar, MessageSquare,
+} from "lucide-react";
+import { useLeadCoach } from "@/hooks/useLeadCoach";
+import { LeadCoachPanel } from "@/components/LeadCoachPanel";
+import { addInteraction, type InteractionType } from "@/services/leadsService";
+
+const INTERACTION_TYPES: { id: InteractionType; he: string; en: string }[] = [
+  { id: "note",    he: "הערה",    en: "Note" },
+  { id: "call",    he: "שיחה",   en: "Call" },
+  { id: "meeting", he: "פגישה",  en: "Meeting" },
+  { id: "email",   he: "אימייל", en: "Email" },
+  { id: "whatsapp", he: "WhatsApp", en: "WhatsApp" },
+];
 
 const LeadDetail = () => {
   const { language, isRTL } = useLanguage();
   const { user } = useAuth();
+  const { toast } = useToast();
   const { leadId } = useParams<{ leadId: string }>();
 
-  const [lead, setLead] = useState<Lead | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { lead, interactions, recommendations, loading, refresh } =
+    useLeadCoach(user?.id, leadId);
 
-  useEffect(() => {
-    let cancelled = false;
-    if (!leadId) return;
-    void (async () => {
-      const row = await getLead(leadId);
-      if (!cancelled) {
-        setLead(row);
-        setLoading(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [leadId]);
+  const [newType, setNewType] = useState<InteractionType>("note");
+  const [newNote, setNewNote] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const handleAddInteraction = async () => {
+    if (!user?.id || !leadId || !newNote.trim() || adding) return;
+    setAdding(true);
+    const created = await addInteraction(user.id, leadId, newType, newNote.trim());
+    setAdding(false);
+    if (!created) {
+      toast({ title: tx({ he: "ההוספה נכשלה", en: "Failed to add" }, language), variant: "destructive" });
+      return;
+    }
+    setNewNote("");
+    refresh();
+    toast({ title: tx({ he: "האינטראקציה נוספה", en: "Interaction added" }, language) });
+  };
 
   if (!user) {
     return (
@@ -50,7 +70,7 @@ const LeadDetail = () => {
     );
   }
 
-  if (loading) {
+  if (loading && !lead) {
     return (
       <div className="min-h-screen bg-background">
         <main className="container mx-auto px-4 pt-4 pb-16 max-w-3xl">
@@ -129,17 +149,62 @@ const LeadDetail = () => {
           </CardContent>
         </Card>
 
+        <div className="mb-4">
+          <LeadCoachPanel recommendations={recommendations} loading={loading} />
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Sparkles className="h-4 w-4 text-primary" />
-              {tx({ he: "Lead Coach – 3 המלצות מבוססות מחקר", en: "Lead Coach – 3 research-based recommendations" }, language)}
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              {tx({ he: "אינטראקציות", en: "Interactions" }, language)}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground" dir="auto">
-              {tx({ he: "המלצות מותאמות אישית לליד הזה יוצגו כאן בקרוב.", en: "Personalized recommendations for this lead will appear here soon." }, language)}
-            </p>
+          <CardContent className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Select value={newType} onValueChange={(v) => setNewType(v as InteractionType)}>
+                <SelectTrigger className="text-xs sm:w-32"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {INTERACTION_TYPES.map((t) => (
+                    <SelectItem key={t.id} value={t.id} className="text-xs">{tx(t, language)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Textarea
+                rows={2}
+                dir="auto"
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+                placeholder={tx({ he: "מה קרה? (תיעוד מקצר)", en: "What happened? (short note)" }, language)}
+                className="resize-none text-xs flex-1"
+              />
+              <Button onClick={handleAddInteraction} disabled={!newNote.trim() || adding} className="self-start">
+                {adding ? tx({ he: "מוסיף...", en: "Adding..." }, language) : tx({ he: "הוסף", en: "Add" }, language)}
+              </Button>
+            </div>
+
+            {interactions.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-4" dir="auto">
+                {tx({ he: "אין עדיין אינטראקציות מתועדות.", en: "No interactions logged yet." }, language)}
+              </p>
+            )}
+
+            {interactions.length > 0 && (
+              <ul className="space-y-2">
+                {interactions.map((ix) => {
+                  const typeLabel = INTERACTION_TYPES.find((t) => t.id === ix.type);
+                  return (
+                    <li key={ix.id} className="rounded-md border bg-card p-2 text-xs">
+                      <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                        <span className="font-medium">{typeLabel ? tx(typeLabel, language) : ix.type}</span>
+                        <span dir="ltr">{new Date(ix.occurredAt).toLocaleString(tx({ he: "he-IL", en: "en-US" }, language))}</span>
+                      </div>
+                      <p className="mt-1" dir="auto">{ix.note}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </CardContent>
         </Card>
       </main>
