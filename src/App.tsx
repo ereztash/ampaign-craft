@@ -56,6 +56,7 @@ const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const ArchetypeRevealScreen = lazy(() => import("./components/ArchetypeRevealScreen"));
 const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
 const AdminAgentMonitor = lazy(() => import("./pages/AdminAgentMonitor"));
+const AdminLLMCost = lazy(() => import("./pages/AdminLLMCost"));
 const Privacy = lazy(() => import("./pages/legal/Privacy"));
 const Terms = lazy(() => import("./pages/legal/Terms"));
 const Support = lazy(() => import("./pages/Support"));
@@ -126,6 +127,7 @@ const AnimatedRoutes = () => {
             <Route path="archetype" element={<ArchetypeRevealScreen />} />
             <Route path="admin/aarrr" element={<AdminRoute><AARRRDashboard /></AdminRoute>} />
             <Route path="admin/agents" element={<AdminRoute><AdminAgentMonitor /></AdminRoute>} />
+            <Route path="admin/llm-cost" element={<AdminRoute><AdminLLMCost /></AdminRoute>} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="terms" element={<Terms />} />
             <Route path="support" element={<Support />} />
