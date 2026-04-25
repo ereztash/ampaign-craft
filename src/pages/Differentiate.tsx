@@ -13,6 +13,7 @@ import DifferentiationResultView from "@/components/DifferentiationResult";
 import DifferentiationTranscriptWizard from "@/components/DifferentiationTranscriptWizard";
 import PaywallModal from "@/components/PaywallModal";
 import BackToHub from "@/components/BackToHub";
+import IntakePromiseHeader from "@/components/intake/IntakePromiseHeader";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { Crosshair, Sparkles, Shield, Brain, Map, Zap, FileText } from "lucide-react";
@@ -119,6 +120,7 @@ const PageComponent = () => {
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16">
         <BackToHub currentPage={language === "he" ? "בידול" : "Differentiation"} />
+        <IntakePromiseHeader moduleTarget="/differentiate" suppress={view !== "idle"} />
         {view === "idle" && (
           <motion.div
             initial={reducedMotion ? false : { opacity: 0, y: 20 }}

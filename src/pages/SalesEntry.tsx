@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { TrendingUp } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
+import IntakePromiseHeader from "@/components/intake/IntakePromiseHeader";
 
 const PageComponent = () => {
   const { language } = useLanguage();
@@ -22,6 +23,7 @@ const PageComponent = () => {
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-5xl">
         <BackToHub currentPage={language === "he" ? "מכירות" : "Sales"} />
+        <IntakePromiseHeader moduleTarget="/sales" suppress={!!result} />
         {result ? (
           <>
             <SalesTab result={result} />

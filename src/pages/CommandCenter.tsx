@@ -38,6 +38,9 @@ import { AnalyticsConnectCard } from "@/components/AnalyticsConnectCard";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import ArchetypePipelineGuide from "@/components/ArchetypePipelineGuide";
 import { snapshotEngineOutputs, captureContentSnapshot } from "@/engine/outcomeLoopEngine";
+import { hasCompletedIntake } from "@/engine/intake/intakeSignal";
+import { recordRouteVisit } from "@/engine/intake/feedbackLoop";
+import IntakeReframeBanner from "@/components/intake/IntakeReframeBanner";
 
 const CommandCenter = () => {
   const { language } = useLanguage();
@@ -55,6 +58,21 @@ const CommandCenter = () => {
   useEffect(() => {
     refreshFromProfile(!!profile.lastFormData);
   }, [profile.lastFormData, refreshFromProfile]);
+
+  // First-time gate: brand-new users (no plan, no intake) get sent to /intake
+  // for the 30-second diagnostic. Users who already have a plan or have
+  // completed intake before are not redirected — they own their entry point.
+  useEffect(() => {
+    if (profile.savedPlanCount === 0 && !hasCompletedIntake() && !profile.lastFormData) {
+      navigate("/intake", { replace: true });
+    }
+  }, [profile.savedPlanCount, profile.lastFormData, navigate]);
+
+  // Phase-3 telemetry: record CommandCenter visit (always collected,
+  // surfaced to UI only when VITE_INTAKE_FEEDBACK_ENABLED is on).
+  useEffect(() => {
+    recordRouteVisit("/");
+  }, []);
 
   // Re-read plans from storage when the count, last summary, or route changes
   // (these are the reactive proxies for the non-reactive localStorage key).
@@ -206,6 +224,7 @@ const CommandCenter = () => {
   return (
     <main className="min-h-full bg-background">
       <div className="container mx-auto max-w-5xl px-4 py-6 space-y-8">
+        <IntakeReframeBanner />
         <motion.section {...mp} className="text-center space-y-2">
           {user && profile.lastFormData ? (
             <>

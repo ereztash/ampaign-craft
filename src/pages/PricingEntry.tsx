@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { DollarSign, RefreshCw } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
 import { safeStorage } from "@/lib/safeStorage";
+import IntakePromiseHeader from "@/components/intake/IntakePromiseHeader";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -102,6 +103,7 @@ const PageComponent = () => {
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-5xl">
         <BackToHub currentPage={language === "he" ? "תמחור" : "Pricing"} />
+        <IntakePromiseHeader moduleTarget="/pricing" suppress={hasPlanWithPrice} />
 
         {/* ── No plan → gate ─────────────────────────────────────────────── */}
         {!result ? (
