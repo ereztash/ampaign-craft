@@ -43,6 +43,8 @@ vi.mock("@/lib/safeStorage", () => ({
     getString: vi.fn(() => ""),
     setString: vi.fn(),
     remove: vi.fn(),
+    keysWithPrefix: vi.fn(() => []),
+    removeWithPrefix: vi.fn(() => []),
   },
 }));
 

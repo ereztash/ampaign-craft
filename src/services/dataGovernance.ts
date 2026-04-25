@@ -122,6 +122,38 @@ export async function exportUserData(userId?: string): Promise<Record<string, un
 }
 
 /**
+ * Keys that belong to the device / installation rather than to a specific
+ * user session. These survive a sign-out so the next user sees correct
+ * language / theme defaults and so the local auth registry stays intact
+ * for re-login.
+ */
+const DEVICE_LEVEL_KEYS = new Set([
+  "funnelforge-lang",            // language preference
+  "funnelforge-dark-mode",       // dark-mode preference
+  "funnelforge-users",           // local auth user registry
+  "funnelforge-auth-version",    // PBKDF2 migration marker
+]);
+
+/**
+ * Clear all per-user session data from localStorage on sign-out.
+ * Removes every `funnelforge-` prefixed key that is NOT in
+ * DEVICE_LEVEL_KEYS, plus the third-party auth state keys (`meta_auth`,
+ * `meta_oauth_state`). Preserves language, dark-mode, and the local auth
+ * registry so the next user gets a clean slate without losing device prefs.
+ */
+export function clearUserSessionData(): void {
+  const keys = safeStorage.keysWithPrefix("funnelforge-");
+  for (const key of keys) {
+    if (!DEVICE_LEVEL_KEYS.has(key)) {
+      safeStorage.remove(key);
+    }
+  }
+  // Third-party auth state (Meta OAuth) is user-scoped — clear it too.
+  safeStorage.remove("meta_auth");
+  safeStorage.remove("meta_oauth_state");
+}
+
+/**
  * Download user data export as a JSON file.
  */
 export async function downloadUserDataExport(userId?: string): Promise<void> {
