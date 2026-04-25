@@ -1,17 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import CrmPage from "../CrmPage";
 
 vi.mock("@/i18n/LanguageContext", () => ({
-  useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),
+  useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false, isRTL: false }),
 }));
 
-vi.mock("@/lib/safeStorage", () => ({
-  safeStorage: {
-    getJSON: vi.fn(() => []),
-    setJSON: vi.fn(),
-    getString: vi.fn(() => ""),
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: { id: "test-user-1", email: "u@example.com" } }),
+}));
+
+vi.mock("@/services/leadsService", () => ({
+  listLeads: vi.fn(() => Promise.resolve([])),
+  createLead: vi.fn(),
+  updateLead: vi.fn(),
+  deleteLead: vi.fn(),
+}));
+
+vi.mock("@/lib/analytics", () => ({
+  Analytics: {
+    firstLeadLogged: vi.fn(),
   },
 }));
 
@@ -34,7 +43,6 @@ vi.mock("@/components/EmailComposer", () => ({
 describe("CrmPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
   });
 
   it("renders without crashing", () => {
@@ -55,39 +63,47 @@ describe("CrmPage", () => {
     expect(screen.getByRole("main")).toBeInTheDocument();
   });
 
-  it("shows the Lead Management heading", () => {
+  it("shows the Lead Management heading", async () => {
     render(
       <MemoryRouter>
         <CrmPage />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/lead management/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/lead management/i)).toBeInTheDocument();
+    });
   });
 
-  it("shows empty state with no leads", () => {
+  it("shows empty state with no leads", async () => {
     render(
       <MemoryRouter>
         <CrmPage />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/no leads yet/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/no leads yet/i)).toBeInTheDocument();
+    });
   });
 
-  it("shows search input", () => {
+  it("shows search input", async () => {
     render(
       <MemoryRouter>
         <CrmPage />
       </MemoryRouter>,
     );
-    expect(screen.getByPlaceholderText(/search by name/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/search by name/i)).toBeInTheDocument();
+    });
   });
 
-  it("shows New Lead button", () => {
+  it("shows New Lead button", async () => {
     render(
       <MemoryRouter>
         <CrmPage />
       </MemoryRouter>,
     );
-    expect(screen.getAllByRole("button", { name: /new lead/i }).length).toBeGreaterThan(0);
+    await waitFor(() => {
+      expect(screen.getAllByRole("button", { name: /new lead/i }).length).toBeGreaterThan(0);
+    });
   });
 });
