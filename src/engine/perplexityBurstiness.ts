@@ -89,14 +89,17 @@ const SLANG_MARKERS = new Set([
 // ═══════════════════════════════════════════════
 
 function tokenize(text: string): string[] {
+  if (!text || typeof text !== "string") return [];
   return text.split(/\s+/).filter((w) => w.length > 0);
 }
 
 function splitSentences(text: string): string[] {
+  if (!text || typeof text !== "string") return [];
   return text.split(/[.!?]+/).map((s) => s.trim()).filter((s) => s.length > 0);
 }
 
 function splitParagraphs(text: string): string[] {
+  if (!text || typeof text !== "string") return [];
   return text.split(/\n\s*\n/).map((p) => p.trim()).filter((p) => p.length > 0);
 }
 

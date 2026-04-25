@@ -50,7 +50,8 @@ export function calculateCostOfInaction(
     : (WASTE_RATES[field] || 0.30);
   const monthlyBudget = BUDGET_AMOUNTS[formData.budgetRange || "medium"] || 6000;
   const improvement = IMPROVEMENT_BY_LEVEL[formData.experienceLevel || ""] || 0.25;
-  const avgPrice = formData.averagePrice || 500;
+  const rawPrice = formData.averagePrice;
+  const avgPrice = (typeof rawPrice === "number" && isFinite(rawPrice) && rawPrice > 0) ? rawPrice : 500;
 
   const monthlyWaste = Math.round(monthlyBudget * wasteRate);
   const annualWaste = monthlyWaste * 12;

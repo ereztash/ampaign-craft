@@ -31,6 +31,7 @@ export function analyzeCopy(
   targetPersona: "system1" | "system2" | "balanced" = "balanced",
   ukg?: import("./userKnowledgeGraph").UserKnowledgeGraph,
 ): CopyQAResult {
+  text = typeof text === "string" ? text : "";
   // Cross-domain: auto-set persona from DISC communication style
   const effectivePersona = targetPersona !== "balanced"
     ? targetPersona

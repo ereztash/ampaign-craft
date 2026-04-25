@@ -194,8 +194,9 @@ function calculateRiskScore(formData: FormData): { score: number; signals: Churn
   }
 
   // === Channel gaps ===
-  const hasEmail = formData.existingChannels.includes("email");
-  const hasWhatsapp = formData.existingChannels.includes("whatsapp");
+  const _channels = formData.existingChannels ?? [];
+  const hasEmail = _channels.includes("email");
+  const hasWhatsapp = _channels.includes("whatsapp");
 
   if (!hasEmail && !hasWhatsapp) {
     score += 10;
@@ -276,8 +277,9 @@ function calculateRiskScore(formData: FormData): { score: number; signals: Churn
 // ═══════════════════════════════════════════════
 
 function generateInterventions(formData: FormData, riskTier: string): ChurnIntervention[] {
-  const channel = formData.existingChannels.includes("whatsapp") ? "whatsapp"
-    : formData.existingChannels.includes("email") ? "email" : "email";
+  const _ch = formData.existingChannels ?? [];
+  const channel = _ch.includes("whatsapp") ? "whatsapp"
+    : _ch.includes("email") ? "email" : "email";
   const isSubscription = formData.salesModel === "subscription";
   const field = formData.businessField || "other";
 

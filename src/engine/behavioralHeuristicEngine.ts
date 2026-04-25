@@ -392,7 +392,7 @@ const L1_BY_ARCHETYPE: Record<ArchetypeId, L1NavigationConfig> = {
  * Every value in the returned set is traceable to its source heuristic.
  */
 export function deriveHeuristicSet(archetypeId: ArchetypeId): BehavioralHeuristicSet {
-  const activeIds = ARCHETYPE_ACTIVE_HEURISTICS[archetypeId];
+  const activeIds = ARCHETYPE_ACTIVE_HEURISTICS[archetypeId] ?? [];
   const activeHeuristics = HEURISTIC_LIBRARY.filter(h => activeIds.includes(h.id));
 
   // Determine primary axes from active heuristics
