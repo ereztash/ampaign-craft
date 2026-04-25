@@ -98,6 +98,20 @@ function buildCoachContext(graph: UserKnowledgeGraph, healthScore?: number, styl
 
   if (stylomePrompt) ctx.stylomePrompt = stylomePrompt.slice(0, 500);
 
+  // DISC behavioral profile — drives personalized communication style
+  if (graph.discProfile) {
+    const disc = graph.discProfile;
+    ctx.discPrimary = disc.primary;
+    ctx.discSecondary = disc.secondary;
+    ctx.discTone = disc.communicationTone.he;
+    ctx.discCTA = disc.ctaStyle.he;
+    ctx.discFunnelFocus = disc.funnelEmphasis;
+    ctx.discEmphasize = disc.messagingStrategy.emphasize.slice(0, 2).map((e) => e.he).join("; ");
+    ctx.discAvoid = disc.messagingStrategy.avoid.slice(0, 2).map((a) => a.he).join("; ");
+  }
+  ctx.discFraming = graph.derived.discAwareFraming;     // roi | social | stability | precision
+  ctx.discCommStyle = graph.derived.discCommunicationStyle; // system1 | system2 | balanced
+
   // Real metrics from imported CSV/Excel or Meta Ads
   const m = graph.derived.realMetrics;
   if (m.trendDirection) ctx.dataOverallTrend = m.trendDirection;
