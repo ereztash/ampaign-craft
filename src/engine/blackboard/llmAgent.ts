@@ -7,7 +7,7 @@
 import type { Blackboard, BlackboardState, BoardSection } from "./blackboardStore";
 import type { WriteEventContext } from "./blackboardStore";
 import type { AsyncAgentDefinition, LLMAgentConfig } from "./agentTypes";
-import { selectModel, type ModelTier } from "@/services/llmRouter";
+import { selectModel, trackUsage, calculateCostNIS, type ModelTier } from "@/services/llmRouter";
 import { authFetch } from "@/lib/authFetch";
 
 // ═══════════════════════════════════════════════
@@ -126,6 +126,20 @@ export function createLLMAgent(config: LLMAgentConfig): AsyncAgentDefinition {
       if (!text) {
         throw new Error(`LLM agent "${config.name}" returned empty response`);
       }
+
+      // Per-agent usage attribution. Without this, blackboard agents are
+      // invisible to llmRouter's cost telemetry — only direct service calls
+      // (aiCopyService) get tracked. Token count from edge function falls back
+      // to maxTokens so failed/missing reports still produce a cost upper bound.
+      const tokensUsed = typeof data?.tokensUsed === "number" ? data.tokensUsed : maxTokens;
+      trackUsage({
+        task: "agent-task",
+        model,
+        tokensUsed,
+        costNIS: calculateCostNIS(tokensUsed, config.modelTier),
+        timestamp: new Date().toISOString(),
+        agentName: config.name,
+      });
 
       // ── Parse output ──
       const parsed = config.outputParser(text);

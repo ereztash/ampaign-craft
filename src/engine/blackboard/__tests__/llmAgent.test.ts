@@ -3,6 +3,8 @@ import { getModelForTier, parseLLMJson, createLLMAgent } from "../llmAgent";
 
 vi.mock("@/services/llmRouter", () => ({
   selectModel: vi.fn(() => "claude-sonnet-4-6"),
+  trackUsage: vi.fn(),
+  calculateCostNIS: vi.fn(() => 0),
 }));
 vi.mock("../ontologicalVerifier", () => ({
   verifyWrite: vi.fn(() => ({ ok: true })),
