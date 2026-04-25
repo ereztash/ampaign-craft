@@ -16,7 +16,8 @@
     "typecheck:strict": "tsc --project tsconfig.strict.json --noEmit",
     "test:coverage": "vitest run --coverage && bash scripts/check-coverage-critical.sh",
     "sync:pull": "bash scripts/sync-from-corsys.sh",
-    "sync:push": "bash scripts/sync-to-corsys.sh"
+    "sync:push": "bash scripts/sync-to-corsys.sh",
+    "personas": "npx tsx scripts/persona-report.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

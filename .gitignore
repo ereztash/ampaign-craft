@@ -34,3 +34,4 @@ load-tests/results/
 
 # Supabase CLI temp files
 supabase/.temp/
+reports/
