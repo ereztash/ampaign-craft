@@ -64,8 +64,8 @@ export function useLeadCoach(
       setLead(freshLead);
       setInteractions(freshInteractions);
 
-      // Cache hit within TTL → use it.
-      if (cached && Date.now() - new Date(cached.computedAt).getTime() < CACHE_TTL_MS) {
+      // Cache hit within TTL → use it (skip on explicit refresh so new interactions are reflected).
+      if (tick === 0 && cached && Date.now() - new Date(cached.computedAt).getTime() < CACHE_TTL_MS) {
         if (Array.isArray(cached.recommendations)) {
           setRecommendations(cached.recommendations as LeadRecommendation[]);
           setLoading(false);

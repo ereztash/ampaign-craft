@@ -13,9 +13,9 @@ const CATEGORY_META: Record<RecommendationCategory, {
   Icon: React.ComponentType<{ className?: string }>;
   color: string;
 }> = {
-  approach: { he: "Approach — איך לדבר", en: "Approach — how to talk", Icon: Compass, color: "text-blue-600" },
-  timing:   { he: "Timing — מה הצעד הבא",  en: "Timing — what's next",  Icon: Clock,   color: "text-amber-600" },
-  leverage: { he: "Leverage — מה להציע",   en: "Leverage — what to offer", Icon: Target, color: "text-emerald-600" },
+  approach: { he: "Approach – איך לדבר", en: "Approach – how to talk", Icon: Compass, color: "text-blue-600" },
+  timing:   { he: "Timing – מה הצעד הבא",  en: "Timing – what's next",  Icon: Clock,   color: "text-amber-600" },
+  leverage: { he: "Leverage – מה להציע",   en: "Leverage – what to offer", Icon: Target, color: "text-emerald-600" },
 };
 
 const FRAMEWORK_LABEL: Record<Framework, string> = {
@@ -37,7 +37,7 @@ export function LeadCoachPanel({ recommendations, loading }: Props) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Sparkles className="h-4 w-4 text-primary" />
-          {tx({ he: "Lead Coach — 3 המלצות מבוססות מחקר", en: "Lead Coach — 3 research-based recommendations" }, language)}
+          {tx({ he: "Lead Coach – 3 המלצות מבוססות מחקר", en: "Lead Coach – 3 research-based recommendations" }, language)}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
