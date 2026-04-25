@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
+import type { AgentInsight } from "@/engine/blackboard/partialRunner";
 import { Analytics } from "@/lib/analytics";
 import { onPlanGenerated, trackFirstPlanGenerated } from "@/services/eventQueue";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +42,12 @@ const Wizard = () => {
   const [state, setState] = useState<WizardState>("onboarding");
   const [formDataCache, setFormDataCache] = useState<FormData | null>(null);
   const [result, setResult] = useState<FunnelResult | null>(null);
+  const [onboardingInsights, setOnboardingInsights] = useState<AgentInsight[]>([]);
   const navigate = useNavigate();
+
+  const handleInsightsUpdate = useCallback((insights: AgentInsight[]) => {
+    setOnboardingInsights(insights);
+  }, []);
 
   // Prompt-optimizer feedback: surface when the user requests it via the
   // processing screen. Holding a reference here makes Wizard a real consumer
@@ -166,12 +172,13 @@ const Wizard = () => {
           <SmartOnboarding
             onComplete={handleProfileComplete}
             initialProfile={profile.unifiedProfile}
+            onInsightsUpdate={handleInsightsUpdate}
           />
         </>
       )}
 
       {state === "processing" && (
-        <ProcessingScreen onComplete={handleProcessingComplete} formData={formDataCache || undefined} />
+        <ProcessingScreen onComplete={handleProcessingComplete} formData={formDataCache || undefined} insights={onboardingInsights} />
       )}
     </main>
   );

@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { FormData } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import type { AgentInsight } from "@/engine/blackboard/partialRunner";
 
 interface ProcessingScreenProps {
   onComplete: () => void;
   formData?: FormData;
+  insights?: AgentInsight[];
 }
 
-const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
+const ProcessingScreen = ({ onComplete, formData, insights }: ProcessingScreenProps) => {
   const { t, language } = useLanguage();
   const reducedMotion = useReducedMotion();
   const [progress, setProgress] = useState(0);
@@ -19,6 +21,13 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
   const [celebrating, setCelebrating] = useState(false);
   const [showContinue, setShowContinue] = useState(false);
   const isHe = language === "he";
+
+  // Reveal insights one at a time as progress advances through 25% milestones
+  const revealedInsights = useMemo(() => {
+    if (!insights?.length) return [];
+    const count = Math.min(Math.floor(progress / 25), insights.length);
+    return insights.slice(0, count);
+  }, [insights, progress]);
 
   // Contextual messages based on formData (Health-Tech pattern)
   const messages = formData
@@ -159,6 +168,24 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
             <div className="h-full funnel-gradient" style={{ width: `${progress}%` }} aria-hidden="true" />
           </div>
           <p className="text-muted-foreground" aria-live="polite" aria-atomic="true">{messages[msgIndex]}</p>
+          {revealedInsights.length > 0 && (
+            <div className="mt-6 w-64 space-y-2" aria-live="polite">
+              {revealedInsights.map((insight) => (
+                <div
+                  key={insight.agentKey}
+                  className="rounded-xl border border-primary/20 bg-background/80 px-3 py-2 text-start"
+                  dir="auto"
+                >
+                  <p className="text-xs text-muted-foreground mb-0.5">
+                    {isHe ? insight.labelHe : insight.labelEn}
+                  </p>
+                  <p className="text-sm font-medium text-foreground">
+                    {isHe ? insight.insightHe : insight.insightEn}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -236,6 +263,31 @@ const ProcessingScreen = ({ onComplete, formData }: ProcessingScreenProps) => {
         >
           {messages[msgIndex]}
         </motion.p>
+
+        {revealedInsights.length > 0 && (
+          <div className="mt-6 w-72 space-y-2" aria-live="polite">
+            <AnimatePresence mode="popLayout">
+              {revealedInsights.map((insight) => (
+                <motion.div
+                  key={insight.agentKey}
+                  layout
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 26 }}
+                  className="rounded-xl border border-primary/20 bg-background/80 backdrop-blur-sm px-3 py-2 text-start"
+                  dir="auto"
+                >
+                  <p className="text-xs text-muted-foreground mb-0.5">
+                    {isHe ? insight.labelHe : insight.labelEn}
+                  </p>
+                  <p className="text-sm font-medium text-foreground">
+                    {isHe ? insight.insightHe : insight.insightEn}
+                  </p>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </motion.div>
     </div>
   );

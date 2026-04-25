@@ -182,12 +182,17 @@ export const Analytics = {
   // `onboarding_completed` event (inherited name). Both helpers remain so
   // existing call sites keep working; prefer `onboardingCompleted` for new
   // call sites so the intent is readable.
-  onboardingStarted: (userId?: string) =>
-    track("aarrr.activation.onboarding_completed", {}, { userId }),
+  onboardingStarted: (userId?: string) => {
+    safeSessionStorage.setJSON("funnelforge_ttfv_start", Date.now());
+    return track("aarrr.activation.onboarding_completed", {}, { userId });
+  },
   onboardingCompleted: (userId: string, source?: "express" | "full") =>
     track("aarrr.activation.onboarding_completed", { source }, { userId }),
-  firstPlanGenerated: (planId: string, userId: string, industry?: string) =>
-    track("aarrr.activation.first_plan_generated", { planId, industry }, { userId }),
+  firstPlanGenerated: (planId: string, userId: string, industry?: string) => {
+    const startTs = safeSessionStorage.getJSON<number | null>("funnelforge_ttfv_start", null);
+    const ttfv_ms = startTs != null ? Date.now() - startTs : undefined;
+    return track("aarrr.activation.first_plan_generated", { planId, industry, ttfv_ms }, { userId });
+  },
   firstTemplateCopied: (userId: string, channel?: string) =>
     track("aarrr.activation.first_template_copied", { channel }, { userId }),
   archetypeRevealed: (userId: string, archetype: string) =>
