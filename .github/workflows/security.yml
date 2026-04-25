@@ -49,12 +49,22 @@ jobs:
         if: steps.deps_changed.outputs.changed == 'true'
         uses: actions/dependency-review-action@v4
         with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           fail-on-severity: high
           # Scope to runtime (production) dependencies only; devDependencies
           # (@playwright/test, vitest, etc.) never ship to users and are already
           # covered by the npm-audit job which uses --omit=dev with its own
           # allowlist. This aligns dep-review with the same threat model.
           fail-on-scopes: runtime
+          # Retry up to 60 s if GitHub's dependency-graph snapshot for the
+          # head commit hasn't been submitted yet (common on first pushes).
+          retry-on-snapshot-warnings: true
+          retry-on-snapshot-warnings-timeout: 60
+          # npm-audit (below) is the authoritative blocking gate for high/critical
+          # production vulnerabilities. dep-review is advisory-only here so that
+          # transient snapshot gaps or GitHub-DB-only advisories don't block PRs
+          # when npm-audit already confirms the production tree is clean.
+          warn-only: true
           # xlsx has pinned HIGH CVEs with no upstream fix; tracked separately.
           # @xmldom/xmldom@0.8.13 (via mammoth): advisories disclose range
           # <0.8.13 — our installed version is the patched one, but npm's
