@@ -8,7 +8,7 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
 
 | | FunnelForge | Jasper / Copy.ai | HubSpot Breeze | GoHighLevel | Attio |
 |---|---|---|---|---|---|
-| **Hebrew-native** | ✅ 300+ keys, RTL, gendered copy | ❌ | ❌ (translated) | ❌ | ❌ |
+| **Hebrew-native** | ✅ 340+ keys, RTL, gendered copy | ❌ | ❌ (translated) | ❌ | ❌ |
 | **Behavioral-science wizards** | ✅ PSM + Hormozi + Decoy + CoI + DISC | ❌ copy only | ⚠️ limited | ❌ | ❌ |
 | **5 connected modules in one journey** | ✅ diff → marketing → sales → pricing → retention | ❌ | ⚠️ multi-hub needed | ⚠️ funnel-first | ❌ CRM-first |
 | **Closed feedback loops** | ✅ 6 self-correcting loops | ❌ | ⚠️ analytics only | ❌ | ❌ |
@@ -18,7 +18,7 @@ Hebrew-first business growth platform. Five connected modules turn raw business 
 **Three uncommon bets:**
 1. **Behavioral-science stack** — Van Westendorp PSM, Hormozi Value Equation, Ariely Decoy, Kahneman CoI, DISC closing — as *wizards*, not research tools.
 2. **Six closed feedback loops** — every recommendation is measured, validated, and feeds back to self-correct the next one.
-3. **Hebrew-first, Arabic-ready RTL** — the only AI-native growth platform that ships production-quality Hebrew out of the box (300+ bilingual keys, gendered copy, RTL-first architecture).
+3. **Hebrew-first, Arabic-ready RTL** — the only AI-native growth platform that ships production-quality Hebrew out of the box (340+ bilingual keys, gendered copy, RTL-first architecture).
 
 ---
 
@@ -123,7 +123,7 @@ A strictly additive, opt-in layer that attaches research citations to every hidd
 | Module | File | Purpose |
 |---|---|---|
 | Loader | `principleLibrary.ts` | One-time startup load + shape validation of `principles.json` / `sources.json`. Throws on malformed library so version mismatches fail loudly. |
-| Map (values) | `hiddenValuePrincipleMap.ts` | Static `HiddenValueType -> PrincipleId[]` map. 14 HiddenValueTypes, 10 mapped in v1 (B2C empties await v1.1 corpus). |
+| Map (values) | `hiddenValuePrincipleMap.ts` | Static `HiddenValueType -> PrincipleId[]` map. 14 HiddenValueTypes, 11 mapped in v1; `aesthetic`, `belonging`, `guilt_free` await v1.1 B2C corpus. |
 | Map (archetypes) | `archetypePrincipleMap.ts` | Static `CompetitorArchetypeId -> PrincipleId[]` map. All 10 archetypes mapped in v1. |
 | Enricher | `principleTraceEnricher.ts` | Pure `DifferentiationResult -> PrincipleTrace[]`. Never mutates, never fabricates, drops zero-citation principles. |
 | UI | `src/components/moat/PrincipleTraceModal.tsx` | Single UI surface — flag-gated trigger + dialog showing principle cards with research_backbone + source docs. |
@@ -207,8 +207,16 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 | `/retention` | Retention module |
 | `/plans` | Saved plans |
 | `/plans/:id/:tab` | Deep link to specific plan tab |
+| `/strategy/:planId/:focus` | StrategyCanvas (marketing planner) |
+| `/data/:sourceId?` | Data hub (imports, integrations) |
+| `/ai` | AI Coach |
 | `/profile` | User profile + personalisation settings |
 | `/archetype` | Archetype reveal + opt-in screen |
+| `/admin/aarrr` | Admin: AARRR metrics dashboard |
+| `/admin/agents` | Admin: agent monitor (MAS-CC) |
+| `/quote/:token` | Public shareable quote view |
+| `/reset-password` | Password reset flow |
+| `/privacy` · `/terms` · `/support` · `/contact` · `/refund-policy` · `/use-cases` | Public legal + marketing pages |
 
 ---
 
@@ -226,7 +234,7 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 | Auth | Dual-mode: Supabase JWT or local PBKDF2 fallback |
 | Payments | Stripe |
 | Ads | Meta Graph API |
-| Testing | Vitest + React Testing Library · 305 test files · 4 506 tests |
+| Testing | Vitest + React Testing Library · 309 test files · 4 541 tests |
 | CI | GitHub Actions (typecheck · lint · test · build) |
 
 ---
@@ -246,7 +254,7 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
 ```
   ┌─────────────────────────────────────────────────────────────┐
   │  UI Layer — React + shadcn/ui + RTL + Archetype-adaptive    │
-  │  104 components · 24 pages · 20 hooks · L1-L5 resolution    │
+  │  254 components · 56 pages · 42 hooks · L1-L5 resolution    │
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
@@ -275,7 +283,7 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
   │  Persistence — Supabase Postgres + pgvector · Event Queue    │
-  │  RLS · 18 migrations · 19 Edge Functions · 1536-dim vectors  │
+  │  RLS · 39 migrations · 23 Edge Functions · 1536-dim vectors  │
   └─────────────────────────────────────────────────────────────┘
 ```
 
