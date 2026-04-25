@@ -23,7 +23,8 @@ export type RecommendationSource =
   | "nudge_banner"       // NudgeBanner BAE-driven nudge
   | "guidance_panel"     // KPI guidance items
   | "archetype_pipeline" // ArchetypePipelineGuide steps
-  | "express_wizard";    // ExpressWizard onboarding
+  | "express_wizard"     // ExpressWizard onboarding
+  | "ssl_similar";       // Loop 7: contrastive-learned similar-plan suggestion
 
 export type VariantPickChoice =
   | "primary"    // "Use this" — strong positive signal
