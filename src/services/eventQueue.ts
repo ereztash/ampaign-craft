@@ -31,6 +31,7 @@ export type EventType =
   | "aarrr.activation.archetype_revealed"
   | "aarrr.activation.aha_moment"
   | "aarrr.activation.onboarding_abandoned"
+  | "aarrr.activation.first_lead_logged"
   // ── AARRR: Retention ────────────────────────────
   | "aarrr.retention.weekly_active"
   | "aarrr.retention.monthly_active"

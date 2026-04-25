@@ -44,6 +44,7 @@ export type AARRREventName =
   | "aarrr.activation.archetype_revealed"
   | "aarrr.activation.aha_moment"
   | "aarrr.activation.onboarding_abandoned"
+  | "aarrr.activation.first_lead_logged"
   // Retention
   | "aarrr.retention.weekly_active"
   | "aarrr.retention.monthly_active"
@@ -201,6 +202,8 @@ export const Analytics = {
     track("aarrr.activation.aha_moment", { trigger }, { userId }),
   onboardingAbandoned: (step: number, userId?: string) =>
     track("aarrr.activation.onboarding_abandoned", { step }, { userId }),
+  firstLeadLogged: (userId: string, leadId: string, source?: string) =>
+    track("aarrr.activation.first_lead_logged", { leadId, source }, { userId }),
 
   // Retention
   weeklyActive: (userId: string) =>
