@@ -169,15 +169,19 @@ export interface UsageRecord {
   tokensUsed: number;
   costNIS: number;
   timestamp: string;
+  /** Blackboard agent that issued the call (e.g. "qaContentAgent"). Absent for direct service calls. */
+  agentName?: string;
+  /** Feedback loop that issued the call (e.g. "promptOptimizerLoop"). Absent for non-loop calls. */
+  loopName?: string;
 }
 
 const STORAGE_KEY = "funnelforge-llm-usage";
+const HISTORY_LIMIT = 500;
 
 export function trackUsage(record: UsageRecord): void {
   const existing = getUsageHistory();
   existing.push(record);
-  // Keep last 100 records
-  const trimmed = existing.slice(-100);
+  const trimmed = existing.slice(-HISTORY_LIMIT);
   safeStorage.setJSON(STORAGE_KEY, trimmed);
 }
 
@@ -187,6 +191,57 @@ export function getUsageHistory(): UsageRecord[] {
 
 export function getTotalCostNIS(): number {
   return getUsageHistory().reduce((sum, r) => sum + r.costNIS, 0);
+}
+
+// ═══════════════════════════════════════════════
+// PER-AGENT / PER-LOOP AGGREGATION
+// ═══════════════════════════════════════════════
+
+export interface UsageBreakdown {
+  /** Stable identifier (agent name, loop name, or "_unattributed"). */
+  key: string;
+  callCount: number;
+  totalTokens: number;
+  totalCostNIS: number;
+  avgTokensPerCall: number;
+  avgCostNIS: number;
+}
+
+function aggregate(records: UsageRecord[], keyFn: (r: UsageRecord) => string): UsageBreakdown[] {
+  const buckets = new Map<string, { tokens: number; cost: number; count: number }>();
+  for (const r of records) {
+    const key = keyFn(r);
+    const bucket = buckets.get(key) ?? { tokens: 0, cost: 0, count: 0 };
+    bucket.tokens += r.tokensUsed;
+    bucket.cost += r.costNIS;
+    bucket.count += 1;
+    buckets.set(key, bucket);
+  }
+  return Array.from(buckets.entries())
+    .map(([key, b]) => ({
+      key,
+      callCount: b.count,
+      totalTokens: b.tokens,
+      totalCostNIS: Math.round(b.cost * 10000) / 10000,
+      avgTokensPerCall: Math.round(b.tokens / b.count),
+      avgCostNIS: Math.round((b.cost / b.count) * 10000) / 10000,
+    }))
+    .sort((a, b) => b.totalCostNIS - a.totalCostNIS);
+}
+
+/** Cost & call breakdown grouped by agentName. Calls without agentName are bucketed under "_unattributed". */
+export function getUsageByAgent(): UsageBreakdown[] {
+  return aggregate(getUsageHistory(), (r) => r.agentName ?? "_unattributed");
+}
+
+/** Cost & call breakdown grouped by loopName. Calls without loopName are bucketed under "_unattributed". */
+export function getUsageByLoop(): UsageBreakdown[] {
+  return aggregate(getUsageHistory(), (r) => r.loopName ?? "_unattributed");
+}
+
+/** Cost & call breakdown grouped by task. Useful for sanity-checking the routing. */
+export function getUsageByTask(): UsageBreakdown[] {
+  return aggregate(getUsageHistory(), (r) => r.task);
 }
 
 // ═══════════════════════════════════════════════
