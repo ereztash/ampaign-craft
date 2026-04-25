@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { authFetch } from "@/lib/authFetch";
 import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
-import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
+import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice, loadImportedDataSignals } from "@/engine/userKnowledgeGraph";
 import { safeStorage } from "@/lib/safeStorage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -98,6 +98,14 @@ function buildCoachContext(graph: UserKnowledgeGraph, healthScore?: number, styl
 
   if (stylomePrompt) ctx.stylomePrompt = stylomePrompt.slice(0, 500);
 
+  // Real metrics from imported CSV/Excel or Meta Ads
+  const m = graph.derived.realMetrics;
+  if (m.trendDirection) ctx.dataOverallTrend = m.trendDirection;
+  if (m.avgCTR != null) ctx.avgCTR = m.avgCTR;
+  if (m.avgCPL != null) ctx.avgCPL = m.avgCPL;
+  if (m.avgCVR != null) ctx.avgCVR = m.avgCVR;
+  ctx.dataConfidence = graph.derived.dataConfidence;
+
   return ctx;
 }
 
@@ -122,7 +130,10 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     [],
   );
   const formData = result?.formData ?? EMPTY_FORM_DATA;
-  const graph = useMemo(() => buildUserKnowledgeGraph(formData, diffResult, stylomeVoice), [formData, diffResult, stylomeVoice]);
+  const graph = useMemo(() => {
+    const imported = loadImportedDataSignals();
+    return buildUserKnowledgeGraph(formData, diffResult, stylomeVoice, undefined, undefined, { importedData: imported });
+  }, [formData, diffResult, stylomeVoice]);
   const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe, language), [graph, isHe, language]);
 
   useEffect(() => {
