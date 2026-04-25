@@ -50,6 +50,11 @@ jobs:
         uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
+          # Scope to runtime (production) dependencies only; devDependencies
+          # (@playwright/test, vitest, etc.) never ship to users and are already
+          # covered by the npm-audit job which uses --omit=dev with its own
+          # allowlist. This aligns dep-review with the same threat model.
+          fail-on-scopes: runtime
           # xlsx has pinned HIGH CVEs with no upstream fix; tracked separately.
           # @xmldom/xmldom@0.8.13 (via mammoth): advisories disclose range
           # <0.8.13 — our installed version is the patched one, but npm's
