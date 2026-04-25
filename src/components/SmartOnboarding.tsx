@@ -2,6 +2,9 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { trackOnboardingAbandoned, trackArchetypeRevealed } from "@/services/eventQueue";
 import { Analytics } from "@/lib/analytics";
 import { safeStorage } from "@/lib/safeStorage";
+import { usePartialAgents } from "@/hooks/usePartialAgents";
+import InsightCloud from "@/components/InsightCloud";
+import type { AgentInsight } from "@/engine/blackboard/partialRunner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Button } from "@/components/ui/button";
@@ -28,6 +31,7 @@ interface SmartOnboardingProps {
   onComplete: (profile: UnifiedProfile) => void;
   initialProfile?: UnifiedProfile | null;
   userId?: string;
+  onInsightsUpdate?: (insights: AgentInsight[]) => void;
 }
 
 type Step = 0 | 1 | 2 | 3 | 4;
@@ -77,7 +81,7 @@ const VALUE_OPTIONS: { id: ValuePriority; label: { he: string; en: string }; emo
   { id: "innovation", label: { he: "חדשנות ובידול", en: "Innovation" }, emoji: "🚀" },
 ];
 
-const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboardingProps) => {
+const SmartOnboarding = ({ onComplete, initialProfile, userId, onInsightsUpdate }: SmartOnboardingProps) => {
   const { language, isRTL } = useLanguage();
   const isHe = language === "he";
   const reducedMotion = useReducedMotion();
@@ -120,6 +124,8 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
   }, []);
 
   const fingerprint = useMemo(() => computeFingerprint(profile), [profile]);
+  const insights = usePartialAgents(profile);
+  useEffect(() => { onInsightsUpdate?.(insights); }, [insights, onInsightsUpdate]);
 
   const personalizationPercent = useMemo(() => {
     const weights = [
@@ -171,6 +177,7 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
     : { initial: { opacity: 0, x: isRTL ? -20 : 20 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: isRTL ? 20 : -20 }, transition: { duration: 0.2 } };
 
   return (
+    <>
     <div className="min-h-screen px-4 pt-4 pb-12">
       <div className="mx-auto max-w-2xl">
         <div className="mb-6">
@@ -524,6 +531,9 @@ const SmartOnboarding = ({ onComplete, initialProfile, userId }: SmartOnboarding
         </div>
       </div>
     </div>
+
+    <InsightCloud insights={insights} />
+    </>
   );
 };
 

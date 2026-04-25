@@ -29,6 +29,18 @@ vi.mock("@/lib/safeStorage", () => ({
     setString: vi.fn(),
     remove: vi.fn(),
   },
+  safeSessionStorage: {
+    getJSON: vi.fn(() => null),
+    setJSON: vi.fn(),
+  },
+}));
+
+vi.mock("@/hooks/usePartialAgents", () => ({
+  usePartialAgents: vi.fn(() => []),
+}));
+
+vi.mock("@/components/InsightCloud", () => ({
+  default: () => null,
 }));
 
 vi.mock("@/services/eventQueue", () => ({
