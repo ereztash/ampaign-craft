@@ -151,6 +151,10 @@ export function clearUserSessionData(): void {
   // Third-party auth state (Meta OAuth) is user-scoped — clear it too.
   safeStorage.remove("meta_auth");
   safeStorage.remove("meta_oauth_state");
+  // Supabase auth tokens (sb-{project-ref}-auth-token). supabase.auth.signOut()
+  // normally clears these, but is a no-op when Supabase isn't configured. We
+  // sweep them directly so a stale token can never re-hydrate the next session.
+  safeStorage.removeWithPrefix("sb-");
 }
 
 /**
