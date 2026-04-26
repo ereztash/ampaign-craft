@@ -36,6 +36,10 @@ const VARIANTS_PER_EXPERIMENT: Record<string, VariantId[]> = {
   palette_accent_strategist: ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
   palette_accent_optimizer:  ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
   palette_accent_connector:  ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
+
+  // Kill-switch: set VITE_AB_PALETTE_ACCENT_KILL_SWITCH=disabled in env to immediately
+  // halt all palette accent injection for all users without a deploy.
+  palette_accent_kill_switch: ["enabled", "disabled"],
 };
 
 // djb2 hash — same function as referralEngine, kept local to avoid circular imports

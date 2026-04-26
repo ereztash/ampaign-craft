@@ -10,6 +10,14 @@ vi.mock("@/contexts/ArchetypeContext", () => ({
   useArchetype: vi.fn(),
 }));
 
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: vi.fn(() => ({ user: null, loading: false })),
+}));
+
+vi.mock("@/lib/paletteVariantGenerator", () => ({
+  getVariantAccentHsl: vi.fn(() => null),
+}));
+
 vi.mock("@/engine/behavioralHeuristicEngine", () => ({
   getL5CSSVars: vi.fn(() => ({
     "--motion-duration-multiplier": "1.2",

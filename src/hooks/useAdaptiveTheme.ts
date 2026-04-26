@@ -116,8 +116,16 @@ export function useAdaptiveTheme() {
       return;
     }
 
-    const experimentId = `palette_accent_${effectiveArchetypeId}`;
     const userId = user?.id ?? undefined;
+
+    // Kill-switch: VITE_AB_PALETTE_ACCENT_KILL_SWITCH=disabled halts injection for all users.
+    if (getVariant("palette_accent_kill_switch", userId) === "disabled") {
+      el.style.removeProperty("--accent");
+      el.removeAttribute("data-palette-variant");
+      return;
+    }
+
+    const experimentId = `palette_accent_${effectiveArchetypeId}`;
     const variantId = getVariant(experimentId, userId);
 
     if (variantId === "control") {

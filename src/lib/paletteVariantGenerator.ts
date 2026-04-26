@@ -57,10 +57,14 @@ function generateVariantForArchetype(
   const hslL = oklchLToHslL(candidate.oklchL);
   const fgHsl: [number, number, number] = [archetypeHslH, archetypeHslS, hslL];
 
+  // CB reference = background, not the global default accent.
+  // Question answered: "can colorblind users see this accent on the canvas?"
+  // ΔL fg vs bg is always ≥50pp (all variants are L=32-48, bg=98) → trivially safe,
+  // but the simulation path catches hue+saturation collapses that flatten ΔL.
   const validation = validatePaletteVariant(
     fgHsl,
     BG_LIGHT_HSL,
-    DEFAULT_ACCENT_LIGHT,
+    BG_LIGHT_HSL,
     { fontWeight: 400, isLargeText: false }
   );
 
