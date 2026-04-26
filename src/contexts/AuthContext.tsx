@@ -620,12 +620,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // ═══ Sign Out ═══
   const signOut = useCallback(async () => {
-    if (!isLocalAuth) {
-      try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        await supabase.auth.signOut();
-      } catch { /* ignore */ }
-    }
+    // Always attempt Supabase signOut, even when isLocalAuth=true. The user
+    // may have a stale Supabase session token in localStorage from a previous
+    // session — without clearing it, the next init() sees that token, calls
+    // getSession() successfully, and signs the user back in. This was the
+    // "can't sign out as admin" bug: local signOut cleared local state, but
+    // the leftover Supabase token re-hydrated the user on reload.
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      await supabase.auth.signOut();
+    } catch { /* ignore — supabase may not be configured */ }
     setLocalSession(null);
     // Purge all per-user localStorage data so a subsequent sign-in as a
     // different user (including the local admin) never sees this session's
@@ -633,7 +637,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearUserSessionData();
     setUser(null);
     setTierState("free");
-  }, [isLocalAuth]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, tier, setTier, refreshTier, canUse, canPerform, signUp, signIn, signOut, resetPassword, signInWithProvider, isLocalAuth }}>
