@@ -155,11 +155,24 @@ async function runPersona(
 
 // ─── HTML report ─────────────────────────────────────────────────────────────
 
+function isAuditAssertion(label: string): boolean {
+  return label.startsWith("[AUDIT]");
+}
+
 function buildHtml(results: PersonaResult[], runAt: Date): string {
   const totalPass = results.reduce((s, r) => s + r.totalPass, 0);
   const totalFail = results.reduce((s, r) => s + r.totalFail, 0);
   const totalTests = totalPass + totalFail;
-  const overallOk = totalFail === 0;
+
+  // Split failures: regression (real bugs) vs audit (intentional UX gap finders)
+  const allFails = results.flatMap((r) =>
+    r.surfaces.flatMap((s) =>
+      s.assertions.filter((a) => !a.pass).map((a) => ({ persona: r.persona.name, route: s.route, ...a })),
+    ),
+  );
+  const auditFails = allFails.filter((f) => isAuditAssertion(f.label));
+  const regressionFails = allFails.filter((f) => !isAuditAssertion(f.label));
+  const overallOk = regressionFails.length === 0;
 
   const surfaceLabel = (route: string) => route === "/" ? "CommandCenter" : route.replace("/", "");
 
@@ -215,6 +228,7 @@ function buildHtml(results: PersonaResult[], runAt: Date): string {
               <span class="tag pain">pain: ${escHtml(persona.pain)}</span>
               <span class="tag target">→ ${escHtml(persona.routingTarget)}</span>
               <span class="tag promise">~${persona.promiseMinutes} min</span>
+              ${persona.bias ? `<span class="tag bias">⚠ bias: ${escHtml(persona.bias)}</span>` : ""}
             </div>
           </div>
           <div class="persona-score">
@@ -249,6 +263,19 @@ function buildHtml(results: PersonaResult[], runAt: Date): string {
     /* ── Summary bar ── */
     .summary-bar { background: #161824; padding: 12px 32px; border-bottom: 1px solid #2d3348; display: flex; gap: 24px; font-size: 0.85rem; color: #94a3b8; }
     .summary-bar strong { color: #e2e8f0; }
+    .summary-bar .audit-pill { color: #fda4af; }
+    .summary-bar .audit-pill strong { color: #fda4af; }
+
+    /* ── Audit block ── */
+    .audit-block { margin: 24px 32px; padding: 18px 22px; background: #1c0f12; border: 1px dashed #fda4af; border-radius: 12px; }
+    .audit-block h3 { font-size: 1rem; color: #fda4af; margin-bottom: 6px; }
+    .audit-intro { font-size: 0.82rem; color: #94a3b8; margin-bottom: 12px; line-height: 1.55; }
+    .audit-list { list-style: none; padding: 0; }
+    .audit-list li { padding: 8px 0; border-bottom: 1px solid #2d1820; font-size: 0.85rem; color: #e2e8f0; line-height: 1.5; }
+    .audit-list li:last-child { border-bottom: none; }
+    .audit-list li code { background: #0f172a; padding: 1px 6px; border-radius: 3px; color: #7dd3fc; font-size: 0.78rem; }
+    .audit-list li em { color: #94a3b8; font-style: normal; }
+    .audit-persona { color: #fda4af; font-weight: 600; }
 
     /* ── Persona cards ── */
     .persona-card { margin: 24px 32px; border: 1px solid #2d3348; border-radius: 12px; overflow: hidden; }
@@ -263,6 +290,9 @@ function buildHtml(results: PersonaResult[], runAt: Date): string {
     .tag.pain { background: #2e1065; color: #c4b5fd; }
     .tag.target { background: #1c3527; color: #6ee7b7; }
     .tag.promise { background: #3b2f00; color: #fbbf24; }
+    .tag.bias { background: #4a0808; color: #fda4af; border: 1px dashed #fda4af; }
+    .assertions-table tr.fail td:nth-child(2):first-letter { /* no-op styling hook */ }
+    .assertions-table tr td:nth-child(2) { font-weight: 500; }
     .persona-score { text-align: center; min-width: 70px; }
     .score-ring { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; margin: 0 auto 4px; }
     .score-ring.pass { background: #064e3b; color: #34d399; border: 2px solid #34d399; }
@@ -307,16 +337,25 @@ function buildHtml(results: PersonaResult[], runAt: Date): string {
       </div>
     </div>
     <div class="overall-badge ${overallOk ? "pass" : "fail"}">
-      ${overallOk ? "✅ All Pass" : `❌ ${totalFail} Failed`}
+      ${overallOk ? "✅ No regressions" : `❌ ${regressionFails.length} regressions`}
     </div>
   </header>
 
   <div class="summary-bar">
     <span><strong>${totalPass}</strong> passed</span>
-    <span><strong>${totalFail}</strong> failed</span>
-    <span><strong>${results.map((r) => (r.durationMs / 1000).toFixed(1) + "s").join(" · ")}</strong> per persona</span>
+    <span><strong>${regressionFails.length}</strong> regressions</span>
+    <span class="audit-pill"><strong>${auditFails.length}</strong> UX audit findings</span>
     <span>Base URL: <strong>${escHtml(BASE_URL)}</strong></span>
   </div>
+
+  ${auditFails.length > 0 ? `
+  <div class="audit-block">
+    <h3>⚠ UX Audit Findings — bias-driven personas</h3>
+    <p class="audit-intro">These are not bugs. They are gaps surfaced by simulating users with cognitive biases (Dunning-Kruger / Sunk-cost / Confirmation). Each row is something the app could do to protect users from a known psychological trap.</p>
+    <ul class="audit-list">
+      ${auditFails.map((f) => `<li><span class="audit-persona">${escHtml(f.persona)}</span> · <code>${escHtml(f.route)}</code> · ${escHtml(f.label.replace("[AUDIT] ", ""))} <em>(${escHtml(f.detail)})</em></li>`).join("")}
+    </ul>
+  </div>` : ""}
 
   ${personaCards}
 
@@ -373,24 +412,36 @@ async function main() {
 
   console.log(`\n📄  Report saved → ${outPath}`);
 
-  // Print summary
+  // Print summary — split regression failures from audit findings
   const totalPass = results.reduce((s, r) => s + r.totalPass, 0);
-  const totalFail = results.reduce((s, r) => s + r.totalFail, 0);
-  console.log(`   ${totalPass} passed, ${totalFail} failed\n`);
+  const allFails = results.flatMap((r) =>
+    r.surfaces.flatMap((s) =>
+      s.assertions.filter((a) => !a.pass).map((a) => ({ persona: r.persona.name, route: s.route, ...a })),
+    ),
+  );
+  const auditFails = allFails.filter((f) => f.label.startsWith("[AUDIT]"));
+  const regressionFails = allFails.filter((f) => !f.label.startsWith("[AUDIT]"));
 
-  if (totalFail > 0) {
-    console.log("Failed assertions:");
-    for (const r of results) {
-      for (const s of r.surfaces) {
-        for (const a of s.assertions.filter((a) => !a.pass)) {
-          console.log(`   ❌  [${r.persona.name}] ${s.route} — ${a.label}: ${a.detail}`);
-        }
-      }
+  console.log(`   ${totalPass} passed, ${regressionFails.length} regressions, ${auditFails.length} UX audit findings\n`);
+
+  if (regressionFails.length > 0) {
+    console.log("🔴 Regression failures (real bugs):");
+    for (const f of regressionFails) {
+      console.log(`   ❌  [${f.persona}] ${f.route} — ${f.label}: ${f.detail}`);
     }
     console.log();
   }
 
-  process.exit(totalFail > 0 ? 1 : 0);
+  if (auditFails.length > 0) {
+    console.log("⚠ UX audit findings (intentional — bias-driven personas):");
+    for (const f of auditFails) {
+      console.log(`   ·  [${f.persona}] ${f.route} — ${f.label.replace("[AUDIT] ", "")}`);
+    }
+    console.log();
+  }
+
+  // Exit non-zero only on real regressions, not on intentional audit gaps.
+  process.exit(regressionFails.length > 0 ? 1 : 0);
 }
 
 main().catch((err) => {

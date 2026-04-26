@@ -32,6 +32,8 @@ export interface Persona {
   color: string; // hex, for report styling
   need: "time" | "money" | "attention";
   pain: "marketing" | "sales" | "product" | "finance";
+  /** Optional bias-driven persona category — surfaces UX gaps, not just regressions */
+  bias?: "dunning_kruger" | "sunk_cost" | "confirmation";
   routingTarget: string;
   promiseMinutes: number;
   surfacesToVisit: string[];
@@ -453,4 +455,250 @@ export const michal: Persona = {
   },
 };
 
-export const ALL_PERSONAS: Persona[] = [dana, ori, michal];
+// ═══════════════════════════════════════════════════════════════════════════════
+// Bias-Driven Personas
+// ═══════════════════════════════════════════════════════════════════════════════
+// These personas don't represent business archetypes — they represent
+// COGNITIVE BIAS PATTERNS. Their assertions describe what the app SHOULD
+// do to protect the user from each bias. A failing assertion here is not
+// a regression — it's a UX audit finding.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ─── Persona 4: יוסי לוי — Dunning-Kruger ───────────────────────────────────
+// Beginner founder who completed the intake in <60 seconds with maximum
+// confidence. Picked the most ambitious goal (sales) at high price point
+// despite "beginner" experience and zero existing channels. The app
+// SHOULD insert friction (clarification, "are you sure?", scaled-down
+// suggestion) before letting them generate a plan.
+
+const YOSSI_ID = "persona-yossi-004";
+
+export const yossi: Persona = {
+  id: YOSSI_ID,
+  name: "יוסי לוי",
+  title: "יזם חדש, ביטחון עצמי גבוה, ניסיון אפס",
+  color: "#f59e0b",
+  need: "money",
+  pain: "marketing",
+  bias: "dunning_kruger",
+  routingTarget: "/wizard",
+  promiseMinutes: 5,
+  surfacesToVisit: ["/", "/wizard", "/ai"],
+  assertions: [
+    { route: "/", label: "CommandCenter נטען", expectAbsent: "Something went wrong" },
+    {
+      route: "/wizard",
+      label: "[AUDIT] Beginner→ambitious מקבל הודעת איפוק",
+      // Ideal: page should show a hint like "מתחילים בקטן" / "let's start small"
+      // when novice + high-ticket + zero channels. Likely to FAIL today.
+      expect: "מתחילים בקטן",
+    },
+    {
+      route: "/wizard",
+      label: "[AUDIT] שאלה מבהירה לפני הפלט",
+      // Ideal: a "סבירות גבוהה שתצליח?" / clarification question before plan generation.
+      expect: "האם",
+    },
+    { route: "/ai", label: "AI Coach נטען", expectAbsent: "Something went wrong" },
+  ],
+  localStorage: {
+    ...authSeed(YOSSI_ID, "yossi@startup-dream.co.il", "יוסי לוי"),
+    "funnelforge-intake-signal": {
+      need: "money",
+      pain: "marketing",
+      // Suspiciously fast — typical Dunning-Kruger pattern
+      completedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      durationMs: 47_000, // 47 seconds for a 5-minute intake — overconfidence signal
+      routing: {
+        target: "/wizard",
+        promise: {
+          headline: { he: "תוך 5 דקות — תוכנית שיווק בסיסית", en: "In 5 min — starter marketing plan" },
+          kicker: { he: "מתחילים קטן ועקבי.", en: "Small and consistent." },
+          expectedMinutes: 5,
+        },
+      },
+    },
+    // No saved plan yet — first-visit
+    "funnelforge-plans": [],
+    "funnelforge-lang": "he",
+  },
+};
+
+// ─── Persona 5: טל ברנע — Sunk-Cost ──────────────────────────────────────────
+// Started the wizard 3 days ago, abandoned mid-way, never came back —
+// until today. The app SHOULD detect partial state and offer "resume
+// from where you left off". Currently the wizard has no draft mechanism
+// (formData is React state only, lost on reload), so the assertion is
+// expected to FAIL — that failure is the audit finding.
+
+const TAL_ID = "persona-tal-005";
+
+export const tal: Persona = {
+  id: TAL_ID,
+  name: "טל ברנע",
+  title: "בעלת בית קפה, התחילה ונטשה wizard לפני 3 ימים",
+  color: "#8b5cf6",
+  need: "time",
+  pain: "marketing",
+  bias: "sunk_cost",
+  routingTarget: "/wizard",
+  promiseMinutes: 5,
+  surfacesToVisit: ["/", "/wizard", "/ai"],
+  assertions: [
+    { route: "/", label: "CommandCenter נטען", expectAbsent: "Something went wrong" },
+    {
+      route: "/wizard",
+      label: "[AUDIT] Wizard מציע 'המשך מאיפה שעצרת'",
+      // Ideal: any of these copy variants. Likely to FAIL — no draft persistence.
+      expect: "המשך",
+    },
+    {
+      route: "/wizard",
+      label: "[AUDIT] טיוטה חלקית נשמרה",
+      expect: "טיוטה",
+    },
+    {
+      route: "/wizard",
+      label: "החזרת משתמש לא קורסת על state חלקי",
+      expectAbsent: "Something went wrong",
+    },
+    { route: "/ai", label: "AI Coach נטען", expectAbsent: "Something went wrong" },
+  ],
+  localStorage: {
+    ...authSeed(TAL_ID, "tal@cafe-rothschild.co.il", "טל ברנע"),
+    "funnelforge-intake-signal": {
+      need: "time",
+      pain: "marketing",
+      completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      routing: {
+        target: "/wizard",
+        promise: {
+          headline: { he: "תוך 5 דקות — תוכנית שיווק בסיסית", en: "In 5 min — starter marketing plan" },
+          kicker: { he: "מתחילים קטן ועקבי.", en: "Small and consistent." },
+          expectedMinutes: 5,
+        },
+      },
+    },
+    // Speculative draft key — if the app starts persisting drafts this is the
+    // shape we'd expect. Currently unread by anyone, but seeding it makes the
+    // intent explicit for future implementers.
+    "funnelforge-wizard-draft": {
+      startedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      lastTouchedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 1000).toISOString(),
+      step: 3, // got partway through
+      formData: {
+        businessField: "food",
+        audienceType: "b2c",
+        productDescription: "בית קפה שכונתי עם מאפים",
+        // Stopped before filling: averagePrice, salesModel, budgetRange, mainGoal
+      },
+    },
+    "funnelforge-plans": [],
+    "funnelforge-lang": "he",
+  },
+};
+
+// ─── Persona 6: רונית כהן — Confirmation Bias ────────────────────────────────
+// Asked the AI Coach 5 leading "אישור-seeking" questions in a row,
+// each phrased to elicit agreement. The seeded chat history contains
+// her questions paired with overly-agreeable assistant replies. The app
+// SHOULD have UX scaffolding that surfaces alternative perspectives
+// (a "challenge this" button, a contrarian view, devil's-advocate mode).
+
+const RONIT_ID = "persona-ronit-006";
+
+const ronitConfirmationChat = [
+  { role: "user", content: "האסטרטגיה שלי לפנות רק לאינסטגרם נכונה, נכון?" },
+  { role: "assistant", content: "בהחלט! אינסטגרם הוא ערוץ מצוין לעסקים כמו שלך." },
+  { role: "user", content: "ואני צודקת שאני לא צריכה לבזבז זמן על email marketing, נכון?" },
+  { role: "assistant", content: "נכון — אם הקהל שלך באינסטגרם זה הגיוני להתמקד שם." },
+  { role: "user", content: "אז גם להעלות את המחירים פי 2 זה רעיון טוב, אה?" },
+  { role: "assistant", content: "אם המוצר שלך באמת ייחודי, העלאת מחירים יכולה לעבוד." },
+  { role: "user", content: "ואני לא צריכה לבדוק מה המתחרים עושים, כי אני שונה, נכון?" },
+  { role: "assistant", content: "כן — להישאר ממוקדת ביעדים שלך זה קריטי." },
+  { role: "user", content: "אז התוכנית שלי מושלמת, נכון?" },
+  { role: "assistant", content: "יש לך הרבה דברים נכונים בתוכנית. בהצלחה!" },
+];
+
+export const ronit: Persona = {
+  id: RONIT_ID,
+  name: "רונית כהן",
+  title: "יועצת עיצוב, מחפשת אישור — לא הכוונה",
+  color: "#ec4899",
+  need: "attention",
+  pain: "marketing",
+  bias: "confirmation",
+  routingTarget: "/ai",
+  promiseMinutes: 10,
+  surfacesToVisit: ["/", "/ai"],
+  assertions: [
+    { route: "/", label: "CommandCenter נטען", expectAbsent: "Something went wrong" },
+    {
+      route: "/ai",
+      label: "AI Coach נטען",
+      expectAbsent: "Something went wrong",
+    },
+    {
+      route: "/ai",
+      label: "[AUDIT] קיים מנגנון 'אתגר את העצה'",
+      // Ideal: button labelled "אתגר אותי" / "נקודת מבט הפוכה" / "Devil's Advocate".
+      // Likely to FAIL — no such anti-confirmation UX exists today.
+      expect: "אתגר",
+    },
+    {
+      route: "/ai",
+      label: "[AUDIT] קיים תיוג ל-'leading question'",
+      // Ideal: when user asks "right? right? right?" the UI should flag the pattern.
+      expect: "שאלה מובילה",
+    },
+    {
+      route: "/ai",
+      label: "ההיסטוריה השמורה נטענת",
+      // The 5 user messages above should render
+      expect: "אינסטגרם",
+    },
+  ],
+  localStorage: {
+    ...authSeed(RONIT_ID, "ronit@design-studio.co.il", "רונית כהן"),
+    "funnelforge-intake-signal": {
+      need: "attention",
+      pain: "marketing",
+      completedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      routing: {
+        target: "/ai",
+        promise: {
+          headline: { he: "נדבר על השיווק שלך — שאלה אחת בכל פעם", en: "Let's talk about your marketing" },
+          kicker: { he: "אתגר אותך, לא רק אאשר.", en: "Challenge you, not just agree." },
+          expectedMinutes: 10,
+        },
+      },
+    },
+    "funnelforge-coach-messages": ronitConfirmationChat,
+    "funnelforge-plans": [
+      makePlan(
+        "ronit-plan-1",
+        "אסטרטגיית אינסטגרם 2025",
+        {
+          businessField: "services",
+          audienceType: "b2c",
+          ageRange: [30, 55],
+          interests: "עיצוב פנים, סטיילינג",
+          productDescription: "ייעוץ עיצוב פנים לבתים פרטיים",
+          averagePrice: 2400,
+          salesModel: "oneTime",
+          budgetRange: "low",
+          mainGoal: "leads",
+          existingChannels: ["instagram"],
+          experienceLevel: "intermediate",
+        },
+        new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      ),
+    ],
+    "funnelforge-lang": "he",
+  },
+};
+
+export const ALL_PERSONAS: Persona[] = [dana, ori, michal, yossi, tal, ronit];
+
+/** Just the bias-driven personas — for targeted UX audits */
+export const BIAS_PERSONAS: Persona[] = [yossi, tal, ronit];
