@@ -45,15 +45,13 @@ export default function PaletteCohorts() {
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<string | null>(null);
 
-  if (!isAdminRole(user?.role)) {
-    return <Navigate to="/" replace />;
-  }
-
   useEffect(() => {
+    if (!isAdminRole(user?.role)) return;
+
     async function load() {
       try {
         // Query palette_cohort_benchmarks joined with palette_promotion_eta
-        const { data, error } = await (db as any)
+        const { data, error } = await db
           .from("palette_cohort_benchmarks")
           .select("*")
           .order("archetype_id", { ascending: true })
@@ -62,7 +60,7 @@ export default function PaletteCohorts() {
         if (error) throw error;
 
         // Enrich with ETA data
-        const { data: etaData } = await (db as any)
+        const { data: etaData } = await db
           .from("palette_promotion_eta")
           .select("archetype_id, palette_variant_id, action_id, rows_to_promotion, status");
 
@@ -88,7 +86,11 @@ export default function PaletteCohorts() {
       }
     }
     void load();
-  }, []);
+  }, [user?.role]);
+
+  if (!isAdminRole(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
 
   const totalExposures = rows.reduce((s, r) => s + (r.n_shown ?? 0), 0);
   const eligibleCount = rows.filter((r) => r.status === "eligible_for_review").length;
