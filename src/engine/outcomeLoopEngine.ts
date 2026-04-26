@@ -204,7 +204,26 @@ export function captureRecommendationShown(
   params: Omit<RecommendationEvent, "id" | "shown_at">
 ): string {
   const id = crypto.randomUUID();
-  const event: RecommendationEvent = { ...params, id, shown_at: new Date().toISOString() };
+
+  // Attach palette variant from the DOM data attribute if available.
+  // Set by useAdaptiveTheme when a non-control palette variant is active.
+  // Format: "archetype:variantId" — e.g. "pioneer:lighter_1"
+  const paletteAttr = typeof document !== "undefined"
+    ? document.documentElement.getAttribute("data-palette-variant")
+    : null;
+  const paletteVariantId = paletteAttr ?? null;
+
+  const enrichedContext: Record<string, unknown> = {
+    ...params.context_snapshot,
+    ...(paletteVariantId ? { palette_variant_id: paletteVariantId } : {}),
+  };
+
+  const event: RecommendationEvent = {
+    ...params,
+    context_snapshot: enrichedContext,
+    id,
+    shown_at: new Date().toISOString(),
+  };
 
   void (async () => {
     const persisted = await persistRecommendation(event);

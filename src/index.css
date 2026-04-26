@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+/* Brand-Locked Tokens — import FIRST so anchors are defined before any overrides */
+@import './styles/brand-locked-tokens.css';
+
+/* Semantic Token Roles (Layer 3) */
+@import './styles/semantic-tokens.css';
+
+/* Cultural Tokens — Israeli SMB color conventions */
+@import './styles/cultural-tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

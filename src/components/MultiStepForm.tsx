@@ -572,7 +572,7 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
             ) : (
               <Button
                 onClick={handleSubmitAttempt}
-                className="gap-2 funnel-gradient border-0 text-accent-foreground"
+                className="gap-2 bg-primary text-primary-foreground border-0"
                 aria-invalid={showValidationError || undefined}
                 aria-describedby={showValidationError ? "form-validation-error" : undefined}
               >

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -275,6 +276,17 @@ const LandingPage = ({ onStart, onStartWithSegment, onLoadLastPlan, onStartDiffe
           ))}
         </div>
       </section>
+      {/* Brand philosophy footer link */}
+      <footer className="border-t border-border py-6">
+        <div className="container mx-auto px-4 text-center">
+          <Link
+            to="/design-philosophy"
+            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            {tx({ he: "למה הכחול שלנו", en: "Why our blue" }, language)} →
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -177,7 +177,7 @@ const Dashboard = () => {
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                 <Button
                   size="lg"
-                  className="gap-2 funnel-gradient border-0 text-accent-foreground"
+                  className="gap-2 bg-primary text-primary-foreground border-0"
                   onClick={() => navigate("/wizard")}
                 >
                   <Rocket className="h-5 w-5" aria-hidden="true" />
@@ -409,7 +409,7 @@ const Dashboard = () => {
 
         {/* New Plan FAB */}
         <div className="fixed bottom-20 end-4 z-30">
-          <Button size="lg" className="rounded-full h-14 w-14 shadow-lg funnel-gradient border-0" onClick={() => navigate("/wizard")}>
+          <Button size="lg" className="rounded-full h-14 w-14 shadow-lg bg-primary border-0" onClick={() => navigate("/wizard")}>
             <Plus className="h-6 w-6 text-accent-foreground" />
           </Button>
         </div>

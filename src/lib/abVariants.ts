@@ -21,6 +21,21 @@ const VARIANTS_PER_EXPERIMENT: Record<string, VariantId[]> = {
   landing_cta:      ["control", "challenger"],
   onboarding_flow:  ["control", "short"],
   pricing_display:  ["control", "value_focused"],
+
+  // OKLCH rollout gate — controls whether a user sees the new semantic-tokens layer.
+  // Allows gradual rollout without a separate feature-flag system.
+  // "legacy_hsl" = existing behaviour; "oklch_v3" = semantic-tokens layer active.
+  oklch_rollout: ["legacy_hsl", "oklch_v3"],
+
+  // Palette accent variants — one experiment per archetype.
+  // Only L (lightness) varies; H and C are LOCKED to the brand-growth anchor.
+  // Variants are pre-validated by paletteVariantGenerator.ts (WCAG AA + APCA + CB-safe).
+  // Promotion gate: n≥200 per arm, |Δ conversion|≥5pp, p<0.05, APCA Lc≥60, CB-safe.
+  palette_accent_pioneer:    ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
+  palette_accent_closer:     ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
+  palette_accent_strategist: ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
+  palette_accent_optimizer:  ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
+  palette_accent_connector:  ["control", "lighter_1", "lighter_2", "darker_1", "darker_2"],
 };
 
 // djb2 hash — same function as referralEngine, kept local to avoid circular imports

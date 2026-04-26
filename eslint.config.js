@@ -79,6 +79,43 @@ export default tseslint.config(
     rules: { "@typescript-eslint/no-explicit-any": "off" },
   },
 
+  // ─── Brand gradient restriction ──────────────────────────────────────────
+  // funnel-gradient is a brand signal, not a generic CTA style.
+  // Sanctioned hero placements: LandingPage, Landing, Header, AppSidebar,
+  // LoadingFallback, ProcessingScreen (icon + progress), MarketingWrapped,
+  // DesignPhilosophy (logo). All others should use bg-primary.
+  // To add a new sanctioned placement: add the file to the allowlist below.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: "JSXAttribute[name.name='className'] > Literal[value=/funnel-gradient/]",
+          message: "funnel-gradient is a brand-asset signal restricted to sanctioned hero placements. Use bg-primary for standard CTAs. See docs/knowledge-and-moat.md § Brand-Asset Moat.",
+        },
+        {
+          selector: "JSXAttribute[name.name='className'] > TemplateLiteral:has(TemplateElement[value.raw=/funnel-gradient/])",
+          message: "funnel-gradient is a brand-asset signal restricted to sanctioned hero placements. Use bg-primary for standard CTAs. See docs/knowledge-and-moat.md § Brand-Asset Moat.",
+        },
+      ],
+    },
+  },
+  // Sanctioned hero placements — funnel-gradient allowed in these files
+  {
+    files: [
+      "src/components/LandingPage.tsx",
+      "src/pages/Landing.tsx",
+      "src/components/Header.tsx",
+      "src/components/AppSidebar.tsx",
+      "src/components/LoadingFallback.tsx",
+      "src/components/ProcessingScreen.tsx",
+      "src/components/MarketingWrapped.tsx",
+      "src/pages/DesignPhilosophy.tsx",
+    ],
+    rules: { "no-restricted-syntax": "off" },
+  },
+
   // ─── Logging boundary enforcement ────────────────────────────────────────
   // Direct console.* usage is banned in src; use logger from @/lib/logger
   // which forwards errors/warnings to Sentry in production.

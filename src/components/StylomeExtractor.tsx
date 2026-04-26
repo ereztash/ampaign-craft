@@ -242,7 +242,7 @@ const StylomeExtractor = () => {
               ))}
               <Button
                 onClick={runAnalysis}
-                className="w-full gap-2 funnel-gradient border-0 text-accent-foreground"
+                className="w-full gap-2 bg-primary text-primary-foreground border-0"
                 disabled={samples.length < 1}
               >
                 <Sparkles className="h-4 w-4" />

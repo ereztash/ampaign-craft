@@ -1,0 +1,139 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SEMANTIC TOKENS — Layer 3 (Role-based CSS custom properties)
+   ═══════════════════════════════════════════════════════════════════
+
+   Architecture: 3-layer token system
+     Layer 1: Brand anchors    → src/styles/brand-locked-tokens.css
+     Layer 2: Tonal palettes   → src/lib/tonalScale.ts (runtime)
+     Layer 3: Semantic roles   → THIS FILE
+
+   USAGE RULE (Boy Scout + Albers)
+   ────────────────────────────────
+   Components consume ROLES, not raw color values.
+   NEVER write: background-color: hsl(216 68% 26%)
+   ALWAYS write: background-color: hsl(var(--action-primary))
+
+   This ensures:
+   - Dark mode is a single mapping swap (not a color redesign)
+   - A/B palette variants inject at Layer 2 without touching components
+   - Albers' relativity principle: every color is computed relative
+     to the surface it sits on, preventing optical illusions
+
+   DARK MODE
+   ──────────
+   Dark mode uses Tonal Mapping Inversion.
+   Same semantic token names; different tonal values from the scale.
+   (text-primary = Neutral-900 in light, Neutral-50 in dark)
+   ═══════════════════════════════════════════════════════════════════ */
+
+@layer base {
+
+  /* ────────────────────────────────────────────────────────────────
+     TEXT ROLES
+     Neutral scale: canvas (L≈0.97) → body (L≈0.18)
+     ──────────────────────────────────────────────────────────────── */
+  :root {
+    --text-primary:        215 22% 18%;   /* Neutral-900: main body */
+    --text-secondary:      215 14% 48%;   /* Neutral-600: helper text */
+    --text-disabled:       215 14% 68%;   /* Neutral-400: unavailable */
+    --text-brand:          var(--primary); /* Links, brand-accented text */
+    --text-on-primary:     var(--primary-foreground);
+    --text-on-accent:      var(--accent-foreground);
+    --text-inverse:        210 22% 98%;   /* Text on dark surfaces */
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+     SURFACE ROLES
+     ──────────────────────────────────────────────────────────────── */
+  :root {
+    --surface-background: var(--background);      /* Page canvas */
+    --surface-card:       var(--card);             /* Card / sheet */
+    --surface-popover:    var(--popover);           /* Dropdown / modal */
+    --surface-sidebar:    var(--sidebar-background);
+
+    /* Tinted surfaces — derived from brand anchors for cohesion */
+    --surface-highlight:  216 68% 96%;   /* navy-50: selected row */
+    --surface-success:    142 60% 96%;   /* success-50: positive bg */
+    --surface-warning:    38  92% 96%;   /* warning-50: caution bg */
+    --surface-error:      4   78% 96%;   /* error-50: danger bg */
+    --surface-insight:    258 62% 96%;   /* insight-50: AI signal bg */
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+     ACTION ROLES (Buttons, interactive elements)
+     Hover / pressed computed via tonal step increments.
+     HSL L shifts ≈ OKLCH tonal step distance.
+     ──────────────────────────────────────────────────────────────── */
+  :root {
+    --action-primary:          var(--primary);
+    --action-primary-fg:       var(--primary-foreground);
+    --action-primary-hover:    216 68% 32%;   /* +6% L from 26% */
+    --action-primary-pressed:  216 68% 20%;   /* -6% L */
+    --action-primary-disabled: var(--muted);
+    --action-primary-disabled-fg: var(--muted-foreground);
+
+    --action-accent:           var(--accent);
+    --action-accent-fg:        var(--accent-foreground);
+    --action-accent-hover:     152 58% 46%;   /* +6% L from 40% */
+    --action-accent-pressed:   152 58% 34%;   /* -6% L */
+
+    --action-destructive:      var(--destructive);
+    --action-destructive-fg:   var(--destructive-foreground);
+    --action-destructive-hover: 4 78% 60%;
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+     BORDER ROLES
+     ──────────────────────────────────────────────────────────────── */
+  :root {
+    --border-subtle:   var(--border);          /* Table dividers */
+    --border-default:  214 18% 82%;            /* Standard frames */
+    --border-strong:   214 18% 62%;            /* Active input */
+    --border-focus:    var(--ring);            /* Keyboard focus ring */
+    --border-error:    var(--destructive);
+    --border-brand:    var(--primary);
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+     STATUS / FEEDBACK ROLES
+     ──────────────────────────────────────────────────────────────── */
+  :root {
+    --status-success:   var(--cor-success);
+    --status-success-fg: var(--cor-success-foreground);
+    --status-warning:   var(--cor-warning);
+    --status-warning-fg: var(--cor-warning-foreground);
+    --status-error:     var(--destructive);
+    --status-error-fg:  var(--destructive-foreground);
+    --status-info:      var(--cor-insight);
+    --status-info-fg:   var(--cor-insight-foreground);
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+     DARK MODE — Tonal Mapping Inversion
+     Same token names. Only the resolved values change.
+     This is the ONLY block that changes for dark mode.
+     ──────────────────────────────────────────────────────────────── */
+  .dark {
+    --text-primary:     210 18% 90%;   /* Neutral-50 equiv */
+    --text-secondary:   215 14% 62%;   /* Neutral-400 equiv */
+    --text-disabled:    215 14% 42%;
+    --text-brand:       var(--primary);
+    --text-inverse:     215 22% 18%;
+
+    --surface-highlight: 213 65% 14%;
+    --surface-success:   142 60% 10%;
+    --surface-warning:   38  90% 10%;
+    --surface-error:     4   75% 10%;
+    --surface-insight:   258 65% 12%;
+
+    --action-primary-hover:    213 65% 70%;
+    --action-primary-pressed:  213 65% 55%;
+    --action-accent-hover:     152 52% 58%;
+    --action-accent-pressed:   152 52% 42%;
+    --action-destructive-hover: 4 75% 70%;
+
+    --border-subtle:   222 16% 18%;
+    --border-default:  222 16% 22%;
+    --border-strong:   222 16% 30%;
+  }
+}

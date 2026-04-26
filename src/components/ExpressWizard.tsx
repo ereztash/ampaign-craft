@@ -129,7 +129,7 @@ const ExpressWizard = ({ onComplete }: ExpressWizardProps) => {
           size="lg"
           disabled={!canGenerate}
           onClick={handleGenerate}
-          className="w-full funnel-gradient text-accent-foreground font-semibold"
+          className="w-full bg-primary text-primary-foreground font-semibold"
         >
           <Zap className="h-4 w-4" />
           {isRTL ? "צור תוכנית מיידית" : "Generate Instant Plan"}

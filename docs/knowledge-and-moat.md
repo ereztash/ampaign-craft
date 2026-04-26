@@ -110,3 +110,114 @@ User interacts with recommendation
 | Emerging | 200–1,000 | Pick-rate signals detectable per archetype | Low |
 | Compounding | 1,000–5,000 | Cross-cohort lift measurable (O(N^0.3)) | Medium |
 | Defensible | > 5,000 | Vertical ontology dense; 6–18 month rebuild gap | High |
+
+---
+
+## Brand-Asset Moat
+
+Color becomes a moat through four compounding mechanisms. This section documents the architecture, locks the identity core, and defines the measurement loop that converts palette data into proprietary IP.
+
+### 5 Moat Sources (ordered by leverage)
+
+| Source | Mechanism | Time to compound |
+|---|---|---|
+| **1. Distinctive Brand Asset** (Romaniuk 2012) | Navy+green become recall triggers without a logo. Unaided color recall ≥30% at T+6m is the DBA test. | 5+ years of consistency |
+| **2. Process Power** (Helmer) | Proprietary `(archetype × palette × stage) → conversion` lookup. Empirical IP no aesthetic-only competitor can reproduce. | 12–18 months of A/B data |
+| **3. Counter-positioning** | Staying in navy+green forces HubSpot (purple), Salesforce (light-blue), Mailchimp (yellow) to concede or abandon their global identity. | Immediate; grows with market share |
+| **4. Cornered cultural resource** | Hebrew + RTL + Israeli SMB conventions (blue=trust, green=growth, red=discount, white=government) in tokens. International competitors structurally can't match. | Permanent structural barrier |
+| **5. Regulatory & locale embedding** | Israeli privacy law, RTL-as-core, locale semantic colors baked in token names. Not a translation overlay — a structural design. | Permanent; deepens with regulatory changes |
+
+### 3 Locked Brand Anchors
+
+Defined in `src/styles/brand-locked-tokens.css`. These are the identity core — **do not modify without following the amendment process below**.
+
+| Token | HSL (light) | HSL (dark) | Behavioral role |
+|---|---|---|---|
+| `--brand-navy-anchor-hsl` | `216 68% 26%` | `213 65% 65%` | Trust anchor (Kahneman System 1 — blue = safe/competent in <90ms) |
+| `--brand-growth-anchor-hsl` | `152 58% 40%` | `152 52% 52%` | Reward signal (Fogg BM — green = permission to act; dopamine-linked) |
+| `--brand-canvas-anchor-hsl` | `210 22% 98%` | `222 24% 7%` | Cognitive rest (Neutral with navy tint — Albers harmony principle) |
+
+### Amendment Process
+
+1. Open a PR with **`[brand-amendment]`** in the description.
+2. Attach a link to a design review approved by a product lead.
+3. The `brand-lock-warn` CI job will post a warning comment — this is expected.
+4. Two senior reviewers must approve before merge.
+5. After merge, schedule a T+6m Romaniuk recall survey to verify DBA recovery.
+
+### Palette Dimension — Flywheel Extension
+
+The MOAT Flywheel (above) now carries a **palette dimension**:
+
+```
+captureRecommendationShown()
+  context_snapshot = { ..., palette_variant_id, archetype_id }
+         │
+         ▼
+palette_cohort_benchmarks (nightly refresh at 05:00 UTC)
+  keyed by (archetype_id, palette_variant_id, action_id, horizon_days)
+         │
+         ▼
+/admin/palette-cohorts shows conversion_rate_pct + rows_to_promotion ETA
+         │
+         ▼
+Promotion gate: n≥200 + |Δ|≥5pp + p<0.05 + APCA Lc≥60 + CB-safe
+         │
+         ▼
+Winning variant locked into archetype default in index.css
+```
+
+**Key invariant**: only `--accent` and `--cor-*` tokens vary across palette variants. The three locked anchors (`--brand-navy`, `--brand-growth`, `--brand-canvas`) are never touched by A/B tests.
+
+### Color Architecture — 3 Layers
+
+| Layer | File | Purpose |
+|---|---|---|
+| **1. Base anchors** | `src/styles/brand-locked-tokens.css` | LOCKED identity core. H+C in OKLCH; HSL fallback. |
+| **2. Tonal generator** | `src/lib/tonalScale.ts` | Derives 50–900 steps from anchors via OKLCH L-axis. |
+| **3. Semantic roles** | `src/styles/semantic-tokens.css` | Components consume roles (e.g., `--action-primary`), not raw values. Dark mode = mapping inversion only. |
+
+### Theoretical Grounding
+
+- **Tufte** (Data-Ink ratio): every colored pixel must carry signal. `funnel-gradient` restricted to ≤8 hero placements (allowlisted in eslint).
+- **Brewer** (color scale ontology): sequential / diverging / categorical scales documented for future chart work. Charts (recharts) are out of moat scope — see "Future palette work" below.
+- **Albers** (Interaction of Color): no raw hex in components. All values relative to surface via CSS var resolution.
+- **Material Design 3 / HCT + OKLCH**: tonal generator uses OKLCH L-axis traversal for perceptually uniform steps.
+- **WCAG / APCA**: APCA Lc ≥60 as guidance; WCAG 2.1 AA (4.5:1) as legal floor. Never overridden.
+
+### Israeli Market Color Conventions
+
+Documented in `src/styles/cultural-tokens.css`. Key conventions:
+
+| Token | Meaning | Reference |
+|---|---|---|
+| `--cultural-discount-red` | Sale/discount (Shufersal, HaShuk) | Distinct from `--destructive` |
+| `--cultural-trust-blue` | Authority/institutional (Bank Hapoalim, El Al) | = `--brand-navy-anchor` |
+| `--cultural-government-clean` | Legal/tax/official screens (white-grey neutral) | Government portal convention |
+| `--cultural-growth-green` | Secular financial growth | = `--brand-growth-anchor` |
+
+### Hebrew Calendar Palette Modulation
+
+`src/engine/calendarPaletteEngine.ts` applies subtle modulations on holidays:
+- **Yom Kippur week**: −15% saturation on `--cor-opportunity` and `--cor-success`
+- **Sukkot**: +5% saturation (harvest warmth)
+- **Purim**: +12% saturation (highest celebration)
+- **Memorial Day**: −20% saturation (absolute respect protocol)
+
+Only `--cor-*` tokens are affected. Locked anchors are immutable.
+
+Annual refresh: update `src/data/hebrew-calendar-2026.json` each September.
+
+### Success Metrics
+
+| Metric | When | Target |
+|---|---|---|
+| Data flow check | T+30d | ≥5 (archetype × palette × stage) rows with n>30 |
+| Romaniuk unaided recall | T+6m | ≥30% of active users name "deep navy + green" without logo |
+| First palette promotion | ~T+3m (traffic-dependent) | First variant locked into archetype default |
+
+### Future Palette Work
+
+- Brewer categorical scales for `recharts` charts (utility work, not moat scope).
+- OKLCH full migration: every component touched after Sprint 1 migrates to semantic tokens. Pure-legacy components: Hard End-Date T+180d from Sprint 1 completion.
+- APCA adoption as primary floor pending WCAG 3 ratification.

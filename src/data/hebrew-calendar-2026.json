@@ -1,0 +1,158 @@
+[
+  {
+    "id": "rosh_hashana_2026",
+    "name": { "he": "ראש השנה תשפ\"ז", "en": "Rosh Hashana 5787" },
+    "gregorianStart": "2026-09-11",
+    "gregorianEnd": "2026-09-13",
+    "paletteEffect": {
+      "type": "celebration",
+      "corOpportunityShift": 5,
+      "corSuccessShift": 5,
+      "saturationDeltaPercent": 0,
+      "description": "New Year energy — amplify positive signals"
+    }
+  },
+  {
+    "id": "yom_kippur_2026",
+    "name": { "he": "יום כיפור תשפ\"ז", "en": "Yom Kippur 5787" },
+    "gregorianStart": "2026-09-20",
+    "gregorianEnd": "2026-09-21",
+    "paletteEffect": {
+      "type": "mute",
+      "corOpportunityShift": 0,
+      "corSuccessShift": 0,
+      "saturationDeltaPercent": -15,
+      "description": "Mute saturation — no celebratory colors during solemn period"
+    }
+  },
+  {
+    "id": "yom_kippur_week_2026",
+    "name": { "he": "ערב יום כיפור", "en": "Yom Kippur eve (extended)" },
+    "gregorianStart": "2026-09-18",
+    "gregorianEnd": "2026-09-21",
+    "paletteEffect": {
+      "type": "mute",
+      "corOpportunityShift": 0,
+      "corSuccessShift": 0,
+      "saturationDeltaPercent": -15,
+      "description": "Yom Kippur week: reduce saturation on opportunity/success tokens"
+    }
+  },
+  {
+    "id": "sukkot_2026",
+    "name": { "he": "סוכות תשפ\"ז", "en": "Sukkot 5787" },
+    "gregorianStart": "2026-09-25",
+    "gregorianEnd": "2026-10-02",
+    "paletteEffect": {
+      "type": "warm",
+      "corOpportunityShift": 8,
+      "corSuccessShift": 3,
+      "saturationDeltaPercent": 5,
+      "description": "Sukkot: warmer accent — harvest palette"
+    }
+  },
+  {
+    "id": "hanukkah_2026",
+    "name": { "he": "חנוכה תשפ\"ז", "en": "Hanukkah 5787" },
+    "gregorianStart": "2026-12-15",
+    "gregorianEnd": "2026-12-23",
+    "paletteEffect": {
+      "type": "celebration",
+      "corOpportunityShift": 6,
+      "corSuccessShift": 4,
+      "saturationDeltaPercent": 8,
+      "description": "Hanukkah: brighter, more vibrant accent"
+    }
+  },
+  {
+    "id": "purim_2027",
+    "name": { "he": "פורים תשפ\"ז", "en": "Purim 5787" },
+    "gregorianStart": "2027-03-02",
+    "gregorianEnd": "2027-03-03",
+    "paletteEffect": {
+      "type": "vibrant",
+      "corOpportunityShift": 10,
+      "corSuccessShift": 5,
+      "saturationDeltaPercent": 12,
+      "description": "Purim: brightest accent — highest celebration energy"
+    }
+  },
+  {
+    "id": "yom_hazikaron_2027",
+    "name": { "he": "יום הזיכרון", "en": "Memorial Day" },
+    "gregorianStart": "2027-04-21",
+    "gregorianEnd": "2027-04-22",
+    "paletteEffect": {
+      "type": "mute",
+      "corOpportunityShift": 0,
+      "corSuccessShift": 0,
+      "saturationDeltaPercent": -20,
+      "description": "Memorial Day: deep mute — absolute respect protocol"
+    }
+  },
+  {
+    "id": "independence_day_2027",
+    "name": { "he": "יום העצמאות", "en": "Independence Day" },
+    "gregorianStart": "2027-04-22",
+    "gregorianEnd": "2027-04-23",
+    "paletteEffect": {
+      "type": "celebration",
+      "corOpportunityShift": 8,
+      "corSuccessShift": 6,
+      "saturationDeltaPercent": 10,
+      "description": "Independence Day: patriotic celebration palette"
+    }
+  },
+  {
+    "id": "pesach_2027",
+    "name": { "he": "פסח תשפ\"ז", "en": "Passover 5787" },
+    "gregorianStart": "2027-04-02",
+    "gregorianEnd": "2027-04-10",
+    "paletteEffect": {
+      "type": "celebration",
+      "corOpportunityShift": 4,
+      "corSuccessShift": 3,
+      "saturationDeltaPercent": 4,
+      "description": "Passover: spring/renewal palette uplift"
+    }
+  },
+  {
+    "id": "rosh_hashana_2027",
+    "name": { "he": "ראש השנה תשפ\"ח", "en": "Rosh Hashana 5788" },
+    "gregorianStart": "2027-09-30",
+    "gregorianEnd": "2027-10-02",
+    "paletteEffect": {
+      "type": "celebration",
+      "corOpportunityShift": 5,
+      "corSuccessShift": 5,
+      "saturationDeltaPercent": 0,
+      "description": "New Year — amplify positive signals"
+    }
+  },
+  {
+    "id": "yom_kippur_2027",
+    "name": { "he": "יום כיפור תשפ\"ח", "en": "Yom Kippur 5788" },
+    "gregorianStart": "2027-10-08",
+    "gregorianEnd": "2027-10-09",
+    "paletteEffect": {
+      "type": "mute",
+      "corOpportunityShift": 0,
+      "corSuccessShift": 0,
+      "saturationDeltaPercent": -15,
+      "description": "Yom Kippur: mute saturation"
+    }
+  },
+  {
+    "id": "yom_kippur_week_2027",
+    "name": { "he": "ערב יום כיפור תשפ\"ח", "en": "Yom Kippur eve 5788" },
+    "gregorianStart": "2027-10-06",
+    "gregorianEnd": "2027-10-09",
+    "paletteEffect": {
+      "type": "mute",
+      "corOpportunityShift": 0,
+      "corSuccessShift": 0,
+      "saturationDeltaPercent": -15,
+      "description": "Yom Kippur week: saturation reduction"
+    }
+  }
+]
