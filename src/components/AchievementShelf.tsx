@@ -25,7 +25,7 @@ export function AchievementShelf() {
           {achievements.map((a) => (
             <div
               key={a.id}
-              title={a.unlockedAt ? `${a.name[language]} — ${a.description[language]}` : undefined}
+              title={a.unlockedAt ? `${a.name[language]}: ${a.description[language]}` : undefined}
               className={`flex flex-col items-center gap-1 rounded-lg p-2 text-center transition-opacity ${
                 a.unlockedAt
                   ? "opacity-100 bg-primary/8"
