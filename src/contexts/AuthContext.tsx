@@ -54,13 +54,14 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const LOCAL_USERS_KEY = "funnelforge-users";
 const LOCAL_SESSION_KEY = "funnelforge-session";
 const LOCAL_AUTH_VERSION_KEY = "funnelforge-auth-version";
-const CURRENT_AUTH_VERSION = "v2"; // v2 = PBKDF2 (replaces v1 SHA-256)
+const CURRENT_AUTH_VERSION = "v3"; // v3 = PBKDF2 with per-user random salt
 
 interface LocalUserRecord {
   id: string;
   email: string;
   displayName: string;
   passwordHash: string;
+  passwordSalt: string;
   tier: PricingTier;
   role?: UserRole;
   createdAt: string;
@@ -90,9 +91,13 @@ function setLocalSession(session: { userId: string; email: string } | null) {
   }
 }
 
-// PBKDF2 password hashing via Web Crypto API (100k iterations).
+// PBKDF2 password hashing via Web Crypto API (100k iterations, per-user random salt).
 // For local/offline fallback only — Supabase handles production auth.
-async function hashPassword(password: string): Promise<string> {
+// Pass saltHex to verify an existing hash; omit to generate a new random salt.
+async function hashPassword(
+  password: string,
+  saltHex?: string,
+): Promise<{ hash: string; salt: string }> {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
@@ -101,15 +106,21 @@ async function hashPassword(password: string): Promise<string> {
     false,
     ["deriveBits"],
   );
-  const salt = encoder.encode("funnelforge-2026-local-pbkdf2");
+  const saltBytes = saltHex
+    ? new Uint8Array(saltHex.match(/.{2}/g)!.map((b) => parseInt(b, 16)))
+    : crypto.getRandomValues(new Uint8Array(16));
   const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", hash: "SHA-256", salt, iterations: 100_000 },
+    { name: "PBKDF2", hash: "SHA-256", salt: saltBytes, iterations: 100_000 },
     keyMaterial,
     256,
   );
-  return Array.from(new Uint8Array(bits))
+  const hash = Array.from(new Uint8Array(bits))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+  const salt = Array.from(saltBytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return { hash, salt };
 }
 
 // Migrate local auth storage to current version.
@@ -243,12 +254,13 @@ async function seedAdminUser() {
   if (!import.meta.env.DEV) return; // never seed in production builds
   const users = getLocalUsers();
   if (users.some((u) => u.id === ADMIN_SEED_ID)) return; // already seeded
-  const hash = await hashPassword("10031999");
+  const { hash, salt } = await hashPassword("10031999");
   const adminUser: LocalUserRecord = {
     id: ADMIN_SEED_ID,
     email: "erez",
     displayName: "ארז",
     passwordHash: hash,
+    passwordSalt: salt,
     tier: "pro",
     role: "admin",
     createdAt: new Date().toISOString(),
@@ -484,12 +496,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: "Email already registered" };
     }
 
-    const hash = await hashPassword(password);
+    const { hash, salt } = await hashPassword(password);
     const newUser: LocalUserRecord = {
       id: crypto.randomUUID(),
       email: email.toLowerCase(),
       displayName: email.split("@")[0],
       passwordHash: hash,
+      passwordSalt: salt,
       tier: "pro", // Local users get Pro by default (for testing)
       createdAt: new Date().toISOString(),
     };
@@ -554,7 +567,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const localUsers = getLocalUsers();
         const localFound = localUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
         if (localFound) {
-          const hash = await hashPassword(password);
+          const { hash } = await hashPassword(password, localFound.passwordSalt);
           if (localFound.passwordHash === hash) {
             setLocalSession({ userId: localFound.id, email: localFound.email });
             setIsLocalAuth(true);
@@ -575,7 +588,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: "User not found" };
     }
 
-    const hash = await hashPassword(password);
+    const { hash } = await hashPassword(password, found.passwordSalt);
     if (found.passwordHash !== hash) {
       return { error: "Invalid password" };
     }
