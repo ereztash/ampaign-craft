@@ -11,13 +11,24 @@ vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ user: null, tier: "free", isLocalAuth: false }),
 }));
 
+const defaultMilestones = {
+  formCompleted: false,
+  firstPlanSaved: false,
+  dataSourceConnected: false,
+  stylomeAnalyzed: false,
+  coachUsed: false,
+};
+
 const defaultProfile = {
   profile: {
     lastFormData: null,
     savedPlanCount: 0,
     investment: { totalSessionsMinutes: 0, plansCreated: 0 },
     unifiedProfile: null,
+    milestones: defaultMilestones,
+    visitCount: 1,
   },
+  completeMilestone: vi.fn(),
 };
 vi.mock("@/contexts/UserProfileContext", () => ({
   useUserProfile: vi.fn(() => defaultProfile),
@@ -170,6 +181,14 @@ vi.mock("@/components/ArchetypePipelineGuide", () => ({
   default: () => <div data-testid="archetype-pipeline-guide" />,
 }));
 
+vi.mock("@/components/NextStepCard", () => ({
+  NextStepCard: () => <div data-testid="next-step-card" />,
+}));
+
+vi.mock("@/components/AchievementShelf", () => ({
+  AchievementShelf: () => <div data-testid="achievement-shelf" />,
+}));
+
 describe("CommandCenter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -212,7 +231,10 @@ describe("CommandCenter", () => {
         savedPlanCount: 1,
         investment: { totalSessionsMinutes: 5, plansCreated: 1 },
         unifiedProfile: null,
+        milestones: { formCompleted: true, firstPlanSaved: true, dataSourceConnected: true, stylomeAnalyzed: false, coachUsed: false },
+        visitCount: 2,
       },
+      completeMilestone: vi.fn(),
     } as unknown as ReturnType<typeof useUserProfile>);
 
     render(

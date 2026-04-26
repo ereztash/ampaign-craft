@@ -7,7 +7,7 @@ const MobileTabBar = () => {
   const { t, isRTL } = useLanguage();
 
   const items: { to: string; end?: boolean; icon: typeof LayoutDashboard; label: string }[] = [
-    { to: "/", end: true, icon: LayoutDashboard, label: t("navCommandCenter") },
+    { to: "/home", end: true, icon: LayoutDashboard, label: t("navCommandCenter") },
     { to: "/data", icon: Database, label: t("navDataSources") },
     { to: "/strategy", icon: Map, label: t("navStrategyCanvas") },
     { to: "/ai", icon: Bot, label: t("navAiCoach") },

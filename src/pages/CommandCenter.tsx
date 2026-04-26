@@ -41,6 +41,8 @@ import { snapshotEngineOutputs, captureContentSnapshot } from "@/engine/outcomeL
 import { hasCompletedIntake } from "@/engine/intake/intakeSignal";
 import { recordRouteVisit } from "@/engine/intake/feedbackLoop";
 import IntakeReframeBanner from "@/components/intake/IntakeReframeBanner";
+import { NextStepCard } from "@/components/NextStepCard";
+import { AchievementShelf } from "@/components/AchievementShelf";
 
 const CommandCenter = () => {
   const { language } = useLanguage();
@@ -52,7 +54,8 @@ const CommandCenter = () => {
   const location = useLocation();
   const reducedMotion = useReducedMotion();
   const totalUsers = getTotalUsers();
-  const { streak, masteryFeatures } = useAchievements(language);
+  const { streak, masteryFeatures, unlock } = useAchievements(language);
+  const { completeMilestone } = useUserProfile();
   const modules = useModuleStatus();
 
   useEffect(() => {
@@ -73,6 +76,11 @@ const CommandCenter = () => {
   useEffect(() => {
     recordRouteVisit("/");
   }, []);
+
+  // Unlock returning_user achievement after 3+ visits
+  useEffect(() => {
+    if (profile.visitCount > 3) unlock("returning_user");
+  }, [profile.visitCount, unlock]);
 
   // Re-read plans from storage when the count, last summary, or route changes
   // (these are the reactive proxies for the non-reactive localStorage key).
@@ -273,6 +281,7 @@ const CommandCenter = () => {
               // this, the AARRR dashboard can't measure time-to-activation
               // for the fast path — only for the full wizard.
               if (user?.id) Analytics.onboardingCompleted(user.id, "express");
+              completeMilestone("formCompleted");
               setShowExpressWizard(false);
               navigate("/wizard", { state: { expressData: data } });
             }} />
@@ -371,19 +380,22 @@ const CommandCenter = () => {
                     is "none" so a user who has filled the express wizard
                     but not yet been classified still sees "do X next". */}
                 <ArchetypePipelineGuide />
+                {/* NextStepCard: show milestone quest while < 3 milestones completed.
+                    Once the user is established, switch to ProgressMomentum. */}
+                {Object.values(profile.milestones).filter(Boolean).length < 3
+                  ? <NextStepCard milestones={profile.milestones} />
+                  : (
+                    <ProgressMomentum
+                      modules={modules}
+                      streakWeeks={streak.currentStreak}
+                      investmentMinutes={profile.investment.totalSessionsMinutes}
+                      plansCreated={profile.investment.plansCreated}
+                    />
+                  )
+                }
+                <AchievementShelf />
                 <InsightsCard />
                 <AnalyticsConnectCard />
-                <ProgressMomentum
-                  modules={modules}
-                  streakWeeks={streak.currentStreak}
-                  investmentMinutes={profile.investment.totalSessionsMinutes}
-                  plansCreated={profile.investment.plansCreated}
-                />
-                {connectedCount === 0 && plans.length === 0 && (
-                  <p className="text-xs text-muted-foreground px-1 text-center" dir="auto">
-                    {tx({ he: "חבר את המקור הראשון כדי לפתוח תובנות מותאמות.", en: "Connect your first source to unlock tailored insights." }, language)}
-                  </p>
-                )}
               </div>
             </div>
           </>

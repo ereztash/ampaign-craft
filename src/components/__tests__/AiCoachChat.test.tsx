@@ -11,6 +11,10 @@ vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRTL: false }),
 }));
 
+vi.mock("@/contexts/UserProfileContext", () => ({
+  useUserProfile: () => ({ completeMilestone: vi.fn() }),
+}));
+
 vi.mock("@/i18n/tx", () => ({
   tx: (obj: { he: string; en: string }, lang: string) => (lang === "he" ? obj.he : obj.en),
 }));

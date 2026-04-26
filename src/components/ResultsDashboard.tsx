@@ -76,7 +76,7 @@ const NEURO_LABELS: Record<string, { emoji: string; vector: { he: string; en: st
 
 const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, embeddedInShell }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
-  const { profile } = useUserProfile();
+  const { profile, completeMilestone } = useUserProfile();
   const reducedMotion = useReducedMotion();
   const isHe = language === "he";
   const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect, disabled: metaDisabled } = useMetaAuth();
@@ -174,10 +174,12 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
     await savePlanToStore(result, name);
     toast.success(t("planSaved"));
     trackFeature("plan_saved");
+    completeMilestone("firstPlanSaved");
     if (savedPlans.length + 1 >= 5) unlock("five_plans");
   };
 
   const exportPdf = async () => {
+    trackFeature("pdf_export");
     if (!featureGate.checkAccess("pdfExport", "pro")) return;
     const html2canvas = (await import("html2canvas")).default;
     const jsPDF = (await import("jspdf")).default;
@@ -192,6 +194,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   };
 
   const sharePlan = () => {
+    trackFeature("share");
     const text = `${result.funnelName[language]}\n${t("estimatedBudget")}: ₪${result.totalBudget.min.toLocaleString()}-₪${result.totalBudget.max.toLocaleString()}${t("perMonth")}`;
     if (navigator.share) {
       navigator.share({ title: result.funnelName[language], text });
@@ -511,7 +514,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         )}
       </div>
     </div>
-    <PaywallModal open={featureGate.paywallOpen} onOpenChange={featureGate.setPaywallOpen} feature={featureGate.paywallFeature} requiredTier={featureGate.paywallTier} />
+    <PaywallModal open={featureGate.paywallOpen} onOpenChange={featureGate.setPaywallOpen} feature={featureGate.paywallFeature} requiredTier={featureGate.paywallTier} dataUnlockHint={featureGate.dataUnlockHint} />
     </>
   );
 };

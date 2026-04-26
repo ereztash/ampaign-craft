@@ -36,7 +36,7 @@ const BackToHub = ({ currentPage }: BackToHubProps) => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/home")}
           className="gap-1.5 text-muted-foreground hover:text-foreground h-7 px-2 min-h-[44px]"
         >
           <Home className="h-3.5 w-3.5" />

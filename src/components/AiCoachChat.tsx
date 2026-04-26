@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { authFetch } from "@/lib/authFetch";
 import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
@@ -126,6 +127,7 @@ function buildCoachContext(graph: UserKnowledgeGraph, healthScore?: number, styl
 const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
+  const { completeMilestone } = useUserProfile();
   const [messages, setMessages] = useState<ChatMessage[]>(() =>
     safeStorage.getJSON<ChatMessage[]>("funnelforge-coach-messages", []),
   );
@@ -160,6 +162,8 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || loading) return;
+
+    if (messages.length === 0) completeMilestone("coachUsed");
 
     const userMsg: ChatMessage = { role: "user", content: text.trim() };
     setMessages((prev) => [...prev, userMsg]);

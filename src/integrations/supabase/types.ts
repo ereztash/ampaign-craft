@@ -71,6 +71,42 @@ export type Database = {
         }
         Relationships: []
       }
+      beta_waitlist: {
+        Row: {
+          id: string
+          email: string
+          utm_source: string | null
+          utm_medium: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_term: string | null
+          ref: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_term?: string | null
+          ref?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_term?: string | null
+          ref?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -78,6 +114,7 @@ export type Database = {
           id: string
           updated_at: string
           visit_count: number | null
+          acquisition_source: Record<string, string> | null
         }
         Insert: {
           created_at?: string
@@ -85,6 +122,7 @@ export type Database = {
           id: string
           updated_at?: string
           visit_count?: number | null
+          acquisition_source?: Record<string, string> | null
         }
         Update: {
           created_at?: string
@@ -92,6 +130,7 @@ export type Database = {
           id?: string
           updated_at?: string
           visit_count?: number | null
+          acquisition_source?: Record<string, string> | null
         }
         Relationships: []
       }
@@ -143,6 +182,36 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          user_id: string
+          milestones: Json
+          investment: Json
+          mastery_features: string[]
+          achievements: Json
+          streak: Json
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          milestones?: Json
+          investment?: Json
+          mastery_features?: string[]
+          achievements?: Json
+          streak?: Json
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          milestones?: Json
+          investment?: Json
+          mastery_features?: string[]
+          achievements?: Json
+          streak?: Json
+          updated_at?: string
         }
         Relationships: []
       }

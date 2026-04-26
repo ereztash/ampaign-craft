@@ -12,6 +12,8 @@ import type { ImportedDataset } from "@/types/importedData";
 import { detectSchema, analyzeTrends } from "@/engine/dataImportEngine";
 import { tx } from "@/i18n/tx";
 import { toast } from "sonner";
+import { useAchievements } from "@/hooks/useAchievements";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 const DataHub = () => {
   const { sourceId } = useParams<{ sourceId?: string }>();
@@ -19,6 +21,8 @@ const DataHub = () => {
   const isHe = language === "he";
   const navigate = useNavigate();
   const { sources, setSourceStatus, setSourceRecords, upsertSource } = useDataSources();
+  const { unlock, trackFeature } = useAchievements(language);
+  const { completeMilestone } = useUserProfile();
 
   const [connectOpen, setConnectOpen] = useState(false);
   const [connectTarget, setConnectTarget] = useState<string | null>(null);
@@ -74,6 +78,9 @@ const DataHub = () => {
       (tx({ he: "הייבוא הושלם", en: "Import complete" }, language)) +
         ` · ${schema.columns.length} cols · ${schema.detectedType}${trendSummary}`,
     );
+    unlock("first_import");
+    trackFeature("data_import");
+    completeMilestone("dataSourceConnected");
     setImportOpen(false);
   };
 

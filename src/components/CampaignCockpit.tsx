@@ -18,7 +18,7 @@ const CampaignCockpit = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const { plans } = useSavedPlans();
-  const { canUse, checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
+  const { canUse, checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier, dataUnlockHint } = useFeatureGate();
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const { metrics, addMetric, getComparison } = useCampaignTracking(selectedPlanId);
 
@@ -193,7 +193,7 @@ const CampaignCockpit = () => {
         </>
       )}
     </>}
-    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} />
+    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} dataUnlockHint={dataUnlockHint} />
     </div>
   );
 };
