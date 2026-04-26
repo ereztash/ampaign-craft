@@ -23,6 +23,30 @@ import { NPSWidget } from "@/components/NPSWidget";
 import { isAdminRole } from "@/lib/roles";
 import AuthDebugPanel from "@/components/AuthDebugPanel";
 import { ProgressSyncManager } from "@/components/ProgressSyncManager";
+import { useUtmTracking } from "@/hooks/useUtmTracking";
+
+/**
+ * Captures UTM params on every page load and persists attribution to the
+ * user profile once they log in. Renders nothing.
+ */
+function UtmCapture() {
+  const { user } = useAuth();
+  useUtmTracking(user?.id);
+  return null;
+}
+
+/**
+ * Dual-mode root:
+ * - Logged out  → PublicLanding (no sidebar, no auth required)
+ * - Logged in   → redirect to /dashboard (CommandCenter inside AppShell)
+ * - Still loading auth → LoadingFallback
+ */
+function RootGuard() {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingFallback />;
+  if (user) return <Navigate to="/home" replace />;
+  return <PublicLanding />;
+}
 
 /** Guard: redirects non-owner/admin users to home with a login-required hint. */
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -30,11 +54,12 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   if (loading) return <LoadingFallback />;
   if (!isAdminRole(user?.role)) {
-    return <Navigate to="/" state={{ openAuth: true, returnTo: location.pathname }} replace />;
+    return <Navigate to="/home" state={{ openAuth: true, returnTo: location.pathname }} replace />;
   }
   return <>{children}</>;
 }
 
+const PublicLanding = lazy(() => import("./components/PublicLanding"));
 const Index = lazy(() => import("./pages/Index"));
 const CommandCenter = lazy(() => import("./pages/CommandCenter"));
 const DataHub = lazy(() => import("./pages/DataHub"));
@@ -97,12 +122,14 @@ const AnimatedRoutes = () => {
         transition={{ duration: 0.15 }}
       >
         <Routes location={location}>
+          {/* Public root — logged-out users see landing page; logged-in users redirect to /dashboard */}
+          <Route path="/" element={<RootGuard />} />
           <Route path="/legacy" element={<Index />} />
           <Route path="/quote/:token" element={<SharedQuote />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/design-philosophy" element={<DesignPhilosophy />} />
           <Route element={<AppShell />}>
-            <Route index element={<CommandCenter />} />
+            <Route path="home" element={<CommandCenter />} />
             <Route path="data/:sourceId?" element={<DataHub />} />
             <Route path="strategy/:planId/:focus" element={<StrategyCanvas />} />
             <Route path="strategy/:planId" element={<StrategyCanvas />} />
@@ -156,6 +183,7 @@ const App = () => (
                   <Suspense fallback={<LoadingFallback />}>
                     <AnimatedRoutes />
                   </Suspense>
+                  <UtmCapture />
                   <ProgressSyncManager />
                   <CheckoutReturnHandler />
                   <ConsentBanner />

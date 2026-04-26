@@ -39,7 +39,7 @@ interface NavItem {
 }
 
 const WORKSPACE_ITEMS: NavItem[] = [
-  { id: "command",   to: "/",          labelKey: "navCommandCenter",  icon: <LayoutDashboard />, end: true },
+  { id: "command",   to: "/home",       labelKey: "navCommandCenter",  icon: <LayoutDashboard />, end: true },
   { id: "data",      to: "/data",      labelKey: "navDataSources",    icon: <Database /> },
   { id: "strategy",  to: "/strategy",  labelKey: "navStrategyCanvas", icon: <Map /> },
   { id: "ai",        to: "/ai",        labelKey: "navAiCoach",        icon: <Bot /> },
@@ -110,7 +110,7 @@ const AppSidebar = () => {
     <>
       <Sidebar side={side} collapsible="icon" variant="sidebar" className="border-e border-sidebar-border" role="navigation" aria-label={isHe ? "ניווט ראשי" : "Main navigation"}>
         <SidebarHeader className="border-b border-sidebar-border">
-          <NavLink to="/" className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent">
+          <NavLink to="/home" className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg funnel-gradient shrink-0">
               <span className="text-sm font-bold text-accent-foreground">F</span>
             </div>

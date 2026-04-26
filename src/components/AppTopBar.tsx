@@ -93,7 +93,7 @@ const AppTopBar = ({ title }: AppTopBarProps) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align={language === "he" ? "start" : "end"} className="w-48">
-                <DropdownMenuItem onClick={() => navigate("/")}>
+                <DropdownMenuItem onClick={() => navigate("/home")}>
                   <Home className="h-4 w-4 me-2" />
                   {t("navCommandCenter")}
                 </DropdownMenuItem>

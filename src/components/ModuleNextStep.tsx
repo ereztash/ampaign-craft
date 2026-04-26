@@ -217,7 +217,7 @@ export function ModuleNextStep({ current }: ModuleNextStepProps) {
             <div className="flex flex-wrap justify-center gap-3 pt-1">
               <Button
                 size="lg"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/home")}
                 className="gap-2 bg-primary text-primary-foreground border-0"
               >
                 <Sparkles className="h-4 w-4" />

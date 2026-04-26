@@ -51,7 +51,7 @@ describe("BackToHub", () => {
       </MemoryRouter>
     );
     fireEvent.click(screen.getByText("navCommandCenter"));
-    expect(mockNavigate).toHaveBeenCalledWith("/");
+    expect(mockNavigate).toHaveBeenCalledWith("/home");
   });
 
   it("shows prev/next module navigation on module page", () => {
