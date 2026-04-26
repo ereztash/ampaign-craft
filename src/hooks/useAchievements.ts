@@ -220,6 +220,11 @@ export function useAchievements(language: "he" | "en" = "he") {
     if (streak.currentStreak >= 12) unlock("streak_12");
   }, [streak.currentStreak, unlock]);
 
+  // Auto-unlock all_tabs when user has visited at least 5 distinct feature areas
+  useEffect(() => {
+    if (masteryFeatures.size >= 5) unlock("all_tabs");
+  }, [masteryFeatures.size, unlock]);
+
   const trackFeature = useCallback((featureId: string) => {
     setMasteryFeatures((prev) => {
       if (prev.has(featureId)) return prev;

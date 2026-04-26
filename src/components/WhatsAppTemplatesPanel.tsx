@@ -17,7 +17,7 @@ interface WhatsAppTemplatesPanelProps {
 const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplatesPanelProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
-  const { canUse, checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier } = useFeatureGate();
+  const { canUse, checkAccess, paywallOpen, setPaywallOpen, paywallFeature, paywallTier, dataUnlockHint } = useFeatureGate();
   const templates = getWhatsAppTemplates();
   const costEstimate = getWhatsAppCostEstimate(monthlyConversations);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -82,7 +82,7 @@ const WhatsAppTemplatesPanel = ({ monthlyConversations = 500 }: WhatsAppTemplate
         </div>
       </CardContent>
     </Card>
-    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} />
+    <PaywallModal open={paywallOpen} onOpenChange={setPaywallOpen} feature={paywallFeature} requiredTier={paywallTier} dataUnlockHint={dataUnlockHint} />
     </>
   );
 };

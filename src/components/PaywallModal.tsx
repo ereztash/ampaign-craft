@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import { Check, Lock, Loader2, AlertTriangle } from "lucide-react";
+import { Check, Lock, Loader2, AlertTriangle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPaywallViewed } from "@/services/eventQueue";
@@ -17,9 +17,10 @@ interface PaywallModalProps {
   onOpenChange: (open: boolean) => void;
   feature: Feature;
   requiredTier: PricingTier;
+  dataUnlockHint?: { he: string; en: string } | null;
 }
 
-const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModalProps) => {
+const PaywallModal = ({ open, onOpenChange, feature, requiredTier, dataUnlockHint }: PaywallModalProps) => {
   const { language } = useLanguage();
   const { user, setTier, isLocalAuth, tier: currentTier } = useAuth();
   const isHe = language === "he";
@@ -116,6 +117,16 @@ const PaywallModal = ({ open, onOpenChange, feature, requiredTier }: PaywallModa
                 : "Every month without this tool costs your business leads and smarter strategy. Your competitors are already acting."}
             </p>
           </div>
+
+          {/* Data-path alternative: unlock by providing data instead of paying */}
+          {dataUnlockHint && (
+            <div className="flex items-start gap-2 text-start rounded-lg bg-green-500/10 border border-green-500/20 px-3 py-2">
+              <Sparkles className="h-4 w-4 text-green-400 mt-0.5 shrink-0" />
+              <p className="text-xs text-green-300" dir="auto">
+                {isHe ? dataUnlockHint.he : dataUnlockHint.en}
+              </p>
+            </div>
+          )}
 
           <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-6">
             <Badge className="mb-2">{tier.name[language]}</Badge>

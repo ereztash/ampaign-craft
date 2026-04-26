@@ -1,5 +1,7 @@
 import { useState, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAchievements } from "@/hooks/useAchievements";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { analyzeSamples, StylomeProfile, StylomeSample, INTERVIEW_QUESTIONS } from "@/engine/stylomeEngine";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,6 +43,8 @@ const EMOTION_LABELS: Record<string, { he: string; en: string }> = {
 const StylomeExtractor = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
+  const { unlock, trackFeature } = useAchievements(language);
+  const { completeMilestone } = useUserProfile();
 
   const [step, setStep] = useState<WizardStep>("collect");
   const [samples, setSamples] = useState<StylomeSample[]>([]);
@@ -80,6 +84,9 @@ const StylomeExtractor = () => {
     const result = analyzeSamples(samples);
     setProfile(result);
     setStep("profile");
+    unlock("stylome_complete");
+    trackFeature("stylome");
+    completeMilestone("stylomeAnalyzed");
     // Persist voice profile for cross-module personalization
     safeStorage.setJSON("funnelforge-stylome-voice", {
       register: result.style.register,
