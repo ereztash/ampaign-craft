@@ -129,8 +129,8 @@ export default function PublicLanding() {
           >
             {tx(
               {
-                he: "שיווק שעובד — לא ניחושים",
-                en: "Marketing that works — not guesses",
+                he: "שיווק שעובד, לא ניחושים",
+                en: "Marketing that works, not guesses",
               },
               language
             )}
@@ -139,8 +139,8 @@ export default function PublicLanding() {
           {/* Sub-headline — oxytocin empathy */}
           <p className="mb-8 text-lg text-muted-foreground sm:text-xl max-w-lg mx-auto" dir="auto">
             {isHe
-              ? "FunnelForge בונה לך תוכנית שיווק, מכירות ותמחור — מותאמת אישית לתעשייה שלך — תוך 5 דקות."
-              : "FunnelForge builds your marketing, sales, and pricing plan — tailored to your industry — in 5 minutes."}
+              ? "FunnelForge בונה לך תוכנית שיווק, מכירות ותמחור מותאמת אישית לתעשייה שלך תוך 5 דקות."
+              : "FunnelForge builds your marketing, sales, and pricing plan tailored to your industry in 5 minutes."}
           </p>
 
           {/* Primary CTA — dopamine */}
@@ -151,7 +151,7 @@ export default function PublicLanding() {
               className="gap-2 text-lg px-10 py-6 rounded-xl cta-warm shadow-lg"
             >
               <Zap className="h-5 w-5" />
-              {tx({ he: "בנה את התוכנית שלי — חינם", en: "Build My Plan — Free" }, language)}
+              {tx({ he: "בנה את התוכנית שלי - חינם", en: "Build My Plan - Free" }, language)}
             </Button>
             <p className="text-xs text-muted-foreground" dir="auto">
               {isHe
