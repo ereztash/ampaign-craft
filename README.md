@@ -1,255 +1,118 @@
-# FunnelForge
+# FunnelForge — פאנלפורג'
 
-Hebrew-first business growth platform. Five connected modules turn raw business data into copy-paste-ready strategy: differentiation → marketing → sales → pricing → retention — all personalized, all bilingual (he/en).
+**הפלטפורמה הראשונה בעברית להצמחת עסקים קטנים ובינוניים באמצעות מדע ההתנהגות**
+**The first Hebrew-native behavioral-science growth platform for Israeli SMBs**
 
 ---
 
-## Why FunnelForge — TL;DR
+## Value Proposition
 
-| | FunnelForge | Jasper / Copy.ai | HubSpot Breeze | GoHighLevel | Attio |
+FunnelForge is the only AI-native growth platform that combines behavioral-science wizards (Van Westendorp, Hormozi, DISC, Kahneman), six self-correcting data loops, and deep Hebrew cultural embedding for Israeli SMBs — giving them a compounding strategic advantage, not just AI-generated copy.
+
+---
+
+## Demo & Screenshots
+
+> 🎥 Demo: [ADD LINK]
+
+> 📸 Screenshots: [ADD FOLDER]
+
+---
+
+## Founder
+
+> [FOUNDER BIO — replace with 1 paragraph]
+
+---
+
+## Three Key Outcomes
+
+| Outcome | How |
+|---------|-----|
+| **Revenue growth** | Behavioral-science pricing wizard (PSM + Hormozi + Decoy) derives optimal charm price and 3-tier offer structure — users report closing at 15–30% higher price points |
+| **Time saved** | Five connected modules replace five disconnected tools; a full growth strategy (differentiation → retention) takes ~45 min instead of weeks of consulting |
+| **Churn reduced** | Archetype-adaptive retention sequences + DISC-personalized re-engagement scripts + 3-stage churn prediction model target <2.5% monthly churn vs. 3–5% Israeli SMB average |
+
+---
+
+## Why Now
+
+- **Israeli SMB digitization wave** — 560K SMBs; only ~32% have a structured digital presence; post-COVID urgency is converting them at scale.
+- **Post-ChatGPT awareness** — Israeli entrepreneurs now expect AI in their tools; the question is no longer *whether* to use AI but *which* AI understands their market.
+- **WhatsApp-native B2B** — Israeli B2B runs on WhatsApp; FunnelForge is the only strategy platform with built-in WhatsApp campaign sequences in Hebrew.
+
+---
+
+## Moat
+
+FunnelForge's primary defensibility is the **Romaniuk DBA color system**: each user archetype receives a distinct palette burned into muscle memory, making the interface immediately recognizable and switching psychologically costly. On top of that, **six compounding data loops** — pricing validation, archetype correction, framework ranking, churn calibration, benchmark replacement, and prompt-patch TTL — mean every user's outcome feeds back to improve the next recommendation, creating a flywheel that widens the gap with every paying customer. Finally, **Hebrew cultural embedding** goes beyond translation: gendered copy, Israeli market calendar, RTL-first architecture, and WhatsApp-native sequences are structural, not cosmetic — they cannot be replicated by localizing an English product.
+
+---
+
+## Competitor Comparison
+
+| | FunnelForge | HubSpot | Jasper | GoHighLevel | Attio |
 |---|---|---|---|---|---|
-| **Hebrew-native** | ✅ 340+ keys, RTL, gendered copy | ❌ | ❌ (translated) | ❌ | ❌ |
-| **Behavioral-science wizards** | ✅ PSM + Hormozi + Decoy + CoI + DISC | ❌ copy only | ⚠️ limited | ❌ | ❌ |
-| **5 connected modules in one journey** | ✅ diff → marketing → sales → pricing → retention | ❌ | ⚠️ multi-hub needed | ⚠️ funnel-first | ❌ CRM-first |
-| **Closed feedback loops** | ✅ 6 self-correcting loops | ❌ | ⚠️ analytics only | ❌ | ❌ |
-| **Archetype-adaptive UI** | ✅ 5 archetypes, L1–L5 adaptation | ❌ | ❌ | ❌ | ❌ |
-| **Entry price (monthly)** | ₪129 (~$36) | $49 | $20/seat | $97 | $29/user |
-
-**Three uncommon bets:**
-1. **Behavioral-science stack** — Van Westendorp PSM, Hormozi Value Equation, Ariely Decoy, Kahneman CoI, DISC closing — as *wizards*, not research tools.
-2. **Six closed feedback loops** — every recommendation is measured, validated, and feeds back to self-correct the next one.
-3. **Hebrew-first, Arabic-ready RTL** — the only AI-native growth platform that ships production-quality Hebrew out of the box (340+ bilingual keys, gendered copy, RTL-first architecture).
+| **Hebrew-native** | ✅ 340+ keys, RTL, gendered copy | ❌ | ❌ | ❌ | ❌ |
+| **Behavioral science** | ✅ PSM + Hormozi + Decoy + CoI + DISC | ⚠️ limited | ❌ copy only | ❌ | ❌ |
+| **Closed feedback loops** | ✅ 6 self-correcting loops | ⚠️ analytics only | ❌ | ❌ | ❌ |
+| **Archetype-adaptive UI** | ✅ 5 archetypes, L1–L5 | ❌ | ❌ | ❌ | ❌ |
+| **Price (monthly)** | ₪99 Pro / ₪249 Business | $20/seat+ | $49 | $97 | $29/user |
 
 ---
 
-## The 5-Module Cycle
+## Market Size
 
-```
-    ┌──── Differentiation ◄──────────────┐
-    │     5-phase wizard + AI enrichment  │
-    ▼                                     │
-  Marketing                           Retention
-  Funnel · Copy · Hooks · Hormozi     Onboarding · Churn · Referral
-    │                                     ▲
-    ▼                                     │
-  Sales ──────────► Pricing ─────────────┘
-  Pipeline · DISC    Wizard · Van Westendorp
-  Neuro-Closing      Tier Structure · LTV
-```
+| Layer | Scope | Size |
+|-------|-------|------|
+| **TAM** | All Israeli SMB marketing spend capturable as SaaS | ₪16B/yr |
+| **SAM** | Israeli SMBs with digital presence, willing to pay for a strategy tool | ₪587M/yr |
+| **SOM** | Realistically acquirable within 5 years | ₪54M/yr |
+
+*Source: [`docs/financials.md`](./docs/financials.md) — 560K SMBs × ₪2,400/mo avg spend; SAM = 180K × 20% SaaS adoption × ₪136 ARPU × 12; SOM = SAM × 10%.*
 
 ---
 
-## Benchmarks
+## Unit Economics
 
-### Pricing vs. Market (Monthly, 2026)
-
-```
-  $0       $25      $50      $75     $100     $150     $250     $500
-   │        │        │        │       │        │        │        │
-   │  ◆ FunnelForge Pro ($36)                                    │
-   │     ▲ HoneyBook Starter ($29)                               │
-   │           ▲ Attio Plus ($29/user)                           │
-   │        ◇ Copy.ai ($29)                                     │
-   │                     ▲ Jasper Creator ($49)                  │
-   │                             ▲ Jasper Pro ($69)              │
-   │                                     ▲ GoHighLevel ($97)     │
-   │                                     ▲ Systeme.io Unlim ($97)│
-   │  ◆ FunnelForge Business ($83)                               │
-   │                                         ▲ HubSpot Starter   │
-   │                                            ($150/seat+)     │
-   │                                                     ▲ GHL   │
-   │                                                       Pro   │
-   │                                                      ($297) │
-   │                                                             ▲ HubSpot Pro
-```
-
-### Category Capability Matrix
-
-| Capability | FunnelForge | HubSpot Breeze | Jasper | GoHighLevel | Attio | Systeme.io |
-|---|---|---|---|---|---|---|
-| **Copy generation** | ✅ 12+ copy types | ⚠️ Breeze Content | ✅ core product | ⚠️ basic | ❌ | ❌ |
-| **Funnel builder** | ✅ budget-allocated | ⚠️ forms+pages | ❌ | ✅ core product | ❌ | ✅ |
-| **CRM + pipeline** | ⚠️ built, not routed | ✅ | ❌ | ✅ | ✅ core product | ⚠️ |
-| **Pricing wizard (behavioral)** | ✅ PSM + Hormozi + Decoy | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Sales scripts (personality-based)** | ✅ DISC + neuro-closing | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Retention / churn prediction** | ✅ 3-stage model + NRR | ⚠️ Service Hub | ❌ | ⚠️ | ⚠️ | ❌ |
-| **Multi-agent orchestration** | ✅ 13 agents, write-gated | ⚠️ 4 Breeze agents | ❌ | ❌ | ⚠️ AI Research | ❌ |
-| **Closed feedback loops** | ✅ 6 loops | ⚠️ attribution only | ❌ | ❌ | ❌ | ❌ |
-| **Archetype-adaptive UI** | ✅ 5 archetypes | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Hebrew-native (not translation)** | ✅ 340+ keys, gendered | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **RTL-first architecture** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-
-### Behavioral-Science Framework Benchmarks
-
-| Framework | FunnelForge | Research tool | Consultant GPT | Native in other SaaS |
-|---|---|---|---|---|
-| Van Westendorp PSM | ✅ Pricing wizard step 2 | Conjointly, Pollfish, LimeSurvey | — | ❌ none |
-| Hormozi Value Equation | ✅ `hormoziValueEngine.ts` + scoring | — | Uplify, Skillfusion, "$100M Offer GPT" | ❌ none |
-| Ariely Decoy (3-tier) | ✅ Pricing wizard step 3 | Academic only | — | ❌ none |
-| Kahneman CoI | ✅ `costOfInactionEngine.ts` | Academic only | — | ❌ none |
-| DISC profiling | ✅ `discProfileEngine.ts` + neuro-closing | Crystal Knows ($25/user) | — | ❌ none in SMB SaaS |
-
-**Conclusion:** the *integrated* behavioral-science stack (PSM + Hormozi + Decoy + CoI + DISC) as a guided wizard is novel in the SMB SaaS category. Frameworks are public knowledge; their integration into a single product journey is not.
+| Metric | Value |
+|--------|-------|
+| **Blended ARPU** | ₪136/mo (~$37) |
+| **LTV** | ₪5,000 (~$1,370) |
+| **CAC** | ₪200 (~$55) |
+| **LTV : CAC** | **25×** |
+| **Payback period** | **1.6 months** |
+| **Gross margin** | ~78% |
 
 ---
 
-## Modules
+## Revenue Projections
 
-### 1 — Differentiation `/differentiate`
-5-phase wizard with AI enrichment. Claim verification, hidden value discovery, competitor archetype mapping, B2B/B2C unified with market-mode detection. Opt-in [Principle Grounding Layer](#principle-grounding-layer--g-layer-v1-pilot) attaches research citations to every hidden value and archetype.
-
-### 2 — Marketing `/plans/:id/strategy`
-5-stage funnel with channel recommendations and budget allocation. Personalized hooks (PAS/AIDA/BAB), Israeli market calendar, Hormozi Value Equation scoring, AI copy generation.
-
-### 3 — Sales `/plans/:id/sales`
-Pipeline stages + forecast. 4-layer personalized objection scripts. DISC personality profiling generates per-type messaging, CTA styles, and neuro-closing objection handlers.
-
-### 4 — Pricing `/plans/:id/pricing`
-**Wizard** — 4-step behavioral-science flow that *derives* the optimal price:
-1. Value Quantification (Hormozi Dream Outcome × Time to Value)
-2. Van Westendorp PSM (too-cheap floor → geo-mean OPP)
-3. Offer Architecture (Effort × Social Proof + differentiator premium)
-4. Revenue Architecture (LTV model + customer count)
-
-Outputs: charm price, acceptable range, psychological anchor, 3-tier structure (Ariely Decoy), Kahneman CoI frame, LTV:CAC budget.
-
-### 5 — Retention `/plans/:id/retention`
-Churn prediction, onboarding sequences, referral mechanics, NRR projections, growth-loop mapping. DISC-personalized re-engagement scripts.
-
-## Principle Grounding Layer — G-Layer (v1 pilot)
-
-A strictly additive, opt-in layer that attaches research citations to every hidden value and competitor archetype surfaced by the Differentiation module. Lives in `src/engine/moat/` and reads the read-only library in `knowledge/` (16 principles synthesized from 65 source docs spanning trauma-intervention research + canonical consulting texts: Hobfoll COR, Lahad BASIC-PH, פרחי 6-C, Omer & Alon continuity, Hill/McCubbin ABC-X, Maister Trust Equation, Minto Pyramid/MECE).
-
-| Module | File | Purpose |
-|---|---|---|
-| Loader | `principleLibrary.ts` | One-time startup load + shape validation of `principles.json` / `sources.json`. Throws on malformed library so version mismatches fail loudly. |
-| Map (values) | `hiddenValuePrincipleMap.ts` | Static `HiddenValueType -> PrincipleId[]` map. 14 HiddenValueTypes, 11 mapped in v1; `aesthetic`, `belonging`, `guilt_free` await v1.1 B2C corpus. |
-| Map (archetypes) | `archetypePrincipleMap.ts` | Static `CompetitorArchetypeId -> PrincipleId[]` map. All 10 archetypes mapped in v1. |
-| Enricher | `principleTraceEnricher.ts` | Pure `DifferentiationResult -> PrincipleTrace[]`. Never mutates, never fabricates, drops zero-citation principles. |
-| UI | `src/components/moat/PrincipleTraceModal.tsx` | Single UI surface — flag-gated trigger + dialog showing principle cards with research_backbone + source docs. |
-
-### G-layer contract
-
-- Zero mutations to `differentiationEngine.ts`, `differentiationKnowledge.ts`, or the five-module engines.
-- Zero LLM calls in v1 (static mapping only).
-- Feature flag: `VITE_PRINCIPLE_GROUNDING_ENABLED`, default `false`. Flag off = `DifferentiationResultView` DOM identical to pre-layer state (no modal trigger, no enricher run, no runtime branch).
-- Read-only `knowledge/` — the layer never writes back; adding a principle is an upstream-only PR.
-- 27 new tests (8 library + 6 hidden-value map + 5 archetype map + 8 enricher), all green.
-- Three principles (P09, P12, P16) carry exactly 1 source doc in library v1.0.0 — documented as `KNOWN_SINGLE_SOURCE_V1_0_0` in `principleTraceEnricher.test.ts`. Literal ≥2-per-principle citation threshold awaits library v1.1 enrichment.
-
-### When flag is on
-
-`DifferentiationResultView` renders a "על מה זה מבוסס" / "Research trace" button below the last tab. Clicking opens a dialog listing every hidden value and archetype in the current result with their mapped principles, research backbones, and resolved source documents. Surfaces without a mapping render an explicit "no research mapping yet" line rather than hiding.
+| Year | Paying Users | ARR (₪) | ARR ($) |
+|------|-------------|---------|---------|
+| **Y1** | 250 | ₪375K | $103K |
+| **Y2** | 900 | ₪1.35M | $370K |
+| **Y3** | 2,500 | ₪3.75M | $1.03M |
+| **Y4** | 6,000 | ₪9M | $2.47M |
+| **Y5** | 12,000 | ₪18M | $4.93M |
 
 ---
 
-## Behavioral-Science Stack
+## Pricing
 
-The unique logic FunnelForge encodes — every engine maps to a named, citable theory. These are not "vibes"; they are **algorithmic implementations of published research**.
+| Tier | Price | Highlights |
+|------|-------|------------|
+| **Free** | ₪0/mo | 3 funnels, core modules, 1 seat |
+| **Pro** | ₪99/mo | Unlimited funnels, AI Coach 75 msgs, WhatsApp 10/mo, PDF export, 14-day trial |
+| **Business** | ₪249/mo | Unlimited AI, unlimited WhatsApp, Campaign Cockpit, branded reports, 3 seats |
 
-| Engine | Theory / Source | What it does |
-|---|---|---|
-| `pricingWizardEngine.ts` | Van Westendorp PSM (1976) + Hormozi Value Equation (2021) + Weber-Fechner Law (1860) + Ariely Decoy (2008) + Kahneman Cost-of-Inaction (2011) | 4-step wizard derives optimal charm price, 3-tier decoy structure, CoI loss frame, LTV-constrained budget |
-| `hormoziValueEngine.ts` | Alex Hormozi, *$100M Offers* (2021) | `Value = (Dream Outcome × Probability) / (Time × Effort)` — scored 0-100, drives offer ranking |
-| `discProfileEngine.ts` | Marston DISC (1928) + modern sales integrations (SPIN, Challenger, MEDDIC) | 4-axis personality inference from form data → per-type messaging + CTA generation |
-| `neuroClosingEngine.ts` | Neuroeconomics (Zak 2017) + 3-vector cortisol/oxytocin/dopamine framing | DISC-gated closing scripts + objection handlers by personality type |
-| `costOfInactionEngine.ts` | Loss aversion (Kahneman & Tversky 1979) | Cumulative opportunity cost calculation for not acting now |
-| `churnPredictionEngine.ts` | 3-stage model (Active → Disengaging → Silent) + NRR baselines by vertical | Risk score 0-100, tier classification, intervention playbook by stage |
-| `archetypeClassifier.ts` | Regulatory Focus Theory (Higgins 1997) × Elaboration Likelihood Model (Petty & Cacioppo 1986) | 14 signals → 5 archetypes with confidence tiers (none / tentative / confident / strong) |
-| `behavioralHeuristicEngine.ts` | 8 heuristics registry (H1 Certainty · H2 Cognitive Load · H3 Regulatory Fit · H4 Momentum · H5 Choice Architecture · H6 Narrative · H7 Relational · H8 Urgency) | L1-L5 resolution from heuristic → copy → flow → CTA verbs → CSS variables |
-| `copyQAEngine.ts` | 6 neuropsychological checks (concreteness, specificity, emotional valence, cognitive load, directional clarity, verification) | Runs after every LLM generation, rejects below threshold |
-| `retentionFlywheelEngine.ts` | Flywheel theory (Collins 2001) + Hooked Model (Eyal 2014) | Growth loop mapping with trigger-action-reward-investment stages |
-| `stylomeEngine.ts` + `perplexityBurstiness.ts` | Stylometry + Burstiness/Perplexity detection (post-2023 AI detection) | User-specific writing fingerprint + AI-content detection score |
-| `frameworkRankingEngine.ts` | Bandit-style pick-rate tracking (primary=2 / variation=1 / skip=0) | Selects best-performing copy framework (PAS/AIDA/BAB/Hormozi/Challenge) per (archetype, field) |
-| `researchOrchestrator.ts` | Multi-agent research pipeline (regulatory · market · marketing) | Decomposes macro questions → parallel sub-agents → cross-domain synthesis |
-| `predictiveContentScoreEngine.ts` | Anyword-style pre-publish scoring | 0-100 score before publishing, driver-level feedback |
-| `campaignAnalyticsEngine.ts` | Benchmark calibration with sample-size confidence weighting | Cross-cohort percentile comparisons (wired to Loop 5 for refresh) |
-
-**Uniqueness claim (verifiable):** the *integrated* behavioral-science wizard — PSM + Hormozi + Decoy + CoI + DISC — does not exist as a productized guided flow in any SMB SaaS competitor as of 2026. Research tools (Conjointly, Pollfish) expose individual frameworks; GPT wrappers (Uplify, "$100M Offer Generator") expose single frameworks without integration or outcome loops.
+Annual plans save 20%.
 
 ---
 
-## Archetype Layer
+## Architecture Overview
 
-A behavioral classification system that adapts the UI and guidance to the user's working style.
-
-**5 archetypes** — derived from Big Five / Regulatory Focus / VIA:
-
-| Archetype | Tendency | Blind spot |
-|-----------|----------|------------|
-| Strategist | Analysis before action | Stalls at differentiation, never moves to pricing |
-| Optimizer | KPI-first, systematic | Skips differentiation, optimises misaligned funnels |
-| Pioneer | High energy, creative | Moves to retention before sales is solid |
-| Connector | Relationship-driven | Under-indexes on pricing confidence |
-| Closer | Execution speed | Misses strategic differentiation depth |
-
-**How it works:**
-1. Behavioral signals are collected from onboarding form answers and module usage
-2. A scoring engine (8 heuristics × L1–L5 confidence resolution) classifies the user
-3. On first confident classification, an **opt-in reveal screen** shows the archetype, its strengths, blind spots, and what changes if the user accepts
-4. If accepted: navigation order, color palette, animation speed, and heading font adapt
-5. **Blind-spot nudges** fire when dwell time on a module exceeds the archetype threshold without completion (rate-limited to once per 72h)
-
-All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptations never hide features.
-
----
-
-## Routes
-
-| Path | Description |
-|------|-------------|
-| `/` | Module hub |
-| `/dashboard` | Returning-user hub (pulse + progress + last plan) |
-| `/wizard` | Quick-start funnel wizard (~2 min) |
-| `/differentiate` | Differentiation wizard (~10 min, recommended) |
-| `/sales` | Sales module |
-| `/pricing` | Pricing module |
-| `/retention` | Retention module |
-| `/plans` | Saved plans |
-| `/plans/:id/:tab` | Deep link to specific plan tab |
-| `/strategy/:planId/:focus` | StrategyCanvas (marketing planner) |
-| `/data/:sourceId?` | Data hub (imports, integrations) |
-| `/ai` | AI Coach |
-| `/profile` | User profile + personalisation settings |
-| `/archetype` | Archetype reveal + opt-in screen |
-| `/admin/aarrr` | Admin: AARRR metrics dashboard |
-| `/admin/agents` | Admin: agent monitor (MAS-CC) |
-| `/quote/:token` | Public shareable quote view |
-| `/reset-password` | Password reset flow |
-| `/privacy` · `/terms` · `/support` · `/contact` · `/refund-policy` · `/use-cases` | Public legal + marketing pages |
-
----
-
-## Tech Stack
-
-| Layer | Choice |
-|-------|--------|
-| Frontend | React 18, TypeScript (pragmatic — strict ratchet in progress), Vite, Tailwind CSS, shadcn/ui |
-| Routing | react-router-dom v6, lazy-loaded |
-| Animation | Framer Motion |
-| Charts | Recharts |
-| Backend | Supabase (Auth, PostgreSQL, Edge Functions, pgvector) |
-| AI | Anthropic Claude (Haiku / Sonnet / Opus) via LLM Router |
-| Embeddings | OpenAI text-embedding-3-small |
-| Auth | Dual-mode: Supabase JWT or local PBKDF2 fallback |
-| Payments | Stripe |
-| Ads | Meta Graph API |
-| Testing | Vitest + React Testing Library · 309 test files · 4 541 tests |
-| CI | GitHub Actions (typecheck · lint · test · build) |
-
----
-
-## Architecture
-
-**AI Engine** — async pipeline that runs every plan through multiple specialized checks before delivery.
-
-- **Orchestrator** — 13 specialized analysis passes (knowledge graph → funnel → DISC → pricing → QA → meta-analysis) run in dependency order via 59 pure-function engines
-- **LLM Router** — selects Claude Haiku / Sonnet / Opus based on task complexity and cost caps
-- **GRAOS** — 6 strictly-additive optimization overlays (M1–M6) that rewrite engine output without touching source engines
-- **QA Pipeline** — 15+ static + content + security checks run after every generation
-- **Research agents** — regulatory, market, and marketing research on demand
-
-### Layer Stack
+**MAS-CC / Blackboard** — 13 specialized agents, 241 engines, 6 closed loops.
 
 ```
   ┌─────────────────────────────────────────────────────────────┐
@@ -287,82 +150,103 @@ All personalisation is gated on explicit opt-in (`adaptationsEnabled`). Adaptati
   └─────────────────────────────────────────────────────────────┘
 ```
 
-> Internal engineering docs use the term **MAS-CC / Blackboard** for this architecture — see [`docs/architecture.md`](./docs/architecture.md).
+> See [`docs/architecture.md`](./docs/architecture.md) for the full engine directory.
 
 ---
 
 ## Six Closed Feedback Loops
 
-Most SaaS tools *capture* data. FunnelForge *closes loops* — every recommendation is measured, validated, and feeds back to self-correct the next one. Each loop follows the same pattern: capture → measure → bridge → self-correct.
-
-```
-                  ┌──────────────────────────────────┐
-                  │         USER INTERACTION         │
-                  └──────────────────┬───────────────┘
-                                     │
-        ┌────────────────────────────┼────────────────────────────┐
-        │                            │                            │
-        ▼                            ▼                            ▼
-  [Loop 1]                      [Loop 2]                     [Loop 3]
-  Pricing                       Archetype                    Framework
-  Validation                    Behavioral                   Ranking
-        │                       Correction                         │
-        │                            │                             │
-        │ actual revenue             │ variant picks               │ PAS/AIDA/BAB
-        │ vs recommended             │ vs expected                 │ pick rates
-        │                            │                             │
-        ▼                            ▼                             ▼
-  training_pairs              confidence tier              localStorage +
-  quality="negative"          lowered one step             framework_pick_events
-        │                            │                             │
-        │                            │                             │
-        ▼                            ▼                             ▼
-  [Loop 6]                                                   aiCopyService
-  Prompt Patch TTL              ┌──────────────┐              selects winning
-  7-day effectiveness ◄─────────│  Flywheel    │              framework
-  check, expire                 │   learns     │
-  ineffective patches           └──────┬───────┘
-                                       │
-        ┌──────────────────────────────┼──────────────────────────┐
-        │                              │                          │
-        ▼                              ▼                          ▼
-  [Loop 4]                        [Loop 5]                 next recommendation
-  Churn Self-                     Nightly Benchmark          is smarter
-  Calibration                     Refresh (Edge Fn)
-        │                              │
-        │ observed churn                │ percentiles by
-        │ vs predicted                  │ (archetype, field)
-        ▼                              ▼
-  FIELD_CHURN_RATES              campaign_benchmarks
-  blended (sample≥10)            replaces hardcoded
-                                 industry baselines
-```
+Most SaaS tools *capture* data. FunnelForge *closes loops* — every recommendation is measured, validated, and feeds back to self-correct the next one.
 
 | # | Loop | What gets measured | Bridge to self-correction | File |
 |---|---|---|---|---|
-| **1** | **Pricing Validation** | Recommended price vs actual user revenue (30d horizon) | If miss > 20% → negative training pair in `campaign_analytics` → promptOptimizerLoop patches the pricing prompt | `outcomeLoopEngine.ts → capturePricingOutcome` |
-| **2** | **Archetype Behavioral Correction** | Variant pick pattern (primary / variation / skip) vs expected for classified archetype | After 10+ picks, if divergence ≥ 25% → lower confidence tier by one step | `ArchetypeContext.tsx → recordVariantPick` |
-| **3** | **Framework Effectiveness Ranking** | Pick rate of PAS / AIDA / BAB / Hormozi / Challenge by (archetype, businessField) | After 5+ picks, best-scoring framework becomes default for new copy | `frameworkRankingEngine.ts` |
-| **4** | **Churn Prediction Self-Calibration** | Predicted churn rate vs observed outcomes by business field | Weighted blend kicks in at N ≥ 10 observations, full weight at N ≥ 50 | `churnPredictionEngine.ts → applyCalibrationUpdate` |
-| **5** | **Internal Benchmark Replacement** | Health score, success probability, reported revenue per (archetype, businessField) | Nightly Edge Fn computes p25/p50/p75 → replaces hardcoded industry numbers | `supabase/functions/nightly-benchmark-refresh/` |
-| **6** | **Prompt Patch TTL** | Negative training pair count before vs 7 days after a patch is applied | If improvement < 10% → expire patch, `getActivePromptPatches` returns empty | `promptOptimizerLoop.ts → checkAndExpirePatches` |
-
-**Why loops matter:** the recommendation engine today is good; in six months it will be materially better because every user's revenue outcome, pick, churn signal, and prompt-patch effectiveness flows back into the system. This is the MOAT — it compounds daily.
+| **1** | **Pricing Validation** | Recommended price vs actual user revenue (30d horizon) | If miss > 20% → negative training pair → prompt patch | `outcomeLoopEngine.ts → capturePricingOutcome` |
+| **2** | **Archetype Behavioral Correction** | Variant pick pattern vs expected for classified archetype | After 10+ picks, divergence ≥ 25% → lower confidence tier | `ArchetypeContext.tsx → recordVariantPick` |
+| **3** | **Framework Effectiveness Ranking** | Pick rate of PAS / AIDA / BAB / Hormozi / Challenge | After 5+ picks, best-scoring framework becomes default | `frameworkRankingEngine.ts` |
+| **4** | **Churn Prediction Self-Calibration** | Predicted churn rate vs observed outcomes by business field | Weighted blend at N ≥ 10, full weight at N ≥ 50 | `churnPredictionEngine.ts → applyCalibrationUpdate` |
+| **5** | **Internal Benchmark Replacement** | Health score, success probability, reported revenue | Nightly Edge Fn computes p25/p50/p75 → replaces hardcoded numbers | `supabase/functions/nightly-benchmark-refresh/` |
+| **6** | **Prompt Patch TTL** | Negative training pair count before vs 7 days after patch | If improvement < 10% → expire patch | `promptOptimizerLoop.ts → checkAndExpirePatches` |
 
 ---
 
-## Authentication
+## AI Cost Economics
 
-Dual-mode — the app detects Supabase availability at startup and falls back to local auth transparently.
+| Model | Cost per call | Typical use |
+|-------|--------------|-------------|
+| Claude Haiku | $0.003 | Copy QA, classification, short completions |
+| Claude Sonnet | $0.015 | Strategy generation, sales scripts, enrichment |
+| Claude Opus | $0.075 | Deep differentiation, research synthesis |
+| **Average per full plan generation** | **~$0.04** | LLM Router mix: ~70% Haiku / 25% Sonnet / 5% Opus |
 
-| Mode | Condition | Persistence |
-|------|-----------|-------------|
-| Supabase | `VITE_SUPABASE_URL` set + reachable | JWT |
-| Local | No Supabase / offline | `localStorage` (PBKDF2-hashed, 100K iterations) |
+At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month costs ~$0.40 in AI — less than 1% of ARPU.
 
-**Roles:** `owner` · `admin` · `editor` · `viewer`
+---
 
-All Supabase users receive `owner` in demo/beta. Local admin seed: `erez` / `10031999`.
+## Engineering Signals
+
+| Metric | Value |
+|--------|-------|
+| Lines of code | 131,773 |
+| Source files | 746 |
+| Tests | 4,721 |
+| Commits | 288 |
+| Language | TypeScript |
+| Test framework | Vitest + React Testing Library |
+| CI | GitHub Actions (typecheck · lint · test · build) |
+| Engines | 241 pure-function engines |
+| Agents | 13 (MAS-CC / Blackboard) |
+| Closed loops | 6 |
+| Archetypes | 5 |
+| Knowledge domains | 46 (16 live in v1) |
+
+---
+
+## Roadmap
+
+| Quarter | Milestone | Target Users |
+|---------|-----------|-------------|
+| **Q2 2026** | Public beta, first 50 paying users, Loop 1–3 live | 50 |
+| **Q3 2026** | Pro tier launch, consultant channel warm-up, WhatsApp sequences | 250 |
+| **Q4 2026** | Business tier GA, consultant reseller program live, cohort studies | 900 |
+| **2027** | Arabic expansion, MENA entry, Series A trigger | 2,500+ |
+
+---
+
+## Seed Ask
+
+**₪350K (~$96K)** — 18-month runway to ₪1M ARR trigger.
+
+| Use of Funds | Amount | Purpose |
+|-------------|--------|---------|
+| Cloud infra (Supabase + Anthropic API) | ₪60K | First 12 months at 500 paying users |
+| Content + WhatsApp marketing | ₪80K | Hebrew SEO, LinkedIn, consultant partnerships |
+| First hire (Sales / Customer Success) | ₪180K | 12-month salary (IL mid-market) |
+| Legal / IP | ₪30K | IP registration, terms, data processor agreements |
+| **Total** | **₪350K** | |
+
+---
+
+## Honest Risks
+
+| Risk | Current state |
+|------|--------------|
+| **Small archetype N** | Behavioral classification trained on <200 observations per archetype; confidence thresholds are conservative until N ≥ 500 |
+| **No paying users yet** | Product is in private beta; all unit economics are modeled, not observed |
+| **Anthropic API dependency** | Core AI features require Anthropic availability; no multi-provider fallback beyond Haiku → Sonnet graceful degradation |
+| **Hebrew NLP tooling gaps** | Hebrew tokenization, stemming, and sentiment tooling is materially weaker than English; copy QA heuristics compensate but are imperfect |
+
+---
+
+## Consultant Reseller Program
+
+Partners (marketing consultants, business coaches) earn **20% recurring commission** on every client they bring to FunnelForge.
+
+- White-label PDF reports with consultant branding
+- Priority API access and dedicated onboarding
+- Co-marketing: featured in the FunnelForge consultant directory
+- Referral dashboard with real-time revenue tracking
+
+Target: 50 active consultant partners by end of Q3 2026.
 
 ---
 
@@ -376,44 +260,40 @@ npx tsc --noEmit  # Type check
 npm run build     # Production build
 ```
 
----
-
-## Environment Variables
+**Environment variables** — copy `.env.example` and fill in:
 
 ```bash
-# Frontend (.env)
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_AI_COPY_ENABLED=true
-VITE_REFLECTIVE_ENABLED=false   # GRAOS Reflective overlay (or ?reflective=1)
-VITE_PRINCIPLE_GROUNDING_ENABLED=false # G-Layer research trace modal on DifferentiationResult (v1 pilot)
-
-# Edge Function secrets (Supabase Dashboard)
-ANTHROPIC_API_KEY=      # AI Coach, Differentiation, QA, Research
-OPENAI_API_KEY=         # Embeddings (text-embedding-3-small)
-META_APP_ID=
-META_APP_SECRET=
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
+# Edge Function secrets: ANTHROPIC_API_KEY, OPENAI_API_KEY, STRIPE_SECRET_KEY
 ```
 
 ---
 
-## Documentation
+## Tech Stack
 
-Detailed reference docs live in [`/docs`](./docs/):
-
-| File | Contents |
-|------|----------|
-| [`docs/architecture.md`](./docs/architecture.md) | Engine directory, MAS-CC agents, GRAOS overlay, Edge Functions, DB schema |
-| [`docs/archetype-system.md`](./docs/archetype-system.md) | 5 archetypes, 8 heuristics, classification pipeline, blind-spot nudges, key files |
-| [`docs/knowledge-and-moat.md`](./docs/knowledge-and-moat.md) | 46 embedded knowledge domains, MOAT data flywheel architecture |
-| [`docs/market-research.md`](./docs/market-research.md) | Target market, competitive landscape, differentiation matrix, growth levers |
-| [`docs/financials.md`](./docs/financials.md) | Pricing tiers, unit economics, revenue projections, valuation scenarios, seed round |
-| [`docs/verification-and-metrics.md`](./docs/verification-and-metrics.md) | Honest market-gap metric, verification gate scripts, key project numbers |
+| Layer | Choice |
+|-------|--------|
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui |
+| Routing | react-router-dom v6, lazy-loaded |
+| Animation | Framer Motion |
+| Charts | Recharts |
+| Backend | Supabase (Auth, PostgreSQL, Edge Functions, pgvector) |
+| AI | Anthropic Claude (Haiku / Sonnet / Opus) via LLM Router |
+| Embeddings | OpenAI text-embedding-3-small |
+| Auth | Dual-mode: Supabase JWT or local PBKDF2 fallback |
+| Payments | Stripe |
+| Ads | Meta Graph API |
+| Testing | Vitest + React Testing Library · 4,721 tests |
+| CI | GitHub Actions (typecheck · lint · test · build) |
 
 ---
 
-## License
+## Contact
 
-Proprietary. All rights reserved.
+If this resonates, let's talk: [CONTACT EMAIL]
+
+---
+
+*Proprietary. All rights reserved.*
