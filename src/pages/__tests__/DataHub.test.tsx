@@ -51,6 +51,26 @@ vi.mock("@/components/DataSourceDetail", () => ({
   default: () => <div data-testid="data-source-detail" />,
 }));
 
+vi.mock("@/contexts/UserProfileContext", () => ({
+  useUserProfile: () => ({
+    completeMilestone: vi.fn(),
+  }),
+}));
+
+vi.mock("@/hooks/useAchievements", () => ({
+  useAchievements: () => ({
+    unlock: vi.fn(),
+    trackFeature: vi.fn(),
+    streak: { currentStreak: 0 },
+    masteryFeatures: new Set(),
+    achievements: [],
+    unlockedCount: 0,
+    totalCount: 10,
+    isUnlocked: vi.fn(() => false),
+    mastery: { percentage: 0, usedFeatures: 0, totalFeatures: 10, categories: [] },
+  }),
+}));
+
 describe("DataHub", () => {
   beforeEach(() => {
     vi.clearAllMocks();

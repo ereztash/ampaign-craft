@@ -5,6 +5,15 @@ vi.mock("@/contexts/AuthContext", () => ({
   useAuth: vi.fn(),
 }));
 
+vi.mock("@/contexts/UserProfileContext", () => ({
+  useUserProfile: vi.fn(() => ({
+    profile: {
+      milestones: { formCompleted: false, firstPlanSaved: false, dataSourceConnected: false, stylomeAnalyzed: false, coachUsed: false },
+      investment: { plansCreated: 0, modulesCompleted: 0, totalVisits: 0, firstSeenDate: null, totalSessionsMinutes: 0 },
+    },
+  })),
+}));
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useFeatureGate } from "../useFeatureGate";
 
