@@ -22,6 +22,7 @@ import { PMFSurveyModal } from "@/components/PMFSurveyModal";
 import { NPSWidget } from "@/components/NPSWidget";
 import { isAdminRole } from "@/lib/roles";
 import AuthDebugPanel from "@/components/AuthDebugPanel";
+import { ProgressSyncManager } from "@/components/ProgressSyncManager";
 
 /** Guard: redirects non-owner/admin users to home with a login-required hint. */
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -155,6 +156,7 @@ const App = () => (
                   <Suspense fallback={<LoadingFallback />}>
                     <AnimatedRoutes />
                   </Suspense>
+                  <ProgressSyncManager />
                   <CheckoutReturnHandler />
                   <ConsentBanner />
                   <PMFSurveyModal />

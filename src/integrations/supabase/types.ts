@@ -146,6 +146,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progress: {
+        Row: {
+          user_id: string
+          milestones: Json
+          investment: Json
+          mastery_features: string[]
+          achievements: Json
+          streak: Json
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          milestones?: Json
+          investment?: Json
+          mastery_features?: string[]
+          achievements?: Json
+          streak?: Json
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          milestones?: Json
+          investment?: Json
+          mastery_features?: string[]
+          achievements?: Json
+          streak?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
