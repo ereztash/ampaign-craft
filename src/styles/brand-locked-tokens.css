@@ -1,0 +1,81 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BRAND-LOCKED TOKENS — IMMUTABLE IDENTITY ANCHORS
+   ═══════════════════════════════════════════════════════════════════
+
+   These three anchors are FunnelForge's Distinctive Brand Asset (DBA).
+   Romaniuk (2012): a color becomes a recall trigger only after years
+   of consistent exposure. Modifying these tokens resets that clock.
+
+   AMENDMENT PROCESS
+   ─────────────────
+   1. Open a PR with [brand-amendment] in the description.
+   2. Attach a link to a design review approved by a product lead.
+   3. The brand-lock-warn CI job will post a warning — this is expected.
+   4. Two senior reviewers must approve before merge.
+
+   5 MOAT SOURCES THESE TOKENS SERVE
+   ───────────────────────────────────
+   1. Distinctive Brand Asset (Romaniuk) — navy+green become recall
+      triggers without a logo after 5+ years of consistency.
+   2. Process Power (Helmer) — variants of --accent and --cor-* are
+      A/B'd; winning values are promoted to archetype defaults. The
+      (archetype × palette × stage) lookup accumulates as IP.
+   3. Counter-positioning — navy+green forces HubSpot (purple),
+      Salesforce (light-blue), Mailchimp (yellow) to either abandon
+      their global identity or concede this niche.
+   4. Cornered cultural resource — blue=trust (Bank Hapoalim, El Al),
+      green=growth (secular, financial), white=clean (government).
+      Encoded in --brand-canvas-anchor.
+   5. Regulatory & locale embedding — Israeli privacy law + RTL-as-core
+      + locale-specific semantic colors baked here; structural barrier
+      international SaaS cannot match without abandoning global identity.
+
+   BROWSER SUPPORT STRATEGY
+   ────────────────────────
+   HSL values: universal (primary specification).
+   OKLCH values: progressive enhancement via @supports.
+     Chrome 111+ | Safari 16.4+ | Firefox 113+
+     For older WebViews in the Israeli market: HSL fallback automatic.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── LOCKED ANCHOR VALUES (HSL — primary specification) ─────────── */
+/* CHECK SCRIPT MARKER: BRAND_LOCKED_TOKEN_START */
+:root {
+  --brand-navy-anchor-hsl:   216 68% 26%;   /* Deep Navy  — trust anchor  */
+  --brand-growth-anchor-hsl: 152 58% 40%;   /* Growth Green — reward signal */
+  --brand-canvas-anchor-hsl: 210 22% 98%;   /* Warm Canvas — cognitive rest */
+}
+.dark {
+  --brand-navy-anchor-hsl:   213 65% 65%;
+  --brand-growth-anchor-hsl: 152 52% 52%;
+  --brand-canvas-anchor-hsl: 222 24%  7%;
+}
+/* CHECK SCRIPT MARKER: BRAND_LOCKED_TOKEN_END */
+
+/* ── OKLCH ENHANCED VALUES (progressive enhancement) ─────────────
+   These are the forward-looking form of the same anchors.
+   H (hue) and C (chroma) are the locked dimensions.
+   L (lightness) is computed per tonal step in tonalScale.ts.
+   ────────────────────────────────────────────────────────────────── */
+@supports (color: oklch(0% 0 0)) {
+  :root {
+    --brand-navy-anchor-oklch:   oklch(0.35 0.12 255);
+    --brand-growth-anchor-oklch: oklch(0.52 0.14 148);
+    --brand-canvas-anchor-oklch: oklch(0.98 0.02 255);
+  }
+  .dark {
+    --brand-navy-anchor-oklch:   oklch(0.65 0.09 255);
+    --brand-growth-anchor-oklch: oklch(0.62 0.11 148);
+    --brand-canvas-anchor-oklch: oklch(0.11 0.02 255);
+  }
+}
+
+/* ── OKLCH ANCHOR PARAMS (Hue + Chroma only — LOCKED) ───────────── */
+:root {
+  --brand-navy-h:   255;    /* Hue: LOCKED */
+  --brand-navy-c:   0.12;   /* Chroma: LOCKED */
+  --brand-growth-h: 148;    /* Hue: LOCKED */
+  --brand-growth-c: 0.14;   /* Chroma: LOCKED */
+  --brand-canvas-h: 255;    /* Hue: LOCKED */
+  --brand-canvas-c: 0.02;   /* Chroma: LOCKED (low — neutral with navy tint) */
+}

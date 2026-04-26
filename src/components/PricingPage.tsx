@@ -71,7 +71,7 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
               className={`relative ${isPopular ? "border-primary shadow-lg" : ""} ${isCurrent ? "ring-2 ring-accent" : ""}`}
             >
               {isPopular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 funnel-gradient border-0 text-accent-foreground">
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground border-0">
                   {tx({ he: "הכי פופולרי", en: "Most Popular" }, language)}
                 </Badge>
               )}
@@ -124,7 +124,7 @@ const PricingPage = ({ currentTier = "free", onSelectTier }: PricingPageProps) =
                   ))}
                 </div>
                 <Button
-                  className={`w-full ${isPopular ? "funnel-gradient border-0 text-accent-foreground" : ""}`}
+                  className={`w-full ${isPopular ? "bg-primary text-primary-foreground border-0" : ""}`}
                   variant={isPopular ? "default" : "outline"}
                   disabled={isCurrent}
                   onClick={() => onSelectTier?.(tier.id, cycle)}

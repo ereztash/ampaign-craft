@@ -421,7 +421,7 @@ const BrandDiagnosticTab = ({ personalBrand }: BrandDiagnosticTabProps) => {
                 {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </Button>
             ) : (
-              <Button onClick={handleCalculate} className="gap-2 funnel-gradient border-0 text-accent-foreground">
+              <Button onClick={handleCalculate} className="gap-2 bg-primary text-primary-foreground border-0">
                 <Sparkles className="h-4 w-4" />
                 {language === "he" ? "חשב ציון" : "Calculate Score"}
               </Button>

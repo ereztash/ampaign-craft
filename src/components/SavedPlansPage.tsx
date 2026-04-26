@@ -76,7 +76,7 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
           {compareIds.length === 2 && (
             <Button
               onClick={() => setShowCompare(true)}
-              className="gap-2 funnel-gradient border-0 text-accent-foreground"
+              className="gap-2 bg-primary text-primary-foreground border-0"
             >
               <GitCompare className="h-4 w-4" />
               {t("comparePlans")}
@@ -107,7 +107,7 @@ const SavedPlansPage = ({ onBack, onLoadPlan }: SavedPlansPageProps) => {
                 <Button
                   size="lg"
                   onClick={onBack}
-                  className="gap-2 funnel-gradient border-0 text-accent-foreground"
+                  className="gap-2 bg-primary text-primary-foreground border-0"
                 >
                   <Rocket className="h-5 w-5" aria-hidden="true" />
                   {language === "he" ? "צור תוכנית ראשונה" : "Create first plan"}

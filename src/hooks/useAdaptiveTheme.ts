@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { getL5CSSVars } from "@/engine/behavioralHeuristicEngine";
+import { getVariant } from "@/lib/abVariants";
+import { getVariantAccentHsl } from "@/lib/paletteVariantGenerator";
 
 /**
  * Adaptive Theme Hook
@@ -15,6 +18,7 @@ import { getL5CSSVars } from "@/engine/behavioralHeuristicEngine";
  */
 export function useAdaptiveTheme() {
   const { profile } = useUserProfile();
+  const { user } = useAuth();
   const { effectiveArchetypeId, confidenceTier, uiConfig, adaptationsEnabled } = useArchetype();
 
   useEffect(() => {
@@ -98,4 +102,46 @@ export function useAdaptiveTheme() {
       });
     };
   }, [effectiveArchetypeId, confidenceTier, adaptationsEnabled]);
+
+  // Palette variant injection (Color Moat — Sprint 2).
+  // Injects the assigned accent variant into --accent for the active archetype.
+  // Gate: same confidence tier as archetype adaptation (opted-in + confident/strong).
+  // Only --accent is overridden; locked anchors (--primary, --background) are never touched.
+  // Variants are pre-validated by paletteVariantGenerator.ts (WCAG AA + APCA + CB-safe).
+  useEffect(() => {
+    const el = document.documentElement;
+    if (!adaptationsEnabled || (confidenceTier !== "confident" && confidenceTier !== "strong")) {
+      el.style.removeProperty("--accent");
+      el.removeAttribute("data-palette-variant");
+      return;
+    }
+
+    const experimentId = `palette_accent_${effectiveArchetypeId}`;
+    const userId = user?.id ?? undefined;
+    const variantId = getVariant(experimentId, userId);
+
+    if (variantId === "control") {
+      el.style.removeProperty("--accent");
+      el.removeAttribute("data-palette-variant");
+      return;
+    }
+
+    const accentHsl = getVariantAccentHsl(
+      effectiveArchetypeId as Parameters<typeof getVariantAccentHsl>[0],
+      variantId,
+    );
+
+    if (accentHsl) {
+      el.style.setProperty("--accent", accentHsl);
+      el.setAttribute("data-palette-variant", `${effectiveArchetypeId}:${variantId}`);
+    } else {
+      el.style.removeProperty("--accent");
+      el.removeAttribute("data-palette-variant");
+    }
+
+    return () => {
+      el.style.removeProperty("--accent");
+      el.removeAttribute("data-palette-variant");
+    };
+  }, [effectiveArchetypeId, confidenceTier, adaptationsEnabled, user?.id]);
 }

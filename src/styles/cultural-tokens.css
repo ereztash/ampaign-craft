@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CULTURAL TOKENS — Israeli SMB Color Conventions
+   ═══════════════════════════════════════════════════════════════════
+
+   Source 5 of the Color Moat: Regulatory & Locale Embedding.
+   These tokens encode Israeli market color semantics that international
+   SaaS competitors (HubSpot, Salesforce, Mailchimp) cannot match
+   without abandoning their global identity.
+
+   References: docs/knowledge-and-moat.md rows 4 (Israeli Culture),
+   5 (Hebrew Linguistics), 37 (Israeli Regulatory).
+
+   CONVENTION NOTES (Tufte: every color encodes information)
+   ──────────────────────────────────────────────────────────
+   Red in Israeli retail: discount / sale / תג מחיר (price tag).
+       NOT the same as --destructive (system error). Distinct semantic role.
+   Blue in Israeli trust: Bank Hapoalim, El Al, government services.
+       Aligned with --brand-navy-anchor. Documents intent.
+   White in Israeli context: clean government, legal, tax — neutral authority.
+       Used in tax/legal/compliance UI screens.
+   Green in Israeli context: secular growth, financial progress (not religious).
+       Aligned with --brand-growth-anchor. Documents intent.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Discount / sale signal — Shufersal red, HaShuk red
+     DO NOT confuse with --destructive (system errors).
+     This is the commercial "מבצע / הנחה" signal only.           */
+  --cultural-discount-red:            4 78% 48%;
+  --cultural-discount-red-foreground: 0 0% 100%;
+  --cultural-discount-red-bg:         4 78% 96%;   /* surface tint */
+
+  /* Trust / authority — Bank Hapoalim / El Al / government blue
+     Intentionally aligned with --brand-navy-anchor.
+     Declares: FunnelForge's primary color occupies the
+     Israeli institutional trust position.                        */
+  --cultural-trust-blue:              216 68% 26%;  /* = --brand-navy-anchor-hsl */
+  --cultural-trust-blue-foreground:   0 0% 100%;
+
+  /* Government-clean / legal / tax screens
+     White-grey neutral palette. Signals official, authoritative.
+     Used in legal disclaimers, tax screens, compliance UI.       */
+  --cultural-government-clean:        210 12% 96%;
+  --cultural-government-clean-border: 214 14% 82%;
+  --cultural-government-clean-text:   215 22% 25%;
+
+  /* Growth / financial success (secular green — not religious)
+     Intentionally aligned with --brand-growth-anchor.            */
+  --cultural-growth-green:            152 58% 40%;  /* = --brand-growth-anchor-hsl */
+  --cultural-growth-green-foreground: 0 0% 100%;
+
+  /* Shabbat / Holiday quiet mode (applied by calendarPaletteEngine)
+     Referenced from calendarPaletteEngine.ts — do not rename.   */
+  --cultural-holiday-mute-saturation-delta: -15;   /* % reduction */
+  --cultural-solemn-saturation-delta:       -20;   /* Yom Kippur / Yom HaZikaron */
+}
+
+.dark {
+  --cultural-discount-red:    4 75% 58%;
+  --cultural-discount-red-bg: 4 75% 10%;
+
+  --cultural-trust-blue:      213 65% 65%;
+
+  --cultural-government-clean:        222 18% 14%;
+  --cultural-government-clean-border: 222 16% 22%;
+  --cultural-government-clean-text:   210 18% 82%;
+
+  --cultural-growth-green:    152 52% 52%;
+}

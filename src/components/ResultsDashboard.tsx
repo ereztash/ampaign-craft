@@ -481,7 +481,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           <Button variant="outline" size="sm" onClick={sharePlan} className="gap-1.5">
             <Share2 className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("sharePlan")}</span>
           </Button>
-          <Button size="sm" onClick={onNewPlan} className="gap-1.5 funnel-gradient border-0 text-accent-foreground">
+          <Button size="sm" onClick={onNewPlan} className="gap-1.5 bg-primary text-primary-foreground border-0">
             <Plus className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("newPlan")}</span>
           </Button>
         </div>
@@ -503,7 +503,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         ) : (
           <Button
             onClick={() => setCoachOpen(true)}
-            className="h-14 w-14 rounded-full shadow-lg funnel-gradient border-0 text-accent-foreground hover:opacity-90 transition-opacity"
+            className="h-14 w-14 rounded-full shadow-lg bg-primary text-primary-foreground border-0 hover:opacity-90 transition-opacity"
             title={tx({ he: "מאמן שיווק AI", en: "AI Marketing Coach" }, language)}
           >
             <Bot className="h-6 w-6" />

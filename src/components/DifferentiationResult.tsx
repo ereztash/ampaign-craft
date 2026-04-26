@@ -278,7 +278,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
               ? "כל הסקריפטים, הנוסחאות וה-hooks ישתמשו בבידול שגילינו"
               : "All scripts, formulas, and hooks will use the differentiation we discovered"}
           </p>
-          <Button size="lg" onClick={() => { window.location.href = "/wizard"; }} className="gap-2 funnel-gradient border-0 text-accent-foreground">
+          <Button size="lg" onClick={() => { window.location.href = "/wizard"; }} className="gap-2 bg-primary text-primary-foreground border-0">
             <Sparkles className="h-5 w-5" />
             {intakeNeed === "time"
               ? tx({ he: "תוכנית ב-2 דקות →", en: "2-min plan →" }, language)

@@ -108,7 +108,7 @@ const OnboardingOverlay = () => {
               <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
-            <Button onClick={handleDismiss} className="gap-2 funnel-gradient border-0 text-accent-foreground">
+            <Button onClick={handleDismiss} className="gap-2 bg-primary text-primary-foreground border-0">
               {tx({ he: "בוא נתחיל!", en: "Let's go!" }, language)}
               <Rocket className="h-4 w-4" />
             </Button>

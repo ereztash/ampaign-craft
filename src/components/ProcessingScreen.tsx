@@ -85,7 +85,7 @@ const ProcessingScreen = ({ onComplete, formData, insights }: ProcessingScreenPr
           </div>
           {showContinue && (
             <div className="mt-6">
-              <Button size="lg" onClick={onComplete} className="funnel-gradient text-accent-foreground font-semibold px-8">
+              <Button size="lg" onClick={onComplete} className="bg-primary text-primary-foreground font-semibold px-8">
                 {tx({ he: "בוא נראה את התוצאות →", en: "See your results →" }, language)}
               </Button>
             </div>
@@ -136,7 +136,7 @@ const ProcessingScreen = ({ onComplete, formData, insights }: ProcessingScreenPr
               animate={{ opacity: 1, y: 0 }}
               className="mt-6"
             >
-              <Button size="lg" onClick={onComplete} className="funnel-gradient text-accent-foreground font-semibold px-8">
+              <Button size="lg" onClick={onComplete} className="bg-primary text-primary-foreground font-semibold px-8">
                 {tx({ he: "בוא נראה את התוצאות →", en: "See your results →" }, language)}
               </Button>
             </motion.div>

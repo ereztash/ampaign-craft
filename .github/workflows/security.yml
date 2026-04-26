@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write
   security-events: write
 
 jobs:
@@ -72,3 +72,49 @@ jobs:
             }
             console.log('npm audit clean (xlsx + @xmldom/xmldom allowlisted)');
           "
+
+  brand-lock-warn:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check brand-locked tokens
+        id: brand_check
+        run: |
+          bash scripts/check-brand-locked.sh > brand_check_output.txt 2>&1
+          cat brand_check_output.txt
+          if grep -q "BRAND LOCK WARNING" brand_check_output.txt; then
+            echo "has_violations=true" >> "$GITHUB_OUTPUT"
+            echo "output<<EOF" >> "$GITHUB_OUTPUT"
+            cat brand_check_output.txt >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_violations=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Post PR warning comment
+        if: steps.brand_check.outputs.has_violations == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `## ⚠ Brand-Locked Token Warning
+
+            This PR modifies a locked brand token (\`--brand-navy\`, \`--brand-growth\`, or \`--brand-canvas\`).
+
+            These three colors constitute FunnelForge's **Distinctive Brand Asset moat** (Romaniuk 2012). Modifying them resets 5+ years of brand-recall compounding.
+
+            **If this change is intentional:**
+            1. Add \`[brand-amendment]\` to the PR description.
+            2. Link to a design review approved by a product lead.
+            3. Get approval from two senior reviewers.
+
+            See \`docs/knowledge-and-moat.md\` § Brand-Asset Moat for the full amendment process.
+
+            > This warning is informational — it does not block merge.`;
+
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              body,
+              event: 'COMMENT',
+            });

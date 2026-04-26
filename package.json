@@ -17,7 +17,8 @@
     "test:coverage": "vitest run --coverage && bash scripts/check-coverage-critical.sh",
     "sync:pull": "bash scripts/sync-from-corsys.sh",
     "sync:push": "bash scripts/sync-to-corsys.sh",
-    "personas": "npx tsx scripts/persona-report.ts"
+    "personas": "npx tsx scripts/persona-report.ts",
+    "check:brand": "bash scripts/check-brand-locked.sh"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
