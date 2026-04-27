@@ -13,15 +13,7 @@ FunnelForge is the only AI-native growth platform that combines behavioral-scien
 
 ## Demo & Screenshots
 
-> 🎥 Demo: [ADD LINK]
-
-> 📸 Screenshots: [ADD FOLDER]
-
----
-
-## Founder
-
-> [FOUNDER BIO — replace with 1 paragraph]
+Live demo and screenshots are pending public-beta release (Q2 2026). For an investor walkthrough, contact the founder directly (see *Contact* below).
 
 ---
 
@@ -53,7 +45,7 @@ FunnelForge's primary defensibility is the **Romaniuk DBA color system**: each u
 
 | | FunnelForge | HubSpot | Jasper | GoHighLevel | Attio |
 |---|---|---|---|---|---|
-| **Hebrew-native** | ✅ 340+ keys, RTL, gendered copy | ❌ | ❌ | ❌ | ❌ |
+| **Hebrew-native** | ✅ 275+ keys, RTL, AI-driven gendered copy | ❌ | ❌ | ❌ | ❌ |
 | **Behavioral science** | ✅ PSM + Hormozi + Decoy + CoI + DISC | ⚠️ limited | ❌ copy only | ❌ | ❌ |
 | **Closed feedback loops** | ✅ 6 self-correcting loops | ⚠️ analytics only | ❌ | ❌ | ❌ |
 | **Archetype-adaptive UI** | ✅ 5 archetypes, L1–L5 | ❌ | ❌ | ❌ | ❌ |
@@ -117,7 +109,7 @@ Annual plans save 20%.
 ```
   ┌─────────────────────────────────────────────────────────────┐
   │  UI Layer — React + shadcn/ui + RTL + Archetype-adaptive    │
-  │  254 components · 56 pages · 42 hooks · L1-L5 resolution    │
+  │  263 components · 34 pages · 24 hooks · L1-L5 resolution    │
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
@@ -146,7 +138,7 @@ Annual plans save 20%.
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
   │  Persistence — Supabase Postgres + pgvector · Event Queue    │
-  │  RLS · 39 migrations · 23 Edge Functions · 1536-dim vectors  │
+  │  RLS · 45 migrations · 24 Edge Functions · 1536/384-dim     │
   └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -187,9 +179,9 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 | Metric | Value |
 |--------|-------|
 | Lines of code | 131,773 |
-| Source files | 746 |
-| Tests | 4,721 |
-| Commits | 288 |
+| Source files | 430 (excluding tests) |
+| Tests | 4,721 in 322 test files |
+| Migrations | 45 |
 | Language | TypeScript |
 | Test framework | Vitest + React Testing Library |
 | CI | GitHub Actions (typecheck · lint · test · build) |
@@ -292,7 +284,7 @@ VITE_AI_COPY_ENABLED=true
 
 ## Contact
 
-If this resonates, let's talk: [CONTACT EMAIL]
+If this resonates, let's talk. Security disclosures: see [`SECURITY.md`](./SECURITY.md). General inquiries: open an issue on this repository (private investor channel available on request).
 
 ---
 

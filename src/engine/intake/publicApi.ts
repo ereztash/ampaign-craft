@@ -30,7 +30,7 @@ import { classifyArchetype } from "@/engine/archetypeClassifier";
 import { inferDISCProfile } from "@/engine/discProfileEngine";
 import type { FormData } from "@/types/funnel";
 import type { ArchetypeId } from "@/types/archetype";
-import type { DISCProfile } from "@/types/funnel";
+import type { DISCProfile } from "@/engine/discProfileEngine";
 
 /** Public input contract — keep field names stable. */
 export interface ClassifyLeadInput {

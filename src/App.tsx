@@ -89,6 +89,7 @@ const Terms = lazy(() => import("./pages/legal/Terms"));
 const Support = lazy(() => import("./pages/Support"));
 const Contact = lazy(() => import("./pages/Contact"));
 const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
+const Subprocessors = lazy(() => import("./pages/legal/Subprocessors"));
 const UseCases = lazy(() => import("./pages/UseCases"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
@@ -158,6 +159,7 @@ const AnimatedRoutes = () => {
             <Route path="support" element={<Support />} />
             <Route path="contact" element={<Contact />} />
             <Route path="refund-policy" element={<RefundPolicy />} />
+            <Route path="subprocessors" element={<Subprocessors />} />
             <Route path="use-cases" element={<UseCases />} />
             <Route path="*" element={<NotFound />} />
           </Route>

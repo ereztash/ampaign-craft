@@ -16,6 +16,7 @@ vi.mock("@/lib/safeStorage", () => ({
   safeStorage: {
     getJSON: vi.fn().mockReturnValue(null),
     setJSON: vi.fn(),
+    remove: vi.fn(),
   },
 }));
 
@@ -28,70 +29,79 @@ describe("ConsentBanner", () => {
     render(
       <MemoryRouter>
         <ConsentBanner />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
-    expect(screen.getByText("Privacy & Terms of Service")).toBeInTheDocument();
+    expect(screen.getByText("Privacy & Consent")).toBeInTheDocument();
   });
 
-  it("shows data processing text", () => {
+  it("shows accept-all and reject-all buttons (Planet49 / GDPR symmetric choice)", () => {
     render(
       <MemoryRouter>
         <ConsentBanner />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
-    expect(
-      screen.getByText(
-        "We process your business and marketing information to provide personalized recommendations. Data is stored securely and not shared with third parties."
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText("Accept all")).toBeInTheDocument();
+    expect(screen.getByText("Reject all")).toBeInTheDocument();
+    expect(screen.getByText("Customize")).toBeInTheDocument();
   });
 
-  it("shows privacy policy link", () => {
+  it("shows privacy policy and subprocessors links", () => {
     render(
       <MemoryRouter>
         <ConsentBanner />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(screen.getByText("Privacy policy")).toBeInTheDocument();
-  });
-
-  it("shows terms link", () => {
-    render(
-      <MemoryRouter>
-        <ConsentBanner />
-      </MemoryRouter>
-    );
+    expect(screen.getByText("Subprocessors")).toBeInTheDocument();
     expect(screen.getByText("Terms")).toBeInTheDocument();
   });
 
-  it("shows accept button", () => {
+  it("does NOT pre-tick any checkbox (Planet49 compliance)", () => {
     render(
       <MemoryRouter>
         <ConsentBanner />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
-    expect(screen.getByText("Accept & Continue")).toBeInTheDocument();
-  });
-
-  it("shows data processing checkbox checked by default", () => {
-    render(
-      <MemoryRouter>
-        <ConsentBanner />
-      </MemoryRouter>
-    );
+    fireEvent.click(screen.getByText("Customize"));
     const checkboxes = document.querySelectorAll('[role="checkbox"]');
-    // First checkbox (data processing) should be checked
-    expect(checkboxes[0]).toHaveAttribute("aria-checked", "true");
+    checkboxes.forEach((cb) => {
+      expect(cb).toHaveAttribute("aria-checked", "false");
+    });
   });
 
-  it("calls onAccept when accept button clicked", () => {
+  it("calls onAccept when Accept all is clicked", () => {
     const onAccept = vi.fn();
     render(
       <MemoryRouter>
         <ConsentBanner onAccept={onAccept} />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
-    fireEvent.click(screen.getByText("Accept & Continue"));
+    fireEvent.click(screen.getByText("Accept all"));
     expect(onAccept).toHaveBeenCalled();
+  });
+
+  it("calls onAccept when Reject all is clicked", () => {
+    const onAccept = vi.fn();
+    render(
+      <MemoryRouter>
+        <ConsentBanner onAccept={onAccept} />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByText("Reject all"));
+    expect(onAccept).toHaveBeenCalled();
+  });
+
+  it("toggles to detailed view via Customize", () => {
+    render(
+      <MemoryRouter>
+        <ConsentBanner />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByText("Customize"));
+    expect(screen.getByText("Save selection")).toBeInTheDocument();
+    expect(screen.getByText("Necessary processing")).toBeInTheDocument();
+    // The granular AI/marketing toggles are rendered.
+    expect(screen.getByText("AI improvement")).toBeInTheDocument();
+    expect(screen.getByText("Marketing")).toBeInTheDocument();
   });
 });

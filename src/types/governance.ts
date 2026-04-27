@@ -8,6 +8,7 @@ export interface ConsentRecord {
   dataProcessing: boolean;
   trainingDataOptIn: boolean;
   marketingEmails: boolean;
+  analytics: boolean;
   consentedAt: string;
   version: string; // consent form version (e.g. "1.0")
 }
@@ -24,8 +25,9 @@ export const DEFAULT_CONSENT: ConsentRecord = {
   dataProcessing: false,
   trainingDataOptIn: false,
   marketingEmails: false,
+  analytics: false,
   consentedAt: "",
-  version: "1.0",
+  version: "2.0",
 };
 
 // Role-based permission matrix
