@@ -73,6 +73,17 @@ jobs:
         # Verifies RLS coverage for user-data tables and .env.example completeness.
         run: npx tsx scripts/consistency/audit-schema.ts
 
+      - name: Consistency - behavioral thresholds
+        # Verifies documented behavioral thresholds (e.g. 20% pricing miss, N≥10 churn
+        # blend) appear as literals in the implementing file near the implementing symbol.
+        run: npx tsx scripts/consistency/audit-behavioral.ts
+
+      - name: Consistency - behavioral test coverage (informational)
+        # Warns when a documented threshold has no test that explicitly contains its
+        # literal value. Informational until coverage reaches 100%.
+        run: npx tsx scripts/consistency/audit-behavioral-coverage.ts
+        continue-on-error: true
+
       - name: Upload consistency reports
         if: always()
         uses: actions/upload-artifact@v4

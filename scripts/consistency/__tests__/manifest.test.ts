@@ -3,6 +3,7 @@
 // Run: npx tsx scripts/consistency/__tests__/manifest.test.ts
 
 import { NUMERIC_CLAIMS, IDENTITY_CLAIMS, SCHEMA_CLAIMS } from "../manifest";
+import { BEHAVIORAL_CLAIMS } from "../behavioral-manifest";
 
 function assert(condition: boolean, message: string): void {
   if (!condition) {
@@ -14,7 +15,8 @@ function assert(condition: boolean, message: string): void {
 const numericIds = NUMERIC_CLAIMS.map((c) => c.id);
 const identityIds = IDENTITY_CLAIMS.map((c) => c.id);
 const schemaIds = SCHEMA_CLAIMS.map((c) => c.id);
-const allIds = [...numericIds, ...identityIds, ...schemaIds];
+const behavioralIds = BEHAVIORAL_CLAIMS.map((c) => c.id);
+const allIds = [...numericIds, ...identityIds, ...schemaIds, ...behavioralIds];
 
 // No duplicate IDs within each type
 const numericSet = new Set(numericIds);
@@ -45,4 +47,32 @@ for (const c of IDENTITY_CLAIMS) {
   assert(c.consumerScans.length > 0, `Identity claim "${c.id}" has no consumer scans`);
 }
 
-console.log(`✓ Manifest test passed: ${NUMERIC_CLAIMS.length} numeric, ${IDENTITY_CLAIMS.length} identity, ${SCHEMA_CLAIMS.length} schema claims. No duplicates.`);
+// Behavioral: no duplicate IDs
+const behavioralSet = new Set(behavioralIds);
+assert(behavioralSet.size === behavioralIds.length, `Duplicate behavioral claim IDs: ${behavioralIds.filter((id, i) => behavioralIds.indexOf(id) !== i).join(", ")}`);
+
+// Behavioral: every claim has a non-trivial description
+for (const c of BEHAVIORAL_CLAIMS) {
+  assert(c.description.length > 5, `Behavioral claim "${c.id}" has too short a description`);
+}
+
+// Behavioral: every claim has at least one threshold
+for (const c of BEHAVIORAL_CLAIMS) {
+  assert(c.thresholds.length > 0, `Behavioral claim "${c.id}" has no thresholds`);
+}
+
+// Behavioral: every threshold has at least one acceptedLiteral
+for (const c of BEHAVIORAL_CLAIMS) {
+  for (const t of c.thresholds) {
+    assert(t.acceptedLiterals.length > 0, `Threshold "${t.name}" in claim "${c.id}" has no acceptedLiterals`);
+    for (const pattern of t.acceptedLiterals) {
+      assert(pattern instanceof RegExp, `acceptedLiteral in "${c.id}.${t.name}" is not a RegExp`);
+    }
+  }
+}
+
+// Behavioral: no ID collision with other claim types
+const crossAllSet = new Set(allIds);
+assert(crossAllSet.size === allIds.length, `Behavioral claim ID collides with other type: ${allIds.filter((id, i) => allIds.indexOf(id) !== i).join(", ")}`);
+
+console.log(`✓ Manifest test passed: ${NUMERIC_CLAIMS.length} numeric, ${IDENTITY_CLAIMS.length} identity, ${SCHEMA_CLAIMS.length} schema, ${BEHAVIORAL_CLAIMS.length} behavioral claims. No duplicates.`);
