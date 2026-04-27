@@ -15,6 +15,10 @@ const PRICE_IDS: Record<string, string | undefined> = {
   business: STRIPE_PRICE_BUSINESS,
 };
 
+// PricingPage advertises 14-day free trial for Pro and Business.
+// Without this, checkout silently skips the trial - bait-and-switch risk.
+const TRIAL_DAYS: Record<string, number> = { pro: 14, business: 14 };
+
 Deno.serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
 
@@ -96,27 +100,33 @@ Deno.serve(async (req) => {
     }
 
     // Create Stripe Checkout Session
+    const baseUrl = Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il";
+    const checkoutParams: Record<string, string> = {
+      "mode": "subscription",
+      "customer_email": user.email || "",
+      "client_reference_id": user.id,
+      "line_items[0][price]": priceId,
+      "line_items[0][quantity]": "1",
+      "success_url": `${baseUrl}/?checkout=success`,
+      "cancel_url": `${baseUrl}/?checkout=cancel`,
+      "metadata[user_id]": user.id,
+      "metadata[tier]": tier,
+      // Propagate metadata to the Subscription object so customer.subscription.*
+      // webhook events (e.g. cancellation) can still resolve the user.
+      "subscription_data[metadata][user_id]": user.id,
+      "subscription_data[metadata][tier]": tier,
+      "allow_promotion_codes": "true",
+    };
+    if (TRIAL_DAYS[tier]) {
+      checkoutParams["subscription_data[trial_period_days]"] = String(TRIAL_DAYS[tier]);
+    }
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${STRIPE_SECRET_KEY}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({
-        "mode": "subscription",
-        "customer_email": user.email || "",
-        "client_reference_id": user.id,
-        "line_items[0][price]": priceId,
-        "line_items[0][quantity]": "1",
-        "success_url": `${Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=success`,
-        "cancel_url": `${Deno.env.get("APP_URL") || req.headers.get("origin") || "https://funnelforge.co.il"}/?checkout=cancel`,
-        "metadata[user_id]": user.id,
-        "metadata[tier]": tier,
-        // Propagate metadata to the Subscription object so customer.subscription.*
-        // webhook events (e.g. cancellation) can still resolve the user.
-        "subscription_data[metadata][user_id]": user.id,
-        "subscription_data[metadata][tier]": tier,
-      }),
+      body: new URLSearchParams(checkoutParams),
     });
 
     const session = await response.json();
