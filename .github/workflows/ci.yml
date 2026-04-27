@@ -89,6 +89,12 @@ jobs:
         # to a real edge-function directory or migration. Catches phantom calls.
         run: npx tsx scripts/consistency/audit-structural.ts
 
+      - name: Consistency - documentation provenance
+        # Verifies every behavioral claim's source.quote still appears in its
+        # source.file. Catches silent doc deletion that would leave the manifest
+        # verifying threshold values for claims the README no longer makes.
+        run: npx tsx scripts/consistency/audit-provenance.ts
+
       - name: Upload consistency reports
         if: always()
         uses: actions/upload-artifact@v4

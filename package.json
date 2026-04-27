@@ -19,13 +19,14 @@
     "sync:push": "bash scripts/sync-to-corsys.sh",
     "personas": "npx tsx scripts/persona-report.ts",
     "check:brand": "bash scripts/check-brand-locked.sh",
-    "consistency": "npx tsx scripts/consistency/audit-numeric.ts && npx tsx scripts/consistency/audit-identity.ts && npx tsx scripts/consistency/audit-schema.ts && npx tsx scripts/consistency/audit-behavioral.ts && npx tsx scripts/consistency/audit-structural.ts",
+    "consistency": "npx tsx scripts/consistency/audit-numeric.ts && npx tsx scripts/consistency/audit-identity.ts && npx tsx scripts/consistency/audit-schema.ts && npx tsx scripts/consistency/audit-behavioral.ts && npx tsx scripts/consistency/audit-structural.ts && npx tsx scripts/consistency/audit-provenance.ts",
     "consistency:numeric": "npx tsx scripts/consistency/audit-numeric.ts",
     "consistency:identity": "npx tsx scripts/consistency/audit-identity.ts",
     "consistency:schema": "npx tsx scripts/consistency/audit-schema.ts",
     "consistency:behavioral": "npx tsx scripts/consistency/audit-behavioral.ts",
     "consistency:behavioral-coverage": "npx tsx scripts/consistency/audit-behavioral-coverage.ts",
-    "consistency:structural": "npx tsx scripts/consistency/audit-structural.ts"
+    "consistency:structural": "npx tsx scripts/consistency/audit-structural.ts",
+    "consistency:provenance": "npx tsx scripts/consistency/audit-provenance.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
