@@ -56,6 +56,31 @@ jobs:
       - name: Build
         run: npx vite build
 
+      - name: Consistency - manifest self-test
+        run: npx tsx scripts/consistency/__tests__/manifest.test.ts
+
+      - name: Consistency - numeric claims
+        # Verifies every numeric count in README/CHOICES matches the codebase.
+        # Known drift is tracked in scripts/consistency/allowlist.json with expiry dates.
+        run: npx tsx scripts/consistency/audit-numeric.ts
+
+      - name: Consistency - identity claims
+        # Verifies archetype IDs, tier names, edge-function names, and route paths
+        # are used consistently. Blockers fail the build; warnings are informational.
+        run: npx tsx scripts/consistency/audit-identity.ts
+
+      - name: Consistency - schema claims
+        # Verifies RLS coverage for user-data tables and .env.example completeness.
+        run: npx tsx scripts/consistency/audit-schema.ts
+
+      - name: Upload consistency reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consistency-reports
+          path: reports/consistency/
+          retention-days: 14
+
   e2e:
     runs-on: ubuntu-latest
     needs: quality

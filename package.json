@@ -18,7 +18,11 @@
     "sync:pull": "bash scripts/sync-from-corsys.sh",
     "sync:push": "bash scripts/sync-to-corsys.sh",
     "personas": "npx tsx scripts/persona-report.ts",
-    "check:brand": "bash scripts/check-brand-locked.sh"
+    "check:brand": "bash scripts/check-brand-locked.sh",
+    "consistency": "npx tsx scripts/consistency/audit-numeric.ts && npx tsx scripts/consistency/audit-identity.ts && npx tsx scripts/consistency/audit-schema.ts",
+    "consistency:numeric": "npx tsx scripts/consistency/audit-numeric.ts",
+    "consistency:identity": "npx tsx scripts/consistency/audit-identity.ts",
+    "consistency:schema": "npx tsx scripts/consistency/audit-schema.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
