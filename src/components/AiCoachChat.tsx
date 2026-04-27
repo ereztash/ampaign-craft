@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { authFetch } from "@/lib/authFetch";
+import { readTextStream } from "@/lib/streamToText";
 import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
 import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice, loadImportedDataSignals } from "@/engine/userKnowledgeGraph";
@@ -180,12 +181,40 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
           context: buildCoachContext(graph, healthScore, stylomePrompt),
         }),
       });
-      const data = await _resp.json();
-      const fnError = _resp.ok ? null : (data?.error || _resp.statusText);
 
-      if (fnError) throw new Error(fnError);
-      const reply = data?.reply || (tx({ he: "לא הצלחתי לענות. נסה שוב.", en: "Couldn't respond. Try again." }, language));
-      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+      if (!_resp.ok) {
+        const errData = await _resp.json();
+        throw new Error(errData?.error || _resp.statusText);
+      }
+
+      const isStream = _resp.headers.get("Content-Type")?.includes("text/event-stream");
+      if (isStream && _resp.body) {
+        // Insert a placeholder and fill it token by token as the stream arrives
+        setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
+        let accumulated = "";
+        for await (const chunk of readTextStream(_resp.body)) {
+          accumulated += chunk;
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (!last || last.role !== "assistant") return prev;
+            return [...prev.slice(0, -1), { role: "assistant", content: accumulated }];
+          });
+        }
+        if (!accumulated) {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (!last || last.role !== "assistant" || last.content) return prev;
+            return [...prev.slice(0, -1), {
+              role: "assistant",
+              content: tx({ he: "לא הצלחתי לענות. נסה שוב.", en: "Couldn't respond. Try again." }, language),
+            }];
+          });
+        }
+      } else {
+        const data = await _resp.json();
+        const reply = data?.reply || tx({ he: "לא הצלחתי לענות. נסה שוב.", en: "Couldn't respond. Try again." }, language);
+        setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       const display = msg.includes("ANTHROPIC_API_KEY")

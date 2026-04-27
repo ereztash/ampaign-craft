@@ -165,7 +165,7 @@ Deno.serve(async (req) => {
 
     const systemPrompt = systemParts.join("\n") + "\n\nיש לך כלי חיפוש באינטרנט (web_search). השתמש בו כשצריך מידע עדכני: מחירים, מתחרים, טרנדים, חדשות, סטטיסטיקות.";
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const anthropicResp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -175,35 +175,102 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 2048,
+        stream: true,
         system: systemPrompt,
         tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }],
         messages: [{ role: "user", content: message }],
       }),
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      return new Response(JSON.stringify({ error: data.error?.message || "API error" }), {
-        status: response.status,
+    if (!anthropicResp.ok) {
+      const errData = await anthropicResp.json();
+      return new Response(JSON.stringify({ error: errData.error?.message || "API error" }), {
+        status: anthropicResp.status,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const contentBlocks: WebSearchBlock[] = data.content ?? [];
-    const reply = contentBlocks
-      .filter((b) => b.type === "text")
-      .map((b) => b.text || "")
-      .join("\n")
-      .trim();
+    // Pipe text tokens to the client as they arrive.
+    // All content blocks are also collected so web-search results can be
+    // persisted to the vector store after the stream closes.
+    const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+    const writer = writable.getWriter();
+    const enc = new TextEncoder();
 
-    // Fire-and-forget: persist any web_search results so they land in the
-    // vector store. Failures here must not block the chat reply.
-    persistWebSearchResults(supabase, user.id, contentBlocks, context).catch((err) => {
-      console.error("ai-coach.persistWebSearch", err);
-    });
+    const userId = user.id;
+    (async () => {
+      const reader = anthropicResp.body!.getReader();
+      const decoder = new TextDecoder();
+      const collectedBlocks: WebSearchBlock[] = [];
+      let currentBlock: WebSearchBlock | null = null;
+      let inputTokens = 0;
+      let outputTokens = 0;
+      let buf = "";
 
-    return new Response(JSON.stringify({ reply }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split("\n");
+          buf = lines.pop() ?? "";
+
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            const json = line.slice(6).trim();
+            if (json === "[DONE]") continue;
+            let event: Record<string, unknown>;
+            try { event = JSON.parse(json) as Record<string, unknown>; } catch { continue; }
+
+            if (event.type === "message_start") {
+              const msg = event.message as Record<string, unknown> | undefined;
+              inputTokens = ((msg?.usage as Record<string, number> | undefined)?.input_tokens) ?? 0;
+            } else if (event.type === "content_block_start") {
+              const cb = event.content_block as Record<string, unknown> | undefined;
+              currentBlock = { type: (cb?.type as string) ?? "text", text: "" };
+            } else if (event.type === "content_block_delta") {
+              const delta = event.delta as Record<string, unknown> | undefined;
+              if (delta?.type === "text_delta" && typeof delta.text === "string") {
+                if (currentBlock) currentBlock.text = (currentBlock.text ?? "") + delta.text;
+                await writer.write(enc.encode(`data: ${JSON.stringify({ t: delta.text })}\n\n`));
+              }
+            } else if (event.type === "content_block_stop") {
+              if (currentBlock) { collectedBlocks.push(currentBlock); currentBlock = null; }
+            } else if (event.type === "message_delta") {
+              outputTokens = ((event.usage as Record<string, number> | undefined)?.output_tokens) ?? 0;
+            }
+          }
+        }
+      } finally {
+        await writer.write(enc.encode("data: [DONE]\n\n")).catch(() => {});
+        await writer.close().catch(() => {});
+
+        const MODEL_RATES: Record<string, { in: number; out: number }> = {
+          "claude-haiku-4-5-20251001": { in: 800, out: 4000 },
+        };
+        const rate = MODEL_RATES["claude-haiku-4-5-20251001"];
+        const costMillis = Math.ceil((inputTokens * rate.in + outputTokens * rate.out) / 1000);
+        supabase.rpc("bump_user_daily_cost", {
+          p_user_id: userId,
+          p_tokens: inputTokens + outputTokens,
+          p_cost_usd_millis: costMillis,
+        }).then(({ error: e }: { error: { message: string } | null }) => {
+          if (e) console.error("ai-coach.costBump", e.message);
+        });
+
+        persistWebSearchResults(supabase, userId, collectedBlocks, context).catch((err: unknown) => {
+          console.error("ai-coach.persistWebSearch", err);
+        });
+      }
+    })();
+
+    return new Response(readable, {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "X-Content-Type-Options": "nosniff",
+      },
     });
   } catch (err) {
     if (err instanceof ValidationError) {

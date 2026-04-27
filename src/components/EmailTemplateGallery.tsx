@@ -251,11 +251,15 @@ export function EmailTemplateGallery() {
       "From Name": "Campaign Craft",
     }));
 
-    const XLSX = await import("xlsx");
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(rows);
-    XLSX.utils.book_append_sheet(wb, ws, format === "mailchimp" ? "Mailchimp" : "HubSpot");
-    const csv = XLSX.utils.sheet_to_csv(ws);
+    const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
+    const escape = (v: unknown) => {
+      const s = String(v ?? "");
+      return /[,"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const csv = [
+      headers.map(escape).join(","),
+      ...rows.map((r) => headers.map((h) => escape((r as Record<string, unknown>)[h])).join(",")),
+    ].join("\n");
     const buffer = new TextEncoder().encode(csv).buffer;
 
     const result: ExportResult = {
