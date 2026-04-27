@@ -12,15 +12,6 @@ import {
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock("xlsx", () => ({
-  utils: {
-    book_new: vi.fn(() => ({})),
-    json_to_sheet: vi.fn((rows: any) => ({ rows })),
-    book_append_sheet: vi.fn(),
-    sheet_to_csv: vi.fn(() => "platform,text\nfacebook,hello"),
-  },
-}));
-
 vi.mock("../blackboard/contract", () => ({
   writeContext: vi.fn(async () => {}),
   conceptKey: vi.fn((ns: string, type: string, id: string) => `${ns}-${type}-${id}`),

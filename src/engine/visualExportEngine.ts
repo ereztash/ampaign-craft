@@ -5,7 +5,6 @@
 // rules for length, hashtags, emoji density, and formatting.
 // ═══════════════════════════════════════════════
 
-import * as XLSX from "xlsx";
 import type { ExportResult } from "./exportEngine";
 import {
   writeContext,
@@ -200,8 +199,21 @@ export function structureForAllPlatforms(
   return posts;
 }
 
+function rowsToCsv(rows: Record<string, unknown>[]): string {
+  if (rows.length === 0) return "";
+  const headers = Object.keys(rows[0]);
+  const escape = (v: unknown): string => {
+    const s = String(v ?? "");
+    return /[,"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return [
+    headers.map(escape).join(","),
+    ...rows.map((r) => headers.map((h) => escape(r[h])).join(",")),
+  ].join("\n");
+}
+
 export function exportSocialPosts(posts: SocialPostData[]): ExportResult {
-  const rows = posts.map((p) => ({
+  const rows: Record<string, unknown>[] = posts.map((p) => ({
     Platform: p.platform,
     Text: p.text,
     Hashtags: p.hashtags.join(" "),
@@ -210,13 +222,8 @@ export function exportSocialPosts(posts: SocialPostData[]): ExportResult {
     Notes: p.notes.map((n) => n.en).join("; "),
   }));
 
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(rows);
-  XLSX.utils.book_append_sheet(wb, ws, "Social Posts");
-
-  const csv = XLSX.utils.sheet_to_csv(ws);
+  const csv = rowsToCsv(rows);
   const encoded = new TextEncoder().encode(csv);
-  // Explicitly create a new ArrayBuffer to avoid Node.js pool-backed buffers
   const buffer = new ArrayBuffer(encoded.byteLength);
   new Uint8Array(buffer).set(encoded);
 
