@@ -127,8 +127,8 @@ Annual plans save 20%.
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
-  │  Pure Engine Layer — 59 engines, no I/O, no side-effects     │
-  │  Behavioral Science · Pricing · Churn · Archetype · Copy QA  │
+  │  Pure Engine Layer - 241 files (59 named *Engine.ts + helpers) │
+  │  Behavioral Science · Pricing · Churn · Archetype · Copy QA   │
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
@@ -168,9 +168,9 @@ Most SaaS tools *capture* data. FunnelForge *closes loops* — every recommendat
 | Claude Haiku | $0.003 | Copy QA, classification, short completions |
 | Claude Sonnet | $0.015 | Strategy generation, sales scripts, enrichment |
 | Claude Opus | $0.075 | Deep differentiation, research synthesis |
-| **Average per full plan generation** | **~$0.04** | LLM Router mix: ~70% Haiku / 25% Sonnet / 5% Opus |
+| **Average per full plan generation** | **~$0.04** *(modeled, not yet observed)* | LLM Router mix: ~70% Haiku / 25% Sonnet / 5% Opus |
 
-At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month costs ~$0.40 in AI — less than 1% of ARPU.
+At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month costs ~$0.40 in AI - less than 1% of ARPU. Reconciliation against actual Anthropic billing pending paid-tier launch.
 
 ---
 
@@ -186,10 +186,10 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 | Test framework | Vitest + React Testing Library |
 | CI | GitHub Actions (typecheck · lint · test · build) |
 | Engines | 241 pure-function engines |
-| Agents | 13 (MAS-CC / Blackboard) |
+| Agents | 14 files (2 LLM-backed: qaContent + debugSwarm; 11 deterministic; 1 orchestrator) |
 | Closed loops | 6 |
 | Archetypes | 5 |
-| Knowledge domains | 46 (16 live in v1) |
+| Knowledge principles | 16 derived from 65 source docs (pilot: trauma + organizational consulting); 30 additional domains have theoretical scaffolding only |
 
 ---
 
