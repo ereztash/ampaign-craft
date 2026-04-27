@@ -273,6 +273,8 @@ Deno.serve(async (req) => {
       }
     })();
 
+    // Usage info is fetched separately by the client's useUsage() hook
+    // after the stream closes — keeps the SSE body free of metadata.
     return new Response(readable, {
       headers: {
         ...corsHeaders,

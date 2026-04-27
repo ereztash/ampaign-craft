@@ -186,9 +186,8 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         }),
       });
 
-      // Hidden-overage flow: 402 means the user hit their monthly quota
-      // and has no credits. Roll back the phantom user message and open
-      // the buy-credits modal — credits never appear elsewhere in the UI.
+      // 402 must be checked before stream detection — denial is JSON, not SSE.
+      // Roll back the phantom user message and surface the buy-credits modal.
       if (_resp.status === 402) {
         const data = await _resp.json().catch(() => ({}));
         const denial = data?.denial;
@@ -205,7 +204,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
       }
 
       if (!_resp.ok) {
-        const errData = await _resp.json();
+        const errData = await _resp.json().catch(() => ({}));
         throw new Error(errData?.error || _resp.statusText);
       }
 
