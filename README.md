@@ -37,7 +37,19 @@ Live demo and screenshots are pending public-beta release (Q2 2026). For an inve
 
 ## Moat
 
-FunnelForge's primary defensibility is the **Romaniuk DBA color system**: each user archetype receives a distinct palette burned into muscle memory, making the interface immediately recognizable and switching psychologically costly. On top of that, **six compounding data loops** — pricing validation, archetype correction, framework ranking, churn calibration, benchmark replacement, and prompt-patch TTL — mean every user's outcome feeds back to improve the next recommendation, creating a flywheel that widens the gap with every paying customer. Finally, **Hebrew cultural embedding** goes beyond translation: gendered copy, Israeli market calendar, RTL-first architecture, and WhatsApp-native sequences are structural, not cosmetic — they cannot be replicated by localizing an English product.
+FunnelForge's primary defensibility is the **Romaniuk DBA color system**: each user archetype receives a distinct palette burned into muscle memory, making the interface immediately recognizable and switching psychologically costly. The palette is also **calendar-aware** — `calendarPaletteEngine.ts` reads `hebrew-calendar-2026.json` (12 events) and modulates `--cor-opportunity` and `--cor-success` HSL tokens at runtime: muted saturation during **Yom Kippur** (-15) and Yom HaZikaron (-20), warmth on **Independence Day** (+10), celebration tone on Rosh Hashana — yielding **200+ runtime data points per archetype variant** (5 archetypes × 12 events × ~4 token shifts) that no English-localized product can replicate without rewriting its theme layer.
+
+On top of that, **six compounding data loops** — pricing validation, archetype correction, framework ranking, churn calibration, benchmark replacement, and prompt-patch TTL — mean every user's outcome feeds back to improve the next recommendation, creating a flywheel that widens the gap with every paying customer. Finally, **Hebrew cultural embedding** goes beyond translation: gendered copy, Israeli market calendar, RTL-first architecture, and WhatsApp-native sequences are structural, not cosmetic.
+
+---
+
+## Competitive Defensibility
+
+The honest competitive map (see [`docs/competitor-research/`](./docs/competitor-research/)):
+
+- **Powerlink/Fireberry is the highest strategic threat** — Hebrew-native CRM with active AI investment and journey orchestration. Estimated **12–24 months** to close the gap on FunnelForge's MOAT thesis. Counter-strategy: ship the Triad-in-One-Platform wedge before Q3 2026.
+- **The empty quadrant is "Hebrew + behavioral-science depth"** — no competitor combines both. Powerlink is high-Hebrew, low-behavioral; HubSpot/monday/Madgicx/Klaviyo are mid-low-Hebrew. FunnelForge owns the top-right quadrant by definition, not by luck.
+- **The real fight is not against global SaaS** — it's against the **₪200/mo DIY stack** (Mailchimp + Canva + Google Sheets) and the ₪3K–₪8K/mo agency/freelancer market. Our pricing is 4–50× cheaper than human alternatives; the trust-gap on AI-Hebrew is the single biggest GTM risk.
 
 ---
 
@@ -107,39 +119,18 @@ Annual plans save 20%.
 **MAS-CC / Blackboard** — 14 specialized agents, 119 engines, 6 closed loops.
 
 ```
-  ┌─────────────────────────────────────────────────────────────┐
-  │  UI Layer — React + shadcn/ui + RTL + Archetype-adaptive    │
-  │  165 components · 35 pages · 25 hooks · L1-L5 resolution    │
-  └──────────────────────────┬──────────────────────────────────┘
-                             │
-  ┌──────────────────────────▼──────────────────────────────────┐
-  │  Context Layer — Auth · Archetype · UserProfile · DataSource │
-  └──────────────────────────┬──────────────────────────────────┘
-                             │
-  ┌──────────────────────────▼──────────────────────────────────┐
-  │  GRAOS Optimization Overlay (M1-M6) — strictly additive      │
-  │  Regime · Anomaly · Forecast · Reflective · DAPL · Verifier  │
-  └──────────────────────────┬──────────────────────────────────┘
-                             │
-  ┌──────────────────────────▼──────────────────────────────────┐
-  │  Blackboard / MAS-CC — 14 agents, write-gated JSONB state   │
-  │  KGraph · Funnel · DISC · Hormozi · CoI · QA · Φ_META (15 files) │
-  └──────────────────────────┬──────────────────────────────────┘
-                             │
-  ┌──────────────────────────▼──────────────────────────────────┐
-  │  Pure Engine Layer - 119 files (50 named *Engine.ts + helpers) │
-  │  Behavioral Science · Pricing · Churn · Archetype · Copy QA   │
-  └──────────────────────────┬──────────────────────────────────┘
-                             │
-  ┌──────────────────────────▼──────────────────────────────────┐
-  │  LLM Router — Haiku $0.003 / Sonnet $0.015 / Opus $0.075     │
-  │  Cost caps · fallback chains · tier-gated by subscription    │
-  └──────────────────────────┬──────────────────────────────────┘
-                             │
-  ┌──────────────────────────▼──────────────────────────────────┐
-  │  Persistence — Supabase Postgres + pgvector · Event Queue    │
-  │  RLS · 48 migrations · 26 Edge Functions · 1536/384-dim     │
-  └─────────────────────────────────────────────────────────────┘
+  UI Layer ──────────── React + shadcn/ui + RTL + Archetype-adaptive
+                        165 components · 35 pages · 25 hooks · L1-L5
+  Context Layer ────── Auth · Archetype · UserProfile · DataSource
+  GRAOS Overlay (M1-M6)  Regime · Anomaly · Forecast · DAPL · Verifier
+  Blackboard / MAS-CC — 14 agents, write-gated JSONB state
+                        KGraph · Funnel · DISC · Hormozi · CoI · QA · Φ_META
+  Pure Engine Layer - 119 files (50 named *Engine.ts + helpers)
+                        Behavioral Science · Pricing · Churn · Copy QA
+  LLM Router ────────── Haiku $0.003 / Sonnet $0.015 / Opus $0.075
+                        Cost caps · fallback chains · tier-gated by subscription
+  Persistence ──────── Supabase Postgres + pgvector · Event Queue
+                        RLS · 48 migrations · 26 Edge Functions · 1536/384-dim
 ```
 
 > See [`docs/architecture.md`](./docs/architecture.md) for the full engine directory.
@@ -158,6 +149,38 @@ Most SaaS tools *capture* data. FunnelForge *closes loops* — every recommendat
 | **4** | **Churn Prediction Self-Calibration** | Predicted churn rate vs observed outcomes by business field | Weighted blend at N ≥ 10, full weight at N ≥ 50 | `churnPredictionEngine.ts → applyCalibrationUpdate` |
 | **5** | **Internal Benchmark Replacement** | Health score, success probability, reported revenue | Nightly Edge Fn computes p25/p50/p75 → replaces hardcoded numbers | `supabase/functions/nightly-benchmark-refresh/` |
 | **6** | **Prompt Patch TTL** | Negative training pair count before vs 7 days after patch | If improvement < 10% → expire patch | `promptOptimizerLoop.ts → checkAndExpirePatches` |
+
+---
+
+## Archetype Science
+
+The five archetypes are not personas — they're a 2-axis classification grounded in two peer-reviewed theories, mapped directly to UI adaptation:
+
+- **Regulatory Focus Theory (RFT)** — Higgins (1997, *"Beyond Pleasure and Pain"*). Promotion-focus seeks gains; prevention-focus avoids losses. Maps to copy framing: gain-framed ("unlock", "achieve") for promotion archetypes vs. loss-framed ("protect", "avoid risk") for prevention archetypes.
+- **Elaboration Likelihood Model (ELM)** — Petty & Cacioppo (1986). Central processing weighs evidence; peripheral processing trusts heuristics. Maps to information surface: data tables and source-of-truth panels for central processors vs. social proof and authority badges for peripheral processors.
+
+Classification confidence has **4 tiers** — lower tiers reduce adaptation aggressiveness:
+
+| Tier | Meaning | UI behavior |
+|------|---------|-------------|
+| `none` | Insufficient signal | Neutral, no adaptations |
+| `tentative` | Weak signal, ≥1 axis ambiguous | L1 only (palette tint) |
+| `confident` | Both axes resolved, divergence < 25% | L1–L4 active |
+| `strong` | High primary rate, no divergence | L1–L5 + framework default |
+
+Implementation: `src/types/behavioralHeuristics.ts` (theory mapping), `src/types/archetype.ts` (`ConfidenceTier`), `src/contexts/ArchetypeContext.tsx` (divergence-driven downgrade after 10+ picks).
+
+---
+
+## Behavioral Ethics
+
+The system is designed to influence behavior — which means we have to be explicit about what we *don't* do:
+
+- **No dark patterns.** No countdown manipulation, no fake scarcity, no pre-checked upsells, no roach-motel cancellation flows.
+- **Glass-Box, not Black-Box.** Every adaptation surfaces source theory + active heuristic + override switch (`AdminArchetypeDebugPanel.tsx`, `ArchetypeProfileCard.tsx`).
+- **Opt-in, not opt-out.** Adaptive theming activates only after the user accepts the reveal screen (IKEA-effect opt-in via `ArchetypeRevealScreen.tsx`).
+- **Rate-limited nudges.** Blind-spot prompts fire at most once per **72-hour window** per module per user (`useModuleDwell.ts → DISMISS_WINDOW_MS = 72 * 60 * 60 * 1000`).
+- **User override always wins.** Manual archetype overrides bypass divergence correction; user-set confidence is locked at `strong`.
 
 ---
 
@@ -190,6 +213,24 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 | Closed loops | 6 |
 | Archetypes | 5 |
 | Knowledge principles | 16 derived from 65 source docs (pilot: trauma + organizational consulting); 30 additional domains have theoretical scaffolding only |
+| **Verification** | 51 tracked claims across 6 audit channels (numeric · identity · schema · behavioral · structural · provenance), blocker-gated in CI |
+
+---
+
+## Self-Consistency Audits
+
+README and code drift in both directions. Every public claim has a registered Source-of-Truth provider re-checked in CI. **51 tracked claims** are split across **6 audit channels**:
+
+| # | Channel | Verifies | Example |
+|---|---------|----------|---------|
+| 1 | **numeric** | 19 claims — doc counts (engines, agents, migrations, prices) match SOT computed from filesystem | `"119 engines"` ↔ `walk(src/engine).filter(non-test).length` |
+| 2 | **identity** | 4 claims — tier/archetype/edge-fn/route IDs match canonical type unions | `ArchetypeId` ↔ palette + classifier consumers |
+| 3 | **schema** | 3 claims — every `import.meta.env.VAR` and `Deno.env.get(VAR)` is declared in `.env.example`; `user_id` tables have RLS + policy | `VITE_AI_COPY_ENABLED` declared |
+| 4 | **behavioral** | 11 claims — numeric thresholds in docs exist as literals in implementation files | `MIN_IMPROVEMENT_RATIO = 0.10` |
+| 5 | **structural** | 3 claims — every `functions.invoke('X')` and `.from('Y')` resolves to a real edge-fn dir / migration | catches phantom calls |
+| 6 | **provenance** | 11 claims — each behavioral claim's `source.quote` substring still appears in its file | quote in README ↔ behavioral-manifest |
+
+Manifests: `scripts/consistency/{manifest,behavioral-manifest,structural-manifest}.ts`. Allowlist (dated): `scripts/consistency/allowlist.json`. Run locally: `npm run consistency`. CI blocks on every PR if any audit reports a non-allowlisted blocker.
 
 ---
 
@@ -197,95 +238,9 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 
 | Quarter | Milestone | Target Users |
 |---------|-----------|-------------|
-| **Q2 2026** | Public beta, first 50 paying users, Loop 1–3 live | 50 |
+| **Q2 2026** | Public beta, first 50 paying users, Loops 1–3 live | 50 |
 | **Q3 2026** | Pro tier launch, consultant channel warm-up, WhatsApp sequences | 250 |
 | **Q4 2026** | Business tier GA, consultant reseller program live, cohort studies | 900 |
 | **2027** | Arabic expansion, MENA entry, Series A trigger | 2,500+ |
 
 ---
-
-## Seed Ask
-
-**₪350K (~$96K)** — 18-month runway to ₪1M ARR trigger.
-
-| Use of Funds | Amount | Purpose |
-|-------------|--------|---------|
-| Cloud infra (Supabase + Anthropic API) | ₪60K | First 12 months at 500 paying users |
-| Content + WhatsApp marketing | ₪80K | Hebrew SEO, LinkedIn, consultant partnerships |
-| First hire (Sales / Customer Success) | ₪180K | 12-month salary (IL mid-market) |
-| Legal / IP | ₪30K | IP registration, terms, data processor agreements |
-| **Total** | **₪350K** | |
-
----
-
-## Honest Risks
-
-| Risk | Current state |
-|------|--------------|
-| **Small archetype N** | Behavioral classification trained on <200 observations per archetype; confidence thresholds are conservative until N ≥ 500 |
-| **No paying users yet** | Product is in private beta; all unit economics are modeled, not observed |
-| **Anthropic API dependency** | Core AI features require Anthropic availability; no multi-provider fallback beyond Haiku → Sonnet graceful degradation |
-| **Hebrew NLP tooling gaps** | Hebrew tokenization, stemming, and sentiment tooling is materially weaker than English; copy QA heuristics compensate but are imperfect |
-
----
-
-## Consultant Reseller Program
-
-Partners (marketing consultants, business coaches) earn **20% recurring commission** on every client they bring to FunnelForge.
-
-- White-label PDF reports with consultant branding
-- Priority API access and dedicated onboarding
-- Co-marketing: featured in the FunnelForge consultant directory
-- Referral dashboard with real-time revenue tracking
-
-Target: 50 active consultant partners by end of Q3 2026.
-
----
-
-## Getting Started
-
-```bash
-npm install
-npm run dev       # Dev server
-npm test          # Run tests
-npx tsc --noEmit  # Type check
-npm run build     # Production build
-```
-
-**Environment variables** — copy `.env.example` and fill in:
-
-```bash
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
-VITE_AI_COPY_ENABLED=true
-# Edge Function secrets: ANTHROPIC_API_KEY, OPENAI_API_KEY, STRIPE_SECRET_KEY
-```
-
----
-
-## Tech Stack
-
-| Layer | Choice |
-|-------|--------|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui |
-| Routing | react-router-dom v6, lazy-loaded |
-| Animation | Framer Motion |
-| Charts | Recharts |
-| Backend | Supabase (Auth, PostgreSQL, Edge Functions, pgvector) |
-| AI | Anthropic Claude (Haiku / Sonnet / Opus) via LLM Router |
-| Embeddings | OpenAI text-embedding-3-small |
-| Auth | Dual-mode: Supabase JWT or local PBKDF2 fallback |
-| Payments | Stripe |
-| Ads | Meta Graph API |
-| Testing | Vitest + React Testing Library · 4,721 tests |
-| CI | GitHub Actions (typecheck · lint · test · build) |
-
----
-
-## Contact
-
-If this resonates, let's talk. Security disclosures: see [`SECURITY.md`](./SECURITY.md). General inquiries: open an issue on this repository (private investor channel available on request).
-
----
-
-*Proprietary. All rights reserved.*
