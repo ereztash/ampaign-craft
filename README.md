@@ -244,3 +244,63 @@ Manifests: `scripts/consistency/{manifest,behavioral-manifest,structural-manifes
 | **2027** | Arabic expansion, MENA entry, Series A trigger | 2,500+ |
 
 ---
+
+## Seed Ask
+
+**₪350K (~$96K)** for 18-month runway to ₪1M ARR trigger. Use of funds: cloud infra — Supabase + Anthropic API (₪60K), content + WhatsApp marketing (₪80K), first hire — Sales/CS at IL mid-market (₪180K), Legal/IP (₪30K).
+
+---
+
+## Honest Risks
+
+| Risk | Current state |
+|------|--------------|
+| **Small archetype N** | Behavioral classification trained on <200 observations per archetype; confidence thresholds are conservative until N ≥ 500 |
+| **No paying users yet** | Product is in private beta; all unit economics are modeled, not observed |
+| **Anthropic API dependency** | Core AI features require Anthropic availability; no multi-provider fallback beyond Haiku → Sonnet graceful degradation |
+| **Hebrew NLP tooling gaps** | Hebrew tokenization, stemming, and sentiment tooling is materially weaker than English; copy QA heuristics compensate but are imperfect |
+| **Engineering debt — TS strict mode** | `tsconfig.app.json` runs with `strict: false` (legacy); strict-mode ratchet tracked in `tsconfig.strict.json`, target full strict by Q4 2026 |
+| **Engineering debt — test coverage** | Global v8 statement coverage at ~36% (vitest threshold); critical engines (pricing, churn, copy QA, CoI) gated at ≥80% branches via `check-coverage-critical.sh` |
+| **Engineering debt — auth crypto fallback** | `AuthContext.tsx` local mode uses PBKDF2 + SHA-256 (100K iterations) as fallback when Supabase JWT is unavailable; not equivalent to server-side Argon2id, intended for offline dev only |
+
+---
+
+## Consultant Reseller Program
+
+Three tiers, recurring commission on every paying client a partner brings:
+
+| Tier | Commission | Eligibility |
+|------|-----------|-------------|
+| **Founding Partner** | **30%** recurring | First 25 partners signed before Q3 2026 GA; ≥3 referred clients live; commits to co-marketing |
+| **Active Partner** | **20%** recurring | ≥1 active referred client/quarter; completed FunnelForge certification module |
+| **Referrer** | **10%** recurring | Single-link referral; no certification required |
+
+Founding + Active receive white-label PDF reports, priority API access, dedicated onboarding, and consultant-directory placement. All tiers get the referral dashboard with real-time revenue tracking. Target: 50 active partners by end of Q3 2026.
+
+---
+
+## Getting Started
+
+```bash
+npm install
+npm run dev          # Dev server
+npm test             # Vitest tests
+npm run consistency  # All 6 audits
+npm run build        # Production build
+```
+
+Copy `.env.example` and fill `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, plus Edge-Fn secrets (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `STRIPE_SECRET_KEY`).
+
+---
+
+## Tech Stack
+
+React 18 + TypeScript + Vite + Tailwind + shadcn/ui (RTL-first); Supabase (Postgres + Auth + Edge Functions + pgvector); Anthropic Claude via LLM Router (Haiku / Sonnet / Opus); OpenAI text-embedding-3-small; Stripe checkout; Meta Graph API; Vitest + Playwright; GitHub Actions CI (typecheck · lint · test · build · consistency).
+
+---
+
+## Contact
+
+Investor walkthrough or partnership inquiry: open an issue (private investor channel on request). Security disclosures: see [`SECURITY.md`](./SECURITY.md).
+
+*Proprietary. All rights reserved.*
