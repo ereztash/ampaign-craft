@@ -93,7 +93,7 @@ function main(): void {
     }
 
     // Check allowlist per claim-id
-    if (isAllowlisted(claim.id, allowlist.entries)) {
+    if (isAllowlisted(claim.id, allowlist)) {
       allowlisted++;
       continue;
     }
