@@ -299,8 +299,8 @@ export function analyzeTrends(dataset: ImportedDataset): TrendAnalysis {
   const secondHalf = sortedRows.slice(midpoint);
 
   const trends: TrendItem[] = metricCols.map((col) => {
-    const firstAvg = average(firstHalf.map((r) => toNumber(r[col.name])));
-    const secondAvg = average(secondHalf.map((r) => toNumber(r[col.name])));
+    const firstAvg = average(firstHalf.map((r) => toNumber((r as Record<string, unknown>)[col.name])));
+    const secondAvg = average(secondHalf.map((r) => toNumber((r as Record<string, unknown>)[col.name])));
 
     const changePercent =
       firstAvg !== 0 ? ((secondAvg - firstAvg) / Math.abs(firstAvg)) * 100 : 0;

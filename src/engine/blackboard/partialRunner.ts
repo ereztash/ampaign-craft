@@ -115,15 +115,15 @@ export function runPartialAgents(profile: Partial<UnifiedProfile>): AgentInsight
     const health = board.get("healthScore");
     if (health) {
       const tier =
-        health.overallScore >= 75 ? { he: "חזק", en: "Strong" } :
-        health.overallScore >= 50 ? { he: "טוב", en: "Good" } :
+        health.total >= 75 ? { he: "חזק", en: "Strong" } :
+        health.total >= 50 ? { he: "טוב", en: "Good" } :
         { he: "יש מקום לגדול", en: "Room to grow" };
       insights.push({
         agentKey: "health",
         labelHe: "בריאות שיווקית",
         labelEn: "Marketing health",
-        insightHe: `${health.overallScore}/100 — ${tier.he}`,
-        insightEn: `${health.overallScore}/100 — ${tier.en}`,
+        insightHe: `${health.total}/100 — ${tier.he}`,
+        insightEn: `${health.total}/100 — ${tier.en}`,
       });
     }
 

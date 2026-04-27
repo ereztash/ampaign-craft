@@ -21,7 +21,8 @@
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strict": true
+    "strict": true,
+    "types": ["vitest/globals", "vite/client"]
   },
-  "include": ["src/engine"]
+  "include": ["src/engine", "src/vite-env.d.ts"]
 }
