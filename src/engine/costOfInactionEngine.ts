@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════
 
 import { FunnelResult, FormData } from "@/types/funnel";
+import { getCoefficient } from "./coefficientCalibration";
 
 export interface CompoundingLoss {
   threeMonth: number;
@@ -61,8 +62,10 @@ export function calculateCostOfInaction(
 
   const formatNIS = (n: number) => `₪${n.toLocaleString()}`;
 
-  // Compounding loss over horizons (loss accelerates as competitors improve)
-  const compoundRate = 1.05; // 5% monthly compounding from competitor improvement
+  // Compounding loss over horizons. The 1.05 monthly rate is a heuristic
+  // that gets replaced by `coi.compoundRate.monthly` once N≥50 observations
+  // are recorded via outcomeLoopEngine.
+  const compoundRate = getCoefficient("coi.compoundRate.monthly", 1.05);
   const compoundingLoss: CompoundingLoss = {
     threeMonth: Math.round(monthlyWaste * ((Math.pow(compoundRate, 3) - 1) / (compoundRate - 1))),
     sixMonth: Math.round(monthlyWaste * ((Math.pow(compoundRate, 6) - 1) / (compoundRate - 1))),

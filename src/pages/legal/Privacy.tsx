@@ -89,6 +89,19 @@ const Privacy = () => {
           </ul>
 
           <h2>{tx({ he: "שיתוף עם צדדים שלישיים", en: "Third-party sharing" }, language)}</h2>
+          <p>
+            {tx(
+              {
+                he: "רשימה מלאה של ספקי משנה (subprocessors), כולל מטרת עיבוד, אזור גיאוגרפי, מנגנון העברה בינלאומי (SCCs) וקישור ל-DPA, מתפרסמת בדף ",
+                en: "A full list of subprocessors - purpose, region, transfer mechanism (SCCs), and DPA links - is published on our ",
+              },
+              language,
+            )}
+            <a href="/subprocessors" className="underline">
+              {tx({ he: "ספקי המשנה", en: "Subprocessors" }, language)}
+            </a>
+            {tx({ he: ".", en: " page." }, language)}
+          </p>
           <ul>
             <li>
               Meta (Facebook) Graph API: {tx({ he: "לצורך קריאת נתוני פרסום בלבד (scope: ads_read).", en: "for reading ad performance only (scope: ads_read)." }, language)}
@@ -100,6 +113,17 @@ const Privacy = () => {
               Sentry: {tx({ he: "דיווח שגיאות בפרודקשן. מידע אישי מסוטר לפני שליחה.", en: "production error reporting. PII is stripped before transmission." }, language)}
             </li>
           </ul>
+
+          <h2>{tx({ he: "AI ועיבוד אוטומטי", en: "AI and Automated Processing" }, language)}</h2>
+          <p>
+            {tx(
+              {
+                he: "השירות מספק המלצות באמצעות מודלי AI (Claude של Anthropic, embeddings של OpenAI). על-פי סעיף 22 של GDPR, יש לך זכות לקבל הסבר על ההיגיון מאחורי המלצה אוטומטית, להשיג עליה ולקבל החלטה אנושית. לחיצה על אייקון \"Glass-Box\" בכל המלצה חושפת את המתודולוגיה והקלט שהובילו לתוצאה. הספקים פועלים ב-tier ללא אימון מודלים על נתוני לקוחותינו.",
+                en: "The service provides recommendations via AI models (Anthropic Claude, OpenAI embeddings). Under GDPR Article 22, you have the right to receive an explanation of the logic behind any automated recommendation, to contest it, and to request human review. Clicking the \"Glass-Box\" icon on any recommendation reveals the methodology and inputs that produced it. Providers operate on tiers that do not train models on our customers' data.",
+              },
+              language,
+            )}
+          </p>
 
           <h2>{tx({ he: "הזכויות שלך (GDPR)", en: "Your rights (GDPR)" }, language)}</h2>
           <ul>

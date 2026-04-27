@@ -61,6 +61,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "churnPlaybookEngine",
   "churnPredictionEngine",
   "clgEngine",
+  "coefficientCalibration",
   "copyQAEngine",
   "costOfInactionEngine",
   "crossDomainBenchmarkEngine",
