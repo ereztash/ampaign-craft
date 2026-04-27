@@ -104,12 +104,12 @@ Annual plans save 20%.
 
 ## Architecture Overview
 
-**MAS-CC / Blackboard** — 13 specialized agents, 241 engines, 6 closed loops.
+**MAS-CC / Blackboard** — 14 specialized agents, 119 engines, 6 closed loops.
 
 ```
   ┌─────────────────────────────────────────────────────────────┐
   │  UI Layer — React + shadcn/ui + RTL + Archetype-adaptive    │
-  │  263 components · 34 pages · 24 hooks · L1-L5 resolution    │
+  │  165 components · 35 pages · 25 hooks · L1-L5 resolution    │
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
@@ -122,12 +122,12 @@ Annual plans save 20%.
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
-  │  Blackboard / MAS-CC — 13 agents, write-gated JSONB state   │
+  │  Blackboard / MAS-CC — 14 agents, write-gated JSONB state   │
   │  KGraph · Funnel · DISC · Hormozi · CoI · QA · Φ_META (15 files) │
   └──────────────────────────┬──────────────────────────────────┘
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
-  │  Pure Engine Layer - 241 files (59 named *Engine.ts + helpers) │
+  │  Pure Engine Layer - 119 files (50 named *Engine.ts + helpers) │
   │  Behavioral Science · Pricing · Churn · Archetype · Copy QA   │
   └──────────────────────────┬──────────────────────────────────┘
                              │
@@ -138,7 +138,7 @@ Annual plans save 20%.
                              │
   ┌──────────────────────────▼──────────────────────────────────┐
   │  Persistence — Supabase Postgres + pgvector · Event Queue    │
-  │  RLS · 45 migrations · 24 Edge Functions · 1536/384-dim     │
+  │  RLS · 48 migrations · 26 Edge Functions · 1536/384-dim     │
   └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -181,11 +181,11 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 | Lines of code | 131,773 |
 | Source files | 430 (excluding tests) |
 | Tests | 4,721 in 322 test files |
-| Migrations | 45 |
+| Migrations | 48 |
 | Language | TypeScript |
 | Test framework | Vitest + React Testing Library |
 | CI | GitHub Actions (typecheck · lint · test · build) |
-| Engines | 241 pure-function engines |
+| Engines | 119 pure-function engines |
 | Agents | 14 files (2 LLM-backed: qaContent + debugSwarm; 11 deterministic; 1 orchestrator) |
 | Closed loops | 6 |
 | Archetypes | 5 |

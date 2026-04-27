@@ -10,8 +10,9 @@
 //   blindspot_nudge_dismissed   — BlindSpotNudge dismissed (x / cta / timeout)
 //   theme_pack_applied          — theme pack became active for first time
 //
-// Transport: fire-and-forget Supabase edge-function call if available,
-// otherwise log to console in development.
+// Transport: structured console.info (captured by Vercel/monitoring).
+// analytics-ingest edge function is not yet deployed; this logger
+// preserves event visibility until that function ships.
 // The emitter is intentionally synchronous to call-site — it never
 // blocks user interaction and never throws to the caller.
 // ═══════════════════════════════════════════════
@@ -56,24 +57,10 @@ export function emitArchetypeEvent(
     emittedAt: new Date().toISOString(),
   };
 
-  // Development: log to console for easy inspection
   if (import.meta.env.DEV) {
     console.debug("[archetypeAnalytics]", name, payload);
-  }
-
-  // Production: fire-and-forget via Supabase edge function (non-blocking)
-  if (!import.meta.env.DEV || import.meta.env.VITE_SUPABASE_URL) {
-    void (async () => {
-      try {
-        const url = import.meta.env.VITE_SUPABASE_URL;
-        if (!url) return;
-        const { supabase } = await import("@/integrations/supabase/client");
-        await (supabase as unknown as {
-          functions: { invoke: (name: string, opts: { body: unknown }) => Promise<void> }
-        }).functions.invoke("analytics-ingest", { body: event });
-      } catch {
-        // Analytics failure must never surface to the user
-      }
-    })();
+  } else {
+    // Structured log captured by Vercel runtime / monitoring ingestion
+    console.info("[archetypeAnalytics]", JSON.stringify(event));
   }
 }

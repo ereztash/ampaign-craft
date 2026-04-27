@@ -56,6 +56,53 @@ jobs:
       - name: Build
         run: npx vite build
 
+      - name: Consistency - manifest self-test
+        run: npx tsx scripts/consistency/__tests__/manifest.test.ts
+
+      - name: Consistency - numeric claims
+        # Verifies every numeric count in README/CHOICES matches the codebase.
+        # Known drift is tracked in scripts/consistency/allowlist.json with expiry dates.
+        run: npx tsx scripts/consistency/audit-numeric.ts
+
+      - name: Consistency - identity claims
+        # Verifies archetype IDs, tier names, edge-function names, and route paths
+        # are used consistently. Blockers fail the build; warnings are informational.
+        run: npx tsx scripts/consistency/audit-identity.ts
+
+      - name: Consistency - schema claims
+        # Verifies RLS coverage for user-data tables and .env.example completeness.
+        run: npx tsx scripts/consistency/audit-schema.ts
+
+      - name: Consistency - behavioral thresholds
+        # Verifies documented behavioral thresholds (e.g. 20% pricing miss, N≥10 churn
+        # blend) appear as literals in the implementing file near the implementing symbol.
+        run: npx tsx scripts/consistency/audit-behavioral.ts
+
+      - name: Consistency - behavioral test coverage (informational)
+        # Warns when a documented threshold has no test that explicitly contains its
+        # literal value. Informational until coverage reaches 100%.
+        run: npx tsx scripts/consistency/audit-behavioral-coverage.ts
+        continue-on-error: true
+
+      - name: Consistency - structural references
+        # Verifies every supabase.functions.invoke and .from() call site resolves
+        # to a real edge-function directory or migration. Catches phantom calls.
+        run: npx tsx scripts/consistency/audit-structural.ts
+
+      - name: Consistency - documentation provenance
+        # Verifies every behavioral claim's source.quote still appears in its
+        # source.file. Catches silent doc deletion that would leave the manifest
+        # verifying threshold values for claims the README no longer makes.
+        run: npx tsx scripts/consistency/audit-provenance.ts
+
+      - name: Upload consistency reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consistency-reports
+          path: reports/consistency/
+          retention-days: 14
+
   e2e:
     runs-on: ubuntu-latest
     needs: quality

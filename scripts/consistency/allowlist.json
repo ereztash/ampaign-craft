@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "claim_id": "database-table-resolution",
+      "reason": "Two phantom table references discovered by structural audit: (1) framework_pick_events used by frameworkRankingEngine.ts:180 for cross-user aggregation, (2) shared_plans used by shareService.ts:88 for plan sharing. Both are wrapped in try/catch with localStorage fallback — silent failure in production. Decision needed: write migrations for these tables OR remove the Supabase persistence paths.",
+      "expected_until": "2026-05-27",
+      "owner": "ereztash"
+    }
+  ]
+}
