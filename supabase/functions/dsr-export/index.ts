@@ -16,21 +16,30 @@ import { requireAuthedUser } from "../_shared/auth.ts";
 import { buildCorsHeaders } from "../_shared/cors.ts";
 import { sanitizeClientError } from "../_shared/errors.ts";
 
-// User-scoped tables to include in the export. Add new tables here as
-// the schema grows. Service-only tables (event_queue, audit logs, etc.)
-// are intentionally excluded.
-const USER_SCOPED_TABLES = [
-  "profiles",
-  "saved_plans",
-  "user_archetype_profiles",
-  "user_progress",
-  "user_integrations",
-  "feedback",
-  "quotes",
-  "leads",
-  "tier_audit_log",
-  "engine_history",
-  "outcome_observations",
+// Defense-in-depth UUID check on the auth.id we interpolate into
+// PostgREST .or() filter strings below. The Supabase gateway has
+// already verified the JWT signature, but we never want a malformed
+// `sub` claim to flow into a DSL fragment.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// User-scoped tables to include in the export, paired with the column
+// that links the row to the user. Most tables use `user_id`; `profiles`
+// uses the auth user id as its primary key, so we filter on `id`.
+// Listing the column explicitly avoids a `user_id.eq.X,id.eq.X` .or()
+// filter that mixed two semantically distinct columns and required
+// per-row post-filtering to stay safe.
+const USER_SCOPED_TABLES: ReadonlyArray<{ table: string; column: "user_id" | "id" }> = [
+  { table: "profiles", column: "id" },
+  { table: "saved_plans", column: "user_id" },
+  { table: "user_archetype_profiles", column: "user_id" },
+  { table: "user_progress", column: "user_id" },
+  { table: "user_integrations", column: "user_id" },
+  { table: "feedback", column: "user_id" },
+  { table: "quotes", column: "user_id" },
+  { table: "leads", column: "user_id" },
+  { table: "tier_audit_log", column: "user_id" },
+  { table: "engine_history", column: "user_id" },
+  { table: "outcome_observations", column: "user_id" },
 ] as const;
 
 interface ExportPayload {
@@ -66,21 +75,34 @@ Deno.serve(async (req) => {
       headers: { ...cors, "Content-Type": "application/json" },
     });
   }
+  if (!UUID_RE.test(auth.id)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
+  }
 
   const tables: Record<string, unknown[]> = {};
 
-  for (const table of USER_SCOPED_TABLES) {
+  for (const { table, column } of USER_SCOPED_TABLES) {
     try {
       const { data, error } = await auth.supabase
         .from(table)
         .select("*")
-        .or(`user_id.eq.${auth.id},id.eq.${auth.id}`);
+        .eq(column, auth.id);
       if (error) {
         // Table may not have user_id column or row-level access — skip.
         tables[table] = [];
         continue;
       }
-      tables[table] = data ?? [];
+      // Defense-in-depth on top of RLS: drop any row that doesn't actually
+      // belong to the authenticated user. Protects the export against an
+      // accidentally permissive RLS policy or a future schema change.
+      const ownedRows = (data ?? []).filter((row) => {
+        const r = row as Record<string, unknown>;
+        return r[column] === auth.id;
+      });
+      tables[table] = ownedRows;
     } catch (e) {
       console.warn(`dsr-export: failed for table ${table}`, sanitizeClientError(e));
       tables[table] = [];

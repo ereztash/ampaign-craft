@@ -218,7 +218,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       const display = msg.includes("ANTHROPIC_API_KEY")
-        ? tx({ he: "שירות ה-AI לא מוגדר (חסר ANTHROPIC_API_KEY בסוד Supabase).", en: "AI service not configured (missing ANTHROPIC_API_KEY in Supabase secrets)." }, language)
+        ? tx({ he: "שירות ה-AI אינו זמין כרגע. נסה שוב מאוחר יותר.", en: "AI service is currently unavailable. Please try again later." }, language)
         : msg.includes("Unauthorized") || msg.includes("401")
           ? tx({ he: "נא להתחבר לחשבון כדי להשתמש במאמן.", en: "Please sign in to use the AI coach." }, language)
           : msg.includes("Origin not allowed") || msg.includes("403")
