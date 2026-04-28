@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Analytics } from "@/lib/analytics";
@@ -47,7 +47,7 @@ import { WhatsAppSendButton } from "@/components/WhatsAppSendButton";
 import { EmailComposer } from "@/components/EmailComposer";
 import {
   Plus, Users, MoreVertical, Pencil, Trash2, Calendar,
-  DollarSign, Phone, Mail, Building2, Sparkles,
+  DollarSign, Building2,
 } from "lucide-react";
 import {
   listLeads, createLead, updateLead, deleteLead, type Lead, type LeadStatus,
@@ -225,7 +225,10 @@ interface LeadCardProps {
 }
 
 function LeadCard({ lead, col, onEdit, onDelete, onMove, language }: LeadCardProps) {
-  const isOverdue = lead.nextFollowup && new Date(lead.nextFollowup) < new Date() && lead.status !== "closed" && lead.status !== "lost";
+  const navigate = useNavigate();
+  const followupDate = lead.nextFollowup ? new Date(lead.nextFollowup) : null;
+  const isOverdue = followupDate && followupDate < new Date() && lead.status !== "closed" && lead.status !== "lost";
+  const detailPath = `/crm/${lead.id}`;
   const waMessage = [
     `שלום ${lead.name}!`,
     lead.business ? `(${lead.business})` : "",
@@ -234,9 +237,17 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, language }: LeadCardPro
     ``,
     `מצפה לשמוע ממך 🙏`,
   ].filter(Boolean).join("\n");
+  // Stop click bubbling so action controls don't also trigger card navigation.
+  const stop = (e: React.MouseEvent | React.KeyboardEvent) => e.stopPropagation();
 
   return (
-    <div className={`rounded-lg border ${col.border} bg-background p-3 space-y-2 shadow-sm hover:shadow-md transition-shadow group`}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate(detailPath)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(detailPath); } }}
+      className={`rounded-lg border ${col.border} bg-background p-3 space-y-2 shadow-sm hover:shadow-md transition-shadow group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+    >
       <div className="flex items-start justify-between gap-1">
         <div className="min-w-0 flex-1">
           <p className="font-medium text-sm text-foreground leading-tight truncate" dir="auto">{lead.name}</p>
@@ -247,85 +258,67 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, language }: LeadCardPro
             </p>
           )}
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <MoreVertical className="h-3.5 w-3.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="text-xs">
-            <LeadFormDialog
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="gap-2 cursor-pointer">
-                  <Pencil className="h-3.5 w-3.5" />
-                  {tx({ he: "עריכה", en: "Edit" }, language)}
+        <div onClick={stop} onKeyDown={stop}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <MoreVertical className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="text-xs">
+              <LeadFormDialog
+                trigger={
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="gap-2 cursor-pointer">
+                    <Pencil className="h-3.5 w-3.5" />
+                    {tx({ he: "עריכה", en: "Edit" }, language)}
+                  </DropdownMenuItem>
+                }
+                initial={lead}
+                onSave={onEdit}
+              />
+              {COLUMNS.filter((c) => c.id !== lead.status).map((c) => (
+                <DropdownMenuItem key={c.id} className="gap-2 cursor-pointer" onSelect={() => onMove(lead.id, c.id)}>
+                  <span className={`w-2 h-2 rounded-full ${c.dot}`} />
+                  {tx(c, language)}
                 </DropdownMenuItem>
-              }
-              initial={lead}
-              onSave={onEdit}
-            />
-            {COLUMNS.filter((c) => c.id !== lead.status).map((c) => (
-              <DropdownMenuItem key={c.id} className="gap-2 cursor-pointer" onSelect={() => onMove(lead.id, c.id)}>
-                <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-                {tx(c, language)}
+              ))}
+              <DropdownMenuItem className="gap-2 text-destructive cursor-pointer" onSelect={() => onDelete(lead.id)}>
+                <Trash2 className="h-3.5 w-3.5" />
+                {tx({ he: "מחק", en: "Delete" }, language)}
               </DropdownMenuItem>
-            ))}
-            <DropdownMenuItem className="gap-2 text-destructive cursor-pointer" onSelect={() => onDelete(lead.id)}>
-              <Trash2 className="h-3.5 w-3.5" />
-              {tx({ he: "מחק", en: "Delete" }, language)}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      <div className="space-y-1">
-        {lead.phone && (
-          <a href={`tel:${lead.phone}`} className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-            <Phone className="h-2.5 w-2.5 shrink-0" />
-            <span dir="ltr">{lead.phone}</span>
-          </a>
-        )}
-        {lead.email && (
-          <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground truncate">
-            <Mail className="h-2.5 w-2.5 shrink-0" />
-            <span dir="ltr" className="truncate">{lead.email}</span>
-          </p>
-        )}
-        {lead.valueNIS > 0 && (
-          <p className="flex items-center gap-1.5 text-[11px] font-medium text-foreground">
-            <DollarSign className="h-2.5 w-2.5 shrink-0 text-emerald-500" />
-            ₪{lead.valueNIS.toLocaleString()}
-          </p>
-        )}
-        {lead.nextFollowup && (
-          <p className={`flex items-center gap-1.5 text-[11px] ${isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
-            <Calendar className="h-2.5 w-2.5 shrink-0" />
-            {new Date(lead.nextFollowup).toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
-            {isOverdue && tx({ he: " (פגה!)", en: " (overdue!)" }, language)}
-          </p>
-        )}
-      </div>
-
-      {lead.notes && (
-        <p className="text-[10px] text-muted-foreground line-clamp-2 border-t pt-1.5 leading-snug" dir="auto">
-          {lead.notes}
-        </p>
+      {(lead.valueNIS > 0 || followupDate) && (
+        <div className="flex items-center gap-3 text-[11px]">
+          {lead.valueNIS > 0 && (
+            <span className="flex items-center gap-1 font-medium text-foreground">
+              <DollarSign className="h-2.5 w-2.5 text-emerald-500" />
+              ₪{lead.valueNIS.toLocaleString()}
+            </span>
+          )}
+          {followupDate && (
+            <span className={`flex items-center gap-1 ${isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
+              <Calendar className="h-2.5 w-2.5 shrink-0" />
+              {followupDate.toLocaleDateString(tx({ he: "he-IL", en: "en-US" }, language))}
+              {isOverdue && tx({ he: " (פגה!)", en: " (overdue!)" }, language)}
+            </span>
+          )}
+        </div>
       )}
 
-      <div className="flex gap-1.5 pt-0.5 flex-wrap">
-        <Link to={`/crm/${lead.id}`} className="inline-flex">
-          <Button variant="outline" size="sm" className="gap-1 text-[11px] h-7">
-            <Sparkles className="h-3 w-3" />
-            {tx({ he: "Lead Coach", en: "Lead Coach" }, language)}
-          </Button>
-        </Link>
-        {lead.phone && (
+      {lead.phone && (
+        <div onClick={stop} onKeyDown={stop} className="pt-0.5">
           <WhatsAppSendButton message={waMessage} defaultPhone={lead.phone} size="sm" label={tx({ he: "WhatsApp", en: "WhatsApp" }, language)} />
-        )}
-        {lead.email && (
+        </div>
+      )}
+      {!lead.phone && lead.email && (
+        <div onClick={stop} onKeyDown={stop} className="pt-0.5">
           <EmailComposer body={`שלום ${lead.name},\n\nרציתי לעקוב אחרי שיחתנו...\n\nבברכה`} subject={tx({ he: "המשך שיחתנו", en: "Following up" }, language)} size="sm" label={tx({ he: "אימייל", en: "Email" }, language)} />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
