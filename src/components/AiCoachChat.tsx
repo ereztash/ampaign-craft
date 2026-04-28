@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { tx } from "@/i18n/tx";
 import { Bot, Send, Loader2, Sparkles } from "lucide-react";
+import { LimitReachedModal, LimitReachedDetail } from "@/components/LimitReachedModal";
+import { useUsage } from "@/hooks/useUsage";
 
 interface AiCoachChatProps {
   result: FunnelResult | null;
@@ -135,7 +137,9 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [limitDetail, setLimitDetail] = useState<LimitReachedDetail | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { refresh: refreshUsage } = useUsage();
 
   // Build knowledge graph for rich context (or a minimal graph if no plan yet)
   const diffResult = useMemo<DifferentiationResult | null>(
@@ -182,6 +186,24 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         }),
       });
 
+      // Hidden-overage flow: 402 means the user hit their monthly quota
+      // and has no credits. Roll back the phantom user message and open
+      // the buy-credits modal — credits never appear elsewhere in the UI.
+      if (_resp.status === 402) {
+        const data = await _resp.json().catch(() => ({}));
+        const denial = data?.denial;
+        setMessages((prev) => prev.slice(0, -1));
+        setLimitDetail({
+          reason: denial?.reason ?? "quota_exhausted_no_credits",
+          actionDisplayKey: denial?.actionDisplayKey ?? "ai_coach_message",
+          creditCost: denial?.creditCost ?? 1,
+          tier: data?.tier ?? "free",
+          used: data?.used ?? 0,
+          limit: data?.limit ?? 0,
+        });
+        return;
+      }
+
       if (!_resp.ok) {
         const errData = await _resp.json();
         throw new Error(errData?.error || _resp.statusText);
@@ -189,7 +211,6 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
 
       const isStream = _resp.headers.get("Content-Type")?.includes("text/event-stream");
       if (isStream && _resp.body) {
-        // Insert a placeholder and fill it token by token as the stream arrives
         setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
         let accumulated = "";
         for await (const chunk of readTextStream(_resp.body)) {
@@ -215,6 +236,7 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         const reply = data?.reply || tx({ he: "לא הצלחתי לענות. נסה שוב.", en: "Couldn't respond. Try again." }, language);
         setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
       }
+      void refreshUsage();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       const display = msg.includes("ANTHROPIC_API_KEY")
@@ -319,6 +341,11 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         </div>
       </CardContent>
     </Card>
+    <LimitReachedModal
+      open={limitDetail !== null}
+      onOpenChange={(open) => { if (!open) setLimitDetail(null); }}
+      detail={limitDetail}
+    />
     </>
   );
 };
