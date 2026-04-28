@@ -25,7 +25,12 @@ Deno.serve(async (req) => {
   if (!isOriginAllowed(req)) return corsDenied(req);
 
   // Public endpoint; cap traffic tightly so enumeration attacks are slow.
-  const rl = checkRateLimit(req, "get-quote-by-token", 30, 60_000);
+  // Tokens are 128-bit so a single attacker can't realistically brute
+  // force the keyspace, but the looser 30/min limit was generous enough
+  // to be useful for parallel scraping. 10/min/IP is plenty for genuine
+  // share-link traffic (one viewer rarely loads a quote more than a
+  // handful of times) while making enumeration economically painful.
+  const rl = checkRateLimit(req, "get-quote-by-token", 10, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
   if (req.method !== "GET" && req.method !== "POST") {

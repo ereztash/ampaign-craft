@@ -5,12 +5,11 @@
 // ═══════════════════════════════════════════════
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
 import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { extractBearerToken, requireAuthOrServiceRole } from "../_shared/auth.ts";
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Supabase built-in embedding model. 384-dim. No external API key.
 // Replaces OpenAI text-embedding-3-small (1536-dim) — see migration
@@ -45,25 +44,30 @@ Deno.serve(async (req) => {
   if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
   // Verify JWT. Allow service-role callers (queue-processor dispatching
-  // background embedding work) to skip user auth by presenting the service
-  // role key; they still have to supply a valid userId in the body.
-  const authHeader = req.headers.get("Authorization");
-  const token = authHeader?.replace("Bearer ", "");
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-  const isServiceRole = !!token && token === SUPABASE_SERVICE_KEY;
-  let authedUserId: string | null = null;
-  if (!isServiceRole) {
-    const { data: { user } } = await supabase.auth.getUser(token);
-    if (!user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    authedUserId = user.id;
-    // Per-user cap on OpenAI embedding calls. Each request can batch up to
+  // background embedding work) to skip user auth; they still have to
+  // supply a valid userId in the body. Role detection uses the JWT
+  // payload claim rather than string-equality against the secret key,
+  // which is both timing-safe and tolerant of key rotation.
+  if (!extractBearerToken(req)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const authCtx = await requireAuthOrServiceRole(req);
+  if (!authCtx) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const isServiceRole = authCtx.kind === "service_role";
+  const supabase = authCtx.supabase;
+  const authedUserId: string | null = isServiceRole ? null : (authCtx.userId ?? null);
+  if (!isServiceRole && authedUserId) {
+    // Per-user cap on embedding calls. Each request can batch up to
     // 2048 items so IP-only limits let a single user drain tokens fast.
-    const userRl = checkUserRateLimit(user.id, "embed-content", 10, 60_000);
+    const userRl = checkUserRateLimit(authedUserId, "embed-content", 10, 60_000);
     if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
   }
 
@@ -87,11 +91,39 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (!userId) {
+    if (!userId || typeof userId !== "string" || !UUID_RE.test(userId)) {
       return new Response(JSON.stringify({ error: "userId is required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (planId !== undefined && planId !== null && (typeof planId !== "string" || !UUID_RE.test(planId))) {
+      return new Response(JSON.stringify({ error: "invalid planId" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // BOLA defense: when a planId is supplied, verify the userId in the
+    // body actually owns that plan. The user-JWT path already pins
+    // userId === authedUserId, but service-role callers (queue-processor)
+    // could otherwise be tricked into embedding under a (userId, planId)
+    // pair where the plan belongs to someone else, polluting another
+    // user's plan embeddings and leaking data via subsequent recall.
+    if (planId) {
+      const { data: planRow, error: planErr } = await supabase
+        .from("saved_plans")
+        .select("id")
+        .eq("id", planId)
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (planErr || !planRow) {
+        return new Response(JSON.stringify({ error: "Forbidden: plan does not belong to user" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Generate embeddings in batch (max 2048 items per API call)
@@ -106,9 +138,6 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Store in database
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
     // Delete existing embeddings for this plan (if re-embedding)
     if (planId) {

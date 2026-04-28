@@ -2,6 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.ts";
 import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { extractBearerToken } from "../_shared/auth.ts";
 
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -39,11 +40,18 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization");
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-    // Get user from JWT
-    const token = authHeader?.replace("Bearer ", "");
+    // Get user from JWT. Use the strict bearer extractor so a malformed
+    // Authorization header is rejected rather than silently coerced into
+    // an empty token string.
+    const token = extractBearerToken(req);
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const { data: { user } } = await supabase.auth.getUser(token);
     if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {

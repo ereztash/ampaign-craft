@@ -75,6 +75,15 @@ const MAX_QUERY_LENGTH = 1000;
 const MAX_FACTS_PER_QUERY = 25;
 const CACHE_SIMILARITY_THRESHOLD = 0.95;
 
+// Defense-in-depth: PostgREST `.or()` accepts a comma-separated filter
+// DSL string. The userId we interpolate originates from the JWT `sub`
+// claim (already verified by the Supabase gateway), so under normal
+// operation it is a UUID. We re-validate the shape here so a malformed
+// claim cannot inject DSL fragments via the .or() path. Anything that
+// fails this check is rejected as an auth error rather than passed to
+// the database.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 // Per-intent TTL for answer_cards.
 const INTENT_TTL_SECONDS: Record<Intent, number> = {
   LOOKUP: 24 * 60 * 60,    // 24h — facts rarely change same-day
@@ -118,6 +127,7 @@ Deno.serve(async (req) => {
 
   const user = await requireAuthedUser(req);
   if (!user) return json({ error: "Unauthorized" }, 401, corsHeaders);
+  if (!UUID_RE.test(user.id)) return json({ error: "Unauthorized" }, 401, corsHeaders);
 
   const userRl = checkUserRateLimit(user.id, "knowledge-query", 20, 60_000);
   if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
