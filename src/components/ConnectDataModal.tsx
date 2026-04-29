@@ -3,7 +3,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
-import { FileSpreadsheet, Building2, Facebook } from "lucide-react";
+import { FileSpreadsheet, Building2 } from "lucide-react";
+import { FacebookIcon } from "@/components/FacebookIcon";
 
 interface ConnectDataModalProps {
   open: boolean;
@@ -59,7 +60,7 @@ const ConnectDataModal = ({ open, onOpenChange, initialPlatform, onOpenImport }:
                 navigate("/data/meta");
               }}
             >
-              <Facebook className="h-5 w-5" />
+              <FacebookIcon className="h-5 w-5" />
               <span dir="auto">{tx({ he: "מודעות מטא (OAuth)", en: "Meta Ads (OAuth)" }, language)}</span>
             </Button>
           )}

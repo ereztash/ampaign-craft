@@ -1,4 +1,5 @@
-import { Facebook, Loader2, AlertCircle, CheckCircle2, PowerOff } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2, PowerOff } from "lucide-react";
+import { FacebookIcon } from "@/components/FacebookIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -79,7 +80,7 @@ const MetaConnect = ({
       <Card className="border-dashed">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Facebook className="h-5 w-5 text-blue-600" />
+            <FacebookIcon className="h-5 w-5" />
             {tx({ he: "חבר חשבון Meta Ads", en: "Connect Meta Ads Account" }, language)}
           </CardTitle>
           <CardDescription>
@@ -96,7 +97,7 @@ const MetaConnect = ({
             </Alert>
           )}
           <Button onClick={onConnect} className="gap-2 bg-primary hover:bg-primary/90">
-            <Facebook className="h-4 w-4" />
+            <FacebookIcon className="h-4 w-4" />
             {tx({ he: "כניסה עם Facebook", en: "Continue with Facebook" }, language)}
           </Button>
           <p className="text-xs text-muted-foreground">
