@@ -24,6 +24,7 @@ import { isAdminRole } from "@/lib/roles";
 import AuthDebugPanel from "@/components/AuthDebugPanel";
 import { ProgressSyncManager } from "@/components/ProgressSyncManager";
 import { useUtmTracking } from "@/hooks/useUtmTracking";
+import { DerivedStateSync } from "@/components/DerivedStateSync";
 
 /**
  * Captures UTM params on every page load and persists attribution to the
@@ -174,6 +175,13 @@ const App = () => (
     <AuthProvider>
       <LanguageProvider>
         <UserProfileProvider>
+          {/*
+            DerivedStateSync watches UserProfileContext and feeds the
+            derived-state store. Mounted here so every consumer of
+            useDerivedStore sees the same values regardless of which
+            route is active.
+          */}
+          <DerivedStateSync />
           <ArchetypeProvider>
           <ArchetypeThemeProvider>
           <DataSourceProvider>

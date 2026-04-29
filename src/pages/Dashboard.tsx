@@ -5,11 +5,8 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useModuleStatus } from "@/hooks/useModuleStatus";
 import { generateWeeklyPulse } from "@/engine/pulseEngine";
-import { buildUserKnowledgeGraph, buildDefaultKnowledgeGraph, loadChatInsights, loadImportedDataSignals, loadMetaSignals } from "@/engine/userKnowledgeGraph";
-import { calculateHealthScore } from "@/engine/healthScoreEngine";
-import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
+import { buildDefaultKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 import { safeStorage } from "@/lib/safeStorage";
-import { assessChurnRisk } from "@/engine/churnPredictionEngine";
 import { getRecommendedNextStep } from "@/engine/nextStepEngine";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import ReferralDashboard from "@/components/ReferralDashboard";
@@ -19,10 +16,17 @@ import { useArchetypePipeline } from "@/hooks/useArchetypePipeline";
 import { getPrimaryCtaVerbs } from "@/engine/behavioralHeuristicEngine";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { generateBenchmarks } from "@/engine/campaignAnalyticsEngine";
-import { assignToCohort } from "@/engine/behavioralCohortEngine";
-import { inferDISCProfile } from "@/engine/discProfileEngine";
 import { structureForAllPlatforms } from "@/engine/visualExportEngine";
 import { computeMotivationState, type BAEInput } from "@/engine/behavioralActionEngine";
+import {
+  useDerivedStore,
+  selectGraph,
+  selectHealthScore,
+  selectChurnRisk,
+  selectCohort,
+  selectDisc,
+  selectCostOfInaction,
+} from "@/store/derivedStore";
 import { SavedPlan } from "@/types/funnel";
 import BackToHub from "@/components/BackToHub";
 import ArchetypeProfileCard from "@/components/ArchetypeProfileCard";
@@ -61,24 +65,15 @@ const Dashboard = () => {
   const lastPlan = savedPlans.length > 0 ? [...savedPlans].sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())[0] : null;
   const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
 
-  // Personalized greeting from knowledge graph
-  const graph = useMemo(() => {
-    if (profile.lastFormData) return buildUserKnowledgeGraph(
-      profile.lastFormData, undefined, undefined, undefined, undefined,
-      { chatInsights: loadChatInsights(), importedData: loadImportedDataSignals(), metaSignals: loadMetaSignals() },
-    );
-    return null;
-  }, [profile.lastFormData]);
-
-  const healthScore = useMemo(() => {
-    if (lastPlan) return calculateHealthScore(lastPlan.result, graph ?? undefined);
-    return null;
-  }, [lastPlan, graph]);
-
-  const churnRisk = useMemo(() => {
-    if (lastPlan) return assessChurnRisk(lastPlan.result.formData);
-    return null;
-  }, [lastPlan]);
+  // All expensive cross-page derivations come from the derived store —
+  // built once per input change by DerivedStateSync. Selectors are
+  // defined module-level so Zustand subscribes stably.
+  const graph = useDerivedStore(selectGraph);
+  const healthScore = useDerivedStore(selectHealthScore);
+  const churnRisk = useDerivedStore(selectChurnRisk);
+  const cohortAssignment = useDerivedStore(selectCohort);
+  const disc = useDerivedStore(selectDisc);
+  const costOfInaction = useDerivedStore(selectCostOfInaction);
 
   const staticNextStep = useMemo(() => {
     const fallbackGraph = graph || buildDefaultKnowledgeGraph();
@@ -108,28 +103,19 @@ const Dashboard = () => {
   const analytics = useMemo(() => generateBenchmarks(savedPlans), [savedPlans]);
   const topIndustryInsight = analytics.industryInsights[0] ?? null;
 
-  // Behavioral cohort assignment — driven by the latest form data + DISC.
-  const cohortAssignment = useMemo(() => {
-    if (!profile.lastFormData) return null;
-    const disc = inferDISCProfile(profile.lastFormData, graph);
-    return assignToCohort(
-      profile.lastFormData,
-      disc,
-      healthScore?.total,
-      undefined,
-    );
-  }, [profile.lastFormData, graph, healthScore?.total]);
+  // cohortAssignment, disc and costOfInaction now come from the derived
+  // store (declared above). Previously this page computed inferDISCProfile
+  // twice and calculateCostOfInaction once with the same inputs each time
+  // the memo invalidated — the store collapses all of that to one call.
 
   const modules = useModuleStatus();
   const completedModules = modules.filter((m) => m.completed).length;
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
 
   const motivationState = useMemo(() => {
-    const disc = profile.lastFormData ? inferDISCProfile(profile.lastFormData, graph) : undefined;
-    const coi = lastPlan ? calculateCostOfInaction(lastPlan.result, graph ?? undefined) : undefined;
     const baeInput: BAEInput = {
       healthScore: healthScore ?? undefined,
-      costOfInaction: coi,
+      costOfInaction: costOfInaction ?? undefined,
       discProfile: disc?.distribution,
       investment: profile.investment,
       modulesTotal: modules.length,
@@ -141,7 +127,7 @@ const Dashboard = () => {
       sessionMinutes: profile.investment.totalSessionsMinutes % 60 || 1,
     };
     return computeMotivationState(baeInput);
-  }, [lastPlan, profile, modules, completedModules, streak, graph, healthScore]);
+  }, [profile, modules, completedModules, streak, healthScore, costOfInaction, disc]);
 
   const socialPreview = useMemo(() => {
     if (!pulse?.greeting) return null;

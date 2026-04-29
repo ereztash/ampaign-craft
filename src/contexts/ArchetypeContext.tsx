@@ -139,7 +139,9 @@ export function ArchetypeProvider({ children }: { children: ReactNode }) {
   // ── Resolve effective archetype (user override takes precedence) ──
   const effectiveArchetypeId: ArchetypeId = profile.overrideByUser ?? profile.archetypeId;
   const confidenceTier: ConfidenceTier = profile.overrideByUser ? "strong" : profile.confidenceTier;
-  const uiConfig = getArchetypeUIConfig(effectiveArchetypeId);
+  // uiConfig is an object; memoize so the outer `value` memo's dep stays
+  // stable when profile changes for unrelated reasons.
+  const uiConfig = useMemo(() => getArchetypeUIConfig(effectiveArchetypeId), [effectiveArchetypeId]);
 
   // ── Hydrate from localStorage on user change ──
   // Pull user.id out so the effect only depends on the stable id, not the
