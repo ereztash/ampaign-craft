@@ -14,6 +14,7 @@ import { ENGINE_MANIFEST as brandVectorManifest } from "../brandVectorEngine";
 import { ENGINE_MANIFEST as businessFingerprintManifest } from "../businessFingerprintEngine";
 import { ENGINE_MANIFEST as stylomeManifest } from "../stylomeEngine";
 import { ENGINE_MANIFEST as exportManifest } from "../exportEngine";
+import { ENGINE_MANIFEST as coachVoiceManifest } from "../coachVoiceProfile";
 
 // ───────────────────────────────────────────────
 // Manifest shape — narrow enough to compare both
@@ -61,6 +62,7 @@ export const ALL_ENGINE_FILES: readonly string[] = [
   "churnPlaybookEngine",
   "churnPredictionEngine",
   "clgEngine",
+  "coachVoiceProfile",
   "coefficientCalibration",
   "copyQAEngine",
   "costOfInactionEngine",
@@ -128,6 +130,7 @@ export const REGISTRY: Readonly<Record<string, EngineManifest>> = (() => {
     businessFingerprintManifest as unknown as EngineManifest,
     stylomeManifest as unknown as EngineManifest,
     exportManifest as unknown as EngineManifest,
+    coachVoiceManifest as unknown as EngineManifest,
   ];
 
   const map: Record<string, EngineManifest> = {};
