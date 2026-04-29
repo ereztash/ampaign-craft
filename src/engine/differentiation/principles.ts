@@ -233,6 +233,10 @@ export const PRINCIPLES: readonly PrincipleDefinition[] = [
   },
 ] as const;
 
+export const PRINCIPLES_BY_CODE: ReadonlyMap<PrincipleCode, PrincipleDefinition> = new Map(
+  PRINCIPLES.map((p) => [p.code, p] as const),
+);
+
 export function getPrincipleByCode(code: PrincipleCode): PrincipleDefinition | undefined {
   return PRINCIPLES.find((p) => p.code === code);
 }

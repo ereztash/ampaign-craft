@@ -4,7 +4,7 @@
 // Entry: /differentiate?mode=transcript
 // ═══════════════════════════════════════════════
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { toDifferentiationPrefill } from "@/types/profile";
@@ -26,9 +26,14 @@ import {
 } from "lucide-react";
 
 import { STAGES, detectStagesInTranscript, type StageDetectionReport } from "@/engine/differentiation/conversationStages";
-import { PRINCIPLES, aggregatePrincipleOutputs, type PrincipleAgentOutput, type ConvergenceReport } from "@/engine/differentiation/principles";
+import { PRINCIPLES_BY_CODE, type PrincipleAgentOutput, type ConvergenceReport } from "@/engine/differentiation/principles";
 import { runPrincipleScan } from "@/engine/differentiation/principleAgents";
 import { readFileAsText, downloadDifferentiationMarkdown, downloadPlanStage1Markdown } from "@/engine/differentiation/transcriptIO";
+import {
+  buildDraftFromScanOutputs,
+  isTranscriptWizardStepValid,
+  type TranscriptWizardStepId,
+} from "@/engine/differentiation/transcriptWizardLogic";
 
 // ───────────────────────────────────────────────
 // Types
@@ -47,7 +52,7 @@ interface DraftData {
 }
 
 // Steps 1-6
-type StepId = 1 | 2 | 3 | 4 | 5 | 6;
+type StepId = TranscriptWizardStepId;
 
 interface WizardState {
   step: StepId;
@@ -68,71 +73,6 @@ const STEP_LABELS: { he: string; en: string }[] = [
   { he: "טיוטת בידול", en: "Differentiation Draft" },
   { he: "ייצוא", en: "Export" },
 ];
-
-// ───────────────────────────────────────────────
-// Validation per step (Rule 1 in CLAUDE.md)
-// ───────────────────────────────────────────────
-
-function isStepValid(step: StepId, state: WizardState): boolean {
-  switch (step) {
-    case 1:
-      return state.intake.clientName.trim().length > 0 &&
-        state.intake.differentiationStatus !== undefined;
-    case 2:
-      return state.transcript.trim().length > 50;
-    case 3:
-      return state.scanOutputs.length > 0;
-    case 4:
-      return state.approvedCodes.size >= 1;
-    case 5:
-      return state.draft.oneSentence.trim().length > 0;
-    case 6:
-      return true;
-    default:
-      return false;
-  }
-}
-
-// ───────────────────────────────────────────────
-// Draft generation from principle outputs
-// ───────────────────────────────────────────────
-
-function buildDraftFromScan(
-  outputs: PrincipleAgentOutput[],
-  approvedCodes: Set<string>,
-  clientName: string,
-): DraftData {
-  const approved = outputs.filter((o) => approvedCodes.has(o.principleCode) && !o.failed);
-  const topHypotheses = approved
-    .sort((a, b) => b.relevanceScore - a.relevanceScore)
-    .slice(0, 3)
-    .map((o) => o.differentiationHypothesis)
-    .filter(Boolean);
-
-  const topQuotes = approved
-    .flatMap((o) => o.evidenceQuotes)
-    .slice(0, 2);
-
-  const principleNames = approved
-    .slice(0, 3)
-    .map((o) => {
-      const def = PRINCIPLES.find((p) => p.code === o.principleCode);
-      return def?.name.en ?? o.principleCode;
-    });
-
-  const oneSentence = topHypotheses[0] ||
-    `${clientName} differentiates through ${principleNames.join(", ")}.`;
-
-  const paragraph = topHypotheses.length > 1
-    ? topHypotheses.join(" ")
-    : `${oneSentence} ${topQuotes.join(" ")}`.trim();
-
-  const marketCheck = approved.length >= 3
-    ? `Strong differentiation signal across ${approved.length} principles. Ready for market positioning.`
-    : `Partial signal (${approved.length} approved principles). Consider strengthening evidence before market positioning.`;
-
-  return { oneSentence, paragraph, marketCheck };
-}
 
 // ───────────────────────────────────────────────
 // Main component
@@ -204,7 +144,7 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
 
     // Step 4 → 5: build draft automatically
     if (current === 4) {
-      const draft = buildDraftFromScan(state.scanOutputs, state.approvedCodes, state.intake.clientName);
+      const draft = buildDraftFromScanOutputs(state.scanOutputs, state.approvedCodes, state.intake.clientName);
       update({ draft, step: 5 });
       setDirection(1);
       return;
@@ -306,7 +246,13 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
       };
 
   const progress = (state.step / 6) * 100;
-  const canProceed = isStepValid(state.step, state);
+  const canProceed = isTranscriptWizardStepValid(state.step, state);
+  const sortedScanOutputs = useMemo(
+    () => [...state.scanOutputs]
+      .filter((o) => !o.failed)
+      .sort((a, b) => b.relevanceScore - a.relevanceScore),
+    [state.scanOutputs],
+  );
 
   // ───────────────────────────────────────────────
   // Render helpers
@@ -536,10 +482,6 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
   };
 
   const renderStep4 = () => {
-    const sorted = [...state.scanOutputs]
-      .filter((o) => !o.failed)
-      .sort((a, b) => b.relevanceScore - a.relevanceScore);
-
     const toggleCode = (code: string) => {
       const next = new Set(state.approvedCodes);
       if (next.has(code)) next.delete(code);
@@ -564,8 +506,8 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
         </div>
 
         <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
-          {sorted.map((out) => {
-            const def = PRINCIPLES.find((p) => p.code === out.principleCode);
+          {sortedScanOutputs.map((out) => {
+            const def = PRINCIPLES_BY_CODE.get(out.principleCode);
             const approved = state.approvedCodes.has(out.principleCode);
             const scoreColor =
               out.relevanceScore >= 8 ? "text-emerald-600"
