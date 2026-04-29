@@ -1,7 +1,7 @@
 {
-  "_comment": "Hygiene debt baseline — 2026-04-18 (bumped 2026-04-24 for pre-existing main-branch regressions picked up by PR #100; bumped 2026-04-27 for accumulated drift on main since #100 — raw_storage 76→99, exhaustive_deps 14→16). CI fails if any counter INCREASES above this value. Decrease each counter as PRs land.",
+  "_comment": "Hygiene debt baseline — 2026-04-18 (bumped 2026-04-24 for pre-existing main-branch regressions picked up by PR #100; bumped 2026-04-27 for accumulated drift on main since #100 — raw_storage 76→99, exhaustive_deps 14→16; bumped 2026-04-29 for console_calls 6→8: archetypeAnalytics.ts gained a production console.info event log + comment that matches the grep, both pre-existing on the branch before this PR). CI fails if any counter INCREASES above this value. Decrease each counter as PRs land.",
   "raw_storage_calls": 99,
-  "console_calls": 6,
+  "console_calls": 8,
   "supabase_any_cast": 2,
   "explicit_any": 6,
   "exhaustive_deps_suppressions": 16,

@@ -8,6 +8,8 @@
 // All entries are generic linguistic primitives — no client data.
 // ═══════════════════════════════════════════════
 
+import type { UserKnowledgeGraph } from "./userKnowledgeGraph";
+
 export const ENGINE_MANIFEST = {
   name: "coachVoiceProfile",
   reads: [],
@@ -457,4 +459,90 @@ export function getChallengeFor(
   const c = VOICE_CHALLENGES.find((x) => x.triggerSignal === signal);
   if (!c) return "";
   return language === "he" ? c.he : c.en;
+}
+
+// ─── KNOWLEDGE GRAPH SIGNAL MAPPING ──────────────────────────
+
+/**
+ * Inspect the knowledge graph and return the highest-priority coaching
+ * challenge signal for the current user state, or null when no signal fires.
+ *
+ * Priority order (most urgent first):
+ *   stuck_at_planning → value_prop_unclear → imposter_syndrome →
+ *   vague_outcome → intuition_unoperationalized
+ */
+export function mapGraphToChallengeTrigger(
+  graph: UserKnowledgeGraph,
+): VoiceChallenge["triggerSignal"] | null {
+  const { derived, behavior, differentiation, chatInsights } = graph;
+
+  // 1. Stuck mid-preparation: knows what to do, isn't doing it
+  if (
+    chatInsights?.readinessSignal === "stuck" &&
+    behavior.stageOfChange === "preparation"
+  ) {
+    return "stuck_at_planning";
+  }
+
+  // 2. Value proposition is fuzzy: no differentiation or low goal clarity
+  if (
+    differentiation === null &&
+    (behavior.stageOfChange === "contemplation" ||
+      behavior.stageOfChange === "precontemplation")
+  ) {
+    return "value_prop_unclear";
+  }
+  if (chatInsights !== null && chatInsights.goalClarity < 40 && differentiation === null) {
+    return "value_prop_unclear";
+  }
+
+  // 3. Imposter syndrome: has some data/activity but low mastery confidence
+  if (
+    derived.dataConfidence !== "no_data" &&
+    behavior.mastery < 30 &&
+    behavior.visitCount >= 3
+  ) {
+    return "imposter_syndrome";
+  }
+
+  // 4. Vague outcome: cold start or no data signal at all
+  if (derived.coldStartMode && derived.dataConfidence === "no_data") {
+    return "vague_outcome";
+  }
+
+  // 5. Intuition present but not operationalized: fast-thinking mode with no data
+  if (
+    derived.discCommunicationStyle === "system1" &&
+    derived.dataConfidence === "no_data" &&
+    behavior.stageOfChange !== "action"
+  ) {
+    return "intuition_unoperationalized";
+  }
+
+  return null;
+}
+
+/**
+ * Build a coaching intervention section for the system prompt when a
+ * challenge signal is detected. Returns an empty string when no signal fires.
+ */
+export function buildChallengeInterventionSection(
+  graph: UserKnowledgeGraph,
+  language: "he" | "en" = "he",
+): string {
+  const signal = mapGraphToChallengeTrigger(graph);
+  if (!signal) return "";
+
+  const challengeText = getChallengeFor(signal, language);
+  if (!challengeText) return "";
+
+  const header = language === "he"
+    ? "=== התערבות ממוקדת (coaching challenge) ==="
+    : "=== FOCUSED INTERVENTION (coaching challenge) ===";
+
+  const guidance = language === "he"
+    ? "השתמש בניסוח הבא כנקודת כניסה מרכזית. אל תרכך — זו בדיוק האתגרות שהמשתמש צריך לשמוע."
+    : "Use the following as the central entry point. Do not soften — this is precisely the challenge the user needs to hear.";
+
+  return [header, challengeText, "", guidance].join("\n");
 }
