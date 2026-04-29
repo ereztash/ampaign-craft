@@ -4,6 +4,7 @@ import { buildCorsHeaders, corsDenied, isOriginAllowed } from "../_shared/cors.t
 import { checkRateLimit, checkUserRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { classifyReliability, detectLanguage, domainFromUrl, sha256Hex } from "../_shared/webSearchClassify.ts";
 import { requireString, ValidationError } from "../_shared/validate.ts";
+import { checkAndConsumeUsage, paymentRequiredResponse } from "../_shared/usage.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -45,6 +46,14 @@ Deno.serve(async (req) => {
   // rewrite it; per-user is tied to a verified JWT and hard to rotate.
   const userRl = checkUserRateLimit(user.id, "ai-coach", 15, 60_000);
   if (!userRl.allowed) return rateLimitResponse(userRl, corsHeaders);
+
+  // Tier gate. Pro gets 75 messages/month included; Business is
+  // unlimited; Free is blocked. Beyond the included quota we try to
+  // spend a credit before charging the user. A 402 here triggers the
+  // buy-credits modal in the client — the only place credits surface
+  // in the UI, keeping the onboarding pure subscription.
+  const usage = await checkAndConsumeUsage(supabase, user.id, "ai_coach_message");
+  if (!usage.allowed) return paymentRequiredResponse(usage, corsHeaders);
 
   try {
     const body = await req.json();
@@ -264,6 +273,8 @@ Deno.serve(async (req) => {
       }
     })();
 
+    // Usage info is fetched separately by the client's useUsage() hook
+    // after the stream closes — keeps the SSE body free of metadata.
     return new Response(readable, {
       headers: {
         ...corsHeaders,

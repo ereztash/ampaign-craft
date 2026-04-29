@@ -83,6 +83,14 @@ vi.mock("@/components/PaywallModal", () => ({
   default: () => <div data-testid="paywall-modal" />,
 }));
 
+vi.mock("@/components/LimitReachedModal", () => ({
+  LimitReachedModal: () => <div data-testid="limit-reached-modal" />,
+}));
+
+vi.mock("@/hooks/useUsage", () => ({
+  useUsage: () => ({ refresh: vi.fn(), data: null, loading: false }),
+}));
+
 const mockResult = {
   formData: {
     productDescription: "Test product",
