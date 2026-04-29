@@ -64,16 +64,16 @@ describe("AiCoachPage", () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole("main")).toBeInTheDocument();
-    // No plan, no lastFormData → shows the "need a plan" prompt
-    expect(screen.getByRole("button", { name: /open wizard/i })).toBeInTheDocument();
+    // No plan, no lastFormData → AiCoachChat is rendered with null result
+    expect(screen.getByTestId("ai-coach-chat")).toBeInTheDocument();
   });
 
-  it("shows the bot icon in the empty state", () => {
+  it("renders AiCoachChat inside the page container", () => {
     render(
       <MemoryRouter>
         <AiCoachPage />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/need a plan or business profile/i)).toBeInTheDocument();
+    expect(screen.getByTestId("ai-coach-chat")).toBeInTheDocument();
   });
 });

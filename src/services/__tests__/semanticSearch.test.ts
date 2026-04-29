@@ -12,6 +12,10 @@ vi.mock("@/integrations/supabase/loose", () => ({
   },
 }));
 
+vi.mock("@/lib/authFetch", () => ({
+  authFetch: (url: string, init?: RequestInit) => fetch(url, init),
+}));
+
 // ── Module under test ─────────────────────────────────────────────────────
 
 import {
@@ -169,7 +173,7 @@ describe("semanticSearch", () => {
       const out = await embedPlanContent(result, "user-1", "plan-99");
       expect(out.embedded).toBe(3);
       expect(global.fetch).toHaveBeenCalledWith(
-        "/api/growth/embed-content",
+        expect.stringContaining("/functions/v1/embed-content"),
         expect.objectContaining({ method: "POST" }),
       );
     });

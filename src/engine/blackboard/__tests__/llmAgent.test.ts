@@ -10,6 +10,9 @@ vi.mock("../ontologicalVerifier", () => ({
 vi.mock("@/lib/logger", () => ({
   logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
+vi.mock("@/lib/authFetch", () => ({
+  authFetch: (url: string, init?: RequestInit) => fetch(url, init),
+}));
 
 // ── getModelForTier ───────────────────────────────────────────────────────────
 
@@ -125,7 +128,7 @@ describe("createLLMAgent", () => {
       await agent.run(board);
 
       expect(fetch).toHaveBeenCalledWith(
-        "/api/growth/agent-executor",
+        expect.stringContaining("/functions/v1/agent-executor"),
         expect.objectContaining({ method: "POST" }),
       );
       const body = JSON.parse((fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body);

@@ -12,6 +12,10 @@ vi.mock("@/integrations/supabase/client", () => ({
   },
 }));
 
+vi.mock("@/lib/authFetch", () => ({
+  authFetch: (url: string, init?: RequestInit) => fetch(url, init),
+}));
+
 // ── Mock sub-agents ───────────────────────────────────────────────────────
 vi.mock("../subAgents/regulatoryAgent", () => ({
   runRegulatoryResearch: vi.fn(async (subQuery) => [

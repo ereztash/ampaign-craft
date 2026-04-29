@@ -6,6 +6,10 @@ vi.mock("@/integrations/supabase/client", () => ({
   supabase: { from: vi.fn(), auth: { getUser: vi.fn() } },
 }));
 
+vi.mock("@/lib/authFetch", () => ({
+  authFetch: (url: string, init?: RequestInit) => fetch(url, init),
+}));
+
 vi.mock("../llmRouter", () => ({
   selectModel: vi.fn(() => ({
     model: "claude-haiku",

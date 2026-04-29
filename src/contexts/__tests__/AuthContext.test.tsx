@@ -125,9 +125,16 @@ describe("AuthContext — initial state (no session)", () => {
 describe("AuthContext — local auth sign up / sign in / sign out", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // checkSupabase() reads VITE_SUPABASE_URL to decide whether to use Supabase.
+    // Clear it so the provider falls through to local auth mode.
+    vi.stubEnv("VITE_SUPABASE_URL", "");
     // Ensure PBKDF2 is available in jsdom
     mockSafeStorage.getJSON.mockImplementation((_key, fallback) => fallback);
     mockSafeStorage.getString.mockReturnValue("");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("signUp returns { error: null } for a new user", async () => {
