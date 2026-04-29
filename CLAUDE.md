@@ -85,13 +85,48 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 ## סטטוס טכני
 
-- **Tests**: 4751 עוברים, אין שגיאות חדשות
+- **Tests**: ~4750 עוברים (main), 4751 על הענף הפעיל
 - **ESLint**: שגיאת `@eslint/js` קיימת מראש (pre-existing, לא נגרמה בסשן זה)
 - **Dev server**: להריץ עם `--host 127.0.0.1` (:::8080 נכשל ב-EAFNOSUPPORT)
 
 ---
 
+## סדר ה-PRs שנסגרו / נמזגו בסשן ה-cleanup (2026-04-29)
+
+### מוזגו ל-main:
+- `#133` README (consultant tiers + Seed Ask)
+- `#95` radix-ui patches
+- `#93` setup-node v4→v6, `#94` checkout v4→v6, `#97` @types/node bump
+- `#98` lucide-react 0.462→1.11 + FacebookIcon inline-SVG fix
+- `#117` CRM Lead Coach Phases 2-4 (crmInsightEngine + Pipeline Pulse + LeadCoachPanel)
+- `#135` billing: subscription with hidden overage credits (402/credits + LimitReachedModal + usage_counters migration)
+
+### נסגרו כ-stale/superseded:
+- `#89`, `#90`, `#138`, `#139` — duplicates/stale
+- `#23` campaign moat (old, no description)
+- `#34` README (superseded by #133)
+- `#38` dark mode cards (stale, 16 days)
+- `#53` AARRR research (stale, no description)
+
+### נסגרו כ-deferred (session bréakout required):
+- `#96` vitest 3→4 (breaking major)
+- `#99` eslint 9→10 (Node 20.19+ + flat config migration)
+
+### נשארים פתוחים:
+- `perf/reactive-core` (#102) — DRAFT, rebased על main, ממתין לvalidation ב-preview env
+
+---
+
+## תשתית hygiene שנוספה בסשן זה
+
+- `.github/PULL_REQUEST_TEMPLATE.md` — checklist לכל PR
+- `.github/workflows/stale.yml` — סוגר PRs לא פעילים אחרי 21 יום
+- `.github/dependabot.yml` — עודכן עם ignore לvitest/eslint major bumps
+- `CONTRIBUTING.md` — עודכן עם branching strategy + Dependabot tiers + hygiene baseline
+
+---
+
 ## ענפים רלוונטיים
 
-- `claude/attention-time-value-cJRys` — ענף פעיל (C workstream)
-- `claude/subscription-with-overage` — 402/credits flow + streaming (merged לענף הראשי)
+- `claude/attention-time-value-cJRys` — **ענף פעיל** (C workstream: Dashboard tab compression + ViewModel layer)
+- `perf/reactive-core` — DRAFT, rebased, ממתין ל-preview env validation

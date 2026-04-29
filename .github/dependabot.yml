@@ -27,6 +27,12 @@ updates:
       # xlsx has known HIGH CVEs with no upstream fix. Pinned and tracked
       # via the security audit; migration to exceljs planned separately.
       - dependency-name: xlsx
+      # vitest 3→4 and eslint 9→10 are breaking major bumps requiring
+      # dedicated migration sessions. Pin to current major until tracked.
+      - dependency-name: vitest
+        update-types: ["version-update:semver-major"]
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: "/"
