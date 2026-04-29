@@ -13,6 +13,7 @@ import { buildCohortPromptSection, type CohortPriors } from "./cohortBenchmarks"
 import type { RegimeState } from "@/engine/optimization/regimeDetector";
 import { getActivePromptPatches, buildPatchPromptSection } from "@/engine/promptOptimizerLoop";
 import { getStoredStylomePrompt } from "@/hooks/useStylomeProfile";
+import { buildCoachVoicePromptSection } from "@/engine/coachVoiceProfile";
 
 export const ENGINE_MANIFEST = {
   name: "aiCopyService",
@@ -108,6 +109,16 @@ function buildSystemPrompt(request: CopyGenerationRequest): string {
   if (patchSection) {
     parts.push("");
     parts.push(patchSection);
+  }
+
+  // Coach voice profile: lexicon, metaphors, frames and transitions that
+  // calibrate the LLM toward a human Hebrew-coaching tone. Sits below the
+  // stylome (which captures per-user voice) and complements it with a
+  // domain-level register that's stable across users.
+  const voiceSection = buildCoachVoicePromptSection(lang);
+  if (voiceSection) {
+    parts.push("");
+    parts.push(voiceSection);
   }
 
   // Task-specific instructions
