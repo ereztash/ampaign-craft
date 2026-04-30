@@ -13,6 +13,8 @@ import { buildCohortPromptSection, type CohortPriors } from "./cohortBenchmarks"
 import type { RegimeState } from "@/engine/optimization/regimeDetector";
 import { getActivePromptPatches, buildPatchPromptSection } from "@/engine/promptOptimizerLoop";
 import { getStoredStylomePrompt } from "@/hooks/useStylomeProfile";
+import { buildCoachVoicePromptSection, buildChallengeInterventionSection } from "@/engine/coachVoiceProfile";
+import type { UserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
 
 export const ENGINE_MANIFEST = {
   name: "aiCopyService",
@@ -35,6 +37,8 @@ export interface CopyGenerationRequest {
   cohortPriors?: CohortPriors | null;
   /** Optional user regime — "crisis" escalates model tier one step. */
   regime?: RegimeState;
+  /** Optional full knowledge graph — when provided, enables coaching challenge injection. */
+  knowledgeGraph?: UserKnowledgeGraph;
 }
 
 export interface CopyGenerationResult {
@@ -108,6 +112,28 @@ function buildSystemPrompt(request: CopyGenerationRequest): string {
   if (patchSection) {
     parts.push("");
     parts.push(patchSection);
+  }
+
+  // Coach voice profile: lexicon, metaphors, frames and transitions that
+  // calibrate the LLM toward a human Hebrew-coaching tone. Sits below the
+  // stylome (which captures per-user voice) and complements it with a
+  // domain-level register that's stable across users.
+  const voiceSection = buildCoachVoicePromptSection(lang);
+  if (voiceSection) {
+    parts.push("");
+    parts.push(voiceSection);
+  }
+
+  // Coaching challenge injection: when the knowledge graph is provided,
+  // detect the highest-priority coaching signal and inject a targeted
+  // challenge prompt. This fires at most once per request and only when
+  // the graph shows a clear signal — never for cold-start users with no data.
+  if (request.knowledgeGraph) {
+    const challengeSection = buildChallengeInterventionSection(request.knowledgeGraph, lang);
+    if (challengeSection) {
+      parts.push("");
+      parts.push(challengeSection);
+    }
   }
 
   // Task-specific instructions
