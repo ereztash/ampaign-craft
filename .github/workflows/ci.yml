@@ -97,7 +97,7 @@ jobs:
 
       - name: Upload consistency reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: consistency-reports
           path: reports/consistency/
@@ -119,7 +119,7 @@ jobs:
       - name: Run Playwright e2e
         run: npx playwright test
         continue-on-error: true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report
