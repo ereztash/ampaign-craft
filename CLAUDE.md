@@ -17,13 +17,17 @@
 
 ## המשך — C Workstream (UX Engineering)
 
-### Slice 2 — Dashboard tab compression
-**קבצים לבדוק:**
-- `src/pages/ResultsDashboard.tsx` — 11+ טאבים
-- `src/components/AARRRDashboard.tsx` — 8 טאבים
-- **פעולה**: לזהות אילו טאבים כמעט לא נגמרים → Progressive disclosure (Primary tabs + "More" dropdown)
+### Slice 2 — Dashboard tab compression ✅ (בוצע 2026-04-30)
+**מיפוי בפועל** (שונה ממה שב-CLAUDE.md הקודם):
+- `ResultsDashboard.tsx` — 10 טאבים, **כבר** משתמש ב-AdaptiveTabNav (3 super-groups: strategy/content/growth) ✅
+- `AARRRDashboard.tsx` — 0 טאבים (לא משתמש ב-Tabs), אין מה לדחוס
+- **DifferentiationResult.tsx** — 7 טאבים flat → דחוס ל-3 primary + "More" dropdown
+  - Primary: `mechanism` / `claims` / `competitors` (תואם 1-1 ל-`pickDefaultTab` mapping מ-IntakeNeed)
+  - More: `committee` / `tradeoffs` / `metrics` / `report`
+  - הטאב המשני האקטיבי נשאר נראה inline; הטאבים הלא-אקטיביים בתפריט
+- ContentTab.tsx (6) ו-IntelligenceSynthesisDashboard.tsx (4) — נשארו flat (סף סביר)
 
-### Slice 3 — View-model layer + ESLint rule
+### Slice 3 — View-model layer + ESLint rule (הבא)
 - להגדיר ViewModel interfaces שמפרידים engine output מ-UI props
 - להוסיף ESLint rule שאוסר import ישיר מ-engine לתוך component ללא ViewModel
 
