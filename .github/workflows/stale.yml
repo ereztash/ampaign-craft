@@ -1,0 +1,35 @@
+name: Stale PRs
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"  # Monday 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          # PRs with no activity for 14 days get a warning label.
+          # PRs with no activity for 21 days get closed.
+          days-before-stale: 14
+          days-before-close: 7
+          stale-pr-label: stale
+          stale-pr-message: >
+            This PR has had no activity for 14 days and is marked stale.
+            If it's still relevant, push a commit or leave a comment to reset the timer.
+            It will be closed in 7 days if no further activity occurs.
+          close-pr-message: >
+            Closing due to inactivity. Reopen anytime if the work is still needed —
+            a rebase onto current main may be required.
+          # Never mark draft PRs stale — they're intentionally parked.
+          exempt-draft-pr: true
+          # Never close PRs with these labels.
+          exempt-pr-labels: "pinned,do-not-close,security"
+          # Only act on PRs targeting main.
+          only-labels: ""
+          operations-per-run: 30
