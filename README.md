@@ -116,21 +116,21 @@ Annual plans save 20%.
 
 ## Architecture Overview
 
-**MAS-CC / Blackboard** — 14 specialized agents, 121 engines, 6 closed loops.
+**MAS-CC / Blackboard** — 14 specialized agents, 123 engines, 6 closed loops.
 
 ```
   UI Layer ──────────── React + shadcn/ui + RTL + Archetype-adaptive
-                        166 components · 35 pages · 25 hooks · L1-L5
+                        169 components · 35 pages · 28 hooks · L1-L5
   Context Layer ────── Auth · Archetype · UserProfile · DataSource
   GRAOS Overlay (M1-M6)  Regime · Anomaly · Forecast · DAPL · Verifier
   Blackboard / MAS-CC — 14 agents, write-gated JSONB state
                         KGraph · Funnel · DISC · Hormozi · CoI · QA · Φ_META
-  Pure Engine Layer - 121 files (50 named *Engine.ts + helpers)
+  Pure Engine Layer - 123 files (52 named *Engine.ts + helpers)
                         Behavioral Science · Pricing · Churn · Copy QA
   LLM Router ────────── Haiku $0.003 / Sonnet $0.015 / Opus $0.075
                         Cost caps · fallback chains · tier-gated by subscription
   Persistence ──────── Supabase Postgres + pgvector · Event Queue
-                        RLS · 48 migrations · 26 Edge Functions · 1536/384-dim
+                        RLS · 49 migrations · 28 Edge Functions · 1536/384-dim
 ```
 
 > See [`docs/architecture.md`](./docs/architecture.md) for the full engine directory.
@@ -204,11 +204,11 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 | Lines of code | 131,773 |
 | Source files | 430 (excluding tests) |
 | Tests | 4,721 in 322 test files |
-| Migrations | 48 |
+| Migrations | 49 |
 | Language | TypeScript |
 | Test framework | Vitest + React Testing Library |
 | CI | GitHub Actions (typecheck · lint · test · build) |
-| Engines | 121 pure-function engines |
+| Engines | 123 pure-function engines |
 | Agents | 14 files (2 LLM-backed: qaContent + debugSwarm; 11 deterministic; 1 orchestrator) |
 | Closed loops | 6 |
 | Archetypes | 5 |
