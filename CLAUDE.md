@@ -91,7 +91,7 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 - **Tests**: ~4750 עוברים (main), 4751 על הענף הפעיל
 - **ESLint**: שגיאת `@eslint/js` קיימת מראש (pre-existing, לא נגרמה בסשן זה)
-- **Dev server**: להריץ עם `--host 127.0.0.1` (:::8080 נכשל ב-EAFNOSUPPORT)
+- **Dev server**: `npm run dev` עובד ישר (vite.config.ts תוקן מ-`"::"` ל-`"0.0.0.0"` ב-2026-04-30 — IPv6 לא נתמך בסנדבוקס)
 
 ---
 
