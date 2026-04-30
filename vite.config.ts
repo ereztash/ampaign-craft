@@ -6,7 +6,10 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    // 0.0.0.0 (IPv4 ALL) accepts localhost, LAN, and container-forwarded
+    // connections. The previous "::" (IPv6 ALL) fails with EAFNOSUPPORT in
+    // sandboxed environments without IPv6 support.
+    host: "0.0.0.0",
     port: 8080,
     hmr: {
       overlay: false,
