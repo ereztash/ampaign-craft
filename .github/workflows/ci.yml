@@ -62,7 +62,18 @@ jobs:
       - name: Consistency - numeric claims
         # Verifies every numeric count in README/CHOICES matches the codebase.
         # Known drift is tracked in scripts/consistency/allowlist.json with expiry dates.
-        run: npx tsx scripts/consistency/audit-numeric.ts
+        run: |
+          npx tsx scripts/consistency/audit-numeric.ts
+          EXIT=$?
+          if [ $EXIT -ne 0 ] && [ -f reports/consistency/numeric.json ]; then
+            node -e "
+              const d = JSON.parse(require('fs').readFileSync('reports/consistency/numeric.json','utf8'));
+              d.violations.filter(v => !v.allowlisted).forEach(v => {
+                console.log('::error::numeric/' + v.claimId + ': expected=' + v.expected + ' actual=' + v.actual + ' file=' + v.file + ' (' + (v.context||'') + ')');
+              });
+            " || true
+          fi
+          exit $EXIT
 
       - name: Consistency - identity claims
         # Verifies archetype IDs, tier names, edge-function names, and route paths
