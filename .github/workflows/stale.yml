@@ -12,7 +12,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v10
         with:
           # PRs with no activity for 14 days get a warning label.
           # PRs with no activity for 21 days get closed.
