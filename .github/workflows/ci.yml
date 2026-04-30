@@ -63,15 +63,22 @@ jobs:
         # Verifies every numeric count in README/CHOICES matches the codebase.
         # Known drift is tracked in scripts/consistency/allowlist.json with expiry dates.
         run: |
+          set +e
           npx tsx scripts/consistency/audit-numeric.ts
           EXIT=$?
-          if [ $EXIT -ne 0 ] && [ -f reports/consistency/numeric.json ]; then
-            node -e "
-              const d = JSON.parse(require('fs').readFileSync('reports/consistency/numeric.json','utf8'));
-              d.violations.filter(v => !v.allowlisted).forEach(v => {
-                console.log('::error::numeric/' + v.claimId + ': expected=' + v.expected + ' actual=' + v.actual + ' file=' + v.file + ' (' + (v.context||'') + ')');
-              });
-            " || true
+          set -e
+          if [ $EXIT -ne 0 ]; then
+            if [ -f reports/consistency/numeric.json ]; then
+              node -e "
+                const d = JSON.parse(require('fs').readFileSync('reports/consistency/numeric.json','utf8'));
+                console.log('::notice::numeric.json violations: ' + JSON.stringify(d.violations));
+                d.violations.filter(v => !v.allowlisted).forEach(v => {
+                  console.log('::error::' + v.claimId + ': expected=' + v.expected + ' actual=' + v.actual + ' (' + (v.context||'') + ')');
+                });
+              " || true
+            else
+              echo "::error::audit-numeric.ts crashed before writing numeric.json (likely an unhandled exception)"
+            fi
           fi
           exit $EXIT
 
