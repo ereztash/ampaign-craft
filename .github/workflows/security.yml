@@ -85,7 +85,7 @@ jobs:
           fi
       - name: Post PR warning comment
         if: steps.brand_check.outputs.has_violations == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const body = `## ⚠ Brand-Locked Token Warning
