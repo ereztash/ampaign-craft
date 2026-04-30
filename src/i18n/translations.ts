@@ -343,6 +343,7 @@ export const translations = {
   diffTabTradeoffs: { he: "ויתורים מודעים", en: "Tradeoffs" },
   diffTabMetrics: { he: "מדדים", en: "Contrary Metrics" },
   diffTabReport: { he: "דוח מלא", en: "Full Report" },
+  diffTabMore: { he: "עוד", en: "More" },
   diffScore: { he: "ציון בידול", en: "Differentiation Score" },
   diffClaimScore: { he: "אימות טענות", en: "Claim Verification" },
   diffVerified: { he: "מאומת", en: "Verified" },

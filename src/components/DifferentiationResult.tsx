@@ -1,14 +1,21 @@
+import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { DifferentiationResult as DiffResult } from "@/types/differentiation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { tx } from "@/i18n/tx";
-import { Sparkles, ShieldCheck, Map, Users, Scale, BarChart3, FileText, ArrowLeft } from "lucide-react";
+import { Sparkles, ShieldCheck, Map, Users, Scale, BarChart3, FileText, ArrowLeft, ChevronDown } from "lucide-react";
 import PrincipleTraceModal from "@/components/moat/PrincipleTraceModal";
 import { getIntakeSignal } from "@/engine/intake/intakeSignal";
 import type { IntakeNeed } from "@/engine/intake/types";
+
+const SECONDARY_TABS = ["committee", "tradeoffs", "metrics", "report"] as const;
+type SecondaryTab = typeof SECONDARY_TABS[number];
 
 /**
  * Pick the most relevant default tab for the user based on intake need.
@@ -41,7 +48,21 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
 
   // Read the IntakeSignal once per mount; null-safe if user skipped intake.
   const intakeNeed = getIntakeSignal()?.need;
-  const defaultTab = pickDefaultTab(intakeNeed);
+  const [activeTab, setActiveTab] = useState<string>(pickDefaultTab(intakeNeed));
+  const isSecondary = SECONDARY_TABS.includes(activeTab as SecondaryTab);
+
+  const secondaryLabel: Record<SecondaryTab, string> = {
+    committee: t("diffTabCommittee"),
+    tradeoffs: t("diffTabTradeoffs"),
+    metrics:   t("diffTabMetrics"),
+    report:    t("diffTabReport"),
+  };
+  const secondaryIcon: Record<SecondaryTab, typeof Users> = {
+    committee: Users,
+    tradeoffs: Scale,
+    metrics:   BarChart3,
+    report:    FileText,
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -67,16 +88,43 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
         </div>
       </div>
 
-      {/* Tabbed Results */}
-      <Tabs defaultValue={defaultTab}>
+      {/* Tabbed Results — 3 primary + "More" dropdown for the 4 derived views */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full flex-wrap h-auto gap-1 bg-muted/50 p-1">
           <TabsTrigger value="mechanism" className="text-xs gap-1"><Sparkles className="h-3 w-3" />{t("diffTabMechanism")}</TabsTrigger>
           <TabsTrigger value="claims" className="text-xs gap-1"><ShieldCheck className="h-3 w-3" />{t("diffTabClaims")}</TabsTrigger>
           <TabsTrigger value="competitors" className="text-xs gap-1"><Map className="h-3 w-3" />{t("diffTabCompetitors")}</TabsTrigger>
-          <TabsTrigger value="committee" className="text-xs gap-1"><Users className="h-3 w-3" />{t("diffTabCommittee")}</TabsTrigger>
-          <TabsTrigger value="tradeoffs" className="text-xs gap-1"><Scale className="h-3 w-3" />{t("diffTabTradeoffs")}</TabsTrigger>
-          <TabsTrigger value="metrics" className="text-xs gap-1"><BarChart3 className="h-3 w-3" />{t("diffTabMetrics")}</TabsTrigger>
-          <TabsTrigger value="report" className="text-xs gap-1"><FileText className="h-3 w-3" />{t("diffTabReport")}</TabsTrigger>
+          {/* Render the active secondary tab inline so it stays visible */}
+          {isSecondary && (() => {
+            const Icon = secondaryIcon[activeTab as SecondaryTab];
+            return (
+              <TabsTrigger value={activeTab} className="text-xs gap-1">
+                <Icon className="h-3 w-3" />{secondaryLabel[activeTab as SecondaryTab]}
+              </TabsTrigger>
+            );
+          })()}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                {t("diffTabMore")}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {SECONDARY_TABS.map((id) => {
+                const Icon = secondaryIcon[id];
+                return (
+                  <DropdownMenuItem key={id} onSelect={() => setActiveTab(id)} className="gap-2">
+                    <Icon className="h-3.5 w-3.5" />
+                    {secondaryLabel[id]}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </TabsList>
 
         {/* Tab 1: Mechanism Statement */}
