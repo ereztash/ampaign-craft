@@ -75,8 +75,8 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
         module={{ he: "בידול", en: "Differentiation" }}
         answer={result.mechanismStatement.oneLiner}
         why={{
-          he: `${result.formData.businessName} — ציון ${strength}/100 — ${result.executiveSummary.he}`,
-          en: `${result.formData.businessName} — Score ${strength}/100 — ${result.executiveSummary.en}`,
+          he: `${result.formData.businessName} · ציון ${strength}/100 · ${result.executiveSummary.he}`,
+          en: `${result.formData.businessName} · Score ${strength}/100 · ${result.executiveSummary.en}`,
         }}
         confidence={diffConfidence}
         confidenceReason={{

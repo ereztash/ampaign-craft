@@ -106,17 +106,17 @@ const SalesTab = ({ result }: SalesTabProps) => {
         module={{ he: "מכירות", en: "Sales" }}
         answer={personalityProfile.sellTo}
         why={{
-          he: `DISC: ${personalityProfile.emoji} ${personalityProfile.name.he} — ${discProfile.communicationTone.he}`,
-          en: `DISC: ${personalityProfile.emoji} ${personalityProfile.name.en} — ${discProfile.communicationTone.en}`,
+          he: `DISC: ${personalityProfile.emoji} ${personalityProfile.name.he} · ${discProfile.communicationTone.he}`,
+          en: `DISC: ${personalityProfile.emoji} ${personalityProfile.name.en} · ${discProfile.communicationTone.en}`,
         }}
         confidence={salesConfidence}
         confidenceReason={{
           he: hasDiff
             ? "מבוסס על פרופיל DISC + נתוני בידול"
-            : "מבוסס על נתוני הטופס — השלם בידול לדיוק גבוה יותר",
+            : "מבוסס על נתוני הטופס; השלם בידול לדיוק גבוה יותר",
           en: hasDiff
             ? "Based on DISC profile + differentiation data"
-            : "Based on form data — complete differentiation for higher accuracy",
+            : "Based on form data; complete differentiation for higher accuracy",
         }}
         useItNarrative={neuroClosing.urgencyTactics[0]}
         useItCopy={[
