@@ -49,7 +49,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           he: "מבוסס על נתוני הטופס — אין conversion data אמיתי עדיין",
           en: "Based on form data — no real conversion data yet",
         }}
-        useItNarrative={pricing.nextSteps[0]?.action}
+        useItNarrative={pricing.nextSteps?.[0]?.action}
         useItCopy={[
           {
             label: { he: "טווח מחיר", en: "Price range" },
@@ -68,7 +68,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
         onCheck={() => undefined}
       />
 
-      {pricing.nextSteps[0] && (
+      {pricing.nextSteps?.[0] && (
         <SectionInsightBanner
           type={
             pricing.competitivePosition.position === "below_market"
@@ -78,7 +78,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
                 : "tip"
           }
           headline={pricing.competitivePosition.label[language]}
-          body={pricing.nextSteps[0].action[language]}
+          body={pricing.nextSteps?.[0]?.action[language] ?? ""}
           metric={pricing.pricingModel.valueMetric[language]}
         />
       )}

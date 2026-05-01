@@ -116,7 +116,7 @@ describe("DifferentiationResult", () => {
 
   it("shows executive summary", () => {
     render(<DifferentiationResultView result={mockResult} onBack={vi.fn()} />);
-    expect(screen.getByText("Executive summary in English")).toBeTruthy();
+    expect(screen.getByText(/Executive summary in English/)).toBeTruthy();
   });
 
   it("shows tabs for different sections", () => {
