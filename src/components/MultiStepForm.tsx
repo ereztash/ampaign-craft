@@ -29,6 +29,28 @@ interface MultiStepFormProps {
   embeddedInShell?: boolean;
 }
 
+function StepInsight({ text, language }: { text: { he: string; en: string }; language: string }) {
+  return (
+    <div
+      className="mb-6 flex items-start gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-400"
+      dir="auto"
+    >
+      <span className="font-semibold shrink-0">{language === "he" ? "ישפיע על:" : "Shapes:"}</span>
+      <span className="opacity-80">{language === "he" ? text.he : text.en}</span>
+    </div>
+  );
+}
+
+const STEP_INSIGHTS: Record<string, { he: string; en: string }> = {
+  businessField: { he: "אסטרטגיית תוכן, ניתוח מתחרים, והשוואה לעסקים דומים בתחום שלך", en: "Content strategy, competitor analysis, and comparison to similar businesses in your field" },
+  experienceLevel: { he: "עומק ההמלצות, רמת הפירוט, ומהירות ההתקדמות", en: "Depth of recommendations, level of detail, and pace of progression" },
+  audience: { he: "בחירת ערוצים, טון הפנייה, ותוכן מותאם לסוג הלקוח", en: "Channel selection, tone of communication, and content tailored to your audience type" },
+  product: { he: "עיגון מחיר, המלצת מודל מכירות, וניסוח ההצעה שלך", en: "Price anchoring, sales model recommendation, and framing of your offer" },
+  budget: { he: "תמהיל ערוצים, כלים מומלצים, ועדיפויות השקעה", en: "Channel mix, recommended tools, and investment priorities" },
+  goal: { he: "מדדי הצלחה, משקל כל שלב בשיווק, וסגנון הקריאה לפעולה", en: "Success metrics, funnel stage weights, and call-to-action style" },
+  channels: { he: "ציון סינרגיה בין ערוצים, היכן להשקיע יותר, והיכן לצמצם", en: "Channel synergy score, where to invest more, and where to cut back" },
+};
+
 const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormProps) => {
   const { t, language, isRTL } = useLanguage();
   const { profile, updateFormData } = useUserProfile();
@@ -516,9 +538,12 @@ const MultiStepForm = ({ onComplete, onBack, embeddedInShell }: MultiStepFormPro
             <h2 id="step-title" className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
               {currentStep ? stepTitles[currentStep.id]?.title : ""}
             </h2>
-            <p className="mb-8 text-muted-foreground">
+            <p className="mb-4 text-muted-foreground">
               {currentStep ? stepTitles[currentStep.id]?.subtitle : ""}
             </p>
+            {currentStep && STEP_INSIGHTS[currentStep.id] && (
+              <StepInsight text={STEP_INSIGHTS[currentStep.id]} language={language} />
+            )}
             {renderStep()}
           </motion.div>
         </AnimatePresence>

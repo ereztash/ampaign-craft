@@ -71,11 +71,11 @@ interface ResultsDashboardProps {
 const STAGE_IDS = ["awareness", "engagement", "leads", "conversion", "retention"];
 
 const NEURO_LABELS: Record<string, { emoji: string; vector: { he: string; en: string }; desc: { he: string; en: string } }> = {
-  awareness: { emoji: "●", vector: { he: "קורטיזול", en: "Cortisol" }, desc: { he: "תפוס קשב דרך מתח אסטרטגי", en: "Grab attention through strategic tension" } },
-  engagement: { emoji: "●", vector: { he: "אוקסיטוצין", en: "Oxytocin" }, desc: { he: "בנה אמון דרך חיבור", en: "Build trust through connection" } },
-  leads: { emoji: "●", vector: { he: "הזדמנות", en: "Opportunity" }, desc: { he: "מתח → תגמול: תפוס את הרגע", en: "Tension → reward: seize the moment" } },
-  conversion: { emoji: "●", vector: { he: "דופמין", en: "Dopamine" }, desc: { he: "רגע התגמול: הפוך להחלטה", en: "Reward moment: convert to decision" } },
-  retention: { emoji: "●", vector: { he: "אוקסיטוצין", en: "Oxytocin" }, desc: { he: "אמון מתמשך: הישאר איתנו", en: "Ongoing trust: stay with us" } },
+  awareness: { emoji: "●", vector: { he: "קשב", en: "Attention" }, desc: { he: "תפוס קשב דרך מסר ברור", en: "Grab attention with a clear message" } },
+  engagement: { emoji: "●", vector: { he: "אמון", en: "Trust" }, desc: { he: "בנה אמון דרך חיבור", en: "Build trust through connection" } },
+  leads: { emoji: "●", vector: { he: "עניין", en: "Interest" }, desc: { he: "הפוך עניין לפנייה", en: "Turn interest into a lead" } },
+  conversion: { emoji: "●", vector: { he: "החלטה", en: "Decision" }, desc: { he: "הפוך עניין להחלטת רכישה", en: "Convert interest into a purchase decision" } },
+  retention: { emoji: "●", vector: { he: "נאמנות", en: "Loyalty" }, desc: { he: "שמור על קשר ארוך טווח", en: "Maintain a long-term relationship" } },
 };
 
 const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, embeddedInShell }: ResultsDashboardProps) => {
@@ -145,7 +145,8 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
     }),
     [result, diffResult, savedPlans.length, auth, healthScore.total],
   );
-  const insights = useMemo(() => generateInsights(), [savedPlans]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const insights = useMemo(() => generateInsights(), [savedPlans.length]);
   const [loopTick, setLoopTick] = useState(0);
   const loopSnapshot = useMemo(
     () => getLoopSnapshot(bottlenecks.length > 0 || insights.length > 0),
