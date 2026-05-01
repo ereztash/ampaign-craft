@@ -1,12 +1,21 @@
 /**
  * Bottleneck detection across the 5-module cycle.
  * Pure logic — composes health score and business signals into prioritized issues.
+ * Descriptions follow FOUND→MEANS→DO: neutral observation → business consequence → one action.
+ * Each tactic has a structureLevel for Fading Scaffolding: full_example → skeleton → prompt_only.
  */
 
 import { FunnelResult } from "@/types/funnel";
 
 export type BottleneckModule = "differentiation" | "marketing" | "sales" | "pricing" | "retention";
 export type BottleneckSeverity = "critical" | "warning" | "info";
+export type TacticStructureLevel = "full_example" | "skeleton" | "prompt_only";
+
+export interface BottleneckTactic {
+  he: string;
+  en: string;
+  structureLevel: TacticStructureLevel;
+}
 
 export interface Bottleneck {
   id: string;
@@ -14,7 +23,7 @@ export interface Bottleneck {
   severity: BottleneckSeverity;
   title: { he: string; en: string };
   description: { he: string; en: string };
-  tactics: { he: string; en: string }[];
+  tactics: BottleneckTactic[];
 }
 
 export interface BottleneckInput {
@@ -23,6 +32,15 @@ export interface BottleneckInput {
   planCount: number;
   connectedSources: number;
   healthScoreTotal: number | null;
+}
+
+export function selectTactic(
+  tactics: BottleneckTactic[],
+  usageCount: number,
+): BottleneckTactic {
+  const level: TacticStructureLevel =
+    usageCount < 3 ? "full_example" : usageCount < 6 ? "skeleton" : "prompt_only";
+  return tactics.find((t) => t.structureLevel === level) ?? tactics[0];
 }
 
 export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
@@ -34,14 +52,27 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
       id: "diff-missing",
       module: "differentiation",
       severity: planCount > 0 ? "warning" : "info",
-      title: { he: "חסר בידול מפורש", en: "Differentiation not completed" },
+      title: { he: "אין משפט בידול כתוב", en: "No written differentiation statement" },
       description: {
-        he: "ללא בידול, סקריפטי מכירה והוקים פחות מדויקים לעסק שלך.",
-        en: "Without differentiation, sales scripts and hooks are less specific to your business.",
+        he: "ללא בידול כתוב, לקוח שמשווה מחירים אין לו סיבה לבחור בך. Copy ומשפך פחות מדויקים.",
+        en: "Without a written differentiation, a price-comparing prospect has no reason to choose you. Copy and funnel lose precision.",
       },
       tactics: [
-        { he: "השלם את אשף הבידול (10 דק׳)", en: "Complete the differentiation wizard (~10 min)" },
-        { he: "מפו מתחרים וערך נסתר", en: "Map competitors and hidden value" },
+        {
+          he: "השלם את אשף הבידול (10 דק'): ענה על שאלת 'למה אתה שונה, לא טוב יותר'.",
+          en: "Complete the differentiation wizard (~10 min): answer 'why you're different, not just better'.",
+          structureLevel: "full_example",
+        },
+        {
+          he: "השלם אשף הבידול — תחל ב-'מנגנון' ו-'מה שאנחנו לא עושים'.",
+          en: "Complete the differentiation wizard — start with 'mechanism' and 'what we consciously don't do'.",
+          structureLevel: "skeleton",
+        },
+        {
+          he: "רוצה תבנית לניסוח בידול?",
+          en: "Want a template for your differentiation statement?",
+          structureLevel: "prompt_only",
+        },
       ],
     });
   }
@@ -51,33 +82,60 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
       id: "no-plan",
       module: "marketing",
       severity: "critical",
-      title: { he: "אין תוכנית שיווק שנוצרה", en: "No marketing plan generated" },
+      title: { he: "אין תוכנית שיווק", en: "No marketing plan" },
       description: {
-        he: "בלי תוכנית משפך אין בסיס למדדי ביצועים והקצאת תקציב.",
-        en: "Without a funnel plan there is no baseline for KPIs and budget allocation.",
+        he: "בלי תוכנית משפך אין בסיס למדדים, ואין לאן להפנות תקציב. כל פעולה שיווקית היא ניחוש.",
+        en: "Without a funnel plan there is no baseline for KPIs and no direction for budget. Every marketing action is a guess.",
       },
       tactics: [
-        { he: "צור תוכנית מהירה או מודרכת", en: "Run express or guided wizard" },
-        { he: "חבר מקור נתונים לשיפור ההמלצות", en: "Connect a data source to sharpen recommendations" },
+        {
+          he: "צור תוכנית מהירה (5 דק'): מלא תחום, קהל יעד, ותקציב חודשי — המערכת תייצר משפך.",
+          en: "Run the express wizard (5 min): fill in field, audience, monthly budget — the system generates a funnel.",
+          structureLevel: "full_example",
+        },
+        {
+          he: "צור תוכנית: הכנס תחום + תקציב + מטרה עיקרית.",
+          en: "Create a plan: enter field + budget + main goal.",
+          structureLevel: "skeleton",
+        },
+        {
+          he: "רוצה שניצור תוכנית שיווק ראשונה?",
+          en: "Ready to create your first marketing plan?",
+          structureLevel: "prompt_only",
+        },
       ],
     });
   }
 
   if (funnelResult) {
     const { formData } = funnelResult;
+
     if (formData.existingChannels.length < 2) {
       out.push({
         id: "mkt-channels",
         module: "marketing",
         severity: "warning",
-        title: { he: "מעט ערוצי שיווק מוגדרים", en: "Few marketing channels defined" },
+        title: { he: "ערוץ שיווק יחיד", en: "Single marketing channel" },
         description: {
-          he: "מגוון נמוך מגביר תלות בערוץ בודד וסיכון לפערים במשפך.",
-          en: "Low channel diversity increases single-channel dependency and funnel gaps.",
+          he: "ערוץ אחד = נקודת כשל יחידה. כשהוא יירד בביצועים, אין גיבוי. הוסף ערוץ שני עם 20% מהתקציב.",
+          en: "One channel = one failure point. When it drops in performance, there's no backup. Add a second channel with 20% of budget.",
         },
         tactics: [
-          { he: "הוסף אימייל או וואטסאפ לפי קהל", en: "Add email or WhatsApp based on audience" },
-          { he: "בדוק הקצאת תקציב בין שלבי המשפך", en: "Review budget split across funnel stages" },
+          {
+            he: "הוסף אימייל אם הקהל B2B, וואטסאפ אם B2C — חלק 20% מהתקציב לערוץ החדש ל-30 יום.",
+            en: "Add email for B2B audiences, WhatsApp for B2C — allocate 20% of budget to the new channel for 30 days.",
+            structureLevel: "full_example",
+          },
+          {
+            he: "הוסף ערוץ שני: [אימייל / וואטסאפ / SEO] + הגדר תקציב חודשי.",
+            en: "Add a second channel: [email / WhatsApp / SEO] + set monthly budget.",
+            structureLevel: "skeleton",
+          },
+          {
+            he: "איזה ערוץ שני מתאים לקהל שלך?",
+            en: "Which second channel fits your audience?",
+            structureLevel: "prompt_only",
+          },
         ],
       });
     }
@@ -89,12 +147,25 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
         severity: healthScoreTotal < 35 ? "critical" : "warning",
         title: { he: "ציון בריאות שיווקית נמוך", en: "Low marketing health score" },
         description: {
-          he: "הגדרות המשפך חסרות או חלקיות — יש מקום לחיזוק מהיר.",
-          en: "Funnel inputs are incomplete — quick wins available.",
+          he: `ציון ${healthScoreTotal}/100 מצביע על פערים בהגדרות המשפך. כל נקודה שחסרה מייצרת המלצות פחות מדויקות.`,
+          en: `Score ${healthScoreTotal}/100 signals gaps in funnel inputs. Each missing input produces less precise recommendations.`,
         },
         tactics: [
-          { he: "השלם תיאור מוצר ומטרה עיקרית", en: "Complete product description and main goal" },
-          { he: "עדכן תקציב ומודל מכירה", en: "Update budget range and sales model" },
+          {
+            he: "השלם תיאור מוצר (לפחות 30 מילה), הגדר מטרה עיקרית, ועדכן מחיר ממוצע — 3 שדות, 5 דק'.",
+            en: "Complete product description (at least 30 words), set main goal, update average price — 3 fields, 5 minutes.",
+            structureLevel: "full_example",
+          },
+          {
+            he: "עדכן: תיאור מוצר + מטרה עיקרית + מחיר ממוצע.",
+            en: "Update: product description + main goal + average price.",
+            structureLevel: "skeleton",
+          },
+          {
+            he: "רוצה לדעת איזה שדה משפיע הכי הרבה על הציון?",
+            en: "Want to know which field impacts your score most?",
+            structureLevel: "prompt_only",
+          },
         ],
       });
     }
@@ -105,19 +176,31 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
       id: "data-velocity",
       module: "marketing",
       severity: "info",
-      title: { he: "אין מקורות נתונים מחוברים", en: "No connected data sources" },
+      title: { he: "אין נתונים מחוברים", en: "No data connected" },
       description: {
-        he: "חיבור נתונים יאפשר תובנות עדכניות והתאמות קמפיין.",
-        en: "Connecting data enables fresher insights and campaign tuning.",
+        he: "בלי נתונים, ההמלצות מבוססות על שאלון בלבד. חיבור CSV או Meta מייצר פערים ותובנות ספציפיות לעסק שלך.",
+        en: "Without data, recommendations are questionnaire-only. Connecting CSV or Meta surfaces gaps and insights specific to your business.",
       },
       tactics: [
-        { he: "ייבא CSV או חבר מטא", en: "Import CSV or connect Meta" },
-        { he: "מלא פרופיל עסק כמקור הקשר", en: "Fill business profile as context source" },
+        {
+          he: "ייבא דוח CSV מהפלטפורמה שלך (פייסבוק, גוגל) דרך הכרטיסייה 'ניתוח' — 2 דק', תוצאות מיד.",
+          en: "Import a CSV report from your platform (Facebook, Google) via the Analytics tab — 2 min, instant results.",
+          structureLevel: "full_example",
+        },
+        {
+          he: "ייבא CSV: פייסבוק / גוגל / CRM — הכרטיסייה 'ניתוח'.",
+          en: "Import CSV: Facebook / Google / CRM — Analytics tab.",
+          structureLevel: "skeleton",
+        },
+        {
+          he: "רוצה לחבר נתונים?",
+          en: "Want to connect data?",
+          structureLevel: "prompt_only",
+        },
       ],
     });
   }
 
-  // Sales / pricing / retention heuristics when plan exists
   if (funnelResult && hasDifferentiation && funnelResult.formData.averagePrice <= 0) {
     out.push({
       id: "price-missing",
@@ -125,12 +208,25 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
       severity: "warning",
       title: { he: "מחיר ממוצע לא הוגדר", en: "Average price not set" },
       description: {
-        he: "תמחור והצעות תלויים במספרים ריאליים.",
-        en: "Pricing and offer stacks need realistic numbers.",
+        he: "מחיר ריאלי הוא הבסיס לחישוב LTV, CAC, ומבנה המדרגות. בלעדיו, המלצות התמחור הן הערכה בלבד.",
+        en: "A realistic price is the foundation for LTV, CAC, and tier structure. Without it, pricing recommendations are estimates only.",
       },
       tactics: [
-        { he: "עדכן מחיר ממוצע בשאלון", en: "Update average price in questionnaire" },
-        { he: "בדוק מבנה מדרגות מחיר", en: "Review tier structure in strategy canvas" },
+        {
+          he: "הכנס מחיר ממוצע בשאלון (ניתן לשנות מאוחר יותר) — הוא ישפיע על חישוב LTV ועל מבנה הטיירים.",
+          en: "Enter your average price in the questionnaire (can change later) — it affects LTV calculations and tier structure.",
+          structureLevel: "full_example",
+        },
+        {
+          he: "עדכן מחיר ממוצע בשאלון.",
+          en: "Update average price in questionnaire.",
+          structureLevel: "skeleton",
+        },
+        {
+          he: "מה המחיר הממוצע לעסקה?",
+          en: "What's your average transaction price?",
+          structureLevel: "prompt_only",
+        },
       ],
     });
   }
@@ -143,11 +239,25 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
       severity: "info",
       title: { he: "מטרת צמיחה לא הוגדרה", en: "Growth goal not set" },
       description: {
-        he: "שימור וצמיחה תלויים במטרה ברורה (מודעות/לידים/מכירות).",
-        en: "Retention strategy aligns to a clear goal (awareness/leads/sales).",
+        he: "ללא מטרה ברורה, תכניות שימור וצמיחה הן כלליות. מטרה מוגדרת ממקדת את המשפך ואת המדדים.",
+        en: "Without a clear goal, retention and growth plans stay generic. A defined goal focuses the funnel and the metrics.",
       },
       tactics: [
-        { he: "בחר מטרה בשאלון", en: "Pick a main goal in the wizard" },
+        {
+          he: "בחר מטרה עיקרית בשאלון (מודעות / לידים / מכירות) — בחירה זו משנה את המשפך כולו.",
+          en: "Pick a main goal in the wizard (awareness / leads / sales) — this selection reshapes the entire funnel.",
+          structureLevel: "full_example",
+        },
+        {
+          he: "בחר מטרה: מודעות / לידים / מכירות / שימור.",
+          en: "Pick a goal: awareness / leads / sales / retention.",
+          structureLevel: "skeleton",
+        },
+        {
+          he: "מה המטרה העיקרית שלך ברבעון הקרוב?",
+          en: "What's your main goal for the next quarter?",
+          structureLevel: "prompt_only",
+        },
       ],
     });
   }

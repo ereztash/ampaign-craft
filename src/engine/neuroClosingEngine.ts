@@ -167,7 +167,7 @@ function buildFollowUpSequence(disc: DISCProfile, formData: FormData): FollowUpS
     case "I":
       return [
         { day: 0, channel: primaryChannel, action: { he: "סיפור הצלחה + הזמנה לקהילה", en: "Success story + community invite" }, template: { he: "הנה הסיפור של... (Case Study רגשי). אגב, יש לנו קבוצה עם 500 חברים — רוצה להצטרף?", en: "Here's the story of... (emotional Case Study). BTW, we have a group with 500 members — want to join?" } },
-        { day: 3, channel: "instagram", action: { he: "שיתוף תוכן מעורר השראה", en: "Share inspiring content" }, template: { he: "ראיתי את הפוסט שלך — מדהים! אגב, זה קשור למה שדיברנו על...", en: "Saw your post — amazing! BTW, this connects to what we discussed about..." } },
+        { day: 3, channel: "instagram", action: { he: "שיתוף תוכן מעורר השראה", en: "Share inspiring content" }, template: { he: "ראיתי את הפוסט שלך. אגב, זה קשור למה שדיברנו על...", en: "Saw your post. BTW, this connects to what we discussed about..." } },
         { day: 7, channel: primaryChannel, action: { he: "FOMO רך", en: "Soft FOMO" }, template: { he: "עוד 3 מקומות נשארו לקבוצה הבאה — שמור/י לך?", en: "3 spots left for the next group — save one for you?" } },
       ];
     case "S":

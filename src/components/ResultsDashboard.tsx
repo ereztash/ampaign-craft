@@ -352,6 +352,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           insights={insights}
           loopSnapshot={loopSnapshot}
           healthScore={healthScore}
+          usageCount={savedPlans.length}
           language={language}
           onLoopStateChange={handleLoopStateChange}
         />

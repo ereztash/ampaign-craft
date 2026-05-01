@@ -125,8 +125,8 @@ export function generateInsights(): BusinessInsight[] {
       type: "risk",
       title: { he: "תוכנית לא עודכנה", en: "Plan hasn't been updated" },
       body: {
-        he: `עברו ${daysSinceLast} ימים מהתוכנית האחרונה. השוק משתנה — כדאי לרענן.`,
-        en: `${daysSinceLast} days since the last plan. The market shifts — time to refresh.`,
+        he: `עברו ${daysSinceLast} ימים מהתוכנית האחרונה. השוק משתנה: כדאי לרענן.`,
+        en: `${daysSinceLast} days since the last plan. The market shifts. Time to refresh.`,
       },
       metric: `${daysSinceLast} ימים`,
       confidence: 0.75,

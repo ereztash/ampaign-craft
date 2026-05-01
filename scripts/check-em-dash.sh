@@ -13,6 +13,7 @@ matches=$(grep -rn "—" src/ \
   | grep -v ">—<" \
   | grep -v "__tests__" \
   | grep -v "\.test\." \
+  | grep -v "\.spec\." \
   || true)
 
 if [ -n "$matches" ]; then

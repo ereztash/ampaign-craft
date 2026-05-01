@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const message = requireString(body?.message, "message", 8000);
     const context = body?.context;
+    const coachMode: string = body?.mode ?? "STRUCTURE";
 
     // Prompt-injection guard. The context dict carries user-authored text
     // (businessField, productDescription, stylomePrompt, etc.) that we
@@ -171,6 +172,20 @@ Deno.serve(async (req) => {
       systemParts.push(`\n=== סגנון כתיבה של המשתמש ===\n${ctx.stylomePrompt}`);
       systemParts.push("כשאתה כותב תוכן בשם המשתמש — חקה את הסגנון הזה.");
     }
+
+    const modeInstructions: Record<string, string> = {
+      HOLD: "המשתמש מוצף רגשית. קודם כל להחזיק — הכר ברגש בלי לדחוף לפעולה. רפלקציה אחת, ואז צעד קטן אחד בלבד.",
+      CLARIFY: "המשתמש השתמש במילה מופשטת. פרק אותה ל-2-3 רכיבים קונקרטיים. אל תשאל — הצע הגדרה ובקש אישור.",
+      STRUCTURE: "המשתמש מוצף מאפשרויות. מקסימום 3 אפשרויות. זהה צוואר בקבוק אחד. אל תרחיב.",
+      CHALLENGE: "שקף את ההנחה של המשתמש תחילה, ואז אתגר אותה עם נתונים מהפרופיל שלו.",
+      OPERATIONALIZE: "המשתמש מוכן לפעולה. התחל בפועל. כלול מספר. פורמט: קלט / תהליך / מדד / פלט / כלל עצירה.",
+    };
+
+    const modeBlock = modeInstructions[coachMode] ?? modeInstructions["STRUCTURE"];
+    systemParts.push(`\n=== מצב תגובה: ${coachMode} ===`);
+    systemParts.push(modeBlock);
+    systemParts.push("כלל בעלות: אם אתה מציע פרשנות חזקה, סיים ב'זה הרושם שלי — מה אתה מרגיש לגביו?'");
+    systemParts.push("כללים: אסור em-dash (—). אסור סימן קריאה (!). ללא מילות הייפ. אורך תשובה: לפי צפיפות הודעת המשתמש.");
 
     const systemPrompt = systemParts.join("\n") + "\n\nיש לך כלי חיפוש באינטרנט (web_search). השתמש בו כשצריך מידע עדכני: מחירים, מתחרים, טרנדים, חדשות, סטטיסטיקות.";
 

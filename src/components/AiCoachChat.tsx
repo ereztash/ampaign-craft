@@ -7,6 +7,7 @@ import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
 import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice, loadImportedDataSignals } from "@/engine/userKnowledgeGraph";
 import { safeStorage } from "@/lib/safeStorage";
+import { classifyUserState } from "@/lib/userStateClassifier";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -177,12 +178,19 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     setError(null);
 
     try {
+      const { mode } = classifyUserState({
+        message: text.trim(),
+        history: messages,
+        messageCount: messages.length,
+      });
+
       const _resp = await authFetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: text.trim(),
           context: buildCoachContext(graph, healthScore, stylomePrompt),
+          mode,
         }),
       });
 
