@@ -56,6 +56,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
   const [psychologyOpen, setPsychologyOpen] = useState(false);
   const psychologyRef = useRef<HTMLDivElement>(null);
 
+  const hasDiff = !!diffResult;
   const salesConfidence: ConfidenceLevel = hasDiff ? "stable" : "needs_data";
   const userState = getPersistedUserState();
 
@@ -84,8 +85,6 @@ const SalesTab = ({ result }: SalesTabProps) => {
   };
 
   const formatCurrency = (n: number) => `₪${n.toLocaleString()}`;
-
-  const hasDiff = !!diffResult;
 
   if (quoteView) {
     return (
@@ -167,7 +166,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
           {getSalesTypeLabel(pipeline.salesType)[language]}
         </Badge>
         <span className="text-xs text-muted-foreground">
-          {tx({ he: "זוהה אוטומטית מנתוני המשפך שלך", en: "Auto-detected from your funnel data" }, language)}
+          {tx({ he: "זוהה אוטומטית מהנתונים שלך", en: "Auto-detected from your data" }, language)}
         </span>
       </div>
 
@@ -398,7 +397,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Brain className="h-4 w-4 text-purple-500" />
-            {tx({ he: "טכניקות סגירה נוירו-פסיכולוגיות", en: "Neuro-Psychological Closing Techniques" }, language)}
+            {tx({ he: "איך לסגור את השיחה", en: "How to close the conversation" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">

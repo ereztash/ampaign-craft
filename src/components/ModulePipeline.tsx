@@ -21,10 +21,10 @@ const FLOW_LABELS: { from: string; to: string; label: { he: string; en: string }
 
 const MODULE_DESCRIPTIONS: Record<string, { he: string; en: string }> = {
   differentiation: { he: "גלה מה באמת מבדל אותך. מנגנונים, לא תיאורים", en: "Discover what truly sets you apart. Mechanisms, not adjectives" },
-  marketing: { he: "משפך 5 שלבים + ערוצים + תקציב + hooks מותאמים", en: "5-stage funnel + channels + budget + personalized hooks" },
-  sales: { he: "סקריפטים, התנגדויות, neuro-closing. מוכנים להעתקה", en: "Scripts, objections, neuro-closing. Ready to copy" },
-  pricing: { he: "מבנה tiers, offer stack, אחריות, מסגור מחיר", en: "Tier structure, offer stack, guarantee, price framing" },
-  retention: { he: "Onboarding, churn prevention, referral, loyalty", en: "Onboarding, churn prevention, referral, loyalty" },
+  marketing: { he: "5 שלבי שיווק + ערוצים + תקציב + תכנים מותאמים", en: "5 marketing stages + channels + budget + personalized content" },
+  sales: { he: "סקריפטים, טיפול בהתנגדויות, טכניקות סגירה. מוכנים להעתקה", en: "Scripts, objection handling, closing techniques. Ready to copy" },
+  pricing: { he: "3 רמות מחיר, offer stack, אחריות, ניסוח מחיר", en: "3 price tiers, offer stack, guarantee, price framing" },
+  retention: { he: "קליטת לקוח, מניעת נטישה, הפניות, נאמנות", en: "Onboarding, churn prevention, referrals, loyalty" },
 };
 
 interface ModulePipelineProps {

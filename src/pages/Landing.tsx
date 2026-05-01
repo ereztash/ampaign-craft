@@ -31,10 +31,10 @@ const PageComponent = () => {
 
   const modules = [
     { icon: Crosshair, color: "text-amber-500", title: tx({ he: "בידול", en: "Differentiation" }, language), desc: tx({ he: "גלה מה באמת מבדל אותך. לא תיאורים, מנגנונים", en: "Discover what truly differentiates you. Mechanisms, not adjectives" }, language) },
-    { icon: BarChart3, color: "text-primary", title: tx({ he: "שיווק", en: "Marketing" }, language), desc: tx({ he: "משפך 5 שלבים + ערוצים + תקציב + hooks מותאמים", en: "5-stage funnel + channels + budget + personalized hooks" }, language) },
-    { icon: TrendingUp, color: "text-accent", title: tx({ he: "מכירות", en: "Sales" }, language), desc: tx({ he: "סקריפטים, התנגדויות, neuro-closing. מוכנים להעתקה", en: "Scripts, objections, neuro-closing. Ready to copy" }, language) },
-    { icon: DollarSign, color: "text-emerald-500", title: tx({ he: "תמחור", en: "Pricing" }, language), desc: tx({ he: "מבנה tiers, offer stack, אחריות, מסגור מחיר", en: "Tier structure, offer stack, guarantee, price framing" }, language) },
-    { icon: Heart, color: "text-pink-500", title: tx({ he: "שימור", en: "Retention" }, language), desc: tx({ he: "Onboarding, churn prevention, referral, loyalty", en: "Onboarding, churn prevention, referral, loyalty" }, language) },
+    { icon: BarChart3, color: "text-primary", title: tx({ he: "שיווק", en: "Marketing" }, language), desc: tx({ he: "5 שלבי שיווק + ערוצים + תקציב + תכנים מותאמים", en: "5 marketing stages + channels + budget + personalized content" }, language) },
+    { icon: TrendingUp, color: "text-accent", title: tx({ he: "מכירות", en: "Sales" }, language), desc: tx({ he: "סקריפטים, טיפול בהתנגדויות, טכניקות סגירה. מוכנים להעתקה", en: "Scripts, objection handling, closing techniques. Ready to copy" }, language) },
+    { icon: DollarSign, color: "text-emerald-500", title: tx({ he: "תמחור", en: "Pricing" }, language), desc: tx({ he: "3 רמות מחיר, offer stack, אחריות, ניסוח מחיר", en: "3 price tiers, offer stack, guarantee, price framing" }, language) },
+    { icon: Heart, color: "text-pink-500", title: tx({ he: "שימור", en: "Retention" }, language), desc: tx({ he: "קליטת לקוח, מניעת נטישה, הפניות, נאמנות", en: "Onboarding, churn prevention, referrals, loyalty" }, language) },
   ];
 
   return (

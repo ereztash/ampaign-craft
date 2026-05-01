@@ -38,8 +38,8 @@ const OnboardingOverlay = () => {
       bg: "bg-primary/10",
       title: { he: "קבל אסטרטגיה מבוססת מדע", en: "Get science-based strategy" },
       desc: {
-        he: "המערכת משתמשת בנוירו-סטוריטלינג ומדע התנהגותי כדי לבנות משפך שעובד",
-        en: "The system uses neuro-storytelling and behavioral science to build a funnel that works",
+        he: "המערכת מנתחת את התשובות שלך ובונה אסטרטגיה מותאמת שעובדת בפועל",
+        en: "We analyze your answers and build a tailored strategy based on what actually works",
       },
     },
     {

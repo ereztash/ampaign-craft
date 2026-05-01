@@ -528,10 +528,10 @@ const PricingWizard = ({
     <div key="revenue" className="space-y-5">
       <StepHeader
         icon={Target}
-        title={tx({ he: "ארכיטקטורת הכנסות", en: "Revenue architecture" }, language)}
+        title={tx({ he: "פירוט הכנסות", en: "Revenue breakdown" }, language)}
         subtitle={isHe
-          ? "מודל המכירה ויעד הכנסה → LTV + CAC מומלץ"
-          : "Sales model + revenue goal → LTV + recommended CAC"}
+          ? "מודל המכירה ויעד הכנסה → שווי לקוח + עלות רכישה מומלצת"
+          : "Sales model + revenue goal → customer value + recommended acquisition cost"}
       />
       <StepInsight
         text={{ he: "כמה לקוחות נדרשים ומה עלות הרכישה המקסימלית", en: "customers needed and maximum acquisition cost" }}

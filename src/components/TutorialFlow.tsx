@@ -138,7 +138,7 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
   retention: {
     module: "retention",
     name: { he: "שימור לקוחות", en: "Customer Retention" },
-    description: { he: "הגדל LTV ב-40% דרך שימור", en: "Grow LTV by 40% through retention" },
+    description: { he: "הגדל שווי לקוח ב-40% דרך שימור", en: "Grow customer value by 40% through retention" },
     steps: [
       {
         title: { he: "עלות שימור < עלות רכישה", en: "Retention cost < acquisition cost" },

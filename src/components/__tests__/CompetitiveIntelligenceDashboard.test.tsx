@@ -67,7 +67,7 @@ describe("CompetitiveIntelligenceDashboard", () => {
     const { getIndustryBenchmarks } = await import("@/lib/industryBenchmarks") as any;
     getIndustryBenchmarks.mockReturnValueOnce([]);
     render(<CompetitiveIntelligenceDashboard industry="unknown-industry" />);
-    expect(screen.getByText("No benchmark data for this industry")).toBeInTheDocument();
+    expect(screen.getByText("No comparison data for this industry")).toBeInTheDocument();
   });
 
   it("shows competitor archetypes when provided", () => {

@@ -96,10 +96,10 @@ export function DISCProfileCard({ profile }: DISCProfileCardProps) {
         <div className="rounded-md border p-3 bg-primary/5">
           <div className="flex items-center justify-between mb-1">
             <p className="text-sm font-medium" dir="auto">
-              {tx({ he: "סגנון CTA:", en: "CTA Style:" }, language)}
+              {tx({ he: "סגנון קריאה לפעולה:", en: "CTA Style:" }, language)}
             </p>
             <Badge variant="outline" className="text-xs">
-              {tx({ he: "דגש משפך:", en: "Funnel focus:" }, language)} {profile.funnelEmphasis}
+              {tx({ he: "שלב מכירה:", en: "Funnel focus:" }, language)} {profile.funnelEmphasis}
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground" dir="auto">

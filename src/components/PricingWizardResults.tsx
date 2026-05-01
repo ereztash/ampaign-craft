@@ -71,7 +71,7 @@ const PricingWizardResults = ({ rec, onRetry }: Props) => {
           en: `Acceptable range: ${formatNIS(rec.acceptableRange.low)}–${formatNIS(rec.acceptableRange.high)} · ${rec.dailyBreakdown.en}`,
         }}
         useItNarrative={{
-          he: `השק ב-${formatNIS(rec.charmPrice)} ל-6 שבועות; עקוב אחרי conversion rate`,
+          he: `השק ב-${formatNIS(rec.charmPrice)} ל-6 שבועות; עקוב אחרי שיעור ההמרה`,
           en: `Launch at ${formatNIS(rec.charmPrice)} for 6 weeks; track your conversion rate`,
         }}
         useItCopy={[
@@ -80,7 +80,7 @@ const PricingWizardResults = ({ rec, onRetry }: Props) => {
             text: { he: formatNIS(rec.charmPrice), en: formatNIS(rec.charmPrice) },
           },
           {
-            label: { he: "Daily Breakdown", en: "Daily breakdown" },
+            label: { he: "פירוט יומי", en: "Daily breakdown" },
             text: rec.dailyBreakdown,
           },
         ]}
@@ -231,7 +231,7 @@ const PricingWizardResults = ({ rec, onRetry }: Props) => {
               <CardTitle className="text-sm flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
-                  {tx({ he: "ארכיטקטורת הכנסות", en: "Revenue Architecture" }, language)}
+                  {tx({ he: "פירוט הכנסות", en: "Revenue breakdown" }, language)}
                 </span>
                 <ChevronDown className="h-4 w-4" />
               </CardTitle>
@@ -242,12 +242,14 @@ const PricingWizardResults = ({ rec, onRetry }: Props) => {
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
                   <div className="text-xl font-bold">{formatNIS(rec.ltv)}</div>
-                  <div className="text-xs text-muted-foreground">LTV</div>
+                  <div className="text-xs text-muted-foreground" dir="auto">
+                    {tx({ he: "שווי לקוח", en: "Customer value" }, language)}
+                  </div>
                 </div>
                 <div>
                   <div className="text-xl font-bold">{formatNIS(rec.recommendedCAC)}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {tx({ he: "CAC מקסימלי", en: "Max CAC" }, language)}
+                  <div className="text-xs text-muted-foreground" dir="auto">
+                    {tx({ he: "עלות מרבית לרכישת לקוח", en: "Max acquisition cost" }, language)}
                   </div>
                 </div>
                 <div>
@@ -270,8 +272,8 @@ const PricingWizardResults = ({ rec, onRetry }: Props) => {
               </div>
               <p className="text-xs text-muted-foreground" dir="auto">
                 {isHe
-                  ? "LTV:CAC אופטימלי הוא 3:1 (מקור: ProfitWell benchmarks)"
-                  : "Optimal LTV:CAC is 3:1 (source: ProfitWell benchmarks)"}
+                  ? "כלל אצבע: על כל ₪1 שמוציאים על גיוס לקוח, לקוח שווה ₪3"
+                  : "Rule of thumb: for every ₪1 spent on acquiring a customer, they should be worth ₪3"}
               </p>
             </CardContent>
           </CollapsibleContent>
