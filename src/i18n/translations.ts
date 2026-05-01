@@ -158,7 +158,7 @@ export const translations = {
   processingStep1: { he: "מנתחים את השוק שלך...", en: "Analyzing your market..." },
   processingStep2: { he: "בוחרים ערוצים מתאימים...", en: "Selecting suitable channels..." },
   processingStep3: { he: "מחשבים תקציב אופטימלי...", en: "Calculating optimal budget..." },
-  processingStep4: { he: "בונים את המשפך המושלם!", en: "Building the perfect funnel!" },
+  processingStep4: { he: "בונה את המשפך", en: "Building the funnel" },
 
   // Results
   resultsTitle: { he: "המשפך השיווקי שלך", en: "Your Marketing Funnel" },
@@ -242,11 +242,11 @@ export const translations = {
   // Saved Plans
   savedPlans: { he: "תוכניות שמורות", en: "Saved Plans" },
   noSavedPlans: { he: "אין תוכניות שמורות", en: "No saved plans" },
-  planSaved: { he: "התוכנית נשמרה!", en: "Plan saved!" },
+  planSaved: { he: "התוכנית נשמרה", en: "Plan saved" },
   planDeleted: { he: "התוכנית נמחקה", en: "Plan deleted" },
   comparePlans: { he: "השווה תוכניות", en: "Compare Plans" },
   copyTemplate: { he: "העתק תבנית", en: "Copy Template" },
-  templateCopied: { he: "התבנית הועתקה!", en: "Template copied!" },
+  templateCopied: { he: "הועתק ללוח", en: "Copied to clipboard" },
 
   // Accessibility
   skipToContent: { he: "דלג לתוכן", en: "Skip to content" },
@@ -296,7 +296,7 @@ export const translations = {
 
   // Stylome Extractor
   tabStylome: { he: "טביעת סגנון", en: "Stylome" },
-  stylomeSubtitle: { he: "מחלץ טביעת סגנון אישית — הדבק דגימות כתיבה וקבל System Prompt לשכפול הקול שלך", en: "Personal style fingerprint — paste writing samples and get a System Prompt to clone your voice" },
+  stylomeSubtitle: { he: "מחלץ טביעת סגנון אישית: הדבק דגימות כתיבה וקבל System Prompt לשכפול הקול שלך", en: "Personal style fingerprint: paste writing samples and get a System Prompt to clone your voice" },
   beginnerStylomeTitle: { he: "מחלץ טביעת סגנון", en: "Style Fingerprint" },
   beginnerStylomeSubtitle: { he: "הדבק טקסטים שכתבת (וואטסאפ, אימייל, פוסט) וקבל פרומפט AI שכותב כמוך", en: "Paste texts you've written (WhatsApp, email, post) and get an AI prompt that writes like you" },
 
@@ -317,12 +317,12 @@ export const translations = {
   winRate: { he: "אחוז סגירה", en: "Win Rate" },
   daysUnit: { he: "ימים", en: "days" },
   conversionToNext: { he: "המרה לשלב הבא", en: "Conversion to next stage" },
-  salesNewBadge: { he: "חדש!", en: "New!" },
+  salesNewBadge: { he: "חדש", en: "New" },
 
   // Differentiation Agent
   differentiationAgent: { he: "סוכן בידול", en: "Differentiation" },
   diffPageTitle: { he: "סוכן בידול", en: "Differentiation Agent" },
-  diffPageSubtitle: { he: "5 שלבים לגלות את הבידול האמיתי שלך — B2B או B2C, לא מה שאתה טוען, אלא מה שאתה יכול להוכיח", en: "5 phases to discover your real differentiation — B2B or B2C, not what you claim, but what you can prove" },
+  diffPageSubtitle: { he: "5 שלבים לגלות את הבידול האמיתי שלך (B2B או B2C): לא מה שאתה טוען, אלא מה שאתה יכול להוכיח", en: "5 phases to discover your real differentiation (B2B or B2C): not what you claim, but what you can prove" },
   diffStartCta: { he: "התחל תהליך בידול", en: "Start Differentiation Process" },
   diffPhase1Title: { he: "שכבת פנים", en: "Surface Layer" },
   diffPhase2Title: { he: "מבחן הסתירה", en: "Contradiction Test" },
@@ -335,7 +335,7 @@ export const translations = {
   diffConfirm: { he: "אשר ומשיך", en: "Confirm & Continue" },
   diffLoading: { he: "ה-AI מנתח את הנתונים...", en: "AI is analyzing your data..." },
   diffError: { he: "שגיאה בחיבור ל-AI. נסה שוב.", en: "Error connecting to AI. Try again." },
-  diffComplete: { he: "התהליך הושלם!", en: "Process Complete!" },
+  diffComplete: { he: "התהליך הושלם", en: "Process Complete" },
   diffTabMechanism: { he: "הצהרת מנגנון", en: "Mechanism Statement" },
   diffTabClaims: { he: "ביקורת טענות", en: "Claim Audit" },
   diffTabCompetitors: { he: "מפת מתחרים", en: "Competitor Map" },
@@ -407,7 +407,7 @@ export const translations = {
   quoteDownloadPdf: { he: "הורד PDF", en: "Download PDF" },
   quoteShareLink: { he: "צור קישור לשיתוף", en: "Create Share Link" },
   quoteFinishSave: { he: "סיום ושמירה", en: "Finish & Save" },
-  quoteSaved: { he: "הצעת המחיר נשמרה!", en: "Quote saved!" },
+  quoteSaved: { he: "הצעת המחיר נשמרה", en: "Quote saved" },
   quoteIncluded: { he: "כלול", en: "Included" },
   quoteExpired: { he: "הצעת מחיר זו פגה תוקף", en: "This quote has expired" },
   quoteNotFound: { he: "הצעת מחיר לא נמצאה", en: "Quote not found" },

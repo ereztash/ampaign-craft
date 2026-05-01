@@ -34,7 +34,7 @@ const DREAM_OUTCOMES: Record<string, { he: string; en: string }> = {
   tech: { he: "מוצר טכנולוגי שמשנה את כללי המשחק בתעשייה", en: "A tech product that changes the rules of the game in the industry" },
   food: { he: "מותג קולינרי שלקוחות נאמנים לו ומפנים חברים", en: "A culinary brand with loyal customers who refer friends" },
   services: { he: "שירות פרימיום שלקוחות משלמים עליו בשמחה ולא עוזבים", en: "A premium service that clients happily pay for and never leave" },
-  education: { he: "תוכנית לימודים שמשנה חיים ומייצרת בוגרים מצליחים", en: "An education program that changes lives and produces successful graduates" },
+  education: { he: "תוכנית לימודים שמייצרת בוגרים עובדים בתחום תוך 18 חודש", en: "An education program that produces graduates working in the field within 18 months" },
   health: { he: "פתרון בריאותי שלקוחות רואים בו שינוי אמיתי ומדיד", en: "A health solution where clients see real, measurable change" },
   realEstate: { he: "השקעה נדלנית שמניבה תשואה עקבית ובטוחה", en: "A real estate investment delivering consistent, safe returns" },
   tourism: { he: "חוויה תיירותית בלתי נשכחת שאנשים מספרים עליה לכולם", en: "An unforgettable travel experience people tell everyone about" },

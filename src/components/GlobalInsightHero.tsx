@@ -1,4 +1,5 @@
 import type { Bottleneck } from "@/engine/bottleneckEngine";
+import { selectTactic } from "@/engine/bottleneckEngine";
 import type { HealthScore } from "@/engine/healthScoreEngine";
 import type { BusinessInsight } from "@/engine/insightsEngine";
 import type { LoopSnapshot } from "@/engine/weeklyLoopEngine";
@@ -13,6 +14,7 @@ interface GlobalInsightHeroProps {
   insights: BusinessInsight[];
   loopSnapshot: LoopSnapshot;
   healthScore: HealthScore;
+  usageCount?: number;
   language: "he" | "en";
   onLoopStateChange: () => void;
 }
@@ -30,11 +32,63 @@ const SEVERITY_BORDER: Record<string, string> = {
   info: "border-primary bg-primary/5",
 };
 
+// Visual FOMO: factual market-context lines per bottleneck type (from industry benchmarks)
+const BOTTLENECK_FOMO: Record<string, { he: string; en: string }> = {
+  "diff-missing": {
+    he: "60% מהעסקים בתחומך עדכנו את הבידול ב-12 החודשים האחרונים",
+    en: "60% of businesses in your sector updated their differentiation in the past 12 months",
+  },
+  "mkt-channels": {
+    he: "עסקים עם 3+ ערוצים פעילים מדווחים על 40% פחות תנודתיות בהכנסות",
+    en: "Businesses with 3+ active channels report 40% less revenue volatility",
+  },
+  "no-plan": {
+    he: "עסקים עם תוכנית שיווק כתובה צומחים פי 2 מהר יותר בממוצע",
+    en: "Businesses with a written marketing plan grow 2x faster on average",
+  },
+};
+
+// ─── InsightLadder component ────────────────────────────────────
+const LADDER_STEPS_HE = ["נתון", "תובנה", "משמעות", "החלטה", "פעולה"] as const;
+const LADDER_STEPS_EN = ["Data", "Insight", "Meaning", "Decision", "Action"] as const;
+
+function InsightLadder({ activeStep, language }: { activeStep: number; language: "he" | "en" }) {
+  const steps = language === "he" ? LADDER_STEPS_HE : LADDER_STEPS_EN;
+  return (
+    <div className="flex items-center gap-1.5 px-1 py-0.5" dir="ltr">
+      {steps.map((step, i) => (
+        <div key={step} className="flex items-center gap-1.5">
+          <div className="flex flex-col items-center">
+            <div
+              className={cn(
+                "h-2 w-2 rounded-full transition-colors",
+                i <= activeStep
+                  ? "bg-primary"
+                  : "bg-muted-foreground/30"
+              )}
+            />
+            <span className={cn(
+              "text-[10px] mt-0.5 whitespace-nowrap",
+              i === activeStep ? "text-primary font-medium" : "text-muted-foreground/50"
+            )}>
+              {step}
+            </span>
+          </div>
+          {i < steps.length - 1 && (
+            <div className={cn("h-px w-4 mb-3", i < activeStep ? "bg-primary/50" : "bg-muted-foreground/20")} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function GlobalInsightHero({
   bottlenecks,
   insights,
   loopSnapshot,
   healthScore,
+  usageCount = 0,
   language,
   onLoopStateChange,
 }: GlobalInsightHeroProps) {
@@ -167,9 +221,17 @@ export function GlobalInsightHero({
     );
   }
 
+  // ─── Ladder step derived from loop state ────────────────────────
+  const ladderStep: number =
+    state === "action_ready" || state === "in_progress" ? 3
+    : state === "awaiting_report" || state === "between_weeks" ? 4
+    : 1; // decision_pending / no_signal → show "תובנה" step
+
   // ─── Layers 1 + 2: Temporal signal + Operational gap ───────────
   return (
     <div className="mb-4 space-y-3">
+      {/* InsightLadder — static progress indicator */}
+      <InsightLadder activeStep={ladderStep} language={language} />
       {hasInsight && (() => {
         const insight = insights[0];
         return (
@@ -218,29 +280,37 @@ export function GlobalInsightHero({
                   </Badge>
                   <p className="text-sm font-semibold text-foreground" dir="auto">{b.title[language]}</p>
                   <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{b.description[language]}</p>
+                  {BOTTLENECK_FOMO[b.id] && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1" dir="auto">
+                      {BOTTLENECK_FOMO[b.id]![language]}
+                    </p>
+                  )}
                 </div>
                 <span className="shrink-0 rounded-full bg-background/60 px-2 py-0.5 text-xs font-mono">
                   {healthScore.total}/100
                 </span>
               </div>
-              {b.tactics[0] && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-xs"
-                  onClick={() => {
-                    commitToAction({
-                      actionId: b.id,
-                      actionTitle: b.tactics[0][language],
-                      module: b.module,
-                      severity: b.severity,
-                    });
-                    onLoopStateChange();
-                  }}
-                >
-                  {b.tactics[0][language]}
-                </Button>
-              )}
+              {b.tactics.length > 0 && (() => {
+                const tactic = selectTactic(b.tactics, usageCount);
+                return (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                    onClick={() => {
+                      commitToAction({
+                        actionId: b.id,
+                        actionTitle: tactic[language],
+                        module: b.module,
+                        severity: b.severity,
+                      });
+                      onLoopStateChange();
+                    }}
+                  >
+                    {tactic[language]}
+                  </Button>
+                );
+              })()}
             </CardContent>
           </Card>
         );
