@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { tx } from "@/i18n/tx";
+import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 import { Copy, Check, ChevronDown, DollarSign, Layers, Shield, MessageSquare, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +32,21 @@ const PricingIntelligenceTab = ({ result }: Props) => {
 
   return (
     <div className="space-y-6">
+      {pricing.nextSteps[0] && (
+        <SectionInsightBanner
+          type={
+            pricing.competitivePosition.position === "below_market"
+              ? "opportunity"
+              : pricing.competitivePosition.position === "premium"
+                ? "win"
+                : "tip"
+          }
+          headline={pricing.competitivePosition.label[language]}
+          body={pricing.nextSteps[0].action[language]}
+          metric={pricing.pricingModel.valueMetric[language]}
+        />
+      )}
+
       {/* Pricing Model */}
       <Card className="border-primary/20">
         <CardHeader className="pb-3">

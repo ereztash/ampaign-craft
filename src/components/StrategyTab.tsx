@@ -35,6 +35,7 @@ import type { generateCLGStrategy } from "@/engine/clgEngine";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getToolsForChannel } from "@/lib/toolRecommendations";
 import { HormoziValueCard } from "@/components/HormoziValueCard";
+import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 import { cn } from "@/lib/utils";
 
 const WhatsAppTemplatesPanel = lazy(() => import("@/components/WhatsAppTemplatesPanel"));
@@ -106,9 +107,24 @@ const StrategyTab = ({
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [tipsOpen, setTipsOpen] = useState(false);
 
+  const worst = healthScore.breakdown.length > 0
+    ? healthScore.breakdown.reduce((w, b) =>
+        b.score / b.maxScore < w.score / w.maxScore ? b : w
+      )
+    : null;
+
   return (
     <div>
       {/* ─── Always-visible core: health score, Hormozi, social proof, ROI, stages ─── */}
+
+      {worst?.tips[0] && (
+        <SectionInsightBanner
+          type={worst.score / worst.maxScore < 0.4 ? "critical" : "opportunity"}
+          headline={worst.label[language]}
+          body={worst.tips[0][language]}
+          metric={`${worst.score}/${worst.maxScore}`}
+        />
+      )}
 
       {/* Marketing Health Score */}
       <Card className="mb-6 border-primary/20">

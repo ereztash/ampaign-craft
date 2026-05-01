@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
+import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 
 // ───────────────────────────────────────────────
 // Types
@@ -130,6 +131,13 @@ export function CompetitiveIntelligenceDashboard({
 
   return (
     <div className="space-y-4">
+      {benchmarks && benchmarks.length > 0 && (
+        <SectionInsightBanner
+          type="tip"
+          headline={benchmarks[0].metric[language]}
+          body={`${benchmarks[0].value} · ${benchmarks[0].context[language]}`}
+        />
+      )}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
