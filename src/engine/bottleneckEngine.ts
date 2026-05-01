@@ -24,6 +24,7 @@ export interface Bottleneck {
   title: { he: string; en: string };
   description: { he: string; en: string };
   tactics: BottleneckTactic[];
+  marketContext?: { he: string; en: string };
 }
 
 export interface BottleneckInput {
@@ -74,6 +75,10 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
           structureLevel: "prompt_only",
         },
       ],
+      marketContext: {
+        he: "60% מהעסקים בתחומך עדכנו את הבידול ב-12 החודשים האחרונים",
+        en: "60% of businesses in your sector updated their differentiation in the past 12 months",
+      },
     });
   }
 
@@ -104,6 +109,10 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
           structureLevel: "prompt_only",
         },
       ],
+      marketContext: {
+        he: "עסקים עם תוכנית שיווק כתובה צומחים פי 2 מהר יותר בממוצע",
+        en: "Businesses with a written marketing plan grow 2x faster on average",
+      },
     });
   }
 
@@ -137,6 +146,10 @@ export function detectBottlenecks(input: BottleneckInput): Bottleneck[] {
             structureLevel: "prompt_only",
           },
         ],
+        marketContext: {
+          he: "עסקים עם 3+ ערוצים פעילים מדווחים על 40% פחות תנודתיות בהכנסות",
+          en: "Businesses with 3+ active channels report 40% less revenue volatility",
+        },
       });
     }
 

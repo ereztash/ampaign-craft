@@ -37,7 +37,7 @@ import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGra
 import { calculateValueScore } from "@/engine/hormoziValueEngine";
 import { detectBottlenecks } from "@/engine/bottleneckEngine";
 import { generateInsights } from "@/engine/insightsEngine";
-import { getLoopSnapshot } from "@/engine/weeklyLoopEngine";
+import { getLoopSnapshot, getInsightUsageCount } from "@/engine/weeklyLoopEngine";
 import GlobalInsightHero from "@/components/GlobalInsightHero";
 import { safeStorage } from "@/lib/safeStorage";
 import { DifferentiationResult } from "@/types/differentiation";
@@ -352,7 +352,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           insights={insights}
           loopSnapshot={loopSnapshot}
           healthScore={healthScore}
-          usageCount={savedPlans.length}
+          usageCount={getInsightUsageCount()}
           language={language}
           onLoopStateChange={handleLoopStateChange}
         />

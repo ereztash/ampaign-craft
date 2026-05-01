@@ -32,22 +32,6 @@ const SEVERITY_BORDER: Record<string, string> = {
   info: "border-primary bg-primary/5",
 };
 
-// Visual FOMO: factual market-context lines per bottleneck type (from industry benchmarks)
-const BOTTLENECK_FOMO: Record<string, { he: string; en: string }> = {
-  "diff-missing": {
-    he: "60% מהעסקים בתחומך עדכנו את הבידול ב-12 החודשים האחרונים",
-    en: "60% of businesses in your sector updated their differentiation in the past 12 months",
-  },
-  "mkt-channels": {
-    he: "עסקים עם 3+ ערוצים פעילים מדווחים על 40% פחות תנודתיות בהכנסות",
-    en: "Businesses with 3+ active channels report 40% less revenue volatility",
-  },
-  "no-plan": {
-    he: "עסקים עם תוכנית שיווק כתובה צומחים פי 2 מהר יותר בממוצע",
-    en: "Businesses with a written marketing plan grow 2x faster on average",
-  },
-};
-
 // ─── InsightLadder component ────────────────────────────────────
 const LADDER_STEPS_HE = ["נתון", "תובנה", "משמעות", "החלטה", "פעולה"] as const;
 const LADDER_STEPS_EN = ["Data", "Insight", "Meaning", "Decision", "Action"] as const;
@@ -280,9 +264,9 @@ export function GlobalInsightHero({
                   </Badge>
                   <p className="text-sm font-semibold text-foreground" dir="auto">{b.title[language]}</p>
                   <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{b.description[language]}</p>
-                  {BOTTLENECK_FOMO[b.id] && (
+                  {b.marketContext && (
                     <p className="text-xs text-amber-600 dark:text-amber-400 mt-1" dir="auto">
-                      {BOTTLENECK_FOMO[b.id]![language]}
+                      {b.marketContext[language]}
                     </p>
                   )}
                 </div>
