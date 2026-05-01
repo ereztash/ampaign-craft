@@ -119,15 +119,15 @@ function getChannelsForStage(
     if (isB2B || audienceType === "both") {
       channels.push({
         channel: "linkedIn",
-        name: { he: "לינקדאין – ICP טרגוט", en: "LinkedIn – ICP Targeting" },
+        name: { he: "לינקדאין – פנייה ממוקדת", en: "LinkedIn – Targeted Outreach" },
         budgetPercent: isB2B ? 40 : 20,
         kpis: [
-          { he: "חשיפות ל-ICP", en: "ICP Impressions" },
+          { he: "חשיפות ללקוח יעד", en: "Target customer impressions" },
           { he: "קליקים לפרופיל", en: "Profile clicks" },
         ],
         tips: [
-          { he: "זהה את ה-ICP (Ideal Customer Profile) ומפה את הכאב העסקי שלו – תפקד כ'מנטור' שמבין את ה'נבל'", en: "Identify your ICP (Ideal Customer Profile) and map their business pain – act as the 'Mentor' who understands the 'Villain'" },
-          { he: "השתמש במודעות Thought Leadership – 79% מקבלי ההחלטות מושפעים מתוכן סמכותי", en: "Use Thought Leadership ads – 79% of decision-makers are influenced by authoritative content" },
+          { he: "זהה את לקוח היעד שלך ומפה את הכאב העסקי שלו; הפוך להיות המומחה שמבין את הבעיה", en: "Identify your target customer and map their business pain; become the expert who understands the problem" },
+          { he: "פרסם תוכן מומחיות – 79% ממקבלי ההחלטות מושפעים מתוכן סמכותי", en: "Publish expert content – 79% of decision-makers are influenced by authoritative content" },
         ],
       });
       channels.push({
@@ -166,15 +166,15 @@ function getChannelsForStage(
     if (isB2B) {
       channels.push({
         channel: "content",
-        name: { he: "Thought Leadership – דוחות ותובנות", en: "Thought Leadership – Reports & Insights" },
+        name: { he: "תוכן מומחיות – דוחות ותובנות", en: "Expert Content – Reports & Insights" },
         budgetPercent: 40,
         kpis: [
           { he: "זמן שהייה ממוצע", en: "Avg. time on page" },
           { he: "שיתופים של תוכן מומחיות", en: "Expertise content shares" },
         ],
         tips: [
-          { he: "פרסם דוחות תעשייה ייחודיים – זו ה'תעלת אמון' (Trust Moat) שמבדילה אותך מהמתחרים", en: "Publish unique industry reports – this is the 'Trust Moat' that differentiates you from competitors" },
-          { he: "הפוך Case Studies ל'אפוסים של הצלחה' – ספר מאבק, פיבוט וניצחון, לא רק תוצאות", en: "Turn Case Studies into 'Success Epics' – tell the struggle, pivot, and victory, not just results" },
+          { he: "פרסם דוחות תעשייה ייחודיים; תוכן שאי אפשר למצוא במקום אחר מבדיל אותך מהמתחרים", en: "Publish unique industry reports; content that can't be found elsewhere sets you apart from competitors" },
+          { he: "הפוך סיפורי לקוחות לסיפורי הצלחה מרתקים; ספר על המאבק, השינוי, והניצחון, לא רק על התוצאות", en: "Turn customer stories into compelling success stories; tell the struggle, the turning point, and the victory, not just results" },
         ],
       });
       channels.push({
@@ -257,27 +257,27 @@ function getChannelsForStage(
       // Diagnostic Assessment — core Δ-Navigator channel
       channels.push({
         channel: "content",
-        name: { he: "אבחון דיאגנוסטי / וובינר", en: "Diagnostic Assessment / Webinar" },
+        name: { he: "כלי אבחון / וובינר", en: "Diagnostic Tool / Webinar" },
         budgetPercent: 35,
         kpis: [
           { he: "הרשמות לאבחון", en: "Assessment sign-ups" },
           { he: "שיעור השלמה", en: "Completion rate" },
         ],
         tips: [
-          { he: "צור כלי אבחון שחושף פער (דיסוננס קוגניטיבי) בין המצב הנוכחי לפוטנציאל – זה מניע פעולה", en: "Create a diagnostic tool exposing the gap (cognitive dissonance) between current state and potential – this drives action" },
-          { he: "הצע 'בדיקת בריאות' חינמית לעסק הלקוח – כלי Self-Assessment ממירים פי 2-3 מ-PDF רגיל", en: "Offer a free 'health check' for the prospect's business – Self-Assessment tools convert 2-3x more than regular PDFs" },
+          { he: "צור כלי אבחון שחושף את הפער בין המצב הנוכחי לפוטנציאל; זה מה שמניע פעולה", en: "Create a diagnostic tool that exposes the gap between current state and potential; this is what drives action" },
+          { he: "הצע 'בדיקת בריאות' חינמית לעסק הלקוח; שאלון אינטראקטיבי ממיר פי 2-3 מ-PDF רגיל", en: "Offer a free 'health check' for the prospect's business; an interactive questionnaire converts 2-3x more than a regular PDF" },
         ],
       });
       channels.push({
         channel: "linkedIn",
-        name: { he: "LinkedIn Lead Gen", en: "LinkedIn Lead Gen" },
+        name: { he: "לינקדאין – יצירת לידים", en: "LinkedIn – Lead Generation" },
         budgetPercent: 30,
         kpis: [
           { he: "עלות ללקוח פוטנציאלי", en: "Cost per lead" },
           { he: "שיעור המרת טפסים", en: "Form conversion rate" },
         ],
         tips: [
-          { he: "הפנה ל-Diagnostic Assessment ולא ל-PDF – כלי אינטראקטיבי בונה אמון טוב יותר", en: "Direct to Diagnostic Assessment not PDF – interactive tools build better trust" },
+          { he: "הפנה לשאלון אבחוני ולא ל-PDF; כלי אינטראקטיבי בונה אמון טוב יותר", en: "Direct to a diagnostic questionnaire not a PDF; interactive tools build better trust" },
         ],
       });
     }
@@ -310,7 +310,7 @@ function getChannelsForStage(
     if (!isB2B) {
       channels.push({
         channel: "content",
-        name: { he: "תוכן מגנטי (Lead Magnet)", en: "Lead Magnet Content" },
+        name: { he: "תוכן מושך לקוחות", en: "Lead-Generating Content" },
         budgetPercent: 25,
         kpis: [
           { he: "הורדות", en: "Downloads" },
@@ -331,27 +331,27 @@ function getChannelsForStage(
       // Tripwire Offer — Δ-Navigator core
       channels.push({
         channel: "content",
-        name: { he: "Tripwire – ספרינט/סדנה", en: "Tripwire Offer (Sprint/Workshop)" },
+        name: { he: "ספרינט / סדנה", en: "Sprint / Workshop" },
         budgetPercent: 35,
         kpis: [
-          { he: "שיעור המרה מ-Tripwire לעסקה מלאה", en: "Tripwire-to-full-deal conversion rate" },
-          { he: "זמן מ-Tripwire לסגירה", en: "Time from Tripwire to close" },
+          { he: "שיעור כניסה לעסקה מלאה", en: "Sprint-to-full-deal conversion rate" },
+          { he: "זמן מהצעה ראשונה לסגירה", en: "Time from first offer to close" },
         ],
         tips: [
-          { he: "הצע ספרינט אסטרטגי (₪299-₪999) שפותר בעיה קטנה וחושף את הערך המלא – PLG בפעולה", en: "Offer a strategic sprint ($299-$999) solving a small problem and revealing full value – PLG in action" },
-          { he: "מודל Freemium ממיר 6-15% למשלמים – הראה ערך לפני שאתה מבקש תשלום מלא", en: "Freemium model converts 6-15% to paying – show value before asking for full payment" },
+          { he: "הצע ספרינט (₪299-₪999) שפותר בעיה קטנה ומראה את הערך המלא שלך", en: "Offer a sprint ($299-$999) that solves a small problem and demonstrates your full value" },
+          { he: "גרסה חינמית ממירה 6-15% ללקוחות משלמים; הראה ערך לפני שאתה מבקש תשלום מלא", en: "A free tier converts 6-15% to paying customers; show value before asking for full payment" },
         ],
       });
       channels.push({
         channel: "content",
-        name: { he: "Case Studies ודמואים", en: "Case Studies & Demos" },
+        name: { he: "סיפורי הצלחה ודמואים", en: "Success Stories & Demos" },
         budgetPercent: 30,
         kpis: [
           { he: "בקשות לדמו", en: "Demo requests" },
           { he: "יחס סגירה", en: "Close rate" },
         ],
         tips: [
-          { he: "הכן סיפורי הצלחה כ'ROI Epics' – כמת את הטרנספורמציה: 'מ-X ל-Y תוך Z חודשים'", en: "Prepare success stories as 'ROI Epics' – quantify the transformation: 'from X to Y in Z months'" },
+          { he: "הכן סיפורי הצלחה ממוספרים; כמת את השינוי: 'מ-X ל-Y תוך Z חודשים'", en: "Prepare quantified success stories; measure the transformation: 'from X to Y in Z months'" },
         ],
       });
     }
@@ -396,25 +396,24 @@ function getChannelsForStage(
       budgetPercent: 30,
       kpis: [
         { he: "שיעור שימור לקוחות", en: "Customer retention rate" },
-        { he: "ערך חיי לקוח (LTV)", en: "Customer lifetime value (LTV)" },
+        { he: "שווי לקוח לאורך זמן", en: "Customer lifetime value" },
       ],
       tips: [
-        { he: "שלח הצעות מותאמות אישית – 76% מהלקוחות מתוסכלים מחוויה לא מותאמת", en: "Send personalized offers – 76% of customers are frustrated by non-personalized experiences" },
+        { he: "שלח הצעות מותאמות אישית; 76% מהלקוחות מתוסכלים מחוויה לא מותאמת", en: "Send personalized offers; 76% of customers are frustrated by non-personalized experiences" },
       ],
     });
-    // Community as Moat — CLG channel
     channels.push({
       channel: "content",
-      name: { he: "פלטפורמת קהילה (CLG)", en: "Community Platform (CLG)" },
+      name: { he: "פלטפורמת קהילה", en: "Community Platform" },
       budgetPercent: 30,
       kpis: [
         { he: "מעורבות בקהילה", en: "Community engagement" },
-        { he: "הפניות (Referrals)", en: "Referrals" },
+        { he: "הפניות", en: "Referrals" },
         { he: "NPS", en: "NPS" },
       ],
       tips: [
-        { he: "קהילה כתעלה: CLG מניב עלות רכישה נמוכה פי 5, LTV גבוה פי 3 ושימור גבוה ב-90% (Figma, Notion)", en: "Community as Moat: CLG delivers 5x lower CAC, 3x higher LTV, 90% higher retention (Figma, Notion)" },
-        { he: "הפוך לקוחות מרוצים לשגרירי מותג – בנה פלטפורמה לשיתוף סיפורי הצלחה", en: "Turn happy customers into brand advocates – build a platform for sharing success stories" },
+        { he: "קהילה פעילה מניבה עלות רכישה נמוכה פי 5, שווי לקוח גבוה פי 3 ושימור גבוה ב-90%", en: "An active community delivers 5x lower acquisition cost, 3x higher customer value, 90% higher retention" },
+        { he: "הפוך לקוחות מרוצים לשגרירי מותג; בנה פלטפורמה לשיתוף סיפורי הצלחה", en: "Turn happy customers into brand advocates; build a platform for sharing success stories" },
       ],
     });
     if (data.salesModel === "subscription") {
@@ -424,10 +423,10 @@ function getChannelsForStage(
         budgetPercent: 20,
         kpis: [
           { he: "שיעור חידוש מנויים", en: "Subscription renewal rate" },
-          { he: "Freemium-to-Paid Rate", en: "Freemium-to-Paid Rate" },
+          { he: "שיעור מעבר לתשלום", en: "Free-to-paid conversion rate" },
         ],
         tips: [
-          { he: "מודל Freemium ממיר 6-15% למשלמים – ודא שהערך הבלעדי ברור ומשמעותי", en: "Freemium model converts 6-15% to paying – ensure exclusive value is clear and meaningful" },
+          { he: "גרסה חינמית ממירה 6-15% ללקוחות משלמים; ודא שהערך הבלעדי ברור ומשמעותי", en: "A free tier converts 6-15% to paying customers; ensure exclusive value is clear and meaningful" },
         ],
       });
     }
@@ -1161,11 +1160,11 @@ export function generateFunnel(data: FormData, blackboardCtx?: BlackboardWriteCo
     { id: "conversion", name: { he: "תוכן ומנהיגות מחשבתית", en: "Content & Thought Leadership" }, desc: { he: "מגבר אפקט הילה (Halo Amplifier), ארכיטקטורת נרטיב, ו-Contrarian Takes שמבדילים אותך", en: "Halo Amplifier, narrative architecture, and Contrarian Takes that set you apart" } },
     { id: "retention", name: { he: "קהילה ואפקט רשת", en: "Community & Network Effects" }, desc: { he: "בניית דביקות רשת (Network Stickiness), Alumni Network, תוכנית Referral, ואפקט Flywheel", en: "Building Network Stickiness, Alumni Network, Referral program, and Flywheel effect" } },
   ] : isB2B ? [
-    { id: "awareness", name: { he: "ICP טרגוט וגילוי כאב", en: "ICP Targeting & Pain Discovery" }, desc: { he: "זיהוי ה-ICP (Ideal Customer Profile), מיפוי הכאב העסקי, ויצירת מודעות לפער בין המצב הנוכחי לפוטנציאל", en: "Identify your ICP (Ideal Customer Profile), map their business pain, and create awareness of the gap between current state and potential" } },
-    { id: "engagement", name: { he: "Thought Leadership ותעלת אמון", en: "Thought Leadership & Trust Moat" }, desc: { he: "מיצוב המותג כסמכות בתעשייה: דוחות, תובנות מקוריות, Case Studies כ'אפוסים של הצלחה' – בניית תעלת אמון בלתי עבירה", en: "Position your brand as an industry authority: reports, original insights, Case Studies as 'Success Epics' – building an impenetrable Trust Moat" } },
-    { id: "leads", name: { he: "Lead Magnet דיאגנוסטי", en: "Diagnostic Lead Magnet" }, desc: { he: "יצירת דיסוננס קוגניטיבי באמצעות כלי אבחון שחושף פער בין המצב הנוכחי לפוטנציאל – מנוע ההמרה החזק ביותר", en: "Create cognitive dissonance with a diagnostic tool exposing the gap between current state and potential – the most powerful conversion driver" } },
-    { id: "conversion", name: { he: "Tripwire & PLG", en: "Tripwire & PLG" }, desc: { he: "הורדת מחסום הכניסה עם Tripwire (ספרינט/סדנה), מודל PLG/Freemium, וסגירה ייעוצית (Consultative Selling)", en: "Lower the entry barrier with a Tripwire (sprint/workshop), PLG/Freemium model, and consultative selling" } },
-    { id: "retention", name: { he: "סגירה ייעוצית ושגרירות", en: "Consultative Closing & Advocacy" }, desc: { he: "סגירה ייעוצית, הפיכת לקוחות לשגרירי מותג, ובניית קהילה כתעלה (CLG) – עלות רכישה נמוכה פי 5", en: "Consultative closing, turning customers into brand advocates, and building Community as Moat (CLG) – 5x lower CAC" } },
+    { id: "awareness", name: { he: "זיהוי לקוח יעד וגילוי כאב", en: "Target Customer & Pain Discovery" }, desc: { he: "זיהוי הלקוח האידיאלי שלך, מיפוי הכאב העסקי שלו, ויצירת מודעות לפער בין המצב הנוכחי לפוטנציאל", en: "Identify your ideal customer, map their business pain, and create awareness of the gap between current state and potential" } },
+    { id: "engagement", name: { he: "בניית סמכות ואמון", en: "Building Authority & Trust" }, desc: { he: "מיצוב המותג כסמכות בתעשייה: דוחות, תובנות מקוריות, וסיפורי הצלחה שבונים אמון ומבדילים אותך", en: "Position your brand as an industry authority: reports, original insights, and success stories that build trust and differentiate you" } },
+    { id: "leads", name: { he: "יצירת עניין ואיסוף פרטים", en: "Generating Interest & Capturing Leads" }, desc: { he: "כלי אבחון שחושף את הפער בין המצב הנוכחי לפוטנציאל; הכלי שמניע הכי הרבה פניות", en: "A diagnostic tool that exposes the gap between current state and potential; the highest-converting lead generation method" } },
+    { id: "conversion", name: { he: "הצעת ניסיון וכניסה לעסקה", en: "Trial Offer & Deal Entry" }, desc: { he: "הורדת מחסום הכניסה: ספרינט/סדנה קטנה, גרסה חינמית, וסגירה ייעוצית שמראים ערך לפני ההתחייבות", en: "Lowering the entry barrier: sprint/workshop, free tier, and consultative closing that shows value before commitment" } },
+    { id: "retention", name: { he: "סגירה ייעוצית ושגרירות", en: "Consultative Closing & Advocacy" }, desc: { he: "סגירה ייעוצית, הפיכת לקוחות לשגרירי מותג, ובניית קהילה שמוזילה את עלות הרכישה פי 5", en: "Consultative closing, turning customers into brand advocates, and building a community that cuts acquisition cost by 5x" } },
   ] : [
     { id: "awareness", name: { he: "מודעות", en: "Awareness" }, desc: { he: "הגברת הנראות בכלכלת הקשב – חיתוך דרך 4,000-10,000 מודעות שהקהל שלך רואה ביום", en: "Increasing visibility in the attention economy – cutting through 4,000-10,000 ads your audience sees daily" } },
     { id: "engagement", name: { he: "מעורבות ואמון", en: "Engagement & Trust" }, desc: { he: "בניית אמון ואינטראקציה – UGC, אותנטיות ומיקרו-משפיענים מניבים ביצועים טובים ב-93%", en: "Building trust and interaction – UGC, authenticity and micro-influencers outperform by 93%" } },
