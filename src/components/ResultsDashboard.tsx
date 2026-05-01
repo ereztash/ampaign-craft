@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import AdaptiveTabNav from "@/components/AdaptiveTabNav";
 import { tx } from "@/i18n/tx";
@@ -35,6 +35,10 @@ import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import { personalizeResult } from "@/engine/funnelEngine";
 import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
 import { calculateValueScore } from "@/engine/hormoziValueEngine";
+import { detectBottlenecks } from "@/engine/bottleneckEngine";
+import { generateInsights } from "@/engine/insightsEngine";
+import { getLoopSnapshot } from "@/engine/weeklyLoopEngine";
+import GlobalInsightHero from "@/components/GlobalInsightHero";
 import { safeStorage } from "@/lib/safeStorage";
 import { DifferentiationResult } from "@/types/differentiation";
 import { useSavedPlans } from "@/hooks/useSavedPlans";
@@ -130,6 +134,25 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   const { unlock, trackFeature } = useAchievements(language);
   const featureGate = useFeatureGate();
   const { savePlan: savePlanToStore, plans: savedPlans } = useSavedPlans();
+
+  const bottlenecks = useMemo(
+    () => detectBottlenecks({
+      funnelResult: result,
+      hasDifferentiation: !!diffResult,
+      planCount: savedPlans.length,
+      connectedSources: auth ? 1 : 0,
+      healthScoreTotal: healthScore.total,
+    }),
+    [result, diffResult, savedPlans.length, auth, healthScore.total],
+  );
+  const insights = useMemo(() => generateInsights(), [savedPlans]);
+  const [loopTick, setLoopTick] = useState(0);
+  const loopSnapshot = useMemo(
+    () => getLoopSnapshot(bottlenecks.length > 0 || insights.length > 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [bottlenecks.length, insights.length, loopTick],
+  );
+  const handleLoopStateChange = useCallback(() => setLoopTick((t) => t + 1), []);
 
   // Auto-trigger achievements on mount
   useEffect(() => {
@@ -322,6 +345,16 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
             modulesTotal={peerModules.length}
           />
         </div>
+
+        {/* Global Insight Hero — accountability loop + temporal signal + operational gap */}
+        <GlobalInsightHero
+          bottlenecks={bottlenecks}
+          insights={insights}
+          loopSnapshot={loopSnapshot}
+          healthScore={healthScore}
+          language={language}
+          onLoopStateChange={handleLoopStateChange}
+        />
 
         {/* Differentiation Upgrade CTA (for Path A users) */}
         {!diffResult && (

@@ -26,6 +26,7 @@ import type { PredictiveContentScore } from "@/engine/predictiveContentScoreEngi
 import type { CohortAssignment } from "@/engine/behavioralCohortEngine";
 import { getEPSVerdict } from "@/engine/emotionalPerformanceEngine";
 import { getPredictiveContentVerdict } from "@/engine/predictiveContentScoreEngine";
+import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 
 interface IntelligenceSynthesisDashboardProps {
   eps?: EPSResult;
@@ -82,6 +83,14 @@ export function IntelligenceSynthesisDashboard({
           <TabsContent value="eps" className="space-y-4">
             {eps ? (
               <>
+                {eps.recommendations[0] && (
+                  <SectionInsightBanner
+                    type={eps.score < 55 ? "critical" : eps.score < 70 ? "opportunity" : "win"}
+                    headline={getEPSVerdict(eps.score)[language]}
+                    body={eps.recommendations[0][language]}
+                    metric={`${eps.score}/100`}
+                  />
+                )}
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-muted-foreground">
@@ -234,6 +243,11 @@ export function IntelligenceSynthesisDashboard({
           <TabsContent value="cohort" className="space-y-3">
             {cohort ? (
               <>
+                <SectionInsightBanner
+                  type="tip"
+                  headline={cohort.primaryCohort.name[language]}
+                  body={cohort.rationale[language]}
+                />
                 <Card>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">

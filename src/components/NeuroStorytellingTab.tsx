@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 
 interface NeuroStorytellingTabProps {
   data: NeuroStorytellingData;
@@ -33,6 +34,14 @@ const NeuroStorytellingTab = ({ data }: NeuroStorytellingTabProps) => {
 
   return (
     <div className="space-y-6">
+      {data.entropyGuide.balanceTips[0] && (
+        <SectionInsightBanner
+          type="tip"
+          headline={data.entropyGuide.balanceTips[0][language]}
+          body={data.axiom[language]}
+        />
+      )}
+
       {/* The Axiom */}
       <motion.div initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
