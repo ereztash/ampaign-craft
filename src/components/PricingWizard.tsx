@@ -101,6 +101,21 @@ function StepHeader({
   );
 }
 
+function StepInsight({
+  text,
+  language,
+}: {
+  text: { he: string; en: string };
+  language: string;
+}) {
+  return (
+    <div className="flex items-start gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-400" dir="auto">
+      <span className="font-semibold shrink-0">{tx({ he: "ישפיע על:", en: "Shapes:" }, language)}</span>
+      <span className="opacity-80">{tx(text, language)}</span>
+    </div>
+  );
+}
+
 // ── Component ────────────────────────────────────────────────────────────
 
 const PricingWizard = ({
@@ -193,10 +208,14 @@ const PricingWizard = ({
           ? "לא שואלים את המחיר. גוזרים אותו מהערך"
           : "We don't ask your price. We derive it from value"}
       />
+      <StepInsight
+        text={{ he: "הבסיס לחישוב המחיר — ערך גבוה = מחיר גבוה יותר", en: "the foundation for price calculation — higher value = higher price" }}
+        language={language}
+      />
 
       <div className="space-y-3">
         <p id="dream-outcome-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
-          {tx({ he: "תוצאה חלומית (Dream Outcome):", en: "Dream Outcome:" }, language)}
+          {tx({ he: "מה הלקוח מרוויח מהמוצר שלך:", en: "Dream Outcome:" }, language)}
         </p>
         <div {...radioGroup("dream-outcome-label")}>
         {(
@@ -246,7 +265,7 @@ const PricingWizard = ({
 
       <div className="space-y-3">
         <p id="time-to-value-label" className="text-xs font-semibold text-muted-foreground uppercase tracking-wide" dir="auto">
-          {tx({ he: "מהירות לתוצאה (Time to Value):", en: "Time to Value:" }, language)}
+          {tx({ he: "כמה מהר הלקוח יראה תוצאה:", en: "Time to Value:" }, language)}
         </p>
         <div {...radioGroup("time-to-value-label")} className="grid grid-cols-2 gap-2">
           {(
@@ -281,8 +300,12 @@ const PricingWizard = ({
         icon={BarChart2}
         title={tx({ he: "מה הרגישות של הלקוח למחיר?", en: "What is your customer's price sensitivity?" }, language)}
         subtitle={isHe
-          ? "שתי שאלות שמגדירות את טווח ה-WTP (Van Westendorp PSM)"
-          : "Two questions that define the WTP range (Van Westendorp PSM)"}
+          ? "שתי שאלות שמגדירות מה הלקוח מוכן לשלם"
+          : "Two questions that define what your customer will pay"}
+      />
+      <StepInsight
+        text={{ he: "הטווח שבו הלקוח ישלם — הבסיס לחישוב המחיר", en: "the range your customer will pay — sets the price baseline" }}
+        language={language}
       />
 
       <div className="rounded-xl border bg-muted/30 p-3 flex items-start gap-2">
@@ -364,7 +387,7 @@ const PricingWizard = ({
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground" dir="auto">
-              {tx({ he: "נקודת מחיר אופטימלית (PSM):", en: "Optimal Price Point (PSM):" }, language)}
+              {tx({ he: "מחיר אופטימלי מחושב:", en: "Calculated optimal price:" }, language)}
             </span>
             <Badge variant="default" className="font-bold">
               ~ {formatNIS(psmMidpoint)}
@@ -385,8 +408,12 @@ const PricingWizard = ({
         icon={Layers}
         title={tx({ he: "עוצמת ההצעה שלך", en: "Your offer strength" }, language)}
         subtitle={isHe
-          ? "קובע את כפולת המחיר (Hormozi E×P + בידול)"
-          : "Determines your price multiplier (Hormozi E×P + differentiation)"}
+          ? "קובע כמה מעל המחיר הבסיסי אפשר לגבות"
+          : "Determines how much above the base price you can charge"}
+      />
+      <StepInsight
+        text={{ he: "כפולת המחיר — כל בידול שתבחר יוסיף אחוז נוסף", en: "price multiplier — each differentiator adds a percentage on top" }}
+        language={language}
       />
 
       {/* Effort level */}
@@ -505,6 +532,10 @@ const PricingWizard = ({
         subtitle={isHe
           ? "מודל המכירה ויעד הכנסה → LTV + CAC מומלץ"
           : "Sales model + revenue goal → LTV + recommended CAC"}
+      />
+      <StepInsight
+        text={{ he: "כמה לקוחות נדרשים ומה עלות הרכישה המקסימלית", en: "customers needed and maximum acquisition cost" }}
+        language={language}
       />
 
       {/* Sales model */}
@@ -635,7 +666,7 @@ const PricingWizard = ({
         <div className="flex justify-between text-[10px] text-muted-foreground/60" dir="auto">
           {[
             tx({ he: "ערך", en: "Value" }, language),
-            tx({ he: "PSM", en: "PSM" }, language),
+            tx({ he: "טווח", en: "Range" }, language),
             tx({ he: "הצעה", en: "Offer" }, language),
             tx({ he: "הכנסות", en: "Revenue" }, language),
           ].map((label, i) => (

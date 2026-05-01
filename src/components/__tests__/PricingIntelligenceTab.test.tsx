@@ -11,6 +11,10 @@ vi.mock("@/i18n/tx", () => ({
     lang === "he" ? _obj.he : _obj.en,
 }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn() } }));
+vi.mock("@/lib/utils", () => ({ cn: (...c: string[]) => c.filter(Boolean).join(" ") }));
+vi.mock("@/lib/userStateClassifier", () => ({
+  getPersistedUserState: () => "ready" as const,
+}));
 
 vi.mock("@/engine/userKnowledgeGraph", () => ({
   buildUserKnowledgeGraph: vi.fn(() => ({ derived: { coldStartMode: false } })),

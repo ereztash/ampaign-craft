@@ -118,7 +118,7 @@ describe("RetentionGrowthTab", () => {
 
   it("shows Retention tab trigger", () => {
     render(<RetentionGrowthTab result={mockResult} />);
-    expect(screen.getByText("Retention")).toBeInTheDocument();
+    expect(screen.getAllByText("Retention").length).toBeGreaterThan(0);
   });
 
   it("shows Churn Playbook tab trigger", () => {

@@ -13,9 +13,12 @@ import { tx } from "@/i18n/tx";
 import { Check, Copy, DollarSign, Layers, Brain, BarChart3, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
+import { InsightActionCard } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 interface Props {
   rec: PricingWizardRecommendation;
+  onRetry?: () => void;
 }
 
 function formatNIS(n: number) {
@@ -38,10 +41,11 @@ function ScoreBar({ value, max = 10, label }: { value: number; max?: number; lab
   );
 }
 
-const PricingWizardResults = ({ rec }: Props) => {
+const PricingWizardResults = ({ rec, onRetry }: Props) => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const [copiedIdx, setCopiedIdx] = useState<string | null>(null);
+  const userState = getPersistedUserState();
 
   const copy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -53,82 +57,86 @@ const PricingWizardResults = ({ rec }: Props) => {
   return (
     <div className="space-y-4">
 
-      {/* ── Hero: Optimal Price ───────────────────────────────────────────── */}
-      <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-background">
-        <CardContent className="pt-6 pb-5">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            {/* Main price */}
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1" dir="auto">
-                {tx({ he: "מחיר אופטימלי (Charm)", en: "Optimal Price (Charm)" }, language)}
-              </p>
-              <div className="text-5xl font-bold text-primary">{formatNIS(rec.charmPrice)}</div>
-              <div className="text-sm text-muted-foreground mt-1" dir="auto">
-                {rec.dailyBreakdown[language]}
-              </div>
-            </div>
+      {/* ── InsightActionCard: Recommended price ─────────────────────────── */}
+      <InsightActionCard
+        module={{ he: "תמחור", en: "Pricing" }}
+        answer={{
+          he: `המחיר המומלץ: ${formatNIS(rec.charmPrice)}`,
+          en: `Recommended price: ${formatNIS(rec.charmPrice)}`,
+        }}
+        why={rec.rationale}
+        confidence="stable"
+        confidenceReason={{
+          he: `טווח מקובל: ${formatNIS(rec.acceptableRange.low)}–${formatNIS(rec.acceptableRange.high)} · ${rec.dailyBreakdown.he}`,
+          en: `Acceptable range: ${formatNIS(rec.acceptableRange.low)}–${formatNIS(rec.acceptableRange.high)} · ${rec.dailyBreakdown.en}`,
+        }}
+        useItNarrative={{
+          he: `השק ב-${formatNIS(rec.charmPrice)} ל-6 שבועות; עקוב אחרי conversion rate`,
+          en: `Launch at ${formatNIS(rec.charmPrice)} for 6 weeks; track your conversion rate`,
+        }}
+        useItCopy={[
+          {
+            label: { he: "מחיר להשקה", en: "Launch price" },
+            text: { he: formatNIS(rec.charmPrice), en: formatNIS(rec.charmPrice) },
+          },
+          {
+            label: { he: "Daily Breakdown", en: "Daily breakdown" },
+            text: rec.dailyBreakdown,
+          },
+        ]}
+        checkOptions={[
+          { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
+          { label: { he: "הקהל שלי שונה", en: "My audience is different" }, action: "reject" },
+          { label: { he: "רוצה לראות חלופות", en: "Show alternatives" }, action: "refine" },
+        ]}
+        userState={userState}
+        onCheck={(action) => {
+          if (action === "reject") onRetry?.();
+        }}
+      />
 
-            {/* Range + anchor */}
-            <div className="flex-1 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground" dir="auto">
-                  {tx({ he: "טווח מקובל (PSM):", en: "Acceptable range (PSM):" }, language)}
+      {/* ── Calculation Details (collapsed) ───────────────────────────────── */}
+      <Collapsible>
+        <Card>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-2">
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-primary" />
+                  {tx({ he: "פירוט חישוב", en: "Calculation details" }, language)}
                 </span>
-                <span className="font-medium">
-                  {formatNIS(rec.acceptableRange.low)} עד {formatNIS(rec.acceptableRange.high)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground" dir="auto">
-                  {tx({ he: "עיגון מחיר (Anchor):", en: "Price Anchor:" }, language)}
-                </span>
-                <span className="font-medium line-through opacity-60">{formatNIS(rec.anchorPrice)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground" dir="auto">
-                  {tx({ he: "פרמיית בידול:", en: "Differentiation premium:" }, language)}
-                </span>
-                <Badge variant={rec.differentiationPremium > 0 ? "default" : "secondary"}>
-                  {rec.differentiationPremium > 0
-                    ? `+${Math.round(rec.differentiationPremium * 100)}%`
-                    : tx({ he: "ללא", en: "None" }, language)}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* ── Behavioural Science Scores ────────────────────────────────────── */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Brain className="h-4 w-4 text-primary" />
-            {tx({ he: "ציוני מדע ההתנהגות", en: "Behavioural Science Scores" }, language)}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <ScoreBar
-            value={rec.hormoziScore}
-            label={tx({ he: "Hormozi Value Score (D×P / T×E)", en: "Hormozi Value Score (D×P / T×E)" }, language)}
-          />
-          <ScoreBar
-            value={rec.psmOPP}
-            max={Math.max(rec.acceptableRange.high * 1.2, 1)}
-            label={tx({ he: "Van Westendorp OPP (₪)", en: "Van Westendorp OPP (₪)" }, language)}
-          />
-          <p className="text-xs text-muted-foreground" dir="auto">
-            {rec.rationale[language]}
-          </p>
-        </CardContent>
-      </Card>
+                <ChevronDown className="h-4 w-4" />
+              </CardTitle>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="space-y-3">
+              <ScoreBar
+                value={rec.hormoziScore}
+                label={tx({ he: "ציון ערך (0-10)", en: "Value score (0-10)" }, language)}
+              />
+              <ScoreBar
+                value={rec.psmOPP}
+                max={Math.max(rec.acceptableRange.high * 1.2, 1)}
+                label={tx({ he: "נקודת מחיר אופטימלית (₪)", en: "Optimal price point (₪)" }, language)}
+              />
+              {rec.differentiationPremium > 0 && (
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span dir="auto">{tx({ he: "פרמיית בידול:", en: "Differentiation premium:" }, language)}</span>
+                  <Badge variant="default">+{Math.round(rec.differentiationPremium * 100)}%</Badge>
+                </div>
+              )}
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       {/* ── 3-Tier Architecture ───────────────────────────────────────────── */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Layers className="h-4 w-4 text-primary" />
-            {tx({ he: "ארכיטקטורת 3 Tiers (Decoy Effect)", en: "3-Tier Architecture (Decoy Effect)" }, language)}
+            {tx({ he: "3 רמות מחיר", en: "3 Price Tiers" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -166,8 +174,8 @@ const PricingWizardResults = ({ rec }: Props) => {
           </div>
           <p className="text-xs text-muted-foreground mt-3 text-center" dir="auto">
             {isHe
-              ? "Tier 1 (עוגן נמוך) עושה את Tier 2 לבחירה ה'הגיונית'. Ariely Decoy Effect"
-              : "Tier 1 (low anchor) makes Tier 2 the 'obvious' choice. Ariely Decoy Effect"}
+              ? "הרמה הנמוכה גורמת לאמצעית להרגיש כ'ברירה הברורה'"
+              : "The low tier makes the middle one feel like the obvious choice"}
           </p>
         </CardContent>
       </Card>
@@ -177,19 +185,19 @@ const PricingWizardResults = ({ rec }: Props) => {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-accent" />
-            {tx({ he: "מסגור פסיכולוגי (Kahneman Prospect Theory)", en: "Psychological Framing (Kahneman Prospect Theory)" }, language)}
+            {tx({ he: "איך לדבר על המחיר", en: "How to talk about the price" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {[
             {
               key: "primary",
-              label: { he: "פריים ראשי: Daily Breakdown", en: "Primary frame: Daily Breakdown" },
+              label: { he: "פתיחת שיחת מכירות", en: "Sales conversation opener" },
               text: rec.primaryFrame[language],
             },
             {
               key: "coi",
-              label: { he: "Cost of Inaction: מה הלקוח מפסיד?", en: "Cost of Inaction: what does the customer lose?" },
+              label: { he: "מה הלקוח מפסיד אם לא קונה?", en: "What does the customer lose by not buying?" },
               text: rec.costOfInactionFrame[language],
             },
           ].map((frame) => (

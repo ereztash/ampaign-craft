@@ -104,19 +104,19 @@ describe("DifferentiationResult", () => {
     expect(container.firstChild).toBeTruthy();
   });
 
-  it("shows differentiation strength score", () => {
+  it("shows differentiation strength score in why section", () => {
     render(<DifferentiationResultView result={mockResult} onBack={vi.fn()} />);
-    expect(screen.getByText("75")).toBeTruthy();
+    expect(screen.getByText(/75\/100/)).toBeTruthy();
   });
 
-  it("shows business name", () => {
+  it("shows business name in why section", () => {
     render(<DifferentiationResultView result={mockResult} onBack={vi.fn()} />);
-    expect(screen.getByText("TestCorp")).toBeTruthy();
+    expect(screen.getByText(/TestCorp/)).toBeTruthy();
   });
 
   it("shows executive summary", () => {
     render(<DifferentiationResultView result={mockResult} onBack={vi.fn()} />);
-    expect(screen.getByText("Executive summary in English")).toBeTruthy();
+    expect(screen.getByText(/Executive summary in English/)).toBeTruthy();
   });
 
   it("shows tabs for different sections", () => {
@@ -132,7 +132,7 @@ describe("DifferentiationResult", () => {
     expect(onBack).toHaveBeenCalledOnce();
   });
 
-  it("shows mechanism one-liner in default tab", () => {
+  it("shows mechanism one-liner in the answer card", () => {
     render(<DifferentiationResultView result={mockResult} onBack={vi.fn()} />);
     expect(screen.getByText("One liner in English")).toBeTruthy();
   });

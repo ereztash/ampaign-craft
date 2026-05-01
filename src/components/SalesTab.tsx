@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/engine/salesPipelineEngine";
@@ -25,6 +25,8 @@ import { safeStorage } from "@/lib/safeStorage";
 import { supabaseLoose } from "@/integrations/supabase/loose";
 import type { Quote } from "@/types/quote";
 import QuoteBuilder from "@/components/QuoteBuilder";
+import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 interface SalesTabProps {
   result: FunnelResult;
@@ -51,6 +53,11 @@ const SalesTab = ({ result }: SalesTabProps) => {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
   const [quoteView, setQuoteView] = useState(false);
+  const [psychologyOpen, setPsychologyOpen] = useState(false);
+  const psychologyRef = useRef<HTMLDivElement>(null);
+
+  const salesConfidence: ConfidenceLevel = hasDiff ? "stable" : "needs_data";
+  const userState = getPersistedUserState();
 
   const handleQuoteComplete = useCallback(async (quote: Quote) => {
     try {
@@ -94,6 +101,50 @@ const SalesTab = ({ result }: SalesTabProps) => {
 
   return (
     <div className="space-y-6">
+      {/* InsightActionCard — Sales: approach for the next conversation */}
+      <InsightActionCard
+        module={{ he: "מכירות", en: "Sales" }}
+        answer={personalityProfile.sellTo}
+        why={{
+          he: `DISC: ${personalityProfile.emoji} ${personalityProfile.name.he} — ${discProfile.communicationTone.he}`,
+          en: `DISC: ${personalityProfile.emoji} ${personalityProfile.name.en} — ${discProfile.communicationTone.en}`,
+        }}
+        confidence={salesConfidence}
+        confidenceReason={{
+          he: hasDiff
+            ? "מבוסס על פרופיל DISC + נתוני בידול"
+            : "מבוסס על נתוני הטופס — השלם בידול לדיוק גבוה יותר",
+          en: hasDiff
+            ? "Based on DISC profile + differentiation data"
+            : "Based on form data — complete differentiation for higher accuracy",
+        }}
+        useItNarrative={neuroClosing.urgencyTactics[0]}
+        useItCopy={[
+          {
+            label: { he: "סקריפט פתיחה", en: "Opening script" },
+            text: neuroClosing.closingStyle,
+          },
+          ...(pipeline.objectionScripts[0]
+            ? [{
+                label: pipeline.objectionScripts[0].objection,
+                text: pipeline.objectionScripts[0].response,
+              }]
+            : []),
+        ]}
+        checkOptions={[
+          { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
+          { label: { he: "הקהל שלי שונה", en: "My audience is different" }, action: "reject" },
+          { label: { he: "רוצה גישה אחרת", en: "Show more approaches" }, action: "refine" },
+        ]}
+        userState={userState}
+        onCheck={(action) => {
+          if (action === "refine") {
+            setPsychologyOpen(true);
+            setTimeout(() => psychologyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+          }
+        }}
+      />
+
       {/* Personalization upgrade CTA */}
       {!hasDiff && (
         <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-3 text-center">
@@ -306,7 +357,8 @@ const SalesTab = ({ result }: SalesTabProps) => {
       </Collapsible>
 
       {/* ═══ Group C: Psychology (collapsible) ═══ */}
-      <Collapsible>
+      <div ref={psychologyRef}>
+      <Collapsible open={psychologyOpen} onOpenChange={setPsychologyOpen}>
         <Card>
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
@@ -406,6 +458,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
           </CollapsibleContent>
         </Card>
       </Collapsible>
+      </div>
     </div>
   );
 };

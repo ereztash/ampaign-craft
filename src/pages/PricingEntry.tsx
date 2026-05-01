@@ -169,7 +169,7 @@ const PageComponent = () => {
               </Button>
             </div>
 
-            <PricingWizardResults rec={wizardRec} />
+            <PricingWizardResults rec={wizardRec} onRetry={() => setView("wizard")} />
 
             {/* Offer to show full intelligence tab if plan exists */}
             {pricingAnalysis && (

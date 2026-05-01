@@ -13,6 +13,8 @@ import { Sparkles, ShieldCheck, Map, Users, Scale, BarChart3, FileText, ArrowLef
 import PrincipleTraceModal from "@/components/moat/PrincipleTraceModal";
 import { getIntakeSignal } from "@/engine/intake/intakeSignal";
 import type { IntakeNeed } from "@/engine/intake/types";
+import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 const SECONDARY_TABS = ["committee", "tradeoffs", "metrics", "report"] as const;
 type SecondaryTab = typeof SECONDARY_TABS[number];
@@ -43,12 +45,14 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
   const { t, language } = useLanguage();
   const isHe = language === "he";
 
-  const scoreColor = (score: number) =>
-    score >= 70 ? "text-accent" : score >= 40 ? "text-amber-500" : "text-destructive";
-
   // Read the IntakeSignal once per mount; null-safe if user skipped intake.
   const intakeNeed = getIntakeSignal()?.need;
   const [activeTab, setActiveTab] = useState<string>(pickDefaultTab(intakeNeed));
+
+  const strength = result.differentiationStrength;
+  const diffConfidence: ConfidenceLevel =
+    strength >= 70 ? "stable" : strength >= 40 ? "needs_data" : "intake_only";
+  const userState = getPersistedUserState();
   const isSecondary = SECONDARY_TABS.includes(activeTab as SecondaryTab);
 
   const secondaryLabel: Record<SecondaryTab, string> = {
@@ -66,27 +70,48 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Score Header */}
-      <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-start">
-        <div className="flex items-center gap-6">
-          <div className="text-center">
-            <div className={`text-4xl font-bold ${scoreColor(result.differentiationStrength)}`}>
-              {result.differentiationStrength}
-            </div>
-            <div className="text-xs text-muted-foreground" dir="auto">{t("diffScore")}</div>
-          </div>
-          <div className="text-center">
-            <div className={`text-4xl font-bold ${scoreColor(result.claimVerificationScore)}`}>
-              {result.claimVerificationScore}
-            </div>
-            <div className="text-xs text-muted-foreground" dir="auto">{t("diffClaimScore")}</div>
-          </div>
-        </div>
-        <div className="flex-1">
-          <h2 className="text-xl font-bold" dir="auto">{result.formData.businessName}</h2>
-          <p className="text-sm text-muted-foreground" dir="auto">{result.executiveSummary[language]}</p>
-        </div>
-      </div>
+      {/* InsightActionCard — replaces the old score header */}
+      <InsightActionCard
+        module={{ he: "בידול", en: "Differentiation" }}
+        answer={result.mechanismStatement.oneLiner}
+        why={{
+          he: `${result.formData.businessName} — ציון ${strength}/100 — ${result.executiveSummary.he}`,
+          en: `${result.formData.businessName} — Score ${strength}/100 — ${result.executiveSummary.en}`,
+        }}
+        confidence={diffConfidence}
+        confidenceReason={{
+          he: "מבוסס על הנתונים שמילאת",
+          en: "Based on the data you provided",
+        }}
+        useItNarrative={{
+          he: "השתמש במשפט הזה ב:",
+          en: "Use this one-liner in:",
+        }}
+        useItCopy={[
+          {
+            label: { he: "חתימת מייל", en: "Email signature" },
+            text: result.mechanismStatement.oneLiner,
+          },
+          {
+            label: { he: "פתיחת שיחת מכירות", en: "Sales call opener" },
+            text: result.mechanismStatement.oneLiner,
+          },
+          {
+            label: { he: "H1 של דף נחיתה", en: "Landing page H1" },
+            text: result.mechanismStatement.oneLiner,
+          },
+        ]}
+        checkOptions={[
+          { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
+          { label: { he: "לא מדויק", en: "Needs work" }, action: "reject" },
+          { label: { he: "רוצה גרסה חדה יותר", en: "Sharpen this" }, action: "refine" },
+        ]}
+        userState={userState}
+        onCheck={(action) => {
+          if (action === "reject") onBack();
+          if (action === "refine") setActiveTab("mechanism");
+        }}
+      />
 
       {/* Tabbed Results — 3 primary + "More" dropdown for the 4 derived views */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -131,11 +156,6 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
         <TabsContent value="mechanism" className="mt-4 space-y-4">
           <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent">
             <CardContent className="p-6 space-y-4">
-              {result.mechanismStatement.oneLiner[language] && (
-                <blockquote className="text-xl font-bold text-foreground border-s-4 border-amber-500 ps-4" dir="auto">
-                  {result.mechanismStatement.oneLiner[language]}
-                </blockquote>
-              )}
               {result.mechanismStatement.mechanism && (
                 <div>
                   <div className="text-xs font-semibold text-muted-foreground mb-1" dir="auto">{tx({ he: "מנגנון:", en: "Mechanism:" }, language)}</div>

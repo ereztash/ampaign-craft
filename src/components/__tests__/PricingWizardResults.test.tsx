@@ -12,6 +12,12 @@ vi.mock("@/i18n/tx", () => ({
     lang === "he" ? _obj.he : _obj.en,
 }));
 
+vi.mock("@/lib/utils", () => ({ cn: (...c: string[]) => c.filter(Boolean).join(" ") }));
+
+vi.mock("@/lib/userStateClassifier", () => ({
+  getPersistedUserState: () => "ready" as const,
+}));
+
 vi.mock("sonner", () => ({
   toast: { success: vi.fn() },
 }));
@@ -47,19 +53,19 @@ describe("PricingWizardResults", () => {
     expect(screen.getAllByText("₪497")[0]).toBeInTheDocument();
   });
 
-  it("shows Optimal Price label", () => {
+  it("shows Recommended price in InsightActionCard answer", () => {
     render(<PricingWizardResults rec={mockRec} />);
-    expect(screen.getByText(/Optimal Price/i)).toBeInTheDocument();
+    expect(screen.getByText(/Recommended price/i)).toBeInTheDocument();
   });
 
-  it("shows Behavioural Science Scores section", () => {
+  it("shows Calculation details section", () => {
     render(<PricingWizardResults rec={mockRec} />);
-    expect(screen.getByText(/Behavioural Science Scores/i)).toBeInTheDocument();
+    expect(screen.getByText(/Calculation details/i)).toBeInTheDocument();
   });
 
-  it("shows 3-Tier Architecture section", () => {
+  it("shows 3 Price Tiers section", () => {
     render(<PricingWizardResults rec={mockRec} />);
-    expect(screen.getByText(/3-Tier Architecture/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 Price Tiers/i)).toBeInTheDocument();
   });
 
   it("shows all tier names", () => {
@@ -74,8 +80,8 @@ describe("PricingWizardResults", () => {
     expect(screen.getByText("Recommended")).toBeInTheDocument();
   });
 
-  it("shows Psychological Framing section", () => {
+  it("shows How to talk about the price section", () => {
     render(<PricingWizardResults rec={mockRec} />);
-    expect(screen.getByText(/Psychological Framing/i)).toBeInTheDocument();
+    expect(screen.getByText(/How to talk about the price/i)).toBeInTheDocument();
   });
 });
