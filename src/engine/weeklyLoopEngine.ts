@@ -19,6 +19,7 @@ import { logger } from "@/lib/logger";
 const COMMITMENT_KEY = "funnelforge-weekly-commitment";
 const HISTORY_KEY = "funnelforge-weekly-history";
 const HISTORY_MAX = 26; // ~6 months of weeks
+const INSIGHT_USAGE_KEY = "funnelforge-insight-usage-count";
 
 // ── Types ──
 
@@ -226,6 +227,7 @@ export function commitToAction(params: {
     note: null,
   };
   writeCommitment(commitment);
+  incrementInsightUsage();
   logger.info("weeklyLoop.commit", { actionId: params.actionId, module: params.module });
   return commitment;
 }
@@ -307,6 +309,18 @@ export function abandonCommitment(): void {
   });
   writeCommitment(null);
   logger.info("weeklyLoop.abandon", { module: archived.module });
+}
+
+/**
+ * How many times the user has committed to an action via the InsightHero.
+ * Used for Fading Scaffolding: tactic detail level adapts to experience.
+ */
+export function getInsightUsageCount(): number {
+  return safeStorage.getJSON<number>(INSIGHT_USAGE_KEY, 0);
+}
+
+function incrementInsightUsage(): void {
+  safeStorage.setJSON(INSIGHT_USAGE_KEY, getInsightUsageCount() + 1);
 }
 
 /**

@@ -1,4 +1,5 @@
 import { useLanguage } from "@/i18n/LanguageContext";
+import { logger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 
 type FeedbackVerdict = "accurate" | "inaccurate" | "urgent";
@@ -34,6 +35,12 @@ export function SectionInsightBanner({
   onFeedback,
 }: SectionInsightBannerProps) {
   const { language } = useLanguage();
+
+  function handleFeedback(verdict: FeedbackVerdict) {
+    logger.info("insight.feedback", { verdict, headline, type });
+    onFeedback?.(verdict);
+  }
+
   return (
     <div className={cn("border-s-4 p-3 rounded-lg text-sm mb-4", TYPE_STYLES[type], className)}>
       <div className="flex items-start justify-between gap-2">
@@ -45,19 +52,17 @@ export function SectionInsightBanner({
         )}
       </div>
       <p className="mt-1 text-xs text-muted-foreground leading-relaxed" dir="auto">{body}</p>
-      {onFeedback && (
-        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-current/10">
-          {FEEDBACK_BUTTONS.map(({ verdict, he, en }) => (
-            <button
-              key={verdict}
-              onClick={() => onFeedback(verdict)}
-              className="text-[10px] px-2 py-0.5 rounded-full border border-current/20 text-muted-foreground hover:bg-background/50 transition-colors"
-            >
-              {language === "he" ? he : en}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-current/10">
+        {FEEDBACK_BUTTONS.map(({ verdict, he, en }) => (
+          <button
+            key={verdict}
+            onClick={() => handleFeedback(verdict)}
+            className="text-[10px] px-2 py-0.5 rounded-full border border-current/20 text-muted-foreground hover:bg-background/50 transition-colors"
+          >
+            {language === "he" ? he : en}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
