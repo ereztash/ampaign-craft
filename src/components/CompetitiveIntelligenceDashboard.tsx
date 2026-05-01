@@ -122,7 +122,7 @@ export function CompetitiveIntelligenceDashboard({
         <CardHeader>
           <CardTitle>{t("מודיעין תחרותי", "Competitive Intelligence")}</CardTitle>
           <CardDescription>
-            {t("אין נתוני בנצ'מרק לתעשייה זו", "No benchmark data for this industry")}
+            {t("אין נתוני השוואה לתעשייה זו", "No comparison data for this industry")}
           </CardDescription>
         </CardHeader>
       </Card>

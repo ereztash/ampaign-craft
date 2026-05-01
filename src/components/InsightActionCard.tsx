@@ -39,7 +39,7 @@ export interface InsightActionCardProps {
 const CONFIDENCE_LABEL: Record<ConfidenceLevel, { he: string; en: string }> = {
   stable:      { he: "יציב", en: "Stable" },
   needs_data:  { he: "חסר מידע", en: "Needs data" },
-  intake_only: { he: "מבוסס על intake בלבד", en: "Intake-only" },
+  intake_only: { he: "מבוסס על השאלון בלבד", en: "Intake-only" },
 };
 
 const CONFIDENCE_COLOR: Record<ConfidenceLevel, string> = {

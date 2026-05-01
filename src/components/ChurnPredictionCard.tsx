@@ -186,7 +186,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
         {assessment.retentionPlaybook.length > 0 && (
           <div className="rounded-md border p-3 bg-primary/5">
             <p className="text-sm font-medium mb-1.5" dir="auto">
-              {tx({ he: "Playbook שימור", en: "Retention Playbook" }, language)}
+              {tx({ he: "תכנית שימור", en: "Retention plan" }, language)}
             </p>
             <ul className="space-y-1">
               {assessment.retentionPlaybook.map((tip, i) => (

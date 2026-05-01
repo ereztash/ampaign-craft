@@ -53,7 +53,7 @@ describe("NeuroClosingCard", () => {
 
   it("shows the Neuro-Closing Strategy title", () => {
     render(<NeuroClosingCard strategy={mockStrategy} />);
-    expect(screen.getByText("Neuro-Closing Strategy")).toBeInTheDocument();
+    expect(screen.getByText("How to close the conversation")).toBeInTheDocument();
   });
 
   it("shows the closing style badge", () => {
@@ -68,7 +68,7 @@ describe("NeuroClosingCard", () => {
 
   it("shows Urgency Tactics and Trust Signals sections", () => {
     render(<NeuroClosingCard strategy={mockStrategy} />);
-    expect(screen.getByText("Urgency Tactics")).toBeInTheDocument();
+    expect(screen.getByText("Creating urgency")).toBeInTheDocument();
     expect(screen.getByText("Trust Signals")).toBeInTheDocument();
   });
 

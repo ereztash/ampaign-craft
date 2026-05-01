@@ -338,12 +338,12 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
               : intakeNeed === "money"
                 ? tx({ he: "הבידול מוכן. עכשיו נבנה תוכנית שמכוונת לרווחיות", en: "Differentiation ready. Now a plan aimed at profitability" }, language)
                 : intakeNeed === "attention"
-                  ? tx({ he: "הבידול מוכן. עכשיו נבנה Hooks שעוצרים את הקהל הנכון", en: "Differentiation ready. Now hooks that stop the right audience" }, language)
+                  ? tx({ he: "הבידול מוכן. עכשיו נבנה תכנים שעוצרים את הקהל הנכון", en: "Differentiation ready. Now hooks that stop the right audience" }, language)
                   : tx({ he: "הבידול שלך מוכן. בוא נבנה תוכנית שיווק מותאמת", en: "Your differentiation is ready. Let's build a tailored marketing plan" }, language)}
           </h3>
           <p className="text-sm text-muted-foreground" dir="auto">
             {isHe
-              ? "כל הסקריפטים, הנוסחאות וה-hooks ישתמשו בבידול שגילינו"
+              ? "כל הסקריפטים, הנוסחאות והתכנים ישתמשו בבידול שגילינו"
               : "All scripts, formulas, and hooks will use the differentiation we discovered"}
           </p>
           <Button size="lg" onClick={() => { window.location.href = "/wizard"; }} className="gap-2 bg-primary text-primary-foreground border-0">

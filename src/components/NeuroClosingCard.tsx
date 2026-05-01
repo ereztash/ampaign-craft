@@ -32,7 +32,7 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Zap className="h-5 w-5 text-amber-500" />
-            {tx({ he: "אסטרטגיית סגירה נוירו", en: "Neuro-Closing Strategy" }, language)}
+            {tx({ he: "איך לסגור את השיחה", en: "How to close the conversation" }, language)}
           </CardTitle>
           <Badge variant="outline" dir="auto">{strategy.closingStyle[language]}</Badge>
         </div>
@@ -78,11 +78,11 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
               <span className="text-muted-foreground">{strategy.pricePresentation.strategy[language]}</span>
             </p>
             <p className="text-xs" dir="auto">
-              <span className="font-medium">{tx({ he: "עוגן: ", en: "Anchor: " }, language)}</span>
+              <span className="font-medium">{tx({ he: "נקודת ייחוס: ", en: "Anchor: " }, language)}</span>
               <span className="text-muted-foreground">{strategy.pricePresentation.anchor[language]}</span>
             </p>
             <p className="text-xs" dir="auto">
-              <span className="font-medium">{tx({ he: "מסגור: ", en: "Framing: " }, language)}</span>
+              <span className="font-medium">{tx({ he: "ניסוח: ", en: "Framing: " }, language)}</span>
               <span className="text-muted-foreground">{strategy.pricePresentation.framing[language]}</span>
             </p>
           </div>
@@ -120,7 +120,7 @@ export function NeuroClosingCard({ strategy }: NeuroClosingCardProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="rounded-lg border p-3">
             <p className="text-sm font-medium mb-1.5" dir="auto">
-              {tx({ he: "טקטיקות דחיפות", en: "Urgency Tactics" }, language)}
+              {tx({ he: "יצירת דחיפות", en: "Creating urgency" }, language)}
             </p>
             <ul className="space-y-1">
               {strategy.urgencyTactics.map((tactic, i) => (

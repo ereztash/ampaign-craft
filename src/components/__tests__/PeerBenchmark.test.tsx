@@ -33,7 +33,7 @@ describe("PeerBenchmark", () => {
 
   it("shows Peer Benchmark heading", () => {
     render(<PeerBenchmark {...defaultProps} />);
-    expect(screen.getByText("Peer Benchmark")).toBeInTheDocument();
+    expect(screen.getByText("Comparison to peers")).toBeInTheDocument();
   });
 
   it("shows user count from social proof data", () => {

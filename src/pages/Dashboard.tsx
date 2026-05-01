@@ -243,14 +243,14 @@ const Dashboard = () => {
               )}
               {cohortAssignment && (
                 <p className="text-xs text-muted-foreground mt-2" dir="auto">
-                  {tx({ he: "קוהורט התנהגותי", en: "Behavioral cohort" }, language)}:{" "}
+                  {tx({ he: "פרופיל התנהגותי", en: "Behavioral profile" }, language)}:{" "}
                   <strong>{cohortAssignment.primaryCohort.name[language]}</strong>
                   {" "}· {cohortAssignment.matchConfidence}% {tx({ he: "התאמה", en: "match" }, language)}
                 </p>
               )}
               {topIndustryInsight && (
                 <p className="text-xs text-muted-foreground mt-1" dir="auto">
-                  {tx({ he: "בנצ'מרק תעשייה", en: "Industry benchmark" }, language)}:{" "}
+                  {tx({ he: "ממוצע תעשייה", en: "Industry average" }, language)}:{" "}
                   <strong>{topIndustryInsight.industry}</strong>
                   {" "}· {tx({ he: "מדגם", en: "n" }, language)}={topIndustryInsight.sampleSize}
                   {" "}· {analytics.benchmarks.length} {tx({ he: "מדדים", en: "metrics" }, language)}

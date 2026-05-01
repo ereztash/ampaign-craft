@@ -109,7 +109,7 @@ const NEXT_COPY: Record<
   // After module 3 → going to 4
   3: {
     heading: { he: "סקריפטים מוכנים. עכשיו תכנן את המחיר הנכון", en: "Scripts ready. Now set the right price" },
-    body: { he: "בונים מבנה 3 שכבות עם Decoy Tier, ומחשבים את ה-LTV:CAC האידאלי.", en: "We'll build a 3-tier structure with a Decoy Tier and calculate the ideal LTV:CAC ratio." },
+    body: { he: "בונים מבנה 3 רמות מחיר ומחשבים את שווי הלקוח מול עלות רכישתו.", en: "We'll build a 3-tier structure and calculate the customer value vs. acquisition cost." },
     cta: { he: "עבור לתמחור →", en: "Go to Pricing →" },
   },
   // After module 4 → going to 5

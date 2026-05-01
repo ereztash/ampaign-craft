@@ -43,7 +43,7 @@ export function PeerBenchmark({ businessField, healthScore, modulesCompleted, mo
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <h3 className="text-sm font-semibold text-foreground">
-            {tx({ he: "השוואת עמיתים", en: "Peer Benchmark" }, language)}
+            {tx({ he: "השוואה לעסקים דומים", en: "Comparison to peers" }, language)}
           </h3>
         </div>
 

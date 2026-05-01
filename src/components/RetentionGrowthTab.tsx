@@ -72,8 +72,8 @@ const RetentionGrowthTab = ({ result }: Props) => {
           }}
           confidence="needs_data"
           confidenceReason={{
-            he: "מבוסס על benchmark תעשייתי; לא cohort אמיתי שלך",
-            en: "Based on industry benchmark; not your actual cohort",
+            he: "מבוסס על ממוצע תעשייתי; לא על הנתונים שלך בפועל",
+            en: "Based on industry average; not your actual data",
           }}
           useItNarrative={topSignal.intervention}
           useItCopy={
@@ -103,7 +103,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
             </div>
             <div>
               <div className="text-2xl font-bold text-primary">{retention.projectedImpact.ltvMultiplier}×</div>
-              <div className="text-xs text-muted-foreground">LTV</div>
+              <div className="text-xs text-muted-foreground" dir="auto">{tx({ he: "שווי לקוח", en: "Customer value" }, language)}</div>
             </div>
           </div>
           <p className="text-sm text-muted-foreground flex-1" dir="auto">{retention.projectedImpact.additionalRevenue[language]}</p>
@@ -117,8 +117,8 @@ const RetentionGrowthTab = ({ result }: Props) => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            🚀 {tx({ he: `Onboarding (${retention.onboarding.type})`, en: `Onboarding (${retention.onboarding.type})` }, language)}
-            <Badge variant="outline" className="text-xs">Time to Value: {retention.onboarding.timeToValue}</Badge>
+            🚀 {tx({ he: `קליטת לקוח חדש (${retention.onboarding.type})`, en: `Onboarding (${retention.onboarding.type})` }, language)}
+            <Badge variant="outline" className="text-xs">{tx({ he: "זמן לתוצאה:", en: "Time to value:" }, language)} {retention.onboarding.timeToValue}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -143,7 +143,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
               </div>
             </div>
           ))}
-          <p className="text-xs text-accent" dir="auto">{tx({ he: "מדד aha:", en: "Aha metric:" }, language)} {retention.onboarding.ahaMetric[language]}</p>
+          <p className="text-xs text-accent" dir="auto">{tx({ he: "רגע ההצלחה הראשון:", en: "First success moment:" }, language)} {retention.onboarding.ahaMetric[language]}</p>
         </CardContent>
       </Card>
 
@@ -170,7 +170,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
                 </div>
               ))}
               <div className="mt-3 pt-3 border-t">
-                <div className="text-xs font-medium mb-2">{tx({ he: "הצעות שימור (Save Offers):", en: "Save Offers:" }, language)}</div>
+                <div className="text-xs font-medium mb-2">{tx({ he: "הצעות לשמירת הלקוח:", en: "Retention offers:" }, language)}</div>
                 {retention.churnPlaybook.saveOffers.map((offer, i) => (
                   <div key={i} className="text-xs text-muted-foreground">• {offer[language]}</div>
                 ))}

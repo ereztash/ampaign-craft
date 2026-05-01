@@ -39,17 +39,17 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
           }}
           why={topBenchmark
             ? {
-                he: `Benchmark בתעשייה: ${topBenchmark.metric.he} = ${topBenchmark.value}. ${topBenchmark.context.he}`,
+                he: `ממוצע בתעשייה: ${topBenchmark.metric.he} = ${topBenchmark.value}. ${topBenchmark.context.he}`,
                 en: `Industry benchmark: ${topBenchmark.metric.en} = ${topBenchmark.value}. ${topBenchmark.context.en}`,
               }
             : {
-                he: "מבוסס על נתוני המשפך שלך",
+                he: "מבוסס על הנתונים שלך",
                 en: "Based on your funnel data",
               }
           }
           confidence={marketingConfidence}
           confidenceReason={{
-            he: "מבוסס על הפרמטרים שהגדרת; אין analytics אמיתי עדיין",
+            he: "מבוסס על הפרמטרים שהגדרת; אין נתונים אמיתיים עדיין",
             en: "Based on your configured parameters; no live analytics yet",
           }}
           useItNarrative={{
