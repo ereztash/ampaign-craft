@@ -5,6 +5,7 @@ import { chartColorPalette } from "@/lib/colorSemantics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { tx } from "@/i18n/tx";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
 
 interface PlanningTabProps {
   barData: { name: string; budget: number; fill: string }[];
@@ -17,7 +18,60 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
   const { t, language } = useLanguage();
   const isHe = language === "he";
 
+  const topKpi = kpis[0];
+  const topBenchmark = benchmarks[0];
+  const marketingConfidence: ConfidenceLevel =
+    topKpi?.confidence === "high" ? "stable"
+    : topKpi?.confidence === "medium" ? "needs_data"
+    : "intake_only";
+
   return (
+    <div className="space-y-6">
+      {/* InsightActionCard — Marketing: the weekly move */}
+      {topKpi && (
+        <InsightActionCard
+          module={{ he: "שיווק", en: "Marketing" }}
+          answer={{
+            he: `השבוע: הגע ל-${topKpi.target} ${topKpi.name.he}`,
+            en: `This week: reach ${topKpi.target} ${topKpi.name.en}`,
+          }}
+          why={topBenchmark
+            ? {
+                he: `Benchmark בתעשייה: ${topBenchmark.metric.he} = ${topBenchmark.value} — ${topBenchmark.context.he}`,
+                en: `Industry benchmark: ${topBenchmark.metric.en} = ${topBenchmark.value} — ${topBenchmark.context.en}`,
+              }
+            : {
+                he: "מבוסס על נתוני המשפך שלך",
+                en: "Based on your funnel data",
+              }
+          }
+          confidence={marketingConfidence}
+          confidenceReason={{
+            he: "מבוסס על הפרמטרים שהגדרת — אין analytics אמיתי עדיין",
+            en: "Based on your configured parameters — no live analytics yet",
+          }}
+          useItNarrative={{
+            he: `מדוד ${topKpi.name.he} כל שבוע ועדכן את הגרף מטה`,
+            en: `Track ${topKpi.name.en} weekly and update the chart below`,
+          }}
+          useItCopy={[
+            {
+              label: { he: "יעד השבוע", en: "This week's target" },
+              text: {
+                he: `${topKpi.name.he}: ${topKpi.target}`,
+                en: `${topKpi.name.en}: ${topKpi.target}`,
+              },
+            },
+          ]}
+          checkOptions={[
+            { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
+            { label: { he: "אין לי קהל עדיין", en: "No audience yet" }, action: "reject" },
+            { label: { he: "רוצה לראות פירוט", en: "Show breakdown" }, action: "refine" },
+          ]}
+          onCheck={() => undefined}
+        />
+      )}
+
     <div className="grid gap-6 md:grid-cols-2">
       {/* Left: Charts */}
       <div className="space-y-6">
@@ -118,6 +172,7 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
           </Card>
         )}
       </div>
+    </div>
     </div>
   );
 };

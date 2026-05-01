@@ -14,6 +14,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { tx } from "@/i18n/tx";
 import { Copy, Check, ChevronDown, UserPlus, AlertTriangle, Gift, TrendingUp, Heart, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
+import { InsightActionCard } from "@/components/InsightActionCard";
 
 const ChurnPlaybookTab = lazy(() => import("@/components/ChurnPlaybookTab"));
 
@@ -23,10 +24,13 @@ const RetentionGrowthTab = ({ result }: Props) => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState("retention");
 
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
   const retention = useMemo(() => generateRetentionStrategy(result.formData, graph), [result.formData, graph]);
   const churnRisk = useMemo(() => assessChurnRisk(result.formData), [result.formData]);
+
+  const topSignal = retention.churnPlaybook.signals[0];
 
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -36,7 +40,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
   };
 
   return (
-    <Tabs defaultValue="retention">
+    <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList className="h-9 w-max min-w-full justify-start gap-1 bg-muted/50 mb-5">
         <TabsTrigger value="retention" className="text-xs px-3">
           {tx({ he: "שימור לקוחות", en: "Retention" }, language)}
@@ -55,6 +59,37 @@ const RetentionGrowthTab = ({ result }: Props) => {
 
       <TabsContent value="retention">
     <div className="space-y-6">
+      {/* InsightActionCard — Retention: top churn driver first */}
+      {topSignal && (
+        <InsightActionCard
+          module={{ he: "שימור לקוחות", en: "Retention" }}
+          answer={topSignal.signal}
+          why={{
+            he: `${retention.projectedImpact.additionalRevenue.he} — ${Math.round(retention.projectedImpact.projectedChurnReduction)}% צמצום נטישה אפשרי`,
+            en: `${retention.projectedImpact.additionalRevenue.en} — ${Math.round(retention.projectedImpact.projectedChurnReduction)}% churn reduction possible`,
+          }}
+          confidence="needs_data"
+          confidenceReason={{
+            he: "מבוסס על benchmark תעשייתי — לא cohort אמיתי שלך",
+            en: "Based on industry benchmark — not your actual cohort",
+          }}
+          useItNarrative={topSignal.intervention}
+          useItCopy={
+            retention.churnPlaybook.saveOffers[0]
+              ? [{ label: { he: "הצעת שימור", en: "Save offer" }, text: retention.churnPlaybook.saveOffers[0] }]
+              : undefined
+          }
+          checkOptions={[
+            { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
+            { label: { he: "אצלי הירידה בנקודה אחרת", en: "My drop-off is elsewhere" }, action: "reject" },
+            { label: { he: "תן לי את התבנית המלאה", en: "Show full playbook" }, action: "refine" },
+          ]}
+          onCheck={(action) => {
+            if (action === "refine") setActiveTab("playbook");
+          }}
+        />
+      )}
+
       {/* Impact Summary */}
       <Card className="border-accent/20 bg-accent/5">
         <CardContent className="flex flex-col sm:flex-row items-center gap-4 p-4">

@@ -12,6 +12,7 @@ import { tx } from "@/i18n/tx";
 import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 import { Copy, Check, ChevronDown, DollarSign, Layers, Shield, MessageSquare, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
+import { InsightActionCard } from "@/components/InsightActionCard";
 
 interface Props { result: FunnelResult }
 
@@ -32,6 +33,37 @@ const PricingIntelligenceTab = ({ result }: Props) => {
 
   return (
     <div className="space-y-6">
+      {/* InsightActionCard — Pricing: the recommended number */}
+      <InsightActionCard
+        module={{ he: "תמחור", en: "Pricing" }}
+        answer={{
+          he: `המחיר המומלץ: ₪${pricing.pricingModel.anchorPrice} ${pricing.pricingModel.valueMetric.he}`,
+          en: `Recommended price: ₪${pricing.pricingModel.anchorPrice} ${pricing.pricingModel.valueMetric.en}`,
+        }}
+        why={pricing.pricingModel.rationale}
+        confidence="intake_only"
+        confidenceReason={{
+          he: "מבוסס על נתוני הטופס — אין conversion data אמיתי עדיין",
+          en: "Based on form data — no real conversion data yet",
+        }}
+        useItNarrative={pricing.nextSteps[0]?.action}
+        useItCopy={[
+          {
+            label: { he: "טווח מחיר", en: "Price range" },
+            text: {
+              he: `₪${pricing.pricingModel.recommendedRange.low} – ₪${pricing.pricingModel.recommendedRange.high} ${pricing.pricingModel.valueMetric.he}`,
+              en: `₪${pricing.pricingModel.recommendedRange.low} – ₪${pricing.pricingModel.recommendedRange.high} ${pricing.pricingModel.valueMetric.en}`,
+            },
+          },
+        ]}
+        checkOptions={[
+          { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
+          { label: { he: "הקהל שלי שונה", en: "My audience is different" }, action: "reject" },
+          { label: { he: "רוצה לראות חלופות", en: "Show alternatives" }, action: "refine" },
+        ]}
+        onCheck={() => undefined}
+      />
+
       {pricing.nextSteps[0] && (
         <SectionInsightBanner
           type={
