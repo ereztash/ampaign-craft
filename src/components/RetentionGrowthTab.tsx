@@ -67,13 +67,13 @@ const RetentionGrowthTab = ({ result }: Props) => {
           module={{ he: "שימור לקוחות", en: "Retention" }}
           answer={topSignal.signal}
           why={{
-            he: `${retention.projectedImpact.additionalRevenue.he} — ${Math.round(retention.projectedImpact.projectedChurnReduction)}% צמצום נטישה אפשרי`,
-            en: `${retention.projectedImpact.additionalRevenue.en} — ${Math.round(retention.projectedImpact.projectedChurnReduction)}% churn reduction possible`,
+            he: `${retention.projectedImpact.additionalRevenue.he}; ${Math.round(retention.projectedImpact.projectedChurnReduction)}% צמצום נטישה אפשרי`,
+            en: `${retention.projectedImpact.additionalRevenue.en}; ${Math.round(retention.projectedImpact.projectedChurnReduction)}% churn reduction possible`,
           }}
           confidence="needs_data"
           confidenceReason={{
-            he: "מבוסס על benchmark תעשייתי — לא cohort אמיתי שלך",
-            en: "Based on industry benchmark — not your actual cohort",
+            he: "מבוסס על benchmark תעשייתי; לא cohort אמיתי שלך",
+            en: "Based on industry benchmark; not your actual cohort",
           }}
           useItNarrative={topSignal.intervention}
           useItCopy={

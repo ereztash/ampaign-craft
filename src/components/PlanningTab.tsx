@@ -39,8 +39,8 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
           }}
           why={topBenchmark
             ? {
-                he: `Benchmark בתעשייה: ${topBenchmark.metric.he} = ${topBenchmark.value} — ${topBenchmark.context.he}`,
-                en: `Industry benchmark: ${topBenchmark.metric.en} = ${topBenchmark.value} — ${topBenchmark.context.en}`,
+                he: `Benchmark בתעשייה: ${topBenchmark.metric.he} = ${topBenchmark.value}. ${topBenchmark.context.he}`,
+                en: `Industry benchmark: ${topBenchmark.metric.en} = ${topBenchmark.value}. ${topBenchmark.context.en}`,
               }
             : {
                 he: "מבוסס על נתוני המשפך שלך",
@@ -49,8 +49,8 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
           }
           confidence={marketingConfidence}
           confidenceReason={{
-            he: "מבוסס על הפרמטרים שהגדרת — אין analytics אמיתי עדיין",
-            en: "Based on your configured parameters — no live analytics yet",
+            he: "מבוסס על הפרמטרים שהגדרת; אין analytics אמיתי עדיין",
+            en: "Based on your configured parameters; no live analytics yet",
           }}
           useItNarrative={{
             he: `מדוד ${topKpi.name.he} כל שבוע ועדכן את הגרף מטה`,

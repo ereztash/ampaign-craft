@@ -142,6 +142,14 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   const scrollRef = useRef<HTMLDivElement>(null);
   const { refresh: refreshUsage } = useUsage();
 
+  // Stable conversation ID — persisted so page refresh continues the same session
+  const [conversationId] = useState<string>(() =>
+    safeStorage.getJSON<string | null>("funnelforge-coach-conv-id", null) ?? crypto.randomUUID()
+  );
+  useEffect(() => {
+    safeStorage.setJSON("funnelforge-coach-conv-id", conversationId);
+  }, [conversationId]);
+
   // Build knowledge graph for rich context (or a minimal graph if no plan yet)
   const diffResult = useMemo<DifferentiationResult | null>(
     () => safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null),
@@ -189,9 +197,11 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: text.trim(),
-          context: buildCoachContext(graph, healthScore, stylomePrompt),
+          message:        text.trim(),
+          context:        buildCoachContext(graph, healthScore, stylomePrompt),
           mode,
+          conversationId,
+          planId:         result?.id ?? null,
         }),
       });
 

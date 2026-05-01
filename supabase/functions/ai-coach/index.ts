@@ -61,6 +61,50 @@ Deno.serve(async (req) => {
     const context = body?.context;
     const coachMode: string = body?.mode ?? "STRUCTURE";
 
+    // Validate client-supplied IDs (UUID format only — prevents injection via FK path)
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const rawConvId = typeof body?.conversationId === "string" ? body.conversationId : null;
+    const conversationId: string = rawConvId && UUID_RE.test(rawConvId)
+      ? rawConvId
+      : crypto.randomUUID();
+    const rawPlanId = typeof body?.planId === "string" ? body.planId : null;
+    const planId: string | null = rawPlanId && UUID_RE.test(rawPlanId) ? rawPlanId : null;
+
+    // CoachMode → orthogonal insight type (maps to knowledge_facts predicate later)
+    const INSIGHT_TYPE: Record<string, string | null> = {
+      HOLD:            "pain",
+      CHALLENGE:       "objection",
+      OPERATIONALIZE:  "goal",
+      CLARIFY:         "context",
+      STRUCTURE:       null,
+    };
+    const insightType = INSIGHT_TYPE[coachMode] ?? null;
+
+    // Ensure the conversation row exists (client generates the UUID)
+    await supabase.from("coach_conversations").upsert(
+      { id: conversationId, user_id: userId, plan_id: planId },
+      { onConflict: "id", ignoreDuplicates: true },
+    );
+
+    // Load last 20 turns (10 exchanges) as LLM context
+    const { data: historyRows } = await supabase
+      .from("coach_messages")
+      .select("role, content")
+      .eq("conversation_id", conversationId)
+      .order("created_at", { ascending: true })
+      .limit(20);
+
+    // Persist the user turn immediately (before stream — ensures it's saved
+    // even if the client disconnects mid-response)
+    await supabase.from("coach_messages").insert({
+      conversation_id: conversationId,
+      user_id:         userId,
+      role:            "user",
+      content:         message,
+      coach_mode:      coachMode,
+      insight_type:    insightType,
+    });
+
     // Prompt-injection guard. The context dict carries user-authored text
     // (businessField, productDescription, stylomePrompt, etc.) that we
     // interpolate into the system prompt. Without sanitization a user
@@ -187,6 +231,16 @@ Deno.serve(async (req) => {
     systemParts.push("כלל בעלות: אם אתה מציע פרשנות חזקה, סיים ב'זה הרושם שלי — מה אתה מרגיש לגביו?'");
     systemParts.push("כללים: אסור em-dash (—). אסור סימן קריאה (!). ללא מילות הייפ. אורך תשובה: לפי צפיפות הודעת המשתמש.");
 
+    // App structure — lets the coach navigate the user to the right module
+    systemParts.push("\n=== FunnelForge — המודולים באפליקציה ===");
+    systemParts.push("כשמשתמש שואל 'איפה' או 'איך להגיע ל-X' — הפנה לטאב הנכון:");
+    systemParts.push("• שיווק (Planning): תקציב לפי שלב, KPI שבועי, benchmark תעשייה");
+    systemParts.push("• תמחור (Pricing): wizard 4 שלבים (ערך → טווח מחיר → עוצמת הצעה → הכנסות) + תוצאות תמחור מפורטות");
+    systemParts.push("• מכירות (Sales): פרופיל DISC, סקריפטים, CRM לידים, Lead Coach לכל ליד");
+    systemParts.push("• שימור (Retention): playbook נטישה, triggers, loyalty tiers, חיזוי נטישה");
+    systemParts.push("• בידול (Differentiation): mechanism statement, ציון 0-100, השוואה לשוק");
+    systemParts.push("• Coach (כאן): שאלות, אסטרטגיה, תוכן — הכל בזמן אמת על בסיס הנתונים של המשתמש");
+
     const systemPrompt = systemParts.join("\n") + "\n\nיש לך כלי חיפוש באינטרנט (web_search). השתמש בו כשצריך מידע עדכני: מחירים, מתחרים, טרנדים, חדשות, סטטיסטיקות.";
 
     const anthropicResp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -202,7 +256,13 @@ Deno.serve(async (req) => {
         stream: true,
         system: systemPrompt,
         tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }],
-        messages: [{ role: "user", content: message }],
+        messages: [
+          ...(historyRows ?? []).map((m: { role: string; content: string }) => ({
+            role: m.role as "user" | "assistant",
+            content: m.content,
+          })),
+          { role: "user", content: message },
+        ],
       }),
     });
 
@@ -281,6 +341,24 @@ Deno.serve(async (req) => {
         }).then(({ error: e }: { error: { message: string } | null }) => {
           if (e) console.error("ai-coach.costBump", e.message);
         });
+
+        // Persist assistant response (fire-and-forget — stream already closed)
+        const assistantText = collectedBlocks
+          .filter((b) => b.type === "text" && b.text)
+          .map((b) => b.text ?? "")
+          .join("");
+        if (assistantText) {
+          supabase.from("coach_messages").insert({
+            conversation_id: conversationId,
+            user_id:         userId,
+            role:            "assistant",
+            content:         assistantText.slice(0, 16000),
+            coach_mode:      coachMode,
+            tokens_used:     outputTokens,
+          }).then(({ error: e }: { error: { message: string } | null }) => {
+            if (e) console.error("ai-coach.persistAssistant", e.message);
+          });
+        }
 
         persistWebSearchResults(supabase, userId, collectedBlocks, context).catch((err: unknown) => {
           console.error("ai-coach.persistWebSearch", err);

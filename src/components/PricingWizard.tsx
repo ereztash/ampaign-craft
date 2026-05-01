@@ -209,7 +209,7 @@ const PricingWizard = ({
           : "We don't ask your price. We derive it from value"}
       />
       <StepInsight
-        text={{ he: "הבסיס לחישוב המחיר — ערך גבוה = מחיר גבוה יותר", en: "the foundation for price calculation — higher value = higher price" }}
+        text={{ he: "הבסיס לחישוב המחיר; ערך גבוה = מחיר גבוה יותר", en: "the foundation for price calculation; higher value = higher price" }}
         language={language}
       />
 
@@ -304,7 +304,7 @@ const PricingWizard = ({
           : "Two questions that define what your customer will pay"}
       />
       <StepInsight
-        text={{ he: "הטווח שבו הלקוח ישלם — הבסיס לחישוב המחיר", en: "the range your customer will pay — sets the price baseline" }}
+        text={{ he: "הטווח שבו הלקוח ישלם; הבסיס לחישוב המחיר", en: "the range your customer will pay; sets the price baseline" }}
         language={language}
       />
 
@@ -412,7 +412,7 @@ const PricingWizard = ({
           : "Determines how much above the base price you can charge"}
       />
       <StepInsight
-        text={{ he: "כפולת המחיר — כל בידול שתבחר יוסיף אחוז נוסף", en: "price multiplier — each differentiator adds a percentage on top" }}
+        text={{ he: "כפולת המחיר; כל בידול שתבחר יוסיף אחוז נוסף", en: "price multiplier; each differentiator adds a percentage on top" }}
         language={language}
       />
 

@@ -46,8 +46,8 @@ const PricingIntelligenceTab = ({ result }: Props) => {
         why={pricing.pricingModel.rationale}
         confidence="intake_only"
         confidenceReason={{
-          he: "מבוסס על נתוני הטופס — אין conversion data אמיתי עדיין",
-          en: "Based on form data — no real conversion data yet",
+          he: "מבוסס על נתוני הטופס; אין conversion data אמיתי עדיין",
+          en: "Based on form data; no real conversion data yet",
         }}
         useItNarrative={pricing.nextSteps?.[0]?.action}
         useItCopy={[
