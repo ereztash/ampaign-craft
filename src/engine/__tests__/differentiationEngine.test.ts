@@ -6,7 +6,7 @@ import {
 } from "../differentiationEngine";
 import { PHASES, getPhaseById, getQuestionsForPhase } from "../differentiationPhases";
 import { HIDDEN_VALUES, COMPETITOR_ARCHETYPES, BUYING_COMMITTEE_ROLES, FAKE_DIFFERENTIATION_SIGNALS, REAL_DIFFERENTIATION_SIGNALS, HYBRID_CATEGORIES, CONTRARY_METRICS, NORMALIZING_FRAMES, B2C_COMPETITOR_ARCHETYPES, B2C_HIDDEN_VALUES, B2C_CONTRARY_METRICS, INFLUENCE_NETWORK_ROLES, getHiddenValuesForMode, getCompetitorArchetypesForMode, getContraryMetricsForMode } from "../differentiationKnowledge";
-import { ClaimExample, HiddenValueScore, DifferentiationFormData, initialDifferentiationFormData, detectMarketMode } from "@/types/differentiation";
+import { ClaimExample, HiddenValueScore, DifferentiationFormData, initialDifferentiationFormData, detectMarketMode, MarketContext } from "@/types/differentiation";
 
 function makeFormData(overrides: Partial<DifferentiationFormData> = {}): DifferentiationFormData {
   return { ...initialDifferentiationFormData, businessName: "TestCo", industry: "SaaS", currentPositioning: "We are the best", ...overrides };
@@ -367,5 +367,48 @@ describe("Phase questions adapt to B2C", () => {
     expect(metrics.length).toBeGreaterThanOrEqual(2);
     // Should not include B2B-only metrics
     expect(metrics.some((m) => m.name.en.includes("Budget Expansion"))).toBe(false);
+  });
+});
+
+// ─── Pareto: output contract + crash safety ──────────────────────────────────
+
+describe("generateDifferentiation — output contract", () => {
+  it("all array fields are arrays (never undefined)", () => {
+    const result = generateDifferentiation(makeFormData());
+    expect(Array.isArray(result.gapAnalysis)).toBe(true);
+    expect(Array.isArray(result.competitorMap)).toBe(true);
+    expect(Array.isArray(result.committeeNarratives)).toBe(true);
+    expect(Array.isArray(result.tradeoffDeclarations)).toBe(true);
+    expect(Array.isArray(result.contraryMetrics)).toBe(true);
+    expect(Array.isArray(result.nextSteps)).toBe(true);
+  });
+});
+
+describe("suggestHybridCategory — bilingual description", () => {
+  it("description is {he: string, en: string} not a plain string", () => {
+    const cat = suggestHybridCategory(makeFormData());
+    expect(cat.description).not.toBeTypeOf("string");
+    expect(typeof cat.description.he).toBe("string");
+    expect(typeof cat.description.en).toBe("string");
+    expect(cat.description.he.length).toBeGreaterThan(0);
+    expect(cat.description.en.length).toBeGreaterThan(0);
+  });
+});
+
+describe("selectContraryMetrics — safety across all market modes", () => {
+  it("does not throw for any valid MarketContext", () => {
+    const contexts: MarketContext[] = ["b2b", "b2c", "b2b2c", "both", "b2b_enterprise", "b2c_ecommerce"];
+    for (const ctx of contexts) {
+      expect(() => selectContraryMetrics(makeFormData({ targetMarket: ctx }))).not.toThrow();
+    }
+  });
+
+  it("every returned metric has bilingual name {he, en}", () => {
+    const metrics = selectContraryMetrics(makeFormData());
+    expect(metrics.length).toBeGreaterThan(0);
+    for (const m of metrics) {
+      expect(typeof m.name.he).toBe("string");
+      expect(typeof m.name.en).toBe("string");
+    }
   });
 });

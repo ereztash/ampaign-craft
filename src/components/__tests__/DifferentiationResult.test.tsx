@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DifferentiationResultView from "../DifferentiationResult";
 import type { DifferentiationResult } from "@/types/differentiation";
 
+const useLanguageMock = vi.fn(() => ({ language: "en" as const, t: (k: string) => k, isRTL: false }));
 vi.mock("@/i18n/LanguageContext", () => ({
-  useLanguage: () => ({ language: "en", t: (k: string) => k, isRTL: false }),
+  useLanguage: () => useLanguageMock(),
 }));
 
 vi.mock("@/i18n/tx", () => ({
@@ -139,5 +140,52 @@ describe("DifferentiationResult", () => {
   it("shows continue to marketing plan CTA", () => {
     render(<DifferentiationResultView result={mockResult} onBack={vi.fn()} />);
     expect(screen.getByText(/continue to marketing plan/i)).toBeTruthy();
+  });
+});
+
+// ─── Pareto: crash safety ─────────────────────────────────────────────────────
+
+describe("DifferentiationResult — empty arrays (crash safety)", () => {
+  it("renders without crashing when all result arrays are empty", () => {
+    const emptyResult = {
+      ...mockResult,
+      gapAnalysis: [],
+      competitorMap: [],
+      committeeNarratives: [],
+      tradeoffDeclarations: [],
+      contraryMetrics: [],
+      nextSteps: [],
+    } as unknown as DifferentiationResult;
+    expect(() =>
+      render(<DifferentiationResultView result={emptyResult} onBack={vi.fn()} />)
+    ).not.toThrow();
+  });
+});
+
+describe("DifferentiationResult — Hebrew language", () => {
+  beforeEach(() => {
+    useLanguageMock.mockReturnValue({ language: "he" as const, t: (k: string) => k, isRTL: true });
+  });
+  afterEach(() => {
+    useLanguageMock.mockReturnValue({ language: "en" as const, t: (k: string) => k, isRTL: false });
+  });
+
+  it("renders without crashing and shows Hebrew content", () => {
+    const { container } = render(
+      <DifferentiationResultView result={mockResult} onBack={vi.fn()} />
+    );
+    expect(container.firstChild).toBeTruthy();
+    expect(screen.getByText("משפט בעברית")).toBeTruthy();
+  });
+});
+
+describe("DifferentiationResult — primary tab navigation", () => {
+  it("clicking through all primary tabs does not crash", () => {
+    const { getAllByRole } = render(
+      <DifferentiationResultView result={mockResult} onBack={vi.fn()} />
+    );
+    for (const tab of getAllByRole("tab")) {
+      expect(() => fireEvent.click(tab)).not.toThrow();
+    }
   });
 });
