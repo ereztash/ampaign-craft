@@ -25,6 +25,8 @@ import {
   Download, BarChart2, Sparkles,
 } from "lucide-react";
 
+import { InsightActionCard } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 import { STAGES, detectStagesInTranscript, type StageDetectionReport } from "@/engine/differentiation/conversationStages";
 import { PRINCIPLES_BY_CODE, type PrincipleAgentOutput, type ConvergenceReport } from "@/engine/differentiation/principles";
 import { runPrincipleScan } from "@/engine/differentiation/principleAgents";
@@ -561,8 +563,50 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
     );
   };
 
-  const renderStep5 = () => (
+  const renderStep5 = () => {
+    const userState = getPersistedUserState();
+    const approvedCount = state.approvedCodes.size;
+    const isStrong = state.convergence?.convergence === "strong";
+    return (
     <div className="space-y-4">
+
+      {/* InsightActionCard — show the auto-generated one-liner as the ANSWER */}
+      {state.draft.oneSentence.trim().length > 0 && (
+        <InsightActionCard
+          module={{ he: "בידול", en: "Differentiation" }}
+          answer={{
+            he: state.draft.oneSentence,
+            en: state.draft.oneSentence,
+          }}
+          why={{
+            he: `נבחרו ${approvedCount} עקרונות · אות ${isStrong ? "חזק" : "בינוני"}`,
+            en: `${approvedCount} principles selected · ${isStrong ? "strong" : "moderate"} signal`,
+          }}
+          confidence="stable"
+          confidenceReason={{
+            he: "מחושב מהתמלול שלך; ערוך את הטקסט מטה לפי הצורך",
+            en: "Derived from your transcript; edit the text below as needed",
+          }}
+          useItCopy={[
+            {
+              label: { he: "חתימת מייל", en: "Email signature" },
+              text: { he: state.draft.oneSentence, en: state.draft.oneSentence },
+            },
+            {
+              label: { he: "פתיחת שיחת מכירות", en: "Sales call opener" },
+              text: { he: state.draft.oneSentence, en: state.draft.oneSentence },
+            },
+          ]}
+          checkOptions={[
+            { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
+            { label: { he: "שנה משהו", en: "Needs change" }, action: "reject" },
+            { label: { he: "גרסה חדה יותר", en: "Sharpen this" }, action: "refine" },
+          ]}
+          userState={userState}
+          onCheck={() => undefined}
+        />
+      )}
+
       <div className="space-y-2">
         <label className="text-sm font-medium" dir="auto">
           {tx({ he: "משפט בידול אחד *", en: "One differentiation sentence *" }, language)}
@@ -611,6 +655,7 @@ const DifferentiationTranscriptWizard = ({ onBack }: Props) => {
       </p>
     </div>
   );
+  };
 
   const renderStep6 = () => (
     <div className="space-y-6">

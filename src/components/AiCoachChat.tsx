@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { tx } from "@/i18n/tx";
-import { Bot, Send, Loader2, Sparkles } from "lucide-react";
+import { Bot, Send, Loader2, Sparkles, RotateCcw } from "lucide-react";
 import { LimitReachedModal, LimitReachedDetail } from "@/components/LimitReachedModal";
 import { useUsage } from "@/hooks/useUsage";
 
@@ -143,12 +143,21 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
   const { refresh: refreshUsage } = useUsage();
 
   // Stable conversation ID — persisted so page refresh continues the same session
-  const [conversationId] = useState<string>(() =>
+  const [conversationId, setConversationId] = useState<string>(() =>
     safeStorage.getJSON<string | null>("funnelforge-coach-conv-id", null) ?? crypto.randomUUID()
   );
   useEffect(() => {
     safeStorage.setJSON("funnelforge-coach-conv-id", conversationId);
   }, [conversationId]);
+
+  const resetConversation = useCallback(() => {
+    const newId = crypto.randomUUID();
+    safeStorage.setJSON("funnelforge-coach-conv-id", newId);
+    safeStorage.setJSON("funnelforge-coach-messages", []);
+    setConversationId(newId);
+    setMessages([]);
+    setError(null);
+  }, []);
 
   // Build knowledge graph for rich context (or a minimal graph if no plan yet)
   const diffResult = useMemo<DifferentiationResult | null>(
@@ -274,10 +283,21 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     <>
     <Card className="flex flex-col h-[60vh] sm:h-[500px]">
       <CardHeader className="pb-3 shrink-0">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Bot className="h-5 w-5 text-primary" />
-          {tx({ he: "מאמן שיווק AI", en: "AI Marketing Coach" }, language)}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Bot className="h-5 w-5 text-primary" />
+            {tx({ he: "מאמן שיווק AI", en: "AI Marketing Coach" }, language)}
+          </CardTitle>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+            onClick={resetConversation}
+            title={tx({ he: "שיחה חדשה", en: "New conversation" }, language)}
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </Button>
+        </div>
         <p className="text-xs text-muted-foreground">
           {isHe
             ? "מכיר את העסק שלך, הסגנון שלך, והתוכניות שלך. שאל כל שאלה."
