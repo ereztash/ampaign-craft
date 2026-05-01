@@ -26,6 +26,7 @@ import { supabaseLoose } from "@/integrations/supabase/loose";
 import type { Quote } from "@/types/quote";
 import QuoteBuilder from "@/components/QuoteBuilder";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 interface SalesTabProps {
   result: FunnelResult;
@@ -56,6 +57,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
   const psychologyRef = useRef<HTMLDivElement>(null);
 
   const salesConfidence: ConfidenceLevel = hasDiff ? "stable" : "needs_data";
+  const userState = getPersistedUserState();
 
   const handleQuoteComplete = useCallback(async (quote: Quote) => {
     try {
@@ -134,6 +136,7 @@ const SalesTab = ({ result }: SalesTabProps) => {
           { label: { he: "הקהל שלי שונה", en: "My audience is different" }, action: "reject" },
           { label: { he: "רוצה גישה אחרת", en: "Show more approaches" }, action: "refine" },
         ]}
+        userState={userState}
         onCheck={(action) => {
           if (action === "refine") {
             setPsychologyOpen(true);

@@ -6,10 +6,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
+import type { UserState } from "@/lib/userStateClassifier";
 
+export type { UserState };
 export type ConfidenceLevel = "stable" | "needs_data" | "intake_only";
 export type CheckAction = "accept" | "reject" | "refine";
-export type UserState = "confused" | "resistant" | "ready" | "disbelieving";
 
 export interface CopyItem {
   label: { he: string; en: string };

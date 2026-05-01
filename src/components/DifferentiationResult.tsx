@@ -14,6 +14,7 @@ import PrincipleTraceModal from "@/components/moat/PrincipleTraceModal";
 import { getIntakeSignal } from "@/engine/intake/intakeSignal";
 import type { IntakeNeed } from "@/engine/intake/types";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 const SECONDARY_TABS = ["committee", "tradeoffs", "metrics", "report"] as const;
 type SecondaryTab = typeof SECONDARY_TABS[number];
@@ -51,6 +52,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
   const strength = result.differentiationStrength;
   const diffConfidence: ConfidenceLevel =
     strength >= 70 ? "stable" : strength >= 40 ? "needs_data" : "intake_only";
+  const userState = getPersistedUserState();
   const isSecondary = SECONDARY_TABS.includes(activeTab as SecondaryTab);
 
   const secondaryLabel: Record<SecondaryTab, string> = {
@@ -104,6 +106,7 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
           { label: { he: "לא מדויק", en: "Needs work" }, action: "reject" },
           { label: { he: "רוצה גרסה חדה יותר", en: "Sharpen this" }, action: "refine" },
         ]}
+        userState={userState}
         onCheck={(action) => {
           if (action === "reject") onBack();
           if (action === "refine") setActiveTab("mechanism");

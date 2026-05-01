@@ -1,9 +1,34 @@
+import { safeStorage } from "@/lib/safeStorage";
+
 export type CoachMode =
   | "HOLD"
   | "CLARIFY"
   | "STRUCTURE"
   | "CHALLENGE"
   | "OPERATIONALIZE";
+
+export type UserState = "confused" | "resistant" | "ready" | "disbelieving";
+
+const COACH_MODE_KEY = "funnelforge-coach-mode";
+
+export function persistCoachMode(mode: CoachMode): void {
+  safeStorage.setJSON(COACH_MODE_KEY, mode);
+}
+
+export function coachModeToUserState(mode: CoachMode): UserState {
+  switch (mode) {
+    case "HOLD":          return "confused";
+    case "CLARIFY":       return "confused";
+    case "STRUCTURE":     return "ready";
+    case "CHALLENGE":     return "resistant";
+    case "OPERATIONALIZE": return "ready";
+  }
+}
+
+export function getPersistedUserState(): UserState {
+  const mode = safeStorage.getJSON<CoachMode | null>(COACH_MODE_KEY, null);
+  return mode ? coachModeToUserState(mode) : "ready";
+}
 
 export interface ClassificationInput {
   message: string;

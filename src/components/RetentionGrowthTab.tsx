@@ -15,6 +15,7 @@ import { tx } from "@/i18n/tx";
 import { Copy, Check, ChevronDown, UserPlus, AlertTriangle, Gift, TrendingUp, Heart, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { InsightActionCard } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 const ChurnPlaybookTab = lazy(() => import("@/components/ChurnPlaybookTab"));
 
@@ -31,6 +32,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
   const churnRisk = useMemo(() => assessChurnRisk(result.formData), [result.formData]);
 
   const topSignal = retention.churnPlaybook.signals[0];
+  const userState = getPersistedUserState();
 
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -84,6 +86,7 @@ const RetentionGrowthTab = ({ result }: Props) => {
             { label: { he: "אצלי הירידה בנקודה אחרת", en: "My drop-off is elsewhere" }, action: "reject" },
             { label: { he: "תן לי את התבנית המלאה", en: "Show full playbook" }, action: "refine" },
           ]}
+          userState={userState}
           onCheck={(action) => {
             if (action === "refine") setActiveTab("playbook");
           }}

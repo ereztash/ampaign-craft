@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { tx } from "@/i18n/tx";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 interface PlanningTabProps {
   barData: { name: string; budget: number; fill: string }[];
@@ -24,6 +25,7 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
     topKpi?.confidence === "high" ? "stable"
     : topKpi?.confidence === "medium" ? "needs_data"
     : "intake_only";
+  const userState = getPersistedUserState();
 
   return (
     <div className="space-y-6">
@@ -68,6 +70,7 @@ const PlanningTab = ({ barData, pieData, kpis, benchmarks }: PlanningTabProps) =
             { label: { he: "אין לי קהל עדיין", en: "No audience yet" }, action: "reject" },
             { label: { he: "רוצה לראות פירוט", en: "Show breakdown" }, action: "refine" },
           ]}
+          userState={userState}
           onCheck={() => undefined}
         />
       )}

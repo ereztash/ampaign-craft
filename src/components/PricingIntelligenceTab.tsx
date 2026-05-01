@@ -13,6 +13,7 @@ import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 import { Copy, Check, ChevronDown, DollarSign, Layers, Shield, MessageSquare, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { InsightActionCard } from "@/components/InsightActionCard";
+import { getPersistedUserState } from "@/lib/userStateClassifier";
 
 interface Props { result: FunnelResult }
 
@@ -30,6 +31,8 @@ const PricingIntelligenceTab = ({ result }: Props) => {
     toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
+
+  const userState = getPersistedUserState();
 
   return (
     <div className="space-y-6">
@@ -61,6 +64,7 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           { label: { he: "הקהל שלי שונה", en: "My audience is different" }, action: "reject" },
           { label: { he: "רוצה לראות חלופות", en: "Show alternatives" }, action: "refine" },
         ]}
+        userState={userState}
         onCheck={() => undefined}
       />
 
