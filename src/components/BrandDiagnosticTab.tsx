@@ -81,8 +81,8 @@ const executionTemplates: ExecutionTemplate[] = [
     steps: [
       { he: "חשב את 'עלות האי-פעולה' – כמה עולה ללקוח לא להשתמש בך", en: "Calculate the 'cost of inaction' – how much it costs NOT to use you" },
       { he: "צור תוכן 'לפני/אחרי' עם מספרים ספציפיים", en: "Create 'before/after' content with specific numbers" },
-      { he: "בנה כלי אבחון שחושף את הפער (דיסוננס קוגניטיבי)", en: "Build a diagnostic tool that exposes the gap (cognitive dissonance)" },
-      { he: "שלב Tripwire Offer שמאפשר לחוות את הערך בסיכון נמוך", en: "Integrate a Tripwire Offer allowing value experience at low risk" },
+      { he: "בנה כלי אבחון שחושף את הפער בין המצב הנוכחי לרצוי", en: "Build a diagnostic tool that exposes the gap between current and desired state" },
+      { he: "הוסף הצעת כניסה בסיכון נמוך שמאפשרת לחוות את הערך לפני ההתחייבות המלאה", en: "Add a low-risk entry offer that lets clients experience the value before full commitment" },
     ],
     timeline: { he: "1-3 שבועות", en: "1-3 weeks" },
     priority: "medium",
