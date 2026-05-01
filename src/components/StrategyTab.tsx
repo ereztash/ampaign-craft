@@ -48,28 +48,28 @@ const NEURO_LABELS: Record<
 > = {
   awareness: {
     emoji: "●",
-    vector: { he: "קורטיזול", en: "Cortisol" },
-    desc: { he: "תפוס קשב דרך מתח אסטרטגי", en: "Grab attention through strategic tension" },
+    vector: { he: "קשב", en: "Attention" },
+    desc: { he: "תפוס קשב דרך מסר ברור", en: "Grab attention with a clear message" },
   },
   engagement: {
     emoji: "●",
-    vector: { he: "אוקסיטוצין", en: "Oxytocin" },
+    vector: { he: "אמון", en: "Trust" },
     desc: { he: "בנה אמון דרך חיבור", en: "Build trust through connection" },
   },
   leads: {
     emoji: "●",
-    vector: { he: "הזדמנות", en: "Opportunity" },
-    desc: { he: "מתח → תגמול: תפוס את הרגע", en: "Tension → reward: seize the moment" },
+    vector: { he: "עניין", en: "Interest" },
+    desc: { he: "הפוך עניין לפנייה", en: "Turn interest into a lead" },
   },
   conversion: {
     emoji: "●",
-    vector: { he: "דופמין", en: "Dopamine" },
-    desc: { he: "רגע התגמול: הפוך להחלטה", en: "Reward moment: convert to decision" },
+    vector: { he: "החלטה", en: "Decision" },
+    desc: { he: "הפוך עניין להחלטת רכישה", en: "Convert interest into a purchase decision" },
   },
   retention: {
     emoji: "●",
-    vector: { he: "אוקסיטוצין", en: "Oxytocin" },
-    desc: { he: "אמון מתמשך: הישאר איתנו", en: "Ongoing trust: stay with us" },
+    vector: { he: "נאמנות", en: "Loyalty" },
+    desc: { he: "שמור על קשר ארוך טווח", en: "Maintain a long-term relationship" },
   },
 };
 
