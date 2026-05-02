@@ -28,7 +28,10 @@ vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),
 }));
 vi.mock("@/contexts/UserProfileContext", () => ({
-  useUserProfile: () => ({ profile: { isReturningUser: true, visitCount: 3, userSegment: "power" } }),
+  useUserProfile: () => ({
+    profile: { isReturningUser: true, visitCount: 3, userSegment: "power" },
+    completeMilestone: vi.fn(),
+  }),
 }));
 vi.mock("@/hooks/useMetaAuth", () => ({
   useMetaAuth: () => ({
@@ -146,6 +149,19 @@ vi.mock("@/lib/colorSemantics", () => ({
 vi.mock("@/engine/optimization/reflectiveAction", () => ({
   generateReflectiveAction: vi.fn(() => ({})),
 }));
+vi.mock("@/engine/insightsEngine", () => ({
+  generateInsights: vi.fn(() => []),
+}));
+vi.mock("@/engine/bottleneckEngine", () => ({
+  detectBottlenecks: vi.fn(() => []),
+}));
+vi.mock("@/engine/weeklyLoopEngine", () => ({
+  getLoopSnapshot: vi.fn(() => ({ state: "active", streakDays: 0, nextActionDue: false })),
+  getInsightUsageCount: vi.fn(() => 0),
+}));
+vi.mock("@/components/GlobalInsightHero", () => ({
+  default: () => <div data-testid="global-insight-hero" />,
+}));
 vi.mock("@/components/BackToHub", () => ({
   default: () => <div data-testid="back-to-hub" />,
 }));
@@ -183,6 +199,7 @@ const mockResult: FunnelResult = {
     mainGoal: "leads",
     budgetRange: "medium",
     experienceLevel: "intermediate",
+    existingChannels: ["instagram", "facebook"],
   } as any,
   funnelName: { he: "תוכנית טכנולוגיה", en: "Tech Plan" },
   totalBudget: { min: 5000, max: 10000 },

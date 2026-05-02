@@ -103,6 +103,7 @@ vi.mock("@/engine/discProfileEngine", () => ({
     conscientious: 0.1,
     primaryType: "I",
     label: { he: "משפיע", en: "Influential" },
+    communicationTone: { he: "תקשורת משפיע", en: "Influential communication" },
   })),
 }));
 
@@ -113,9 +114,10 @@ vi.mock("@/engine/neuroClosingEngine", () => ({
     scripts: [],
     objectionHandlers: [],
     followUpSequence: [],
-    urgencyTactics: [],
+    urgencyTactics: [{ he: "דחיפות", en: "Create urgency now" }],
     trustBuilders: [],
     pricePresentation: { he: "הצגת מחיר", en: "Price presentation" },
+    closingStyle: { he: "סגנון סגירה", en: "Direct closing style" },
     badge: { he: "I", en: "Influential" },
     badgeColor: "blue",
   })),
@@ -143,6 +145,12 @@ vi.mock("@/components/QuoteBuilder", () => ({
 
 vi.mock("@/lib/utils", () => ({
   cn: (...classes: string[]) => classes.filter(Boolean).join(" "),
+}));
+
+vi.mock("@/components/ui/collapsible", () => ({
+  Collapsible: ({ children }: any) => <div>{children}</div>,
+  CollapsibleTrigger: ({ children }: any) => <div>{children}</div>,
+  CollapsibleContent: ({ children }: any) => <div>{children}</div>,
 }));
 
 const mockResult: FunnelResult = {

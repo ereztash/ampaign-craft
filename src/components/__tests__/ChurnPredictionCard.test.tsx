@@ -89,7 +89,7 @@ describe("ChurnPredictionCard", () => {
 
   it("shows retention playbook", () => {
     render(<ChurnPredictionCard assessment={mockAssessment} />);
-    expect(screen.getByText("Retention Playbook")).toBeInTheDocument();
+    expect(screen.getByText("Retention plan")).toBeInTheDocument();
     expect(screen.getByText(/Offer a discount to at-risk customers/)).toBeInTheDocument();
   });
 });
