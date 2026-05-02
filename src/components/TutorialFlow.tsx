@@ -92,7 +92,7 @@ const MODULES: Record<TutorialModule, TutorialModuleDefinition> = {
     steps: [
       {
         title: { he: "מה מנוע ה-QA בודק?", en: "What the QA engine checks" },
-        body: { he: "קורטיזול, אמון, reactance, התאמת פרסונה, CTA, הוכחה חברתית, ו-SOTA² stylometry לזיהוי AI.", en: "Cortisol, trust, reactance, persona fit, CTA, social proof, and SOTA² stylometry for AI detection." },
+        body: { he: "עומס רגשי, אמון, התנגדות, התאמת פרסונה, קריאה לפעולה, הוכחה חברתית, וזיהוי כתיבת AI.", en: "Emotional load, trust, resistance, persona fit, call-to-action, social proof, and AI writing detection." },
       },
       {
         title: { he: "איך לפרש את הציון?", en: "How to read the score" },

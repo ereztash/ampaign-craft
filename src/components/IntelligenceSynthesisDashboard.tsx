@@ -105,9 +105,9 @@ export function IntelligenceSynthesisDashboard({
                     <ResponsiveContainer width="100%" height="100%">
                       <RadarChart
                         data={[
-                          { emotion: "Cortisol", value: eps.emotionalBalance.cortisol },
-                          { emotion: "Oxytocin", value: eps.emotionalBalance.oxytocin },
-                          { emotion: "Dopamine", value: eps.emotionalBalance.dopamine },
+                          { emotion: t("עומס רגשי", "Emotional Load"), value: eps.emotionalBalance.cortisol },
+                          { emotion: t("חיבור", "Connection"), value: eps.emotionalBalance.oxytocin },
+                          { emotion: t("מוטיבציה", "Motivation"), value: eps.emotionalBalance.dopamine },
                         ]}
                       >
                         <PolarGrid />
