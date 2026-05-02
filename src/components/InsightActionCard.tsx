@@ -34,6 +34,8 @@ export interface InsightActionCardProps {
   drillDown?: React.ReactNode;
   userState?: UserState;
   onCheck: (action: CheckAction) => void;
+  /** Optional: fires when a use-it copy button is clicked. Passes idx + label so the parent can emit module-specific analytics (e.g., one_liner_copied, use_case_selected). */
+  onCopy?: (idx: number, label: { he: string; en: string }) => void;
 }
 
 const CONFIDENCE_LABEL: Record<ConfidenceLevel, { he: string; en: string }> = {
@@ -67,6 +69,7 @@ export function InsightActionCard({
   drillDown,
   userState = "ready",
   onCheck,
+  onCopy,
 }: InsightActionCardProps) {
   const { language } = useLanguage();
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -82,6 +85,9 @@ export function InsightActionCard({
     navigator.clipboard.writeText(text).catch(() => undefined);
     setCopiedIdx(idx);
     setTimeout(() => setCopiedIdx(null), 1800);
+    if (onCopy && useItCopy && useItCopy[idx]) {
+      onCopy(idx, useItCopy[idx].label);
+    }
   }
 
   return (

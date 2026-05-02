@@ -26,7 +26,7 @@ export const NORTH_STAR_METRIC = {
 
 // ─── Types ──────────────────────────────────────
 
-export type AARRRStage = "acquisition" | "activation" | "retention" | "revenue" | "referral";
+export type AARRRStage = "acquisition" | "activation" | "retention" | "revenue" | "referral" | "validation";
 
 /** All AARRR event names */
 export type AARRREventName =
@@ -67,7 +67,21 @@ export type AARRREventName =
   | "aarrr.referral.share_viewed"
   | "aarrr.referral.signup_from_share"
   | "aarrr.referral.reward_earned"
-  | "aarrr.referral.referral_clicked";
+  | "aarrr.referral.referral_clicked"
+  // Differentiation OneLiner — behaviour, not feelings.
+  // Wired to the validation harness gates (see evals/differentiation/uncertainty-ledger.md).
+  // generated → copied → edited → use_case_selected → external_use_committed → followup_sent
+  // → real_world_use_reported → positive_signal_reported. not_mine/unclear are negative signals.
+  | "differentiation.one_liner_generated"
+  | "differentiation.one_liner_copied"
+  | "differentiation.one_liner_edited"
+  | "differentiation.use_case_selected"
+  | "differentiation.external_use_committed"
+  | "differentiation.followup_sent"
+  | "differentiation.real_world_use_reported"
+  | "differentiation.positive_signal_reported"
+  | "differentiation.not_mine_feedback"
+  | "differentiation.unclear_feedback";
 
 export type AnalyticsEventName = AARRREventName | EventType;
 
@@ -105,7 +119,10 @@ export function getStageFromEvent(name: AARRREventName): AARRRStage {
   if (name.startsWith("aarrr.activation")) return "activation";
   if (name.startsWith("aarrr.retention")) return "retention";
   if (name.startsWith("aarrr.revenue")) return "revenue";
-  return "referral";
+  if (name.startsWith("aarrr.referral")) return "referral";
+  // Non-AARRR product events (e.g., differentiation.one_liner_*) — bucketed
+  // to a synthetic "validation" stage so they don't get mislabelled as referral.
+  return "validation";
 }
 
 // ─── Main track function ─────────────────────────
@@ -143,6 +160,7 @@ export async function track(
       retention: "#f59e0b",
       revenue: "#ef4444",
       referral: "#8b5cf6",
+      validation: "#64748b",
     };
     console.log(
       `%c[AARRR:${stage.toUpperCase()}] %c${eventName}`,

@@ -60,6 +60,7 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 }
 
 const PublicLanding = lazy(() => import("./components/PublicLanding"));
+const PublicLandingDifferentiation = lazy(() => import("./components/PublicLandingDifferentiation"));
 const Index = lazy(() => import("./pages/Index"));
 const CommandCenter = lazy(() => import("./pages/CommandCenter"));
 const DataHub = lazy(() => import("./pages/DataHub"));
@@ -126,6 +127,9 @@ const AnimatedRoutes = () => {
           {/* Public root — logged-out users see landing page; logged-in users redirect to /dashboard */}
           <Route path="/" element={<RootGuard />} />
           <Route path="/legacy" element={<Index />} />
+          {/* Fake Door variant: focused promise + email capture, no auth.
+              Conversion is tracked via utm_campaign=oneliner-fakedoor. */}
+          <Route path="/oneliner" element={<PublicLandingDifferentiation />} />
           <Route path="/quote/:token" element={<SharedQuote />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/design-philosophy" element={<DesignPhilosophy />} />

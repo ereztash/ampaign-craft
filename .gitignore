@@ -35,3 +35,6 @@ load-tests/results/
 # Supabase CLI temp files
 supabase/.temp/
 reports/
+
+# Validation harness outputs — too large / non-deterministic to commit
+evals/**/outputs/*.json
