@@ -1,26 +1,32 @@
 // ═══════════════════════════════════════════════
-// LLM Client — supports `mock` and `live` modes
+// LLM Client — supports `mock`, `live`, and `proxy` modes
 //
-// Default: mock (deterministic, no API key required, suitable for CI).
-// Live: real Anthropic API call via fetch (no SDK dep).
+// mock  : deterministic, no network. Fail-biased. CI-safe.
+// live  : direct Anthropic Messages API via fetch. Needs ANTHROPIC_API_KEY.
+// proxy : Supabase edge function (harness-llm) that wraps Anthropic.
+//         Avoids putting the API key on dev machines. Needs:
+//         HARNESS_PROXY_URL (e.g., https://<project>.supabase.co/functions/v1/harness-llm)
+//         HARNESS_PROXY_SECRET (matches the function's hardcoded SHARED_SECRET)
+//         HARNESS_PROXY_APIKEY (Supabase project anon/publishable key)
 //
-// Mode is decided per call:
-//   - if process.env.ANTHROPIC_API_KEY is unset → mock
-//   - if HARNESS_MODE=mock → mock (force)
-//   - if HARNESS_MODE=live → live (requires key)
+// Mode resolution priority:
+//   1. HARNESS_MODE env (mock | live | proxy) — explicit override
+//   2. HARNESS_PROXY_URL set → proxy
+//   3. ANTHROPIC_API_KEY set → live
+//   4. otherwise → mock
 //
 // The mock returns plausible but BIASED-TOWARD-FAILURE JSON. This is by
 // design: in the absence of real LLM judgement, we assume the worst.
-// That way "passing IBAR in mock mode" is impossible — only live runs
-// can clear the gates.
+// "Passing IBAR" is impossible in mock mode — only live/proxy can clear
+// the gates.
 // ═══════════════════════════════════════════════
 
-export type HarnessMode = "mock" | "live";
+export type HarnessMode = "mock" | "live" | "proxy";
 
 export function resolveMode(): HarnessMode {
   const forced = process.env.HARNESS_MODE;
-  if (forced === "mock") return "mock";
-  if (forced === "live") return "live";
+  if (forced === "mock" || forced === "live" || forced === "proxy") return forced;
+  if (process.env.HARNESS_PROXY_URL) return "proxy";
   return process.env.ANTHROPIC_API_KEY ? "live" : "mock";
 }
 
@@ -66,6 +72,42 @@ async function callAnthropic(opts: LLMCallOptions): Promise<string> {
   const data = (await res.json()) as { content?: Array<{ type: string; text: string }> };
   const text = data.content?.find((c) => c.type === "text")?.text ?? "";
   return text.trim();
+}
+
+// ─── Proxy path (Supabase edge function) ────────────────────────────────────
+
+async function callProxy(opts: LLMCallOptions): Promise<string> {
+  const url = process.env.HARNESS_PROXY_URL;
+  const secret = process.env.HARNESS_PROXY_SECRET;
+  const apikey = process.env.HARNESS_PROXY_APIKEY;
+  if (!url || !secret || !apikey) {
+    throw new Error("HARNESS_PROXY_URL, HARNESS_PROXY_SECRET, HARNESS_PROXY_APIKEY are all required in proxy mode");
+  }
+
+  const model = process.env.HARNESS_MODEL ?? DEFAULT_MODEL;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-harness-secret": secret,
+      apikey,
+      Authorization: `Bearer ${apikey}`,
+    },
+    body: JSON.stringify({
+      prompt: opts.prompt,
+      maxTokens: opts.maxTokens ?? 1024,
+      model,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Proxy error ${res.status}: ${body.slice(0, 300)}`);
+  }
+
+  const data = (await res.json()) as { text?: string; error?: string };
+  if (data.error) throw new Error(`Proxy responded with error: ${data.error}`);
+  return (data.text ?? "").trim();
 }
 
 // ─── Mock path (deterministic, fail-biased) ─────────────────────────────────
@@ -132,6 +174,7 @@ function mockFor(opts: LLMCallOptions): string {
 export async function callLLM(opts: LLMCallOptions): Promise<string> {
   const mode = resolveMode();
   if (mode === "mock") return mockFor(opts);
+  if (mode === "proxy") return callProxy(opts);
   return callAnthropic(opts);
 }
 

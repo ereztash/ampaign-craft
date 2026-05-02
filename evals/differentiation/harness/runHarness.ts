@@ -59,7 +59,7 @@ export interface HarnessRun {
   runId: string;
   startedAt: string;
   finishedAt: string;
-  mode: "mock" | "live";
+  mode: "mock" | "live" | "proxy";
   n: number;
   ibar: SyntheticIBAR;
   genericityFailures: number;
@@ -76,13 +76,15 @@ async function runPersona(
   // 1. Generate differentiation result. We need a mechanism statement; in
   // mock/live mode we synthesize a oneLiner via LLM (production has its own
   // upstream synthesis step we are deliberately skipping here).
+  // Use plain-text two-line format (HE:/EN:) instead of JSON because
+  // free-form Hebrew often contains unescaped quotes that break JSON.parse.
   const oneLinerRaw = await callLLM({
     prompt: buildOneLinerPrompt(persona),
     promptKind: "oneLiner",
     seed: `${persona.formData.businessName}|oneLiner`,
     maxTokens: 256,
   });
-  const oneLiner = parseStrictJSON<{ he: string; en: string }>(oneLinerRaw);
+  const oneLiner = parseTwoLineOneLiner(oneLinerRaw);
 
   const result: DifferentiationResult = generateDifferentiation(persona.formData, {
     phase5: {
@@ -111,10 +113,25 @@ async function runPersona(
     }),
   ]);
 
-  const critic = parseStrictJSON<CriticOutput>(criticRaw);
-  const usability = parseStrictJSON<UsabilityOutput>(usabilityRaw);
-  const ownership = parseStrictJSON<OwnershipOutput>(ownershipRaw);
-  const comparison = parseStrictJSON<ComparisonOutput>(comparisonRaw);
+  // Each red-team output is freeform Hebrew/English JSON. Models occasionally
+  // emit unescaped quotes inside string values, which break JSON.parse. We
+  // log the raw response on parse failure and substitute a fail-biased
+  // default so the run continues — a per-persona parse failure should not
+  // abort the whole IBAR.
+  const critic = safeParse<CriticOutput>(criticRaw, persona.id, "critic", {
+    coherent: false, weakest_claim: "(parse_error)", why: "(parse_error)", genericity_score: 100,
+  });
+  const usability = safeParse<UsabilityOutput>(usabilityRaw, persona.id, "usability", {
+    would_use: false, where: [], confidence: 0,
+  });
+  const ownership = safeParse<OwnershipOutput>(ownershipRaw, persona.id, "ownership", {
+    feels_mine: false, what_to_change: "(parse_error)",
+  });
+  const comparison = safeParse<ComparisonOutput>(comparisonRaw, persona.id, "comparison", {
+    winner: "tie",
+    on_dimensions: { clarity: "tie", specificity: "tie", actionability: "tie", ownership: "tie" },
+    reason: "(parse_error)",
+  });
 
   const record: PersonaRunRecord = {
     personaId: persona.id,
@@ -138,7 +155,11 @@ async function runPersona(
 function buildOneLinerPrompt(persona: typeof personas[number]): string {
   const f = persona.formData;
   return `
-תכתוב משפט בידול לעסק. החזר JSON תקין בלבד עם השדות he ו-en.
+תכתוב משפט בידול לעסק. שני משפטים בלבד: עברית ואנגלית.
+החזר בדיוק בפורמט הזה (ללא הסברים נוספים):
+
+HE: <משפט הבידול בעברית, ללא מירכאות בתוך הטקסט>
+EN: <one differentiation sentence in English, no quote marks inside>
 
 עסק: ${f.businessName}
 תחום: ${f.industry}
@@ -146,10 +167,31 @@ function buildOneLinerPrompt(persona: typeof personas[number]): string {
 positioning נוכחי: ${f.currentPositioning || "—"}
 טענות עם הוכחה: ${f.claimExamples.filter((c) => c.verified).map((c) => `${c.claim}: ${c.evidence}`).join("; ") || "—"}
 ציטוט לקוח: ${f.customerQuote || "—"}
-
-החזר JSON:
-{ "he": "...", "en": "..." }
 `.trim();
+}
+
+function safeParse<T>(raw: string, personaId: string, kind: string, fallback: T): T {
+  try {
+    return parseStrictJSON<T>(raw);
+  } catch (err) {
+    console.warn(`[harness] ${personaId} ${kind} parse failed: ${(err as Error).message}`);
+    console.warn(`[harness] ${personaId} ${kind} raw response (first 300 chars): ${raw.slice(0, 300)}`);
+    return fallback;
+  }
+}
+
+function parseTwoLineOneLiner(raw: string): { he: string; en: string } {
+  // Strip code fences if any, then extract HE:/EN: lines.
+  let cleaned = raw.trim();
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```[a-zA-Z]*\s*/i, "").replace(/```\s*$/i, "").trim();
+  }
+  const heMatch = cleaned.match(/HE:\s*(.+?)(?:\r?\n|$)/i);
+  const enMatch = cleaned.match(/EN:\s*(.+?)(?:\r?\n|$)/i);
+  return {
+    he: (heMatch?.[1] ?? "").trim().replace(/^["'״]+|["'״]+$/g, ""),
+    en: (enMatch?.[1] ?? "").trim().replace(/^["'″]+|["'″]+$/g, ""),
+  };
 }
 
 // ─── Kill criteria evaluation (plan §9) ─────────────────────────────────────
@@ -190,6 +232,8 @@ async function main(): Promise<void> {
   console.log(`[harness] mode=${mode}  n=${personas.length}  runId=${runId}`);
   if (mode === "mock") {
     console.log("[harness] WARNING: mock mode is fail-biased by design. IBAR cannot pass gates in mock mode.");
+  } else if (mode === "proxy") {
+    console.log(`[harness] proxy=${process.env.HARNESS_PROXY_URL}`);
   }
 
   const records: PersonaRunRecord[] = [];
@@ -235,7 +279,7 @@ async function main(): Promise<void> {
       seed: `${worstPersona.id}|premortem`,
       maxTokens: 2048,
     });
-    premortem = parseStrictJSON<PreMortemOutput>(raw);
+    premortem = safeParse<PreMortemOutput>(raw, worstPersona.id, "premortem", { failures: [] });
   }
 
   const finishedAt = new Date().toISOString();

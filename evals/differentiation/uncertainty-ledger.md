@@ -63,15 +63,54 @@
 | Run ID | Date | Mode | Personas tested | IBAR summary | Genericity | Kill criteria | Outcome |
 |---|---|---|---|---|---|---|---|
 | 001-mock | 2026-05-02 | mock | 20 | clarity 12/20 (FAIL) · ownership 12/20 · applicability 14/20 · improvability 0/20 · preference 19/20 | 8/20 | none triggered | mock fail-biased — expected; live run pending |
+| 002-proxy | 2026-05-02 | proxy (Haiku 4.5 via Supabase edge function) | 20 | **clarity 0/20** (FAIL) · **ownership 0/20** · **applicability 0/20** · improvability 0/20 · **preference 7/20** | **20/20** | **ALL FOUR** triggered | engine output fails red-team interrogation across the board |
 
-### Notes on run 001 (mock)
+### Notes on run 002 (proxy / live)
 
-- Mock mode is intentionally fail-biased (~33% per persona). The output above is **not** a verdict on the engine; it confirms the harness wiring works end-to-end on 20 personas in <1.5s.
-- Assumptions #1-#10 remain `untested` until a live run with `ANTHROPIC_API_KEY=...`. Do not mark anything `tested-pass` from a mock run.
-- Improvability stays 0/20 because v1→v2 iteration is not yet implemented (`improvedClarityHigher` defaults to false in `runHarness.ts`). Acceptable until live IBAR justifies wiring it.
+- Real Anthropic Haiku 4.5 calls. ~120 LLM calls total: 20 oneLiners + 20 ChatGPT baselines + 20×4 red-team prompts + 1 premortem.
+- Genericity score distribution: min 72, p25 85, median 89, p75 92, max 95. **Every** persona scored ≥70 — the engine is producing marketing-speak, not differentiated claims.
+- Kill switches all flipped: not a single-dimension failure to patch. The synthesis prompt itself produces output that an adversarial reviewer can't defend.
+- Failure pattern is **uniform across personas**, not concentrated. 4-5 dimensions failed for almost every persona; no ICP escape valve.
 
-### Status updates from this run
+### Per-segment breakdown (run 002)
+
+| Segment | n | ff_wins (vs ChatGPT+template) | mean genericity | gen_failures |
+|---|---|---|---|---|
+| b2b_services | 4 | 1 | 89 | 4/4 |
+| b2c_services | 4 | 3 | 91 | 4/4 |
+| b2b_saas | 3 | 0 | 83 | 3/3 |
+| b2c_creator | 3 | 3 | 80 | 3/3 |
+| edge_case | 3 | 0 | 91 | 3/3 |
+| failure_state | 3 | 0 | 94 | 3/3 |
+
+**Signal:** the only places where FF *sometimes* beats ChatGPT are b2c_services and b2c_creator — segments where the form data carried specific numbers (e.g., p04 lawyer "85 M&A deals", p06 clinic Dr. Rosen by name, p13 creator's ingredient claims). When the form was sparse (edge_case, failure_state), FF lost or tied 100% of the time.
+
+### Status updates from run 002
 
 | # | Assumption | Previous | New | Reason |
 |---|---|---|---|---|
-| (none) | — | — | — | live run required to update statuses |
+| #4 | clarity ≥16/20 | untested | **tested-fail** | clarity 0/20; critic returned coherent=false or genericity≥70 for all |
+| #5 | ownership feels-mine ≥12/20 | untested | **tested-fail** | ownership 0/20; LLM-as-persona rejected every output as "marketing speak" |
+| #6 | applicability ≥10/20 | untested | **tested-fail** | applicability 0/20; usability.would_use=false for all 20 |
+| #7 | preference over ChatGPT ≥8/20 | untested | **tested-fail** | 7/20 wins; below threshold but close |
+| #10 | engine works on edge personas | untested | **tested-fail** | edge_case 0/3, failure_state 0/3 — those segments are the hardest hit |
+| #12 | engine doesn't return generic statements | untested | **tested-fail** | 20/20 above genericity 70; median 89 |
+| #1 | user wants a sendable line | untested | **needs-user** | LLM red-team can't validate demand |
+| #11 | secondary tabs don't confuse | untested | **needs-user** | requires real-user UX observation |
+| #2, #3 | promise = 10 min, oneLiner is primary output | untested | **untested** | not yet probed by the harness |
+| #9 | feedback translates to better v2 | untested | **untested** | v1→v2 iteration not implemented |
+
+### Premortem categories (worst persona)
+
+| Category | Count |
+|---|---|
+| positioning | 6 |
+| trust | 3 |
+| real | 3 |
+| measurement | 2 |
+| market | 2 |
+| price | 2 |
+| complexity | 1 |
+| ux | 1 |
+
+The dominant failure category is **positioning** — the synthesis prompt produces vague claims ("the only", "uniquely combines", "deep understanding") instead of falsifiable, measurable differentiators.
