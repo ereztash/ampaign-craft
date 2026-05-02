@@ -46,7 +46,7 @@ jobs:
         run: npm audit --audit-level=critical
 
       - name: Test
-        run: npx vitest run
+        run: npx vitest run --reporter verbose
 
       - name: Critical-path coverage
         # Enforces 85% statement coverage on the three pivotal pricing engines.
