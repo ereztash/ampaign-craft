@@ -1,57 +1,50 @@
 # FunnelForge — הוראות המשך עבודה
 
 ## ענף פעיל
-`claude/user-data-insights-Zs5ts`
+`claude/continue-checkpoint-166-gQl3G`
 
 ---
 
 ## מה הושלם בסשן האחרון (2026-05-02)
 
-### Cognitive Friction Audit — InsightActionCard pattern
-כל 5 המודולים + אשף הטופס קיבלו את הפטרן:
-**ANSWER → WHY → CONFIDENCE → USE IT → CHECK**
+### Slice 3 — ViewModel layer + ESLint engine-import boundary
 
-**קבצים שנוצרו/שונו:**
-- `src/components/InsightActionCard.tsx` — Reference implementation חדש
-- `src/components/MultiStepForm.tsx` — StepInsight pill מעל כל שלב
-- `src/components/DifferentiationResult.tsx` — InsightActionCard בראש
-- `src/components/SalesTab.tsx` — InsightActionCard + תיקון ויזואלי (ר' להלן)
-- `src/components/PricingIntelligenceTab.tsx` — InsightActionCard בראש
-- `src/components/RetentionGrowthTab.tsx` — InsightActionCard בראש
-- `src/components/PlanningTab.tsx` — InsightActionCard בראש
+**קבצים שנוצרו:**
+- `src/viewmodels/health.vm.ts` — `HealthScoreVM` + `toHealthScoreVM` adapter; re-export של `getHealthScoreColor`
+- `src/viewmodels/insights.vm.ts` — `InsightVM`, `BottleneckVM`, `LoopStateVM` + adapters
+- `src/viewmodels/user-profile.vm.ts` — `DISCProfileVM`, `NextStepVM`, `ChurnRiskVM` + adapters
+- `src/viewmodels/index.ts` — barrel, נקודת import יחידה לכל ה-ViewModels
 
-### Jargon Audit — ניקוי ז'רגון מכל המשטחים הנגישים למשתמש
-| קובץ | מה תוקן |
-|---|---|
-| `src/engine/funnelEngine.ts` | שמות שלבים B2B, תיאורים, שמות ערוצים, KPIs, tips — ICP/Tripwire/PLG/CLG/Trust Moat הוסרו |
-| `src/components/ResultsDashboard.tsx` | NEURO_LABELS: קורטיזול/דופמין/אוקסיטוצין → קשב/החלטה/נאמנות |
-| `src/components/StrategyTab.tsx` | NEURO_LABELS כפול זוהה ותוקן; CLG → "אסטרטגיית קהילה" |
-| `src/components/TutorialFlow.tsx` | "קורטיזול, reactance, CTA" → עברית פשוטה |
-| `src/components/IntelligenceSynthesisDashboard.tsx` | Radar chart axes: Cortisol/Oxytocin/Dopamine → עומס רגשי/חיבור/מוטיבציה |
-| `src/components/BrandDiagnosticTab.tsx` | "Tripwire Offer", "דיסוננס קוגניטיבי" → עברית פשוטה |
-| `src/engine/salesPipelineEngine.ts` | vectorLabel + psychology: ניקוי נוירוכימיה מכל 6 frameworks |
+**קבצים שעודכנו:**
+- `eslint.config.js` — rule חדשה `no-restricted-imports` ב-`src/components/**` שאוסרת `@/engine/*`; debt allowlist של 16 קומפוננטות שטרם מוּגרו
 
-### SalesTab — תיקונים ויזואליים
-- `DISCProfileCard` הועבר מראש הדף → לתוך Collapsible "פסיכולוגיית מכירה"
-- Sales Type Badge הורד מהצף → שולב בכותרת כרטיס ה-Pipeline
-- Funnel centering: `marginInlineStart` חד-צדדי → `mx-auto` סימטרי
-- כפילות כותרת "איך לסגור" → Section 6 שונה ל"גישות לסגירה"
+### Typography / IA — StrategyTab
+- `InsightActionCard` בראש הטאב עם "3 הפעולות הדחופות עכשיו" — נגזר מ-worst health-score gaps, נעלם אחרי אישור המשתמש
+- כרטיסי שלבי המשפך עטופים ב-Collapsible "תוכנית שלבים מלאה" (ברירת מחדל: פתוח)
+- `healthScore` prop type עבר מ-`ReturnType<typeof calculateHealthScore>` ל-`HealthScore` מ-`@/viewmodels`
+- תיקון em-dash ב-`PublicLandingDifferentiation.tsx` שעצר את ה-build
 
 ---
 
 ## המשך — עבודה ממתינה
 
-### Slice 3 — View-model layer + ESLint rule
-- להגדיר ViewModel interfaces שמפרידים engine output מ-UI props
-- להוסיף ESLint rule שאוסר import ישיר מ-engine לתוך component ללא ViewModel
-
-### Typography / IA improvement (הוצע, לא בוצע — ממתין לאישור)
-- InsightActionCard בראש StrategyTab עם "3 הפעולות הדחופות עכשיו"
-- שלבי אסטרטגיה מלאים מאחורי "הצג תוכנית שלבים מלאה ▼"
+### מיגרציית ViewModel debt — 16 קומפוננטות (בתוך allowlist)
+בסדר עדיפות יורד לפי תדירות שימוש:
+1. `GlobalInsightHero.tsx` — bottleneck, health, insights, weeklyLoop
+2. `InsightFeed.tsx` — bottleneck, nextStep, pulse, ukg, outcomeLoop
+3. `ResultsDashboard.tsx` — מנועים רבים (מיגרציה ראשית)
+4. `IntelligenceSynthesisDashboard.tsx` — EPS, crossDomain, predictive, cohort
+5. שאר 12 הקומפוננטות ב-allowlist
 
 ### Drafts Inbox — A+B Workstream (ממתין ל-5 ראיונות משתמש)
 1. go/no-go: האם משתמש מבין הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
 2. 10 מוקים ויזואליים → module WhatsApp Drafts
+
+### engineActivationRules.ts (Lazy Activation Pattern)
+**קובץ להוסיף**: `src/engine/engineActivationRules.ts`
+```ts
+{ engineId, condition: (signals) => boolean, mode: "passive" | "standby" | "active" }
+```
 
 ---
 
@@ -65,11 +58,6 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 ```
 
 ### 29 מנועי Tier B/C — Lazy Activation Pattern
-**קובץ להוסיף**: `src/engine/engineActivationRules.ts`
-```ts
-{ engineId, condition: (signals) => boolean, mode: "passive" | "standby" | "active" }
-```
-
 **4 סוגי טריגרים:**
 | סוג | דוגמה | מנועים |
 |---|---|---|
@@ -77,6 +65,19 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 | Time-in-system | >30 יום פעיל | retentionFlywheelEngine, behavioralCohortEngine |
 | Health anomaly | healthScore ירד >10 נק' | bottleneckEngine, gapEngine (escalated) |
 | Intent signal | שאל coach על תמחור | pricingWizardEngine, hormoziValueEngine |
+
+---
+
+## ViewModel layer — כללי הארכיטקטורה
+
+- **`src/viewmodels/`** — גבול בין engine output ל-UI props
+- Components ו-Pages: import רק מ-`@/viewmodels`, לא מ-`@/engine/*`
+- Hooks ו-Services: מותר לייבא מ-`@/engine/*` (הם שכבת האורקסטרציה)
+- להוסיף ViewModel חדש לפני הוספת component שצורך engine type חדש
+
+**ESLint enforcement:**
+- `no-restricted-imports` — error-level ב-`src/components/**`
+- debt allowlist = `eslint.config.js` בלוק "Engine-import debt"
 
 ---
 
@@ -93,7 +94,7 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 - **TypeScript**: עובר נקי (`npx tsc --noEmit` — אפס שגיאות)
 - **em-dash gate**: עובר (`bash scripts/check-em-dash.sh`)
-- **ESLint**: שגיאת `@eslint/js` קיימת מראש (pre-existing, לא נגרמה בסשן זה)
+- **ESLint**: שגיאת `@eslint/js` קיימת מראש (pre-existing — גירסת ESLint גלובלית 10.x vs. פרויקט 9.x)
 - **Dev server**: להריץ עם `--host 127.0.0.1` (:::8080 נכשל ב-EAFNOSUPPORT)
 
 ---
@@ -106,5 +107,5 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 ## ענפים רלוונטיים
 
-- `claude/user-data-insights-Zs5ts` — **ענף פעיל**
+- `claude/continue-checkpoint-166-gQl3G` — **ענף פעיל**
 - `perf/reactive-core` — DRAFT, ממתין ל-preview env validation
