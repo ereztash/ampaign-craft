@@ -27,6 +27,22 @@ Live demo and screenshots are pending public-beta release (Q2 2026). For an inve
 
 ---
 
+## UX Philosophy — InsightActionCard Pattern
+
+Every AI recommendation in FunnelForge follows the same 5-step HITL structure, enforced via the `InsightActionCard` component:
+
+| Step | What the user sees | Purpose |
+|------|--------------------|---------|
+| **ANSWER** | The direct recommendation, bolded | Immediate value — no preamble |
+| **WHY** | One-sentence reasoning | Transparency — builds trust in AI |
+| **CONFIDENCE** | Stable / Needs data / Intake-only badge | Calibrated uncertainty — no false precision |
+| **USE IT** | Copyable text or actionable narrative | Frictionless implementation |
+| **CHECK** | 2-3 labeled buttons (accept / reject / refine) | Human-in-the-loop gate before any irreversible step |
+
+This pattern appears at the top of every major module: Differentiation, Sales, Pricing, Retention, Planning, and the Strategy Tab. The "3 urgent actions now" card on the Strategy Tab derives the top 3 actions automatically from the worst health-score gaps.
+
+---
+
 ## Why Now
 
 - **Israeli SMB digitization wave** — 560K SMBs; only ~32% have a structured digital presence; post-COVID urgency is converting them at scale.
@@ -121,6 +137,8 @@ Annual plans save 20%.
 ```
   UI Layer ──────────── React + shadcn/ui + RTL + Archetype-adaptive
                         169 components · 35 pages · 28 hooks · L1-L5
+  ViewModel Layer ───── src/viewmodels/ — stable UI contracts, adapter fns
+                        ESLint boundary: components may not import @/engine/* directly
   Context Layer ────── Auth · Archetype · UserProfile · DataSource
   GRAOS Overlay (M1-M6)  Regime · Anomaly · Forecast · DAPL · Verifier
   Blackboard / MAS-CC — 14 agents, write-gated JSONB state
@@ -283,10 +301,10 @@ Founding + Active receive white-label PDF reports, priority API access, dedicate
 
 ```bash
 npm install
-npm run dev          # Dev server
-npm test             # Vitest tests
-npm run consistency  # All 6 audits
-npm run build        # Production build
+npm run dev -- --host 127.0.0.1   # Dev server (use 127.0.0.1; :: fails on some envs)
+npm test                           # Vitest tests
+npm run consistency                # All 6 audits
+npm run build                      # Production build
 ```
 
 Copy `.env.example` and fill `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, plus Edge-Fn secrets (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `STRIPE_SECRET_KEY`).
