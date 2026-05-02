@@ -157,25 +157,17 @@ const SalesTab = ({ result }: SalesTabProps) => {
         </div>
       )}
 
-      {/* DISC Personality Profile */}
-      <DISCProfileCard profile={discProfile} />
-
-      {/* Sales Type Badge */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <Badge variant="outline" className="text-sm px-3 py-1">
-          {getSalesTypeLabel(pipeline.salesType)[language]}
-        </Badge>
-        <span className="text-xs text-muted-foreground">
-          {tx({ he: "זוהה אוטומטית מהנתונים שלך", en: "Auto-detected from your data" }, language)}
-        </span>
-      </div>
-
       {/* ═══ Section 1: Pipeline Visualization ═══ */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Target className="h-4 w-4 text-primary" />
-            {t("salesPipeline")}
+          <CardTitle className="text-sm flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              {t("salesPipeline")}
+            </span>
+            <Badge variant="outline" className="text-xs font-normal">
+              {getSalesTypeLabel(pipeline.salesType)[language]}
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -185,8 +177,8 @@ const SalesTab = ({ result }: SalesTabProps) => {
               return (
                 <div key={stage.id} className="group">
                   <div
-                    className="rounded-xl border p-3 transition-all hover:border-primary/30"
-                    style={{ width: `${widthPercent}%`, marginInlineStart: `${(100 - widthPercent) / 2}%` }}
+                    className="mx-auto rounded-xl border p-3 transition-all hover:border-primary/30"
+                    style={{ width: `${widthPercent}%` }}
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-sm font-medium flex items-center gap-2">
@@ -369,6 +361,9 @@ const SalesTab = ({ result }: SalesTabProps) => {
           </CollapsibleTrigger>
           <CollapsibleContent>
 
+      {/* ═══ DISC Profile Detail ═══ */}
+      <DISCProfileCard profile={discProfile} />
+
       {/* ═══ Section 5: Buyer Personality ═══ */}
       <Card className="border-0 shadow-none border-primary/10">
         <CardHeader className="pb-3">
@@ -392,12 +387,12 @@ const SalesTab = ({ result }: SalesTabProps) => {
         </CardContent>
       </Card>
 
-      {/* ═══ Section 6: Neuro-Closing Frameworks ═══ */}
+      {/* ═══ Section 6: Closing Approaches ═══ */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Brain className="h-4 w-4 text-purple-500" />
-            {tx({ he: "איך לסגור את השיחה", en: "How to close the conversation" }, language)}
+            {tx({ he: "גישות לסגירה", en: "Closing Approaches" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
