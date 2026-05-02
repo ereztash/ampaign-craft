@@ -18,6 +18,7 @@
     "sync:pull": "bash scripts/sync-from-corsys.sh",
     "sync:push": "bash scripts/sync-to-corsys.sh",
     "personas": "npx tsx scripts/persona-report.ts",
+    "evals:differentiation": "VITE_SUPABASE_URL=https://test.supabase.co VITE_SUPABASE_PUBLISHABLE_KEY=test_anon_key vite-node evals/differentiation/harness/runHarness.ts",
     "check:brand": "bash scripts/check-brand-locked.sh",
     "check:brand-copy": "bash scripts/check-brand-copy.sh",
     "consistency": "npx tsx scripts/consistency/audit-numeric.ts && npx tsx scripts/consistency/audit-identity.ts && npx tsx scripts/consistency/audit-schema.ts && npx tsx scripts/consistency/audit-behavioral.ts && npx tsx scripts/consistency/audit-structural.ts && npx tsx scripts/consistency/audit-provenance.ts",
