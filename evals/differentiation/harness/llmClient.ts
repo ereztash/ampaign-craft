@@ -35,7 +35,8 @@ export interface LLMCallOptions {
   /** Hint for token budget. */
   maxTokens?: number;
   /** Hint for which mock template to fall back on. */
-  promptKind: "critic" | "usability" | "ownership" | "comparison" | "premortem" | "oneLiner" | "chatgptBaseline";
+  promptKind: "critic" | "usability" | "ownership" | "comparison" | "premortem" | "oneLiner" | "chatgptBaseline"
+    | "structuralExtraction" | "stylometricRendering" | "falsifiabilityCritic";
   /** Stable seed so mocks are deterministic per persona. */
   seed: string;
 }
@@ -166,6 +167,58 @@ function mockFor(opts: LLMCallOptions): string {
       });
     case "chatgptBaseline":
       return `Generic differentiation statement for ${opts.seed.split("|")[0]}: we deliver quality service with personal attention.`;
+    case "structuralExtraction":
+      return JSON.stringify({
+        metric: { value: fail ? "" : `${(h % 80) + 10} לקוחות / עסקאות`, source: "post_1" },
+        named_alternative: fail ? "מתחרה כללי" : opts.seed.split("|")[0] + " alternative",
+        sacrifices: ["לא עושים X", "לא עובדים עם Y", "לא מציעים Z"],
+        vocabulary_gap: [fail ? "מחיר" : "ביטחון", "תוצאות", "מהירות"],
+      });
+    case "stylometricRendering": {
+      const biz = opts.seed.split("|")[0];
+      return JSON.stringify({
+        angles: [
+          {
+            text_he: `אנחנו עושים ${biz} אחרת — לא דרך X אלא דרך המנגנון הספציפי שלנו`,
+            text_en: `We do ${biz} differently — not through X but through our specific mechanism`,
+            type: "mechanism",
+            borrowed_phrase: "מנגנון ספציפי",
+            why_uncomfortable: "מגדיר במה לא כמו האחרים",
+            metric_source: "post_1",
+            alternative_source: "deal_1",
+            sacrifice_source: "deal_2",
+          },
+          {
+            text_he: `אנחנו לא עובדים עם לקוחות שמחפשים Y — כי זה לא מה שאנחנו עושים`,
+            text_en: `We don't work with clients who want Y — because that's not what we do`,
+            type: "sacrifice",
+            borrowed_phrase: "לא עובדים עם",
+            why_uncomfortable: "דוחה חלק מהשוק במפורש",
+            metric_source: "post_2",
+            alternative_source: "deal_1",
+            sacrifice_source: "deal_3",
+          },
+          {
+            text_he: `אחרי ${fail ? "X" : "12"} שנים ו-${fail ? "?" : "50"} לקוחות — ה-${biz} שלנו שונה כי...`,
+            text_en: `After ${fail ? "X" : "12"} years and ${fail ? "?" : "50"} clients — our ${biz} is different because...`,
+            type: "metric",
+            borrowed_phrase: "שנים",
+            why_uncomfortable: "מצריך להתחייב למספר ספציפי",
+            metric_source: "post_1",
+            alternative_source: "deal_2",
+            sacrifice_source: "deal_1",
+          },
+        ],
+        selection_prompt: "איזה משפט הכי מדויק — גם אם הכי קשה לשלוח?",
+      });
+    }
+    case "falsifiabilityCritic":
+      return JSON.stringify({
+        genericity_score: fail ? 75 : 30,
+        who_else_could_say_this: fail ? "כל יועץ בתחום יכול לחתום" : "מעטים מאוד",
+        missing_biographical_constraint: fail ? "חסר מספר ספציפי ושם מתחרה מפורש" : "ספציפי מספיק",
+        rewrite_required: fail,
+      });
   }
 }
 

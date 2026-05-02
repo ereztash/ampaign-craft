@@ -11,6 +11,7 @@
 
 import type {
   CriticOutput, UsabilityOutput, OwnershipOutput, ComparisonOutput,
+  FalsifiabilityCriticOutput,
 } from "./redTeamPrompts";
 
 export interface PersonaRedTeamBundle {
@@ -21,6 +22,8 @@ export interface PersonaRedTeamBundle {
   comparison: ComparisonOutput;
   /** Optional: clarity scored on a v2 oneLiner derived from ownership.what_to_change. */
   improvedClarityHigher?: boolean;
+  /** Falsifiability check on the chosen angle (Call 3). */
+  falsifiability?: FalsifiabilityCriticOutput;
 }
 
 export interface SyntheticIBAR {
@@ -29,6 +32,8 @@ export interface SyntheticIBAR {
   applicability: number;  // /N
   improvability: number;  // /N
   preference: number;     // /N
+  /** Count of personas whose chosen angle passed falsifiability (rewrite_required=false). */
+  falsifiability: number; // /N
   /** Total personas evaluated. */
   n: number;
   /** True if ALL gates pass per plan §5 + §9. */
@@ -39,13 +44,14 @@ export interface SyntheticIBAR {
   perPersonaFailures: Record<string, number>;
 }
 
-// Thresholds from plan §5
+// Thresholds from plan §5 + reproducibility protocol
 const THRESHOLDS = {
   clarity: 16,
   ownership: 12,
   applicability: 10,
   improvability: 0, // not gated yet (needs v2 pass) — informational only
   preference: 8,
+  falsifiability: 12, // at least 12/20 angles must pass falsifiability check
 } as const;
 
 function scoreClarity(b: PersonaRedTeamBundle): boolean {
@@ -69,14 +75,19 @@ function scorePreference(b: PersonaRedTeamBundle): boolean {
   return b.comparison.winner === "ff";
 }
 
+function scoreFalsifiability(b: PersonaRedTeamBundle): boolean {
+  return b.falsifiability?.rewrite_required === false;
+}
+
 export function computeIBAR(bundles: PersonaRedTeamBundle[]): SyntheticIBAR {
   const n = bundles.length;
   const dims: Array<{ key: keyof typeof THRESHOLDS; fn: (b: PersonaRedTeamBundle) => boolean }> = [
-    { key: "clarity",       fn: scoreClarity },
-    { key: "ownership",     fn: scoreOwnership },
-    { key: "applicability", fn: scoreApplicability },
-    { key: "improvability", fn: scoreImprovability },
-    { key: "preference",    fn: scorePreference },
+    { key: "clarity",         fn: scoreClarity },
+    { key: "ownership",       fn: scoreOwnership },
+    { key: "applicability",   fn: scoreApplicability },
+    { key: "improvability",   fn: scoreImprovability },
+    { key: "preference",      fn: scorePreference },
+    { key: "falsifiability",  fn: scoreFalsifiability },
   ];
 
   const counts = dims.reduce<Record<string, number>>((acc, { key, fn }) => {
@@ -93,7 +104,7 @@ export function computeIBAR(bundles: PersonaRedTeamBundle[]): SyntheticIBAR {
 
   // Gate evaluation (in plan order)
   let firstFailedGate: SyntheticIBAR["firstFailedGate"];
-  const gates: Array<keyof typeof THRESHOLDS> = ["clarity", "ownership", "applicability", "preference"];
+  const gates: Array<keyof typeof THRESHOLDS> = ["clarity", "ownership", "applicability", "preference", "falsifiability"];
   for (const g of gates) {
     if (counts[g] < THRESHOLDS[g]) {
       firstFailedGate = g;
@@ -107,6 +118,7 @@ export function computeIBAR(bundles: PersonaRedTeamBundle[]): SyntheticIBAR {
     applicability: counts.applicability,
     improvability: counts.improvability,
     preference: counts.preference,
+    falsifiability: counts.falsifiability,
     n,
     passesGates: firstFailedGate === undefined,
     firstFailedGate,
@@ -115,7 +127,7 @@ export function computeIBAR(bundles: PersonaRedTeamBundle[]): SyntheticIBAR {
 }
 
 export function formatIBAR(ibar: SyntheticIBAR): string {
-  const line = `IBAR: clarity ${ibar.clarity}/${ibar.n}, ownership ${ibar.ownership}/${ibar.n}, applicability ${ibar.applicability}/${ibar.n}, improvability ${ibar.improvability}/${ibar.n}, preference ${ibar.preference}/${ibar.n}`;
+  const line = `IBAR: clarity ${ibar.clarity}/${ibar.n}, ownership ${ibar.ownership}/${ibar.n}, applicability ${ibar.applicability}/${ibar.n}, improvability ${ibar.improvability}/${ibar.n}, preference ${ibar.preference}/${ibar.n}, falsifiability ${ibar.falsifiability}/${ibar.n}`;
   const verdict = ibar.passesGates
     ? "PASS — all gates cleared"
     : `FAIL — first gate failed: ${ibar.firstFailedGate}`;

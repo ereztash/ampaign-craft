@@ -54,6 +54,52 @@ export interface PreMortemOutput {
   failures: PreMortemFailure[]; // exactly 20
 }
 
+// ─── Two-Stage Reproducibility Pipeline types ────────────────────────────────
+
+export interface StructuralExtractionOutput {
+  /** One specific number/metric extracted from the artifacts. */
+  metric: {
+    value: string;
+    /** Which artifact it came from: post_1|post_2|post_3|deal_1|deal_2|deal_3|url */
+    source: string;
+  };
+  /** Named competitor/alternative explicitly or implicitly referenced. */
+  named_alternative: string;
+  /** 3 things this business demonstrably does NOT do — things competitors do or clients request. */
+  sacrifices: [string, string, string];
+  /** 3 words/phrases that appear in lost-deal moments but NOT in the posts (honesty gap). */
+  vocabulary_gap: [string, string, string];
+}
+
+export interface StylometricAngle {
+  text_he: string;
+  text_en: string;
+  type: "mechanism" | "sacrifice" | "metric";
+  /** Exact phrase borrowed from the post corpus. */
+  borrowed_phrase: string;
+  /** Why this angle is slightly uncomfortable to send — what makes it have teeth. */
+  why_uncomfortable: string;
+  metric_source: string;
+  alternative_source: string;
+  sacrifice_source: string;
+}
+
+export interface StylometricRenderingOutput {
+  angles: [StylometricAngle, StylometricAngle, StylometricAngle];
+  /** Hebrew selection prompt that frames choice as "most accurate / hardest to send". */
+  selection_prompt: string;
+}
+
+export interface FalsifiabilityCriticOutput {
+  /** 0-100: 0 = only this person could say it. 100 = anyone in the industry could sign it. */
+  genericity_score: number;
+  /** Describe a specific competitor who could also truthfully send this angle. */
+  who_else_could_say_this: string;
+  /** What biographical/numerical constraint is missing that would make it exclusive. */
+  missing_biographical_constraint: string;
+  rewrite_required: boolean;
+}
+
 // ─── Anti-flattery preamble (shared by all prompts) ─────────────────────────
 
 const ANTI_FLATTERY = `
@@ -171,6 +217,136 @@ ${personaContext(persona)}
     "ownership":    "ff" | "chatgpt" | "template" | "tie"
   },
   "reason": string                 // משפט אחד: למה המנצח ניצח
+}
+`.trim();
+}
+
+// ─── Two-Stage Reproducibility Prompts ──────────────────────────────────────
+
+export function buildStructuralExtractionPrompt(persona: SyntheticPersona): string {
+  const posts = persona.linkedinPosts
+    .map((p, i) => `פוסט ${i + 1}:\n${p}`)
+    .join("\n\n");
+  const moments = persona.lostDealMoments
+    .map((m, i) => `רגע ${i + 1}: ${m}`)
+    .join("\n");
+  const urlText = persona.profileUrl ? `URL: ${persona.profileUrl}` : "";
+  const opArtifacts = persona.operationalArtifacts?.length
+    ? `\nחומרים תפעוליים:\n${persona.operationalArtifacts.join("\n")}`
+    : "";
+
+  return `
+אתה מחלץ עובדות מבניות מהחומרים הבאים של עסק.
+
+עסק: ${persona.formData.businessName}
+תחום: ${persona.formData.industry}
+${urlText}
+
+פוסטים ציבוריים (קול שיווקי):
+${posts}
+
+רגעי חיכוך עסקי — ממש מה נאמר לפני שעסקה נעצרה (לא סיבות כלליות):
+${moments}
+${opArtifacts}
+
+חלץ בדיוק:
+1. מספר/מדד ספציפי אחד שמוזכר או משתמע מהחומרים (לא המצאה — עובדה קיימת)
+2. מתחרה או אלטרנטיבה אחת שמוזכרת במפורש או במשתמע
+3. שלושה דברים שהעסק הזה demonstrably לא עושה — דברים שמתחרים עושים או שלקוחות מבקשים
+4. שלוש מילים/ביטויים שמופיעים ברגעי החיכוך אבל לא בפוסטים (פער הכנות)
+
+אם לא מוצאים מספר ספציפי בחומרים — החזר metric.value = "" ואל תמציא.
+
+החזר JSON בלבד, בלי טקסט נוסף:
+{
+  "metric": { "value": string, "source": "post_1|post_2|post_3|deal_1|deal_2|deal_3|url" },
+  "named_alternative": string,
+  "sacrifices": [string, string, string],
+  "vocabulary_gap": [string, string, string]
+}
+`.trim();
+}
+
+export function buildStylometricRenderingPrompt(
+  persona: SyntheticPersona,
+  extraction: StructuralExtractionOutput,
+): string {
+  const posts = persona.linkedinPosts
+    .map((p, i) => `פוסט ${i + 1}:\n${p}`)
+    .join("\n\n");
+
+  const metricsNote = extraction.metric.value
+    ? `מספר/מדד: ${extraction.metric.value} (מקור: ${extraction.metric.source})`
+    : "אין מספר ספציפי זמין — הימנע מבדייה";
+
+  return `
+למדת את הכתיבה של ${persona.formData.businessName}. הנה הקורפוס שלו:
+
+${posts}
+
+חולצו עובדות מבניות:
+- ${metricsNote}
+- אלטרנטיבה שמוזכרת: ${extraction.named_alternative}
+- 3 דברים שהוא לא עושה: ${extraction.sacrifices.join(" | ")}
+- פער אוצר מילים (נאמר ברגעי חיכוך אבל לא בפוסטים): ${extraction.vocabulary_gap.join(" | ")}
+
+המשימה: כתוב 3 זוויות בידול שה-${persona.formData.businessName} ניסה לומר שנים אבל לא מצא את המילים.
+
+כללים:
+- כל זווית חייבת להשתמש ב-metric.value אם קיים (לא לבדות מספרים חדשים)
+- כל זווית חייבת להזכיר את ${extraction.named_alternative} כניגוד
+- כל זווית חייבת לכלול sacrifice אחד מהרשימה — בסגנון של הכותב, לא בשפה שיווקית מלוטשת
+- כל זווית חייבת להשתמש בביטוי אחד לפחות מ-vocabulary_gap
+
+מבנה הזוויות — כל אחת מתחילה אחרת:
+- זווית A: מנגנון ("מה שאני עושה בפועל הוא...")
+- זווית B: sacrifice ("אני לא..." — צריך להרגיש קצת אי-נוח לשלוח)
+- זווית C: מדד ("עד שמישהו מגיע אלי, כבר..." / "X שנים / עסקות / לקוחות אומרים...")
+
+בדיקה פנימית לפני פלט: האם יועץ/עסק אחר עם אותו טייטל יכול לחתום על זה? אם כן — שכתב.
+
+החזר JSON בלבד:
+{
+  "angles": [
+    {
+      "text_he": string,
+      "text_en": string,
+      "type": "mechanism",
+      "borrowed_phrase": string,
+      "why_uncomfortable": string,
+      "metric_source": string,
+      "alternative_source": string,
+      "sacrifice_source": string
+    },
+    { "type": "sacrifice", ... },
+    { "type": "metric", ... }
+  ],
+  "selection_prompt": "איזה משפט הכי מדויק — גם אם הכי קשה לשלוח?"
+}
+`.trim();
+}
+
+export function buildFalsifiabilityCriticPrompt(
+  persona: SyntheticPersona,
+  angle: StylometricAngle,
+): string {
+  return `
+${ANTI_FLATTERY}
+
+תחום: ${persona.formData.industry}
+עסק: ${persona.formData.businessName}
+
+זווית בידול שנוצרה:
+"${angle.text_he}"
+
+המשימה: בדוק האם יועץ/עסק אחר עם אותו תחום יכול לחתום על המשפט הזה.
+
+החזר JSON בלבד:
+{
+  "genericity_score": number,        // 0-100. 0 = רק האדם הזה יכול לומר. 100 = כל אחד בתחום.
+  "who_else_could_say_this": string,  // תאר מתחרה ספציפי שיכול לשלוח את אותו משפט
+  "missing_biographical_constraint": string,  // מה צריך להוסיף כדי שרק הם יוכלו לחתום
+  "rewrite_required": boolean         // true אם genericity_score > 60
 }
 `.trim();
 }
