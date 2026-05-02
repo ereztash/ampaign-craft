@@ -45,8 +45,21 @@ jobs:
         # we block on critical severity but track the xlsx issue separately.
         run: npm audit --audit-level=critical
 
+      - name: Diagnostics
+        run: |
+          echo "Node: $(node --version)"
+          echo "npm: $(npm --version)"
+          echo "npx vitest: $(npx vitest --version)"
+          echo "OS: $(uname -a)"
+          echo "RAM: $(free -h | head -2)"
+          echo "Disk: $(df -h . | tail -1)"
+        continue-on-error: true
+
       - name: Test
-        run: npx vitest run --reporter verbose
+        shell: bash
+        run: |
+          set -o pipefail
+          npx vitest run --reporter verbose 2>&1 | tee vitest.log
 
       - name: Critical-path coverage
         # Enforces 85% statement coverage on the three pivotal pricing engines.
@@ -113,12 +126,15 @@ jobs:
         # verifying threshold values for claims the README no longer makes.
         run: npx tsx scripts/consistency/audit-provenance.ts
 
-      - name: Upload consistency reports
+      - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: consistency-reports
-          path: reports/consistency/
+          name: ci-reports
+          path: |
+            reports/consistency/
+            vitest.log
+          if-no-files-found: ignore
           retention-days: 14
 
   e2e:
