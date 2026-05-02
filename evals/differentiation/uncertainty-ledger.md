@@ -60,6 +60,18 @@
 
 ## Run log
 
-| Run ID | Date | Personas tested | IBAR summary | Outcome |
+| Run ID | Date | Mode | Personas tested | IBAR summary | Genericity | Kill criteria | Outcome |
+|---|---|---|---|---|---|---|---|
+| 001-mock | 2026-05-02 | mock | 20 | clarity 12/20 (FAIL) · ownership 12/20 · applicability 14/20 · improvability 0/20 · preference 19/20 | 8/20 | none triggered | mock fail-biased — expected; live run pending |
+
+### Notes on run 001 (mock)
+
+- Mock mode is intentionally fail-biased (~33% per persona). The output above is **not** a verdict on the engine; it confirms the harness wiring works end-to-end on 20 personas in <1.5s.
+- Assumptions #1-#10 remain `untested` until a live run with `ANTHROPIC_API_KEY=...`. Do not mark anything `tested-pass` from a mock run.
+- Improvability stays 0/20 because v1→v2 iteration is not yet implemented (`improvedClarityHigher` defaults to false in `runHarness.ts`). Acceptable until live IBAR justifies wiring it.
+
+### Status updates from this run
+
+| # | Assumption | Previous | New | Reason |
 |---|---|---|---|---|
-| 001 | TBD | 20 | TBD | — |
+| (none) | — | — | — | live run required to update statuses |

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { DifferentiationResult as DiffResult } from "@/types/differentiation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import { getIntakeSignal } from "@/engine/intake/intakeSignal";
 import type { IntakeNeed } from "@/engine/intake/types";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
+import { track } from "@/lib/analytics";
 
 const SECONDARY_TABS = ["committee", "tradeoffs", "metrics", "report"] as const;
 type SecondaryTab = typeof SECONDARY_TABS[number];
@@ -48,6 +49,20 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
   // Read the IntakeSignal once per mount; null-safe if user skipped intake.
   const intakeNeed = getIntakeSignal()?.need;
   const [activeTab, setActiveTab] = useState<string>(pickDefaultTab(intakeNeed));
+
+  // Fire `one_liner_generated` once when the result is rendered. The ref
+  // guards against double-firing under StrictMode dev re-renders.
+  const generatedFired = useRef(false);
+  useEffect(() => {
+    if (generatedFired.current) return;
+    generatedFired.current = true;
+    void track("differentiation.one_liner_generated", {
+      resultId: result.id,
+      hasOneLiner: Boolean(result.mechanismStatement.oneLiner.he || result.mechanismStatement.oneLiner.en),
+      strength: result.differentiationStrength,
+      industry: result.formData.industry,
+    }, { uiOnly: true });
+  }, [result.id, result.mechanismStatement.oneLiner.he, result.mechanismStatement.oneLiner.en, result.differentiationStrength, result.formData.industry]);
 
   const strength = result.differentiationStrength;
   const diffConfidence: ConfidenceLevel =
@@ -108,8 +123,30 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
         ]}
         userState={userState}
         onCheck={(action) => {
+          // Map check action → behaviour event. accept = positive_signal,
+          // reject = not_mine, refine = unclear. These are the validation
+          // signals the harness asks for; do not collapse them.
+          const eventName =
+            action === "accept" ? "differentiation.positive_signal_reported"
+            : action === "reject" ? "differentiation.not_mine_feedback"
+            : "differentiation.unclear_feedback";
+          void track(eventName, { resultId: result.id }, { uiOnly: true });
           if (action === "reject") onBack();
           if (action === "refine") setActiveTab("mechanism");
+        }}
+        onCopy={(idx, label) => {
+          // Copying a use-case both: (1) confirms the user wants to use the
+          // line somewhere, and (2) tells us where. Fire both events.
+          void track("differentiation.one_liner_copied", {
+            resultId: result.id,
+            useCaseIdx: idx,
+            useCaseLabel: label.en,
+          }, { uiOnly: true });
+          void track("differentiation.use_case_selected", {
+            resultId: result.id,
+            useCaseIdx: idx,
+            useCaseLabel: label.en,
+          }, { uiOnly: true });
         }}
       />
 
