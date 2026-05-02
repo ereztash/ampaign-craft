@@ -9,7 +9,7 @@ import type { DifferentiationFormData } from "@/types/differentiation";
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
-function makeFormData(overrides: Partial<DifferentiationFormData> = {}): DifferentiationFormData {
+function makeFormData(overrides: Partial<DifferentiationFormData> & Record<string, unknown> = {}): DifferentiationFormData {
   return {
     businessName: "Test Corp",
     industry: "tech",
@@ -24,7 +24,10 @@ function makeFormData(overrides: Partial<DifferentiationFormData> = {}): Differe
     negativeReviewTheme: "",
     returnReason: "",
     competitorOverlap: "Both offer analytics dashboards.",
-    ashamedPains: ["pain1", "pain2"],
+    ashamedPains: [],
+    // Phase 3 stores answers as dynamic keys, not in ashamedPains[]
+    ashamedPain_process: "We struggle with slow onboarding processes.",
+    ashamedPain_knowledge: "Our team lacks deep domain expertise.",
     hiddenValues: Array.from({ length: 4 }, (_, i) => ({ id: `v${i}`, score: 3, label: { he: "", en: "" } })) as never,
     internalFriction: "",
     competitorArchetypes: [{ id: "a1", name: "Category King" }] as never,
@@ -34,7 +37,7 @@ function makeFormData(overrides: Partial<DifferentiationFormData> = {}): Differe
     ] as never,
     decisionLatency: "weeks",
     ...overrides,
-  } as DifferentiationFormData;
+  } as unknown as DifferentiationFormData;
 }
 
 describe("differentiationFormRules", () => {
@@ -105,8 +108,13 @@ describe("differentiationFormRules", () => {
       ).toBe(false);
     });
 
-    it("returns false when ashamedPains < 2", () => {
-      expect(canProceedPhase("hidden", makeFormData({ ashamedPains: ["only one"] }))).toBe(false);
+    it("returns false when fewer than 2 ashamed-pain dynamic keys are filled", () => {
+      expect(
+        canProceedPhase(
+          "hidden",
+          makeFormData({ ashamedPain_process: "", ashamedPain_knowledge: "" }),
+        ),
+      ).toBe(false);
     });
   });
 
@@ -180,10 +188,10 @@ describe("differentiationFormRules", () => {
       expect(hint?.en.toLowerCase()).toContain("committee");
     });
 
-    it("hidden: names ashamedPains when < 2 entries", () => {
+    it("hidden: names ashamed pains when fewer than 2 dynamic keys are filled", () => {
       const hint = describeBlockingField(
         "hidden",
-        makeFormData({ ashamedPains: ["only one"] }),
+        makeFormData({ ashamedPain_process: "", ashamedPain_knowledge: "" }),
       );
       expect(hint).not.toBeNull();
       expect(hint?.en.toLowerCase()).toContain("pain");
@@ -193,7 +201,7 @@ describe("differentiationFormRules", () => {
       const cases: Array<[string, DifferentiationFormData]> = [
         ["surface", makeFormData({ industry: "" })],
         ["contradiction", makeFormData({ customerQuote: "" })],
-        ["hidden", makeFormData({ ashamedPains: [] })],
+        ["hidden", makeFormData({ ashamedPain_process: "", ashamedPain_knowledge: "" })],
         ["mapping", makeFormData({ competitorArchetypes: [] })],
       ];
       for (const [phase, data] of cases) {
