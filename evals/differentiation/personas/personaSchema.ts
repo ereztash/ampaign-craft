@@ -80,6 +80,14 @@ export const SyntheticPersonaSchema = z.object({
   ]),
   expectedFailureMode: z.string().optional(),
   formData: DifferentiationFormDataSchema,
+  /** 2-3 public posts (LinkedIn / website). Used for stylometric calibration. */
+  linkedinPosts: z.array(z.string()).min(2).max(3),
+  /** 3 specific friction moments — the last thing said before a deal stopped.
+   *  NOT abstract reasons ("budget"). Specific statements. */
+  lostDealMoments: z.array(z.string()).min(2).max(3),
+  profileUrl: z.string().optional(),
+  /** Optional: messages / emails that reveal operational voice (refusals, debrief notes). */
+  operationalArtifacts: z.array(z.string()).optional(),
 });
 
 export type SyntheticPersona = z.infer<typeof SyntheticPersonaSchema>;

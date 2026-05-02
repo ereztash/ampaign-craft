@@ -54,6 +54,49 @@ export interface PreMortemOutput {
   failures: PreMortemFailure[]; // exactly 20
 }
 
+// ─── Two-Stage Reproducibility Pipeline types ────────────────────────────────
+
+export interface StructuralExtractionOutput {
+  /** One specific number/metric extracted from the artifacts. */
+  metric: {
+    value: string;
+    /** Which artifact it came from: post_1|post_2|post_3|deal_1|deal_2|deal_3|url */
+    source: string;
+  };
+  /** Named competitor/alternative explicitly or implicitly referenced. */
+  named_alternative: string;
+  /** 3 things this business demonstrably does NOT do — things competitors do or clients request. */
+  sacrifices: [string, string, string];
+  /** 3 words/phrases that appear in lost-deal moments but NOT in the posts (honesty gap). */
+  vocabulary_gap: [string, string, string];
+}
+
+export interface StylometricAngle {
+  text_he: string;
+  text_en: string;
+  type: "mechanism" | "sacrifice" | "metric";
+  /** Exact phrase borrowed from the post corpus. */
+  borrowed_phrase: string;
+  /** Why this angle is slightly uncomfortable to send — what makes it have teeth. */
+  why_uncomfortable: string;
+}
+
+export interface StylometricRenderingOutput {
+  angles: [StylometricAngle, StylometricAngle, StylometricAngle];
+  /** Hebrew selection prompt that frames choice as "most accurate / hardest to send". */
+  selection_prompt: string;
+}
+
+export interface FalsifiabilityCriticOutput {
+  /** 0-100: 0 = only this person could say it. 100 = anyone in the industry could sign it. */
+  genericity_score: number;
+  /** Describe a specific competitor who could also truthfully send this angle. */
+  who_else_could_say_this: string;
+  /** What biographical/numerical constraint is missing that would make it exclusive. */
+  missing_biographical_constraint: string;
+  rewrite_required: boolean;
+}
+
 // ─── Anti-flattery preamble (shared by all prompts) ─────────────────────────
 
 const ANTI_FLATTERY = `
@@ -113,33 +156,35 @@ ${oneLinerBlock(result)}
 
 export function buildUsabilityPrompt(persona: SyntheticPersona, result: DifferentiationResult): string {
   return `
-${ANTI_FLATTERY}
+אתה משחק פרסונה עסקית. ענה בכנות — לא ניסיון לרצות, לא ניסיון לתקוף. תגיד מה אתה באמת היית עושה.
 
 ${personaContext(persona)}
 
 ${oneLinerBlock(result)}
 
-המשימה: בתור הפרסונה — תגיד אם היית משתמש במשפט הזה. החזר JSON:
+המשימה: בתור הפרסונה — בהינתן המשפט שלמעלה, האם היית שולח אותו ללקוח הבא שלך?
+החזר JSON:
 {
   "would_use": boolean,
-  "where": string[],               // איפה הייתי משתמש (לדוגמה: ["פרופיל לינקדאין", "פתיחה לשיחת מכירה"]). [] אם לא הייתי משתמש בכלל.
-  "confidence": number             // 0-100. כמה בטוח שזה ינחית עבורי.
+  "where": string[],               // מקומות ספציפיים (לדוגמה: ["פרופיל לינקדאין", "פתיחה לשיחת מכירה"]). [] אם לא.
+  "confidence": number             // 0-100. כמה בטוח שזה ינחית אצל לקוח אמיתי שלך.
 }
 `.trim();
 }
 
 export function buildOwnershipPrompt(persona: SyntheticPersona, result: DifferentiationResult): string {
   return `
-${ANTI_FLATTERY}
+אתה משחק פרסונה עסקית. ענה בכנות — לא ניסיון לרצות, לא ניסיון לתקוף.
 
 ${personaContext(persona)}
 
 ${oneLinerBlock(result)}
 
-המשימה: בתור הפרסונה — תגיד אם המשפט הזה מרגיש לך שלך. החזר JSON:
+המשימה: בתור הפרסונה — קרא את המשפט. האם זה נשמע כמו מילים שאתה היית אומר, או כמו מי שקרא עליך וניסה לסכם?
+החזר JSON:
 {
-  "feels_mine": boolean,           // האם זה נשמע כאילו אני כתבתי, או כאילו AI כפה עלי
-  "what_to_change": string         // משפט אחד: מה הייתי משנה כדי שירגיש שלי. "" אם הוא בסדר.
+  "feels_mine": boolean,           // true = אני יכול לשלוח את זה כי זה נשמע כמוני. false = זה נשמע כמו AI שניסה לתאר אותי.
+  "what_to_change": string         // משפט אחד קצר: מה הייתי מנסח אחרת כדי שירגיש שלי. "" אם לא צריך לשנות כלום.
 }
 `.trim();
 }
@@ -171,6 +216,144 @@ ${personaContext(persona)}
     "ownership":    "ff" | "chatgpt" | "template" | "tie"
   },
   "reason": string                 // משפט אחד: למה המנצח ניצח
+}
+`.trim();
+}
+
+// ─── Two-Stage Reproducibility Prompts ──────────────────────────────────────
+
+export function buildStructuralExtractionPrompt(persona: SyntheticPersona): string {
+  const posts = persona.linkedinPosts
+    .map((p, i) => `פוסט ${i + 1}:\n${p}`)
+    .join("\n\n");
+  const moments = persona.lostDealMoments
+    .map((m, i) => `רגע ${i + 1}: ${m}`)
+    .join("\n");
+  const urlText = persona.profileUrl ? `URL: ${persona.profileUrl}` : "";
+  const opArtifacts = persona.operationalArtifacts?.length
+    ? `\nחומרים תפעוליים:\n${persona.operationalArtifacts.join("\n")}`
+    : "";
+
+  return `
+אתה מחלץ עובדות מבניות מהחומרים הבאים של עסק.
+
+עסק: ${persona.formData.businessName}
+תחום: ${persona.formData.industry}
+${urlText}
+
+פוסטים ציבוריים (קול שיווקי):
+${posts}
+
+רגעי חיכוך עסקי — ממש מה נאמר לפני שעסקה נעצרה (לא סיבות כלליות):
+${moments}
+${opArtifacts}
+
+חלץ בדיוק:
+1. מספר/מדד ספציפי אחד שמוזכר או משתמע מהחומרים (לא המצאה — עובדה קיימת)
+2. מתחרה או אלטרנטיבה אחת שמוזכרת במפורש או במשתמע
+3. שלושה דברים שהעסק הזה demonstrably לא עושה — דברים שמתחרים עושים או שלקוחות מבקשים
+4. שלוש מילים/ביטויים שמופיעים ברגעי החיכוך אבל לא בפוסטים (פער הכנות)
+
+אם לא מוצאים מספר ספציפי בחומרים — החזר metric.value = "" ואל תמציא.
+
+החזר JSON בלבד, בלי טקסט נוסף:
+{
+  "metric": { "value": string, "source": "post_1|post_2|post_3|deal_1|deal_2|deal_3|url" },
+  "named_alternative": string,
+  "sacrifices": [string, string, string],
+  "vocabulary_gap": [string, string, string]
+}
+`.trim();
+}
+
+export function buildStylometricRenderingPrompt(
+  persona: SyntheticPersona,
+  extraction: StructuralExtractionOutput,
+): string {
+  const posts = persona.linkedinPosts
+    .map((p, i) => `פוסט ${i + 1}:\n${p}`)
+    .join("\n\n");
+
+  const moments = persona.lostDealMoments
+    .map((m, i) => `רגע ${i + 1}: ${m}`)
+    .join("\n");
+
+  const metricsNote = extraction.metric.value
+    ? `מספר/מדד: ${extraction.metric.value} (מקור: ${extraction.metric.source})`
+    : "אין מספר ספציפי זמין — הימנע מבדייה";
+
+  return `
+קורפוס ציבורי (LinkedIn — קול שיווקי, מלוטש):
+${posts}
+
+רגעי חיכוך אמיתיים (מה נאמר לפני שעסקה נעצרה — קול פנימי, ישיר):
+${moments}
+
+חולצו עובדות מבניות:
+- ${metricsNote}
+- אלטרנטיבה שמוזכרת: ${extraction.named_alternative}
+- 3 דברים שהוא לא עושה: ${extraction.sacrifices.join(" | ")}
+- פער אוצר מילים (נאמר ברגעי חיכוך אבל לא בפוסטים): ${extraction.vocabulary_gap.join(" | ")}
+
+המשימה: כתוב 3 זוויות בידול שה-${persona.formData.businessName} אמר לעצמו אבל מעולם לא שלח ללקוח.
+
+כללי רגיסטר — קריטי:
+- כתוב בסגנון של רגעי החיכוך, לא הפוסטים. ישיר, לא מלוטש, כאילו מדברים עם לקוח מוכר — לא כתיבה שיווקית.
+- אין מטאפורות, אין פילוסופיה, אין "להסתתר מאחורי". משפט קצר, עובדתי, עם שם ספציפי.
+- אם כתבת משהו שנשמע כמו פוסט לינקדאין — מחק ושכתב.
+
+כללי תוכן:
+- כל זווית חייבת להשתמש ב-metric.value אם קיים (לא לבדות מספרים חדשים)
+- כל זווית חייבת להזכיר את ${extraction.named_alternative} כניגוד
+- כל זווית חייבת לכלול sacrifice אחד מהרשימה
+- כל זווית חייבת להשתמש בביטוי אחד לפחות מ-vocabulary_gap
+
+מבנה:
+- זווית A: מנגנון (מה אני עושה בפועל — בשורה אחת)
+- זווית B: sacrifice (מה אני לא עושה — צריך להרגיש קצת אי-נוח לשלוח)
+- זווית C: מדד (מספר ספציפי / ניסיון ספציפי)
+
+בדיקה לפני פלט: האם יועץ/עסק אחר עם אותו טייטל יכול לחתום על זה? אם כן — שכתב.
+
+החזר JSON בלבד. שמור על טקסטים קצרים (עד 40 מילים כל אחד):
+{
+  "angles": [
+    {
+      "text_he": string,
+      "text_en": string,
+      "type": "mechanism",
+      "borrowed_phrase": string,
+      "why_uncomfortable": string
+    },
+    { "text_he": string, "text_en": string, "type": "sacrifice", "borrowed_phrase": string, "why_uncomfortable": string },
+    { "text_he": string, "text_en": string, "type": "metric", "borrowed_phrase": string, "why_uncomfortable": string }
+  ],
+  "selection_prompt": "איזה משפט הכי מדויק — גם אם הכי קשה לשלוח?"
+}
+`.trim();
+}
+
+export function buildFalsifiabilityCriticPrompt(
+  persona: SyntheticPersona,
+  angle: StylometricAngle,
+): string {
+  return `
+${ANTI_FLATTERY}
+
+תחום: ${persona.formData.industry}
+עסק: ${persona.formData.businessName}
+
+זווית בידול שנוצרה:
+"${angle.text_he}"
+
+המשימה: בדוק האם מתחרה בתחום יכול לחתום על המשפט הזה.
+
+החזר JSON בלבד. ערכי string: משפט אחד קצר בלבד, ללא newlines, ללא מירכאות כפולות:
+{
+  "genericity_score": number,
+  "who_else_could_say_this": "שם מתחרה אחד — משפט אחד",
+  "missing_biographical_constraint": "ביטוי קצר — מה חסר",
+  "rewrite_required": boolean
 }
 `.trim();
 }
