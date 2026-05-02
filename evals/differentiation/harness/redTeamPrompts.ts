@@ -79,9 +79,6 @@ export interface StylometricAngle {
   borrowed_phrase: string;
   /** Why this angle is slightly uncomfortable to send — what makes it have teeth. */
   why_uncomfortable: string;
-  metric_source: string;
-  alternative_source: string;
-  sacrifice_source: string;
 }
 
 export interface StylometricRenderingOutput {
@@ -305,7 +302,7 @@ ${posts}
 
 בדיקה פנימית לפני פלט: האם יועץ/עסק אחר עם אותו טייטל יכול לחתום על זה? אם כן — שכתב.
 
-החזר JSON בלבד:
+החזר JSON בלבד. שמור על טקסטים קצרים (עד 60 מילים כל אחד):
 {
   "angles": [
     {
@@ -313,13 +310,10 @@ ${posts}
       "text_en": string,
       "type": "mechanism",
       "borrowed_phrase": string,
-      "why_uncomfortable": string,
-      "metric_source": string,
-      "alternative_source": string,
-      "sacrifice_source": string
+      "why_uncomfortable": string
     },
-    { "type": "sacrifice", ... },
-    { "type": "metric", ... }
+    { "text_he": string, "text_en": string, "type": "sacrifice", "borrowed_phrase": string, "why_uncomfortable": string },
+    { "text_he": string, "text_en": string, "type": "metric", "borrowed_phrase": string, "why_uncomfortable": string }
   ],
   "selection_prompt": "איזה משפט הכי מדויק — גם אם הכי קשה לשלוח?"
 }
@@ -339,14 +333,14 @@ ${ANTI_FLATTERY}
 זווית בידול שנוצרה:
 "${angle.text_he}"
 
-המשימה: בדוק האם יועץ/עסק אחר עם אותו תחום יכול לחתום על המשפט הזה.
+המשימה: בדוק האם מתחרה בתחום יכול לחתום על המשפט הזה.
 
-החזר JSON בלבד:
+החזר JSON בלבד. ערכי string: משפט אחד קצר בלבד, ללא newlines, ללא מירכאות כפולות:
 {
-  "genericity_score": number,        // 0-100. 0 = רק האדם הזה יכול לומר. 100 = כל אחד בתחום.
-  "who_else_could_say_this": string,  // תאר מתחרה ספציפי שיכול לשלוח את אותו משפט
-  "missing_biographical_constraint": string,  // מה צריך להוסיף כדי שרק הם יוכלו לחתום
-  "rewrite_required": boolean         // true אם genericity_score > 60
+  "genericity_score": number,
+  "who_else_could_say_this": "שם מתחרה אחד — משפט אחד",
+  "missing_biographical_constraint": "ביטוי קצר — מה חסר",
+  "rewrite_required": boolean
 }
 `.trim();
 }

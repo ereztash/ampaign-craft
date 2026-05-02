@@ -106,13 +106,13 @@ async function runPersona(
     prompt: buildStylometricRenderingPrompt(persona, extraction),
     promptKind: "stylometricRendering",
     seed: `${seedBase}|rendering`,
-    maxTokens: 1024,
+    maxTokens: 2048,
   });
   const angles = safeParse<StylometricRenderingOutput>(renderingRaw, persona.id, "rendering", {
     angles: [
-      { text_he: "(parse_error)", text_en: "(parse_error)", type: "mechanism", borrowed_phrase: "", why_uncomfortable: "", metric_source: "", alternative_source: "", sacrifice_source: "" },
-      { text_he: "(parse_error)", text_en: "(parse_error)", type: "sacrifice", borrowed_phrase: "", why_uncomfortable: "", metric_source: "", alternative_source: "", sacrifice_source: "" },
-      { text_he: "(parse_error)", text_en: "(parse_error)", type: "metric", borrowed_phrase: "", why_uncomfortable: "", metric_source: "", alternative_source: "", sacrifice_source: "" },
+      { text_he: "(parse_error)", text_en: "(parse_error)", type: "mechanism", borrowed_phrase: "", why_uncomfortable: "" },
+      { text_he: "(parse_error)", text_en: "(parse_error)", type: "sacrifice", borrowed_phrase: "", why_uncomfortable: "" },
+      { text_he: "(parse_error)", text_en: "(parse_error)", type: "metric", borrowed_phrase: "", why_uncomfortable: "" },
     ],
     selection_prompt: "",
   });

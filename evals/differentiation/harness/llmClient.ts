@@ -184,9 +184,6 @@ function mockFor(opts: LLMCallOptions): string {
             type: "mechanism",
             borrowed_phrase: "מנגנון ספציפי",
             why_uncomfortable: "מגדיר במה לא כמו האחרים",
-            metric_source: "post_1",
-            alternative_source: "deal_1",
-            sacrifice_source: "deal_2",
           },
           {
             text_he: `אנחנו לא עובדים עם לקוחות שמחפשים Y — כי זה לא מה שאנחנו עושים`,
@@ -194,19 +191,13 @@ function mockFor(opts: LLMCallOptions): string {
             type: "sacrifice",
             borrowed_phrase: "לא עובדים עם",
             why_uncomfortable: "דוחה חלק מהשוק במפורש",
-            metric_source: "post_2",
-            alternative_source: "deal_1",
-            sacrifice_source: "deal_3",
           },
           {
-            text_he: `אחרי ${fail ? "X" : "12"} שנים ו-${fail ? "?" : "50"} לקוחות — ה-${biz} שלנו שונה כי...`,
-            text_en: `After ${fail ? "X" : "12"} years and ${fail ? "?" : "50"} clients — our ${biz} is different because...`,
+            text_he: `אחרי ${fail ? "X" : "12"} שנים ו-${fail ? "?" : "50"} לקוחות — ה-${biz} שלנו שונה כי`,
+            text_en: `After ${fail ? "X" : "12"} years and ${fail ? "?" : "50"} clients — our ${biz} is different because`,
             type: "metric",
             borrowed_phrase: "שנים",
             why_uncomfortable: "מצריך להתחייב למספר ספציפי",
-            metric_source: "post_1",
-            alternative_source: "deal_2",
-            sacrifice_source: "deal_1",
           },
         ],
         selection_prompt: "איזה משפט הכי מדויק — גם אם הכי קשה לשלוח?",
@@ -231,17 +222,75 @@ export async function callLLM(opts: LLMCallOptions): Promise<string> {
   return callAnthropic(opts);
 }
 
-/** Strict JSON parse with one repair pass — strips trailing prose / code fences. */
+/** Strict JSON parse with repair passes — handles code fences, prose, and
+ *  unescaped Hebrew double-quotes (גרשיים ״ / ASCII " inside string values). */
 export function parseStrictJSON<T>(raw: string): T {
   let cleaned = raw.trim();
   if (cleaned.startsWith("```")) {
     cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
   }
-  // Find first `{` and last `}` — handles models adding prose
+  // Extract first `{` to last `}` — handles models adding prose
   const start = cleaned.indexOf("{");
   const end = cleaned.lastIndexOf("}");
-  if (start >= 0 && end > start) {
-    cleaned = cleaned.slice(start, end + 1);
+  if (start >= 0 && end > start) cleaned = cleaned.slice(start, end + 1);
+
+  // First attempt
+  try { return JSON.parse(cleaned) as T; } catch (_) { /* try repairs */ }
+
+  // Repair 1: replace Unicode gershayim (״ U+05F4) with escaped ASCII quote
+  const r1 = cleaned.replace(/״/g, '\\"');
+  try { return JSON.parse(r1) as T; } catch (_) { /* try next */ }
+
+  // Repair 2: escape bare ASCII " that appear inside a JSON string value.
+  // Strategy: walk the string tracking whether we're inside a JSON string,
+  // and escape any unescaped " that appear mid-string.
+  const r2 = repairUnescapedQuotes(cleaned);
+  try { return JSON.parse(r2) as T; } catch (_) { /* fall through */ }
+
+  // If still failing, throw with useful context
+  throw new SyntaxError(`JSON repair failed. First 200 chars: ${cleaned.slice(0, 200)}`);
+}
+
+function repairUnescapedQuotes(s: string): string {
+  const out: string[] = [];
+  let inString = false;
+  let i = 0;
+  while (i < s.length) {
+    const ch = s[i];
+
+    if (ch === "\\") {
+      out.push(ch, s[i + 1] ?? "");
+      i += 2;
+      continue;
+    }
+
+    if (inString) {
+      // Literal control characters inside strings must be escaped.
+      if (ch === "\n") { out.push("\\n"); i++; continue; }
+      if (ch === "\r") { out.push("\\r"); i++; continue; }
+      if (ch === "\t") { out.push("\\t"); i++; continue; }
+
+      if (ch === '"') {
+        // Peek at next token (skip only spaces, not newlines) to decide
+        // if this " is the real string end or an embedded quote.
+        let j = i + 1;
+        while (j < s.length && s[j] === " ") j++;
+        const next = s[j];
+        if (next === ":" || next === "," || next === "}" || next === "]" || j >= s.length) {
+          inString = false;
+          out.push(ch);
+        } else {
+          out.push('\\"');
+        }
+        i++;
+        continue;
+      }
+    } else {
+      if (ch === '"') { inString = true; out.push(ch); i++; continue; }
+    }
+
+    out.push(ch);
+    i++;
   }
-  return JSON.parse(cleaned) as T;
+  return out.join("");
 }

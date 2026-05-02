@@ -76,7 +76,10 @@ function scorePreference(b: PersonaRedTeamBundle): boolean {
 }
 
 function scoreFalsifiability(b: PersonaRedTeamBundle): boolean {
-  return b.falsifiability?.rewrite_required === false;
+  if (!b.falsifiability) return false;
+  // Model's rewrite_required boolean is unreliable (gives true even for score=8.5).
+  // Derive from genericity_score directly: <60 = specific enough to keep.
+  return b.falsifiability.genericity_score < 60;
 }
 
 export function computeIBAR(bundles: PersonaRedTeamBundle[]): SyntheticIBAR {
