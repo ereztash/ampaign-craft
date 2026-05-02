@@ -136,7 +136,7 @@ Annual plans save 20%.
 
 ```
   UI Layer ──────────── React + shadcn/ui + RTL + Archetype-adaptive
-                        169 components · 35 pages · 28 hooks · L1-L5
+                        173 components · 35 pages · 28 hooks · L1-L5
   ViewModel Layer ───── src/viewmodels/ — stable UI contracts, adapter fns
                         ESLint boundary: components may not import @/engine/* directly
   Context Layer ────── Auth · Archetype · UserProfile · DataSource
@@ -148,7 +148,7 @@ Annual plans save 20%.
   LLM Router ────────── Haiku $0.003 / Sonnet $0.015 / Opus $0.075
                         Cost caps · fallback chains · tier-gated by subscription
   Persistence ──────── Supabase Postgres + pgvector · Event Queue
-                        RLS · 49 migrations · 28 Edge Functions · 1536/384-dim
+                        RLS · 51 migrations · 28 Edge Functions · 1536/384-dim
 ```
 
 > See [`docs/architecture.md`](./docs/architecture.md) for the full engine directory.
@@ -222,7 +222,7 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 | Lines of code | 131,773 |
 | Source files | 430 (excluding tests) |
 | Tests | 4,721 in 322 test files |
-| Migrations | 49 |
+| Migrations | 51 |
 | Language | TypeScript |
 | Test framework | Vitest + React Testing Library |
 | CI | GitHub Actions (typecheck · lint · test · build) |
