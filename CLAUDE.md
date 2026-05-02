@@ -1,41 +1,63 @@
 # FunnelForge — הוראות המשך עבודה
 
 ## ענף פעיל
-`claude/attention-time-value-cJRys`
+`claude/user-data-insights-Zs5ts`
 
 ---
 
-## מה הושלם בסשן הנוכחי
+## מה הושלם בסשן האחרון (2026-05-02)
 
-### Slice 1 — LeadCard simplification (committed `33853fb`)
-- `CrmPage.tsx`: LeadCard עבר מ-8+ פריטים שווים לסיכום + click-to-detail
-- כרטיס: שם + עסק, ערך + פולואפ (רק אם קיים), כפתור אחד (WhatsApp אם יש טלפון, אחרת Email)
-- הוסרו: תצוגת טלפון/מייל inline, תצוגה מקדימה של הערות, כפתור Lead Coach
-- DropdownMenu מוגן מ-navigation trigger עם `stopPropagation`
+### Cognitive Friction Audit — InsightActionCard pattern
+כל 5 המודולים + אשף הטופס קיבלו את הפטרן:
+**ANSWER → WHY → CONFIDENCE → USE IT → CHECK**
+
+**קבצים שנוצרו/שונו:**
+- `src/components/InsightActionCard.tsx` — Reference implementation חדש
+- `src/components/MultiStepForm.tsx` — StepInsight pill מעל כל שלב
+- `src/components/DifferentiationResult.tsx` — InsightActionCard בראש
+- `src/components/SalesTab.tsx` — InsightActionCard + תיקון ויזואלי (ר' להלן)
+- `src/components/PricingIntelligenceTab.tsx` — InsightActionCard בראש
+- `src/components/RetentionGrowthTab.tsx` — InsightActionCard בראש
+- `src/components/PlanningTab.tsx` — InsightActionCard בראש
+
+### Jargon Audit — ניקוי ז'רגון מכל המשטחים הנגישים למשתמש
+| קובץ | מה תוקן |
+|---|---|
+| `src/engine/funnelEngine.ts` | שמות שלבים B2B, תיאורים, שמות ערוצים, KPIs, tips — ICP/Tripwire/PLG/CLG/Trust Moat הוסרו |
+| `src/components/ResultsDashboard.tsx` | NEURO_LABELS: קורטיזול/דופמין/אוקסיטוצין → קשב/החלטה/נאמנות |
+| `src/components/StrategyTab.tsx` | NEURO_LABELS כפול זוהה ותוקן; CLG → "אסטרטגיית קהילה" |
+| `src/components/TutorialFlow.tsx` | "קורטיזול, reactance, CTA" → עברית פשוטה |
+| `src/components/IntelligenceSynthesisDashboard.tsx` | Radar chart axes: Cortisol/Oxytocin/Dopamine → עומס רגשי/חיבור/מוטיבציה |
+| `src/components/BrandDiagnosticTab.tsx` | "Tripwire Offer", "דיסוננס קוגניטיבי" → עברית פשוטה |
+| `src/engine/salesPipelineEngine.ts` | vectorLabel + psychology: ניקוי נוירוכימיה מכל 6 frameworks |
+
+### SalesTab — תיקונים ויזואליים
+- `DISCProfileCard` הועבר מראש הדף → לתוך Collapsible "פסיכולוגיית מכירה"
+- Sales Type Badge הורד מהצף → שולב בכותרת כרטיס ה-Pipeline
+- Funnel centering: `marginInlineStart` חד-צדדי → `mx-auto` סימטרי
+- כפילות כותרת "איך לסגור" → Section 6 שונה ל"גישות לסגירה"
 
 ---
 
-## המשך — C Workstream (UX Engineering)
+## המשך — עבודה ממתינה
 
-### Slice 2 — Dashboard tab compression ✅ (בוצע 2026-04-30)
-**מיפוי בפועל** (שונה ממה שב-CLAUDE.md הקודם):
-- `ResultsDashboard.tsx` — 10 טאבים, **כבר** משתמש ב-AdaptiveTabNav (3 super-groups: strategy/content/growth) ✅
-- `AARRRDashboard.tsx` — 0 טאבים (לא משתמש ב-Tabs), אין מה לדחוס
-- **DifferentiationResult.tsx** — 7 טאבים flat → דחוס ל-3 primary + "More" dropdown
-  - Primary: `mechanism` / `claims` / `competitors` (תואם 1-1 ל-`pickDefaultTab` mapping מ-IntakeNeed)
-  - More: `committee` / `tradeoffs` / `metrics` / `report`
-  - הטאב המשני האקטיבי נשאר נראה inline; הטאבים הלא-אקטיביים בתפריט
-- ContentTab.tsx (6) ו-IntelligenceSynthesisDashboard.tsx (4) — נשארו flat (סף סביר)
-
-### Slice 3 — View-model layer + ESLint rule (הבא)
+### Slice 3 — View-model layer + ESLint rule
 - להגדיר ViewModel interfaces שמפרידים engine output מ-UI props
 - להוסיף ESLint rule שאוסר import ישיר מ-engine לתוך component ללא ViewModel
 
+### Typography / IA improvement (הוצע, לא בוצע — ממתין לאישור)
+- InsightActionCard בראש StrategyTab עם "3 הפעולות הדחופות עכשיו"
+- שלבי אסטרטגיה מלאים מאחורי "הצג תוכנית שלבים מלאה ▼"
+
+### Drafts Inbox — A+B Workstream (ממתין ל-5 ראיונות משתמש)
+1. go/no-go: האם משתמש מבין הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
+2. 10 מוקים ויזואליים → module WhatsApp Drafts
+
 ---
 
-## ארכיטקטורת מנועים — החלטות שהתקבלו בסשן
+## ארכיטקטורת מנועים — החלטות שהתקבלו
 
-### SNR 80/20 — 10 מנועי ה-Tier S (מריצים תמיד)
+### SNR 80/20 — 10 מנועי Tier S (מריצים תמיד)
 ```
 userKnowledgeGraph → funnelEngine → differentiationEngine
 → discProfileEngine → healthScoreEngine → guidanceEngine
@@ -43,14 +65,12 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 ```
 
 ### 29 מנועי Tier B/C — Lazy Activation Pattern
-**ההחלטה**: לא כבויים — לומדים בשקט ומתעוררים לפי טריגר.
-
 **קובץ להוסיף**: `src/engine/engineActivationRules.ts`
 ```ts
 { engineId, condition: (signals) => boolean, mode: "passive" | "standby" | "active" }
 ```
 
-**4 סוגי טריגרים שהוגדרו:**
+**4 סוגי טריגרים:**
 | סוג | דוגמה | מנועים |
 |---|---|---|
 | Data threshold | >20 לידים ב-CRM | salesPipelineEngine, churnPredictionEngine |
@@ -58,79 +78,33 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 | Health anomaly | healthScore ירד >10 נק' | bottleneckEngine, gapEngine (escalated) |
 | Intent signal | שאל coach על תמחור | pricingWizardEngine, hormoziValueEngine |
 
-**תשתית קיימת שתומכת בזה:**
-- `blackboard/circuitBreaker.ts` — enable/disable לפי מצב
-- `blackboard/sentinelRail.ts` — preconditions למנוע
-- `blackboard/partialRunner.ts` — מריץ subset של מנועים
-- `intake/intakeSignal.ts` + `intake/feedbackLoop.ts` — צוברים signals בשקט
-
-**הצעד הבא בארכיטקטורה**: להגדיר activation rules לכל 29 המנועים הלא-core ולחבר ל-`partialRunner`.
-
 ---
 
 ## הגדרת "טיוטה" (Draft) שהתגבשה
 
-- **טיוטה** = כל הצעדים בכל תהליך למעט הפעולה הבלתי-הפיכה האחרונה (שליחה/ביצוע)
-- **HITL** (Human In The Loop) רק בצעד האחרון
-- **טיוטה אסטרטגית**: כוללת Toulmin reasoning מלא (Claim → Data → Warrant → Backing → Qualifier → Rebuttal)
+- **טיוטה** = כל הצעדים בכל תהליך למעט הפעולה הבלתי-הפיכה האחרונה
+- **HITL** רק בצעד האחרון
+- **טיוטה אסטרטגית**: Toulmin reasoning מלא
 - **טיוטה אופרטיבית**: נגזרת מאסטרטגיה מאושרת
-- **Type D (תצפיות)**: לא רלוונטי לטיוטות
-
----
-
-## עבודה על חזרה — A+B (ממתין לאימות C)
-
-לפני שמתחילים A+B (Drafts Inbox):
-1. לבצע 5 ראיונות משתמשים
-2. go/no-go: האם משתמש מבין את הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
-3. רק אז לבנות: 10 מוקים ויזואליים + module WhatsApp Drafts
 
 ---
 
 ## סטטוס טכני
 
-- **Tests**: ~4750 עוברים (main), 4751 על הענף הפעיל
+- **TypeScript**: עובר נקי (`npx tsc --noEmit` — אפס שגיאות)
+- **em-dash gate**: עובר (`bash scripts/check-em-dash.sh`)
 - **ESLint**: שגיאת `@eslint/js` קיימת מראש (pre-existing, לא נגרמה בסשן זה)
 - **Dev server**: להריץ עם `--host 127.0.0.1` (:::8080 נכשל ב-EAFNOSUPPORT)
 
 ---
 
-## סדר ה-PRs שנסגרו / נמזגו בסשן ה-cleanup (2026-04-29)
+## PRs פתוחים
 
-### מוזגו ל-main:
-- `#133` README (consultant tiers + Seed Ask)
-- `#95` radix-ui patches
-- `#93` setup-node v4→v6, `#94` checkout v4→v6, `#97` @types/node bump
-- `#98` lucide-react 0.462→1.11 + FacebookIcon inline-SVG fix
-- `#117` CRM Lead Coach Phases 2-4 (crmInsightEngine + Pipeline Pulse + LeadCoachPanel)
-- `#135` billing: subscription with hidden overage credits (402/credits + LimitReachedModal + usage_counters migration)
-
-### נסגרו כ-stale/superseded:
-- `#89`, `#90`, `#138`, `#139` — duplicates/stale
-- `#23` campaign moat (old, no description)
-- `#34` README (superseded by #133)
-- `#38` dark mode cards (stale, 16 days)
-- `#53` AARRR research (stale, no description)
-
-### נסגרו כ-deferred (session bréakout required):
-- `#96` vitest 3→4 (breaking major)
-- `#99` eslint 9→10 (Node 20.19+ + flat config migration)
-
-### נשארים פתוחים:
-- `perf/reactive-core` (#102) — DRAFT, rebased על main, ממתין לvalidation ב-preview env
-
----
-
-## תשתית hygiene שנוספה בסשן זה
-
-- `.github/PULL_REQUEST_TEMPLATE.md` — checklist לכל PR
-- `.github/workflows/stale.yml` — סוגר PRs לא פעילים אחרי 21 יום
-- `.github/dependabot.yml` — עודכן עם ignore לvitest/eslint major bumps
-- `CONTRIBUTING.md` — עודכן עם branching strategy + Dependabot tiers + hygiene baseline
+- `perf/reactive-core` (#102) — DRAFT, rebased, ממתין ל-preview env validation
 
 ---
 
 ## ענפים רלוונטיים
 
-- `claude/attention-time-value-cJRys` — **ענף פעיל** (C workstream: Dashboard tab compression + ViewModel layer)
-- `perf/reactive-core` — DRAFT, rebased, ממתין ל-preview env validation
+- `claude/user-data-insights-Zs5ts` — **ענף פעיל**
+- `perf/reactive-core` — DRAFT, ממתין ל-preview env validation

@@ -421,8 +421,8 @@ const StrategyTab = ({
               {clgStrategy.suitable && (
                 <div className="pt-2 border-t border-muted/30">
                   <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                    👥 {tx({ he: "אסטרטגיית קהילה (CLG)", en: "Community-Led Growth (CLG)" }, language)}
-                    <Badge className="text-xs">LTV ×{clgStrategy.ltvImpact.multiplier}</Badge>
+                    👥 {tx({ he: "אסטרטגיית קהילה", en: "Community-Led Growth" }, language)}
+                    <Badge className="text-xs">{tx({ he: "שווי לקוח", en: "Customer Value" }, language)} ×{clgStrategy.ltvImpact.multiplier}</Badge>
                   </h4>
                   <p className="text-xs text-muted-foreground mb-2">{clgStrategy.reason[language]}</p>
                   <p className="text-xs text-muted-foreground mb-2">
