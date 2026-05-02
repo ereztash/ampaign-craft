@@ -6,8 +6,10 @@
 // so this component stays pure and cheap to render.
 //
 // Progressive disclosure rules:
-//  - ALWAYS visible: health score, Hormozi value, social proof,
-//    ROI estimate, funnel stage cards (the main "what did I get").
+//  - ALWAYS visible: InsightActionCard (top 3 urgent actions),
+//    health score, Hormozi value, social proof, ROI estimate.
+//  - COLLAPSIBLE (default open): Funnel stage cards — the main
+//    strategic plan. Collapses after the user has reviewed it.
 //  - DEFAULT COLLAPSED: Israeli toolkit, WhatsApp templates pane,
 //    market calendar, retention flywheel, CLG strategy, personalized
 //    tips — advanced / reference content that shouldn't overwhelm
@@ -23,8 +25,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { tx } from "@/i18n/tx";
 import { ChevronDown, MessageCircle } from "lucide-react";
 import type { FunnelResult } from "@/types/funnel";
-import type { calculateHealthScore } from "@/engine/healthScoreEngine";
-import { getHealthScoreColor } from "@/engine/healthScoreEngine";
+import type { HealthScore } from "@/viewmodels";
+import { getHealthScoreColor } from "@/viewmodels";
 import type { calculateValueScore } from "@/engine/hormoziValueEngine";
 import type { calculateRoi } from "@/lib/roiCalculator";
 import type { getSocialProof } from "@/lib/socialProofData";
@@ -36,6 +38,7 @@ import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getToolsForChannel } from "@/lib/toolRecommendations";
 import { HormoziValueCard } from "@/components/HormoziValueCard";
 import { SectionInsightBanner } from "@/components/SectionInsightBanner";
+import { InsightActionCard } from "@/components/InsightActionCard";
 import { cn } from "@/lib/utils";
 
 const WhatsAppTemplatesPanel = lazy(() => import("@/components/WhatsAppTemplatesPanel"));
@@ -78,7 +81,7 @@ export interface StrategyTabProps {
   language: "he" | "en";
   isHe: boolean;
   t: (key: string) => string;
-  healthScore: ReturnType<typeof calculateHealthScore>;
+  healthScore: HealthScore;
   hormoziValue: ReturnType<typeof calculateValueScore>;
   socialProof: ReturnType<typeof getSocialProof>;
   roiEstimate: ReturnType<typeof calculateRoi>;
@@ -87,6 +90,18 @@ export interface StrategyTabProps {
   flywheel: ReturnType<typeof generateRetentionFlywheel>;
   clgStrategy: ReturnType<typeof generateCLGStrategy>;
   recommendedChannelsLabel: string;
+}
+
+// Derive the top 3 urgent actions from the health-score breakdown.
+function deriveTopActions(
+  healthScore: HealthScore,
+  language: "he" | "en",
+): { he: string; en: string }[] {
+  const sorted = [...healthScore.breakdown]
+    .filter((b) => b.tips.length > 0)
+    .sort((a, b) => a.score / a.maxScore - b.score / b.maxScore)
+    .slice(0, 3);
+  return sorted.map((b) => b.tips[0]);
 }
 
 const StrategyTab = ({
@@ -104,18 +119,72 @@ const StrategyTab = ({
   clgStrategy,
   recommendedChannelsLabel,
 }: StrategyTabProps) => {
+  const [stagesOpen, setStagesOpen] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [tipsOpen, setTipsOpen] = useState(false);
+  const [insightChecked, setInsightChecked] = useState(false);
 
-  const worst = healthScore.breakdown.length > 0
-    ? healthScore.breakdown.reduce((w, b) =>
-        b.score / b.maxScore < w.score / w.maxScore ? b : w
-      )
-    : null;
+  const worst =
+    healthScore.breakdown.length > 0
+      ? healthScore.breakdown.reduce((w, b) =>
+          b.score / b.maxScore < w.score / w.maxScore ? b : w,
+        )
+      : null;
+
+  const topActions = deriveTopActions(healthScore, language);
+
+  // Build the "3 urgent actions" narrative for InsightActionCard
+  const urgentActionsAnswer = {
+    he: topActions.map((a, i) => `${i + 1}. ${a.he}`).join(" • "),
+    en: topActions.map((a, i) => `${i + 1}. ${a.en}`).join(" • "),
+  };
+
+  const tierLabel: Record<HealthScore["tier"], { he: string; en: string }> = {
+    critical:    { he: "מצב קריטי", en: "Critical" },
+    "needs-work": { he: "יש לשפר", en: "Needs work" },
+    good:        { he: "טוב", en: "Good" },
+    excellent:   { he: "מצוין", en: "Excellent" },
+  };
 
   return (
     <div>
-      {/* ─── Always-visible core: health score, Hormozi, social proof, ROI, stages ─── */}
+      {/* ─── InsightActionCard: 3 הפעולות הדחופות עכשיו ─── */}
+      {topActions.length > 0 && !insightChecked && (
+        <div className="mb-6">
+          <InsightActionCard
+            module={{ he: "3 הפעולות הדחופות עכשיו", en: "3 urgent actions now" }}
+            answer={urgentActionsAnswer}
+            why={{
+              he: `ציון הבריאות שלך הוא ${healthScore.total}/100 (${tierLabel[healthScore.tier].he}). אלו הפערים הגדולים ביותר שמשפיעים על תוצאות המשפך.`,
+              en: `Your marketing health score is ${healthScore.total}/100 (${tierLabel[healthScore.tier].en}). These are the biggest gaps affecting funnel performance.`,
+            }}
+            confidence={
+              healthScore.total < 50
+                ? "stable"
+                : healthScore.breakdown.length >= 3
+                  ? "stable"
+                  : "needs_data"
+            }
+            confidenceReason={{
+              he: "מבוסס על ניתוח ציון הבריאות המלא",
+              en: "Based on full health score analysis",
+            }}
+            useItNarrative={{
+              he: "התחל מהפעולה הראשונה: היא בעלת ההשפעה הגבוהה ביותר על המרות.",
+              en: "Start with action #1: it has the highest impact on conversions.",
+            }}
+            checkOptions={[
+              { label: { he: "מובן, מתחיל", en: "Got it, let's go" }, action: "accept" },
+              { label: { he: "לא רלוונטי לעכשיו", en: "Not relevant now" }, action: "reject" },
+            ]}
+            onCheck={(action) => {
+              if (action === "accept" || action === "reject") setInsightChecked(true);
+            }}
+          />
+        </div>
+      )}
+
+      {/* ─── Always-visible core: health score, Hormozi, social proof, ROI ─── */}
 
       {worst?.tips[0] && (
         <SectionInsightBanner
@@ -231,93 +300,114 @@ const StrategyTab = ({
         </div>
       )}
 
-      {/* Funnel stage cards */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {result.stages.map((stage, i) => {
-          const stageId = STAGE_IDS[i] || "engagement";
-          const colors = funnelStageColors[stageId];
-          return (
-            <Card key={stage.id} className={`border-s-4 ${colors?.border || ""}`}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground"
-                    style={{ background: chartColorPalette[i] }}
-                    aria-hidden="true"
-                  >
-                    {i + 1}
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{stage.name[language]}</CardTitle>
-                    {NEURO_LABELS[stageId] && (
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-xs" aria-hidden="true">
-                          {NEURO_LABELS[stageId].emoji}
-                        </span>
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          {NEURO_LABELS[stageId].vector[language]}
-                        </span>
-                        <span className="text-xs text-muted-foreground">—</span>
-                        <span className="text-xs text-muted-foreground italic">
-                          {NEURO_LABELS[stageId].desc[language]}
-                        </span>
+      {/* ─── Funnel stage cards — collapsible ─── */}
+      <Collapsible open={stagesOpen} onOpenChange={setStagesOpen} className="mb-4">
+        <CollapsibleTrigger asChild>
+          <Button
+            variant="ghost"
+            className="w-full flex items-center justify-between px-1 py-2 text-sm font-semibold text-foreground hover:bg-muted/40"
+          >
+            <span>
+              {isHe ? "תוכנית שלבים מלאה" : "Full stage plan"}
+              <Badge variant="outline" className="ms-2 text-xs">
+                {result.stages.length}
+              </Badge>
+            </span>
+            <ChevronDown
+              className={cn("h-4 w-4 transition-transform text-muted-foreground", stagesOpen && "rotate-180")}
+              aria-hidden="true"
+            />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="grid gap-4 md:grid-cols-2 mt-2">
+            {result.stages.map((stage, i) => {
+              const stageId = STAGE_IDS[i] || "engagement";
+              const colors = funnelStageColors[stageId];
+              return (
+                <Card key={stage.id} className={`border-s-4 ${colors?.border || ""}`}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-accent-foreground"
+                        style={{ background: chartColorPalette[i] }}
+                        aria-hidden="true"
+                      >
+                        {i + 1}
                       </div>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-3 text-sm text-muted-foreground">{stage.description[language]}</p>
-                <div className="space-y-2">
-                  <div className="text-sm font-semibold text-foreground">{recommendedChannelsLabel}:</div>
-                  {stage.channels.map((ch, j) => {
-                    const tools = getToolsForChannel(ch.channel);
-                    return (
-                      <div key={j} className="rounded-lg bg-muted/50 p-3">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-foreground">
-                            {ch.channel === "whatsapp" && (
-                              <MessageCircle
-                                className="inline h-3.5 w-3.5 me-1 text-green-500"
-                                aria-hidden="true"
-                              />
-                            )}
-                            {ch.name[language]}
-                          </span>
-                          <span className="text-sm text-primary font-semibold">
-                            {ch.budgetPercent}%
-                          </span>
-                        </div>
-                        {ch.tips.map((tip, k) => (
-                          <p key={k} className="mt-1 text-xs text-muted-foreground">
-                            💡 {tip[language]}
-                          </p>
-                        ))}
-                        {tools.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {tools.map((tool, ti) => (
-                              <span
-                                key={ti}
-                                className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
-                              >
-                                🇮🇱 {tool.tool}
-                              </span>
-                            ))}
+                      <div>
+                        <CardTitle className="text-lg">{stage.name[language]}</CardTitle>
+                        {NEURO_LABELS[stageId] && (
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-xs" aria-hidden="true">
+                              {NEURO_LABELS[stageId].emoji}
+                            </span>
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                              {NEURO_LABELS[stageId].vector[language]}
+                            </span>
+                            <span className="text-xs text-muted-foreground">—</span>
+                            <span className="text-xs text-muted-foreground italic">
+                              {NEURO_LABELS[stageId].desc[language]}
+                            </span>
                           </div>
                         )}
                       </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="mb-3 text-sm text-muted-foreground">{stage.description[language]}</p>
+                    <div className="space-y-2">
+                      <div className="text-sm font-semibold text-foreground">{recommendedChannelsLabel}:</div>
+                      {stage.channels.map((ch, j) => {
+                        const tools = getToolsForChannel(ch.channel);
+                        return (
+                          <div key={j} className="rounded-lg bg-muted/50 p-3">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-foreground">
+                                {ch.channel === "whatsapp" && (
+                                  <MessageCircle
+                                    className="inline h-3.5 w-3.5 me-1 text-green-500"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                                {ch.name[language]}
+                              </span>
+                              <span className="text-sm text-primary font-semibold">
+                                {ch.budgetPercent}%
+                              </span>
+                            </div>
+                            {ch.tips.map((tip, k) => (
+                              <p key={k} className="mt-1 text-xs text-muted-foreground">
+                                💡 {tip[language]}
+                              </p>
+                            ))}
+                            {tools.length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {tools.map((tool, ti) => (
+                                  <span
+                                    key={ti}
+                                    className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
+                                  >
+                                    🇮🇱 {tool.tool}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* ─── Progressive disclosure: advanced content collapsed by default ─── */}
 
-      <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen} className="mt-6">
+      <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen} className="mt-2">
         <Card className="border-primary/20">
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">

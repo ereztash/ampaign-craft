@@ -122,8 +122,8 @@ export default function PublicLandingDifferentiation() {
 
           <p className="text-lg text-muted-foreground" dir="auto">
             {isHe
-              ? "במקום עוד סדנת פוזישנינג של חודש — תקבל משפט שתעתיק לפרופיל הלינקדאין שלך, לפתיחת שיחת מכירה, או להצעת מחיר. כתוב בעברית, מבוסס על העסק שלך."
-              : "Instead of another month-long positioning workshop — get a sentence you can paste into your LinkedIn, your sales opener, or your proposal. Hebrew-first, grounded in your business."}
+              ? "במקום עוד סדנת פוזישנינג של חודש: תקבל משפט שתעתיק לפרופיל הלינקדאין שלך, לפתיחת שיחת מכירה, או להצעת מחיר. כתוב בעברית, מבוסס על העסק שלך."
+              : "Instead of another month-long positioning workshop: get a sentence you can paste into your LinkedIn, your sales opener, or your proposal. Hebrew-first, grounded in your business."}
           </p>
 
           {/* Three concrete promises — what the 10 minutes get you */}

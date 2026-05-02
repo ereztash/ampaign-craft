@@ -116,6 +116,59 @@ export default tseslint.config(
     rules: { "no-restricted-syntax": "off" },
   },
 
+  // ─── Engine-import boundary enforcement ──────────────────────────────────
+  // Components must not import from @/engine/* directly.
+  // All engine output must flow through a ViewModel in src/viewmodels/.
+  // This keeps component props typed against stable UI contracts rather than
+  // raw engine internals, and makes the architecture auditable.
+  //
+  // To migrate a component: replace `@/engine/foo` imports with the
+  // equivalent types/adapters from `@/viewmodels`.
+  //
+  // To add a new component that genuinely needs an engine type not yet
+  // modelled in viewmodels: add the ViewModel first, then import from there.
+  {
+    files: ["src/components/**/*.{ts,tsx}"],
+    ignores: ["src/components/ui/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/engine/*", "@/engine/**"],
+              message:
+                "Components must not import from engines directly. Add the type/adapter to src/viewmodels/ and import from @/viewmodels instead.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Engine-import debt — components not yet migrated to the ViewModel layer.
+  // Do NOT add new entries here; migrate instead.
+  {
+    files: [
+      "src/components/GlobalInsightHero.tsx",
+      "src/components/RetentionGrowthTab.tsx",
+      "src/components/UVPSynthesisTab.tsx",
+      "src/components/InsightFeed.tsx",
+      "src/components/EmailTemplateGallery.tsx",
+      "src/components/IntelligenceSynthesisDashboard.tsx",
+      "src/components/ResultsDashboard.tsx",
+      "src/components/ArchetypePipelineGuide.tsx",
+      "src/components/ContentTab.tsx",
+      "src/components/StrategyMap.tsx",
+      "src/components/ChurnPlaybookTab.tsx",
+      "src/components/ChurnPredictionCard.tsx",
+      "src/components/DISCProfileCard.tsx",
+      "src/components/DataImportModal.tsx",
+      "src/components/OutputFeedback.tsx",
+      "src/components/SmartOnboarding.tsx",
+    ],
+    rules: { "no-restricted-imports": "off" },
+  },
+
   // ─── Logging boundary enforcement ────────────────────────────────────────
   // Direct console.* usage is banned in src; use logger from @/lib/logger
   // which forwards errors/warnings to Sentry in production.
