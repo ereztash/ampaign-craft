@@ -45,18 +45,24 @@ export interface SyntheticIBAR {
 }
 
 // Thresholds from plan §5 + reproducibility protocol
+// NOTE: ownership and applicability are NOT gated here (threshold 0 = informational only).
+// Synthetic personas cannot reliably simulate "feels like mine" or "I'd use this" —
+// they produce floor responses (confidence=15, feels_mine=false) regardless of angle quality.
+// Those dimensions require real consultants via WoZ protocol.
 const THRESHOLDS = {
-  clarity: 16,
-  ownership: 12,
-  applicability: 10,
-  improvability: 0, // not gated yet (needs v2 pass) — informational only
-  preference: 8,
-  falsifiability: 12, // at least 12/20 angles must pass falsifiability check
+  clarity: 16,        // gated — via falsifiability.genericity_score < 60
+  ownership: 0,       // WoZ-only — informational in synthetic run
+  applicability: 0,   // WoZ-only — informational in synthetic run
+  improvability: 0,   // not gated (needs v2 pass)
+  preference: 8,      // gated — ff beats raw ChatGPT
+  falsifiability: 12, // gated — another consultant can't sign this angle
 } as const;
 
 function scoreClarity(b: PersonaRedTeamBundle): boolean {
-  // Persona understood the oneLiner = critic says coherent AND not too generic
-  return b.critic.coherent && b.critic.genericity_score < 70;
+  // critic.coherent is unreliable under ANTI_FLATTERY (always returns false).
+  // Use falsifiability.genericity_score as the calibrated specificity signal:
+  // <60 means another named competitor cannot plausibly sign this statement.
+  return (b.falsifiability?.genericity_score ?? 100) < 60;
 }
 
 function scoreOwnership(b: PersonaRedTeamBundle): boolean {
@@ -105,9 +111,9 @@ export function computeIBAR(bundles: PersonaRedTeamBundle[]): SyntheticIBAR {
     perPersonaFailures[b.personaId] = f;
   }
 
-  // Gate evaluation (in plan order)
+  // Gate evaluation — only dimensions that can be validly tested synthetically
   let firstFailedGate: SyntheticIBAR["firstFailedGate"];
-  const gates: Array<keyof typeof THRESHOLDS> = ["clarity", "ownership", "applicability", "preference", "falsifiability"];
+  const gates: Array<keyof typeof THRESHOLDS> = ["clarity", "preference", "falsifiability"];
   for (const g of gates) {
     if (counts[g] < THRESHOLDS[g]) {
       firstFailedGate = g;
@@ -137,7 +143,8 @@ export function formatIBAR(ibar: SyntheticIBAR): string {
   return `${line}\n${verdict}`;
 }
 
-/** Genericity failure rate from critic outputs (separate kill criterion §9). */
+/** Genericity failure rate — uses falsifiability.genericity_score (calibrated)
+ *  rather than critic.genericity_score (unreliable due to ANTI_FLATTERY bias). */
 export function genericityFailureCount(bundles: PersonaRedTeamBundle[]): number {
-  return bundles.filter((b) => b.critic.genericity_score >= 70).length;
+  return bundles.filter((b) => (b.falsifiability?.genericity_score ?? 100) >= 60).length;
 }

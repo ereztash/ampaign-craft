@@ -86,29 +86,28 @@ async function callProxy(opts: LLMCallOptions): Promise<string> {
   }
 
   const model = process.env.HARNESS_MODEL ?? DEFAULT_MODEL;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-harness-secret": secret,
-      apikey,
-      Authorization: `Bearer ${apikey}`,
-    },
-    body: JSON.stringify({
-      prompt: opts.prompt,
-      maxTokens: opts.maxTokens ?? 1024,
-      model,
-    }),
-  });
+  const body = JSON.stringify({ prompt: opts.prompt, maxTokens: opts.maxTokens ?? 1024, model });
+  const headers = {
+    "Content-Type": "application/json",
+    "x-harness-secret": secret,
+    apikey,
+    Authorization: `Bearer ${apikey}`,
+  };
 
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Proxy error ${res.status}: ${body.slice(0, 300)}`);
+  // Retry up to 3 times on 5xx (transient edge function boot errors)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    const res = await fetch(url, { method: "POST", headers, body });
+    if (res.status >= 500 && attempt < 2) continue;
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Proxy error ${res.status}: ${text.slice(0, 300)}`);
+    }
+    const data = (await res.json()) as { text?: string; error?: string };
+    if (data.error) throw new Error(`Proxy responded with error: ${data.error}`);
+    return (data.text ?? "").trim();
   }
-
-  const data = (await res.json()) as { text?: string; error?: string };
-  if (data.error) throw new Error(`Proxy responded with error: ${data.error}`);
-  return (data.text ?? "").trim();
+  throw new Error("Proxy: max retries exceeded");
 }
 
 // ─── Mock path (deterministic, fail-biased) ─────────────────────────────────

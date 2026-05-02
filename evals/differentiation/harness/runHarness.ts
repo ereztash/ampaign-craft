@@ -232,11 +232,12 @@ function evaluateKillCriteria(
   bundles: PersonaRedTeamBundle[],
   genericFailures: number,
 ): string[] {
+  // Synthetic gates: only dimensions reliably measurable without real users.
+  // ownership/applicability are WoZ-only — not included here.
   const triggered: string[] = [];
-  if (genericFailures > 8) triggered.push(`genericity_failure ${genericFailures}/${ibar.n} > 8 — engine returns generic statements`);
+  if (genericFailures > 8) triggered.push(`genericity_failure ${genericFailures}/${ibar.n} > 8 — falsifiability_score ≥ 60 for too many angles`);
   if (ibar.preference < 8) triggered.push(`preference ${ibar.preference}/${ibar.n} < 8 — no edge over raw ChatGPT`);
-  if (ibar.applicability < 8) triggered.push(`applicability ${ibar.applicability}/${ibar.n} < 8 — promise is wrong, not the wording`);
-  if (ibar.clarity < 12) triggered.push(`clarity ${ibar.clarity}/${ibar.n} < 12 — engine/copy fundamentals broken`);
+  if (ibar.clarity < 12) triggered.push(`clarity ${ibar.clarity}/${ibar.n} < 12 — angles not specific enough (falsifiability.genericity ≥ 60)`);
   if (ibar.falsifiability < 12) triggered.push(`falsifiability ${ibar.falsifiability}/${ibar.n} < 12 — angles not biographical enough, another consultant could sign them`);
   // "majority of failures from one persona" gate
   const totalFailures = Object.values(ibar.perPersonaFailures).reduce((a, b) => a + b, 0);
