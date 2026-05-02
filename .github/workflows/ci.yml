@@ -126,6 +126,29 @@ jobs:
         # verifying threshold values for claims the README no longer makes.
         run: npx tsx scripts/consistency/audit-provenance.ts
 
+      - name: Post failure summary as PR comment
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## CI Quality Failure Diagnostic\n\n';
+            if (fs.existsSync('vitest.log')) {
+              const log = fs.readFileSync('vitest.log', 'utf8');
+              const lines = log.split('\n');
+              // Last 80 lines (failures appear at the end)
+              const tail = lines.slice(-80).join('\n');
+              body += '**Last 80 lines of vitest output:**\n```\n' + tail + '\n```\n';
+            } else {
+              body += '_vitest.log not found — failure occurred before Test step_\n';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
