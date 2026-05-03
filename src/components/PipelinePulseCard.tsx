@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { Activity, AlertCircle, ArrowRight, Target, TrendingUp } from "lucide-react";
 import { StaleLeadDraft } from "@/components/StaleLeadDraft";
+import { ChannelROIStrip } from "@/components/ChannelROIStrip";
 
 const MAX_STALE_TO_SHOW = 3;
 
@@ -159,6 +160,8 @@ export function PipelinePulseCard() {
             </div>
           </div>
         )}
+
+        <ChannelROIStrip leads={leads} />
 
         <Link to="/crm" className="block">
           <Button variant="ghost" size="sm" className="w-full text-xs gap-1 h-7">

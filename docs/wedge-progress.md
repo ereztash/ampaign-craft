@@ -70,7 +70,7 @@ WHERE status='closed' AND acquisition_source IS NOT NULL
 | 4 | AddLead Split | 2-3 | COMPLETE | CrmPage.tsx | PASS | C1 PASS, C2 PASS, C3 N/A | quickMode renders 3 fields; onAfterCreate navigates to LeadDetail for progressive disclosure |
 | 5 | TTV Badge | 2-3 | COMPLETE | TimeToValueBadge.tsx (new), CommandCenter.tsx, Wizard.tsx | PASS | C1 PASS, C2 PASS, C3 PASS | recordFirstOutput wired in Wizard; one-time celebratory banner |
 | 6 | Intake Pre-fill | 2-3 | COMPLETE | profilePrefill.ts (new), Wizard.tsx | PASS | C1 PASS, C2 N/A, C3 N/A | mainGoal, budgetCapacity, currentStuckPoint inferred from intake signal |
-| 7 | Channel ROI Strip | 4-5 | NOT_STARTED | — | — | — | — |
+| 7 | Channel ROI Strip | 4-5 | COMPLETE | ChannelROIStrip.tsx (new), PipelinePulseCard.tsx | PASS | C1 PASS, C2 PASS, C3 PASS | gates on >=5 closed leads + >=2 sources; data exposed already by useCrmInsights |
 
 ## Deferred
 
