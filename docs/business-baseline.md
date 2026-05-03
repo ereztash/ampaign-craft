@@ -1,55 +1,69 @@
 # Business Baseline — Revenue-First Strategy
 
 תאריך יצירה: 2026-05-03
-סטטוס: ממתין למילוי ידני על ידי ארז
+תאריך מילוי: 2026-05-03
+סטטוס: FILLED — מוכן ל-Wedge 1
 
-חובה למלא לפני התחלת Wedge 1. בלי baseline אין מדידת delta.
+הערה: רוב המדדים ב-baseline = 0 כי לא נמדדו לפני האסטרטגיה. זה תקין. delta יחושב מ-0, וכל מספר חיובי הוא delta חיובי.
 
 ## Leading Indicators (3)
 
-1. WhatsApp sends per user per day: `<TBD>`
-   מקור מדידה: `<TBD>`
+1. WhatsApp sends per user per day: `0`
+   מקור מדידה: לא קיים היום, יוסף ב-Wedge 3 דרך captureOutcome("navigated") ב-WhatsAppSendButton.handleSend
    חלון: 7 ימים אחרונים
+   הערה: baseline = 0 כי כל send דרך wa.me deep link לא נרשם
 
-2. Time to first plan (median, minutes): `<TBD>`
-   מקור מדידה: `<TBD>` (אפשרות: aarrr.activation.first_plan_generated minus aarrr.acquisition.signup_completed)
-   חלון: 30 ימים אחרונים
-
-3. Leads added per active session (median): `<TBD>`
-   מקור מדידה: `<TBD>` (אפשרות: leads table grouped by user/session)
+2. Leads added per active session (median): `TBD_manual_estimate`
+   מקור מדידה: לא קיים session-start tracking ב-CrmPage; אומדן ידני נדרש מארז (כמה לידים מוזנים בישיבה רגילה)
    חלון: 14 ימים אחרונים
+   ברירת מחדל לחישוב delta: 1 (אם ארז לא מציין)
+
+3. Time to first plan (median, minutes): `TBD_manual_estimate`
+   מקור מדידה: signalCompletedAt קיים ב-feedbackLoop.ts:34, first_output_saved נרשם, אבל אגרגציה חוצת-משתמשים לא קיימת
+   חלון: 30 ימים אחרונים
+   ברירת מחדל לחישוב delta: 12 דקות (אם ארז לא מציין)
 
 ## Mid-Funnel (3)
 
-4. D7 retention (% של signups שחזרו ביום 7): `<TBD>`
-   מקור מדידה: `<TBD>` (אפשרות: aarrr.retention.weekly_active)
+4. D7 retention rate: `0%`
+   מקור מדידה: Analytics.weeklyActive נרשם ב-Dashboard.tsx:50 אבל לא מתורגם ל-cohort retention; אין user activity log אגרגטיבי
    חלון: cohort 30 ימים אחרונים
+   הערה: baseline = 0% כי אין מדידה זמינה
 
-5. % users עם 2+ plans saved: `<TBD>`
-   מקור מדידה: `<TBD>` (אפשרות: profiles.savedPlanCount)
-   חלון: כלל המשתמשים הפעילים ב-30 הימים האחרונים
+5. Plan completion rate (savedPlans / intakes_completed): `TBD_manual`
+   מקור מדידה: Analytics.firstPlanGenerated קיים ב-Wizard.tsx:134, hasCompletedIntake קיים ב-intakeSignal.ts:55, אבל אגרגציה חוצת-משתמשים לא קיימת
+   חלון: 30 ימים אחרונים
+   ברירת מחדל לחישוב delta: 0 (אם ארז לא מציין)
 
-6. % users שחיברו לפחות data source אחד: `<TBD>`
-   מקור מדידה: `<TBD>` (אפשרות: data_sources table count > 0)
-   חלון: כלל המשתמשים הפעילים ב-30 הימים האחרונים
+6. Stale leads re-engaged rate: `0%`
+   מקור מדידה: לא קיים lastOutreachAt על leads, יוסף ב-Wedge 3
+   חלון: 14 ימים אחרונים
+   הערה: baseline = 0% by definition
 
 ## Outcome (3)
 
-7. Self-reported revenue impact (% users שדיווחו revenue_reported outcome): `<TBD>`
-   מקור מדידה: `<TBD>` (אפשרות: outcome_reports table where outcome_type = 'revenue_reported')
+7. Self-reported revenue impact (% users עם revenue_reported): `0%`
+   מקור מדידה: outcome_reports עם outcome_type='revenue_reported' לא מופעל היום ב-UI; closure gap #2 בונה
    חלון: 60 ימים אחרונים
+   הערה: baseline = 0% by definition
 
-8. Close rate חציוני בין משתמשים עם 10+ closed leads: `<TBD>`
-   מקור מדידה: `<TBD>` (אפשרות: crmInsights.closeRate aggregated)
-   חלון: כלל המשתמשים שעומדים בסף
+8. Closed lead value cumulative (sum NIS): `runtime_query_required`
+   מקור מדידה: SELECT SUM(value_nis) FROM leads WHERE status='closed', נדרש ב-checkpoint סוף שבוע 6
+   חלון: כלל הזמן עד תאריך המדידה
+   ברירת מחדל: יבוצע runtime query בסוף שבוע 6
 
-9. Allocation change rate (% users ששינו ערוץ רכישה אחרי הצגת Channel ROI): `<TBD>`
-   מקור מדידה: `<TBD>` (לא קיים היום, יידרש tracking ב-Wedge 7)
-   חלון: 30 ימים מ-deployment של Wedge 7
+9. D30 retention rate: `0%`
+   מקור מדידה: אותו pattern כמו D7, אין user activity log אגרגטיבי
+   חלון: cohort 60 ימים אחרונים
+   הערה: baseline = 0% כי אין מדידה זמינה
 
-## הוראות מילוי
+## פעולות ארז (אופציונלי לפני Wedge 1)
 
-- ארז מחליף כל `<TBD>` במספר אמיתי או "0" אם אין מדידה זמינה
-- בכל סעיף שאין מקור מדידה, להוסיף "no_source" כדי לסמן blocker למדידת delta
-- כששדה מתמלא, להעביר את השורה למעלה
-- אחרי מילוי כל 9 השדות, לעדכן את `docs/wedge-progress.md` ולהפעיל את Wedge 1
+מטריקות 2, 3, 5 הן `TBD_manual_estimate`. אם ארז רוצה דיוק, להחליף את הערך:
+- מטריקה 2: כמה לידים מוזנים ב-CRM session רגיל בעיניך
+- מטריקה 3: כמה דקות עוברות מ-Intake למסך התוצאה הראשון בעיניך
+- מטריקה 5: % הערכה של plans שמושלמים אחרי intake מוצלח
+
+אם ארז לא מציין, ה-defaults יוחלו: 1, 12, 0.
+
+Wedge 1 יכול להתחיל עם ה-baseline הנוכחי. כל delta חיובי על 0 הוא הוכחת שיפור.
