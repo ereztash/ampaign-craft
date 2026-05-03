@@ -18,13 +18,31 @@ import { useCrmInsights } from "@/hooks/useCrmInsights";
 import {
   generateLeadRecommendations,
   type LeadRecommendation,
+  type PriorOutreachOutcome,
 } from "@/engine/leadCoachEngine";
+import { safeStorage } from "@/lib/safeStorage";
 import { inferDISCProfile } from "@/engine/discProfileEngine";
 import { generateClosingStrategy } from "@/engine/neuroClosingEngine";
 import { calculateValueScore } from "@/engine/hormoziValueEngine";
 import { generateFunnel } from "@/engine/funnelEngine";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+interface OutreachLogEntry { leadId: string; recommendationId: string; sentAt: string }
+interface ReplyMarker { recommendationId: string; outcome: "replied" | "no_reply" | "converted"; loggedAt: string }
+
+function readPriorOutcomes(leadId: string): PriorOutreachOutcome[] {
+  const log = safeStorage.getJSON<OutreachLogEntry[]>("funnelforge-outreach-log", []);
+  const replies = safeStorage.getJSON<ReplyMarker[]>("funnelforge-outreach-replies", []);
+  const replyById = new Map(replies.map((r) => [r.recommendationId, r.outcome] as const));
+  return log
+    .filter((e) => e.leadId === leadId && replyById.has(e.recommendationId))
+    .map((e) => ({
+      recommendationId: e.recommendationId,
+      framework: null,
+      outcome: replyById.get(e.recommendationId) ?? "no_reply",
+    }));
+}
 
 interface UseLeadCoachResult {
   lead: Lead | null;
@@ -86,6 +104,8 @@ export function useLeadCoach(
       const closing = userDisc && formData ? generateClosingStrategy(userDisc, formData) : null;
       const hormozi = formData ? calculateValueScore(formData) : null;
 
+      const priorOutcomes = readPriorOutcomes(leadId);
+
       const recs = generateLeadRecommendations({
         userDisc,
         funnel,
@@ -94,6 +114,7 @@ export function useLeadCoach(
         crmInsights,
         lead: freshLead,
         interactions: freshInteractions,
+        priorOutcomes,
       });
 
       setRecommendations(recs);

@@ -25,8 +25,32 @@ import { tx } from "@/i18n/tx";
 import { safeStorage } from "@/lib/safeStorage";
 import type { SavedPlan } from "@/types/funnel";
 import type { Language } from "@/i18n/translations";
+import { recordFirstOutput } from "@/engine/intake/feedbackLoop";
+import { getIntakePrefill } from "@/engine/intake/profilePrefill";
+import { INITIAL_UNIFIED_PROFILE, type UnifiedProfile } from "@/types/profile";
 
 type WizardState = "onboarding" | "processing";
+
+/**
+ * Wedge 6 — pre-fill the SmartOnboarding initialProfile with whatever the
+ * user already disclosed via Intake. Existing profile fields take precedence
+ * (we never overwrite a real answer with a heuristic guess).
+ */
+function mergeIntakePrefill(existing: UnifiedProfile | null): UnifiedProfile | null {
+  const prefill = getIntakePrefill();
+  if (!prefill) return existing;
+  const base: UnifiedProfile = existing ?? { ...INITIAL_UNIFIED_PROFILE };
+  return {
+    ...prefill,
+    ...base,
+    // mainGoal & currentStuckPoint use prefill only when base has the default.
+    mainGoal: existing?.mainGoal && existing.mainGoal !== "sales"
+      ? existing.mainGoal
+      : prefill.mainGoal ?? base.mainGoal,
+    currentStuckPoint: base.currentStuckPoint || prefill.currentStuckPoint,
+    budgetCapacity: existing ? base.budgetCapacity : (prefill.budgetCapacity ?? base.budgetCapacity),
+  } as UnifiedProfile;
+}
 
 const Wizard = () => {
   const { language } = useLanguage();
@@ -158,6 +182,7 @@ const Wizard = () => {
     };
     plans.push(plan);
     safeStorage.setJSON("funnelforge-plans", plans);
+    recordFirstOutput("wizard");
     navigate(`/strategy/${result.id}`);
   }, [result, navigate, formDataCache, loadPromptOptimizations, regenerateHeroCopy]);
 
@@ -171,7 +196,7 @@ const Wizard = () => {
           </div>
           <SmartOnboarding
             onComplete={handleProfileComplete}
-            initialProfile={profile.unifiedProfile}
+            initialProfile={mergeIntakePrefill(profile.unifiedProfile)}
             onInsightsUpdate={handleInsightsUpdate}
           />
         </>
