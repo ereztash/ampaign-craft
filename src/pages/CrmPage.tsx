@@ -311,7 +311,7 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, language }: LeadCardPro
 
       {lead.phone && (
         <div onClick={stop} onKeyDown={stop} className="pt-0.5">
-          <WhatsAppSendButton message={waMessage} defaultPhone={lead.phone} size="sm" label={tx({ he: "WhatsApp", en: "WhatsApp" }, language)} />
+          <WhatsAppSendButton message={waMessage} defaultPhone={lead.phone} size="sm" label={tx({ he: "WhatsApp", en: "WhatsApp" }, language)} recommendationId={`whatsapp.lead.${lead.id}`} leadId={lead.id} />
         </div>
       )}
       {!lead.phone && lead.email && (
