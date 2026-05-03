@@ -68,7 +68,7 @@ WHERE status='closed' AND acquisition_source IS NOT NULL
 | 2 | Stale Leads → Drafts | 1 | COMPLETE | StaleLeadDraft.tsx (new), PipelinePulseCard.tsx, useCrmInsights.ts, outcomeLoopEngine.ts | PASS | C1 PASS, C2 PASS, C3 PASS | source enum extended; useCrmInsights now exposes leads+interactions |
 | 3 | WhatsApp Tracking | 1 | COMPLETE | OutreachReplyPrompt.tsx (new), WhatsAppSendButton.tsx, LeadDetail.tsx, leadCoachEngine.ts, useLeadCoach.ts | PASS | C1 PASS, C2 PASS, C3 PASS | 48h reply prompt; priorOutcomes added to engine signature |
 | 4 | AddLead Split | 2-3 | COMPLETE | CrmPage.tsx | PASS | C1 PASS, C2 PASS, C3 N/A | quickMode renders 3 fields; onAfterCreate navigates to LeadDetail for progressive disclosure |
-| 5 | TTV Badge | 2-3 | NOT_STARTED | — | — | — | — |
+| 5 | TTV Badge | 2-3 | COMPLETE | TimeToValueBadge.tsx (new), CommandCenter.tsx, Wizard.tsx | PASS | C1 PASS, C2 PASS, C3 PASS | recordFirstOutput wired in Wizard; one-time celebratory banner |
 | 6 | Intake Pre-fill | 2-3 | NOT_STARTED | — | — | — | — |
 | 7 | Channel ROI Strip | 4-5 | NOT_STARTED | — | — | — | — |
 

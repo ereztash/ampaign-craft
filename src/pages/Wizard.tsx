@@ -25,6 +25,7 @@ import { tx } from "@/i18n/tx";
 import { safeStorage } from "@/lib/safeStorage";
 import type { SavedPlan } from "@/types/funnel";
 import type { Language } from "@/i18n/translations";
+import { recordFirstOutput } from "@/engine/intake/feedbackLoop";
 
 type WizardState = "onboarding" | "processing";
 
@@ -158,6 +159,7 @@ const Wizard = () => {
     };
     plans.push(plan);
     safeStorage.setJSON("funnelforge-plans", plans);
+    recordFirstOutput("wizard");
     navigate(`/strategy/${result.id}`);
   }, [result, navigate, formDataCache, loadPromptOptimizations, regenerateHeroCopy]);
 
