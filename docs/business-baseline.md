@@ -30,10 +30,10 @@
    חלון: cohort 30 ימים אחרונים
    הערה: baseline = 0% כי אין מדידה זמינה
 
-5. Plan completion rate (savedPlans / intakes_completed): `PENDING_VERIFICATION`
-   מקור מדידה: Analytics.firstPlanGenerated קיים ב-Wizard.tsx:134, hasCompletedIntake קיים ב-intakeSignal.ts:55
+5. Plan completion rate (savedPlans / intakes_completed): `STRUCTURALLY_UNMEASURABLE`
+   מקור מדידה: Analytics.firstPlanGenerated קיים ב-Wizard.tsx:134, אבל אין אירוע `aarrr.activation.intake_completed` ב-eventQueue; hasCompletedIntake נשמר רק ב-localStorage (intakeSignal.ts:8 "Not synced to Supabase")
    חלון: 30 ימים אחרונים
-   הערה: ארז סימן את ה-default 0% כחשוד. בדיקה בקריאה הבאה לפני Wedge 1: count(savedPlans) / count(distinct users עם Intake completed). אם > 0% לעדכן baseline; אם = 0% האסטרטגיה דורשת re-evaluation לפני Wedge 1.
+   הערה: ה-default 0% החשוד הוא case 1 (אין תשתית). Wedge עתידי יכול להוסיף intake_completed event ל-eventQueue. לא חוסם את האסטרטגיה הנוכחית כי מטריקות 1-4, 6-9 ניתנות למדידה דרך השינויים של ה-wedges עצמם.
 
 6. Stale leads re-engaged rate: `0%`
    מקור מדידה: לא קיים lastOutreachAt על leads, יוסף ב-Wedge 3

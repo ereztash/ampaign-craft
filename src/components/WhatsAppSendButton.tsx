@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MessageCircle, Send, X } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { captureOutcome } from "@/engine/outcomeLoopEngine";
 
 interface WhatsAppSendButtonProps {
   message: string;
@@ -22,6 +24,22 @@ interface WhatsAppSendButtonProps {
   size?: "sm" | "default";
   variant?: "default" | "outline" | "ghost";
   label?: string;
+  /** Stable id for outcome tracking. Required to seal the action loop. */
+  recommendationId?: string;
+  /** Optional lead context for outcome payload. */
+  leadId?: string;
+}
+
+function normalizePhone(raw: string): string {
+  let n = raw.replace(/[\s\-()]/g, "");
+  if (n.startsWith("0")) n = "972" + n.slice(1);
+  if (!n.startsWith("+") && !n.startsWith("972")) n = "972" + n;
+  return n.replace(/^\+/, "");
+}
+
+function isValidPhone(raw: string): boolean {
+  const digits = raw.replace(/\D/g, "");
+  return digits.length >= 9 && digits.length <= 15;
 }
 
 export function WhatsAppSendButton({
@@ -30,34 +48,67 @@ export function WhatsAppSendButton({
   size = "sm",
   variant = "outline",
   label,
+  recommendationId,
+  leadId,
 }: WhatsAppSendButtonProps) {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const isHe = language === "he";
   const [phone, setPhone] = useState(defaultPhone);
   const [open, setOpen] = useState(false);
 
-  const handleSend = () => {
-    // Normalize phone: remove spaces, dashes, leading zeros, add country code if missing
-    let normalized = phone.replace(/[\s\-()]/g, "");
-    if (normalized.startsWith("0")) {
-      normalized = "972" + normalized.slice(1); // Israeli default
-    }
-    if (!normalized.startsWith("+") && !normalized.startsWith("972")) {
-      normalized = "972" + normalized;
-    }
-    normalized = normalized.replace(/^\+/, "");
+  const recordSend = (sentPhone: string) => {
+    if (!recommendationId) return;
+    captureOutcome(
+      recommendationId,
+      user?.id ?? null,
+      "navigated",
+      7,
+      leadId ? 1 : null,
+    );
+  };
 
+  const handleSend = () => {
+    const normalized = normalizePhone(phone);
+    recordSend(normalized);
     const url = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     setOpen(false);
   };
 
   const handleSendNoPhone = () => {
-    // Open WhatsApp without specific contact (user picks from their contacts)
+    recordSend("");
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     setOpen(false);
   };
+
+  // Direct-send path: skip popover when defaultPhone is valid 9-15 digits.
+  const handleTriggerClick = () => {
+    if (isValidPhone(defaultPhone)) {
+      const normalized = normalizePhone(defaultPhone);
+      recordSend(normalized);
+      const url = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    setOpen(true);
+  };
+
+  // When defaultPhone is valid, render a direct-send button (no popover).
+  if (isValidPhone(defaultPhone)) {
+    return (
+      <Button
+        size={size}
+        variant={variant}
+        onClick={handleTriggerClick}
+        className="gap-1.5 text-green-700 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-700 dark:hover:bg-green-900/20"
+      >
+        <MessageCircle className="h-3.5 w-3.5 fill-green-500 text-green-500" />
+        {label ?? (tx({ he: "שלח ב-WhatsApp", en: "Send via WhatsApp" }, language))}
+      </Button>
+    );
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

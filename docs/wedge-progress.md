@@ -64,7 +64,7 @@ WHERE status='closed' AND acquisition_source IS NOT NULL
 
 | Wedge | Name | Week | Status | Files | Lint | C1/C2/C3 | Decision |
 |---|---|---|---|---|---|---|---|
-| 1 | WhatsApp defaultPhone | 1 | NOT_STARTED | — | — | — | — |
+| 1 | WhatsApp defaultPhone | 1 | COMPLETE | WhatsAppSendButton.tsx, CrmPage.tsx:314 | PASS | C1 PASS, C2 PASS, C3 PASS | direct-send when defaultPhone valid; captureOutcome wired |
 | 2 | Stale Leads → Drafts | 1 | NOT_STARTED | — | — | — | — |
 | 3 | WhatsApp Tracking | 1 | NOT_STARTED | — | — | — | — |
 | 4 | AddLead Split | 2-3 | NOT_STARTED | — | — | — | — |
