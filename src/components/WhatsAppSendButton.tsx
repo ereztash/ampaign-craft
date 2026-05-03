@@ -16,6 +16,20 @@ import { Label } from "@/components/ui/label";
 import { MessageCircle, Send, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { captureOutcome } from "@/engine/outcomeLoopEngine";
+import { safeStorage } from "@/lib/safeStorage";
+
+interface OutreachLogEntry {
+  leadId: string;
+  recommendationId: string;
+  sentAt: string;
+}
+
+function appendOutreachLog(entry: OutreachLogEntry): void {
+  const key = "funnelforge-outreach-log";
+  const existing = safeStorage.getJSON<OutreachLogEntry[]>(key, []);
+  const trimmed = [...existing.filter((e) => e.leadId !== entry.leadId), entry].slice(-200);
+  safeStorage.setJSON(key, trimmed);
+}
 
 interface WhatsAppSendButtonProps {
   message: string;
@@ -66,6 +80,13 @@ export function WhatsAppSendButton({
       7,
       leadId ? 1 : null,
     );
+    if (leadId) {
+      appendOutreachLog({
+        leadId,
+        recommendationId,
+        sentAt: new Date().toISOString(),
+      });
+    }
   };
 
   const handleSend = () => {

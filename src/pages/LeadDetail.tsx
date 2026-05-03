@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useLeadCoach } from "@/hooks/useLeadCoach";
 import { LeadCoachPanel } from "@/components/LeadCoachPanel";
+import { OutreachReplyPrompt } from "@/components/OutreachReplyPrompt";
 import { addInteraction, type InteractionType } from "@/services/leadsService";
 
 const INTERACTION_TYPES: { id: InteractionType; he: string; en: string }[] = [
@@ -148,6 +149,8 @@ const LeadDetail = () => {
             )}
           </CardContent>
         </Card>
+
+        <OutreachReplyPrompt leadId={lead.id} leadValueNIS={lead.valueNIS} />
 
         <div className="mb-4">
           <LeadCoachPanel recommendations={recommendations} loading={loading} />

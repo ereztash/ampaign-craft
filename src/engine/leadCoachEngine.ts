@@ -46,6 +46,12 @@ export interface LeadRecommendation {
   confidence: number;
 }
 
+export interface PriorOutreachOutcome {
+  recommendationId: string;
+  framework: Framework | null;
+  outcome: "replied" | "no_reply" | "converted";
+}
+
 export interface LeadCoachInput {
   userDisc: DISCProfile | null;
   funnel: FunnelResult | null;
@@ -56,6 +62,12 @@ export interface LeadCoachInput {
   interactions: LeadInteraction[];
   /** Pin "now" in tests. */
   now?: Date;
+  /**
+   * Wedge 3 — Engine Learning. Outcomes of prior outreach attempts on this
+   * lead. The engine downweights frameworks that produced "no_reply" twice
+   * or more and reorders so unfamiliar frameworks rise.
+   */
+  priorOutcomes?: PriorOutreachOutcome[];
 }
 
 // ─── Citations ──────────────────────────────────
@@ -384,6 +396,29 @@ function leverageRec(input: LeadCoachInput): LeadRecommendation {
 
 // ─── Public entry point ─────────────────────────
 
+function applyPriorOutcomes(
+  recs: LeadRecommendation[],
+  priorOutcomes: PriorOutreachOutcome[] | undefined,
+): LeadRecommendation[] {
+  if (!priorOutcomes || priorOutcomes.length === 0) return recs;
+
+  const failureCounts = new Map<Framework, number>();
+  for (const o of priorOutcomes) {
+    if (o.outcome !== "no_reply" || !o.framework) continue;
+    failureCounts.set(o.framework, (failureCounts.get(o.framework) ?? 0) + 1);
+  }
+  if (failureCounts.size === 0) return recs;
+
+  const dampened = recs.map((r) => {
+    const failures = failureCounts.get(r.framework) ?? 0;
+    if (failures < 2) return r;
+    const penalty = Math.min(0.5, failures * 0.2);
+    return { ...r, confidence: Math.max(0, r.confidence - penalty) };
+  });
+  return dampened.sort((a, b) => b.confidence - a.confidence);
+}
+
 export function generateLeadRecommendations(input: LeadCoachInput): LeadRecommendation[] {
-  return [approachRec(input), timingRec(input), leverageRec(input)];
+  const base = [approachRec(input), timingRec(input), leverageRec(input)];
+  return applyPriorOutcomes(base, input.priorOutcomes);
 }

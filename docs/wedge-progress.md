@@ -66,7 +66,7 @@ WHERE status='closed' AND acquisition_source IS NOT NULL
 |---|---|---|---|---|---|---|---|
 | 1 | WhatsApp defaultPhone | 1 | COMPLETE | WhatsAppSendButton.tsx, CrmPage.tsx:314 | PASS | C1 PASS, C2 PASS, C3 PASS | direct-send when defaultPhone valid; captureOutcome wired |
 | 2 | Stale Leads → Drafts | 1 | COMPLETE | StaleLeadDraft.tsx (new), PipelinePulseCard.tsx, useCrmInsights.ts, outcomeLoopEngine.ts | PASS | C1 PASS, C2 PASS, C3 PASS | source enum extended; useCrmInsights now exposes leads+interactions |
-| 3 | WhatsApp Tracking | 1 | NOT_STARTED | — | — | — | — |
+| 3 | WhatsApp Tracking | 1 | COMPLETE | OutreachReplyPrompt.tsx (new), WhatsAppSendButton.tsx, LeadDetail.tsx, leadCoachEngine.ts, useLeadCoach.ts | PASS | C1 PASS, C2 PASS, C3 PASS | 48h reply prompt; priorOutcomes added to engine signature |
 | 4 | AddLead Split | 2-3 | NOT_STARTED | — | — | — | — |
 | 5 | TTV Badge | 2-3 | NOT_STARTED | — | — | — | — |
 | 6 | Intake Pre-fill | 2-3 | NOT_STARTED | — | — | — | — |
