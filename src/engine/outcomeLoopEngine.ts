@@ -24,7 +24,11 @@ export type RecommendationSource =
   | "guidance_panel"     // KPI guidance items
   | "archetype_pipeline" // ArchetypePipelineGuide steps
   | "express_wizard"     // ExpressWizard onboarding
-  | "ssl_similar";       // Loop 7: contrastive-learned similar-plan suggestion
+  | "ssl_similar"        // Loop 7: contrastive-learned similar-plan suggestion
+  | "pipeline_pulse"     // Wedge 2: stale-lead drafts in PipelinePulseCard
+  | "lead_outreach"      // Wedge 1/3: WhatsApp send from a lead context
+  | "ttv_badge"          // Wedge 5: time-to-value celebration banner
+  | "channel_roi";       // Wedge 7: ChannelROIStrip allocation actions
 
 export type VariantPickChoice =
   | "primary"    // "Use this" — strong positive signal

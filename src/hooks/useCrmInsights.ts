@@ -18,6 +18,8 @@ import { computeCrmInsights, type CrmInsights } from "@/engine/crmInsightEngine"
 
 interface UseCrmInsightsResult {
   insights: CrmInsights | null;
+  leads: Lead[];
+  interactions: LeadInteraction[];
   loading: boolean;
   refresh: () => void;
 }
@@ -48,6 +50,8 @@ async function listAllInteractionsForUser(userId: string): Promise<LeadInteracti
 
 export function useCrmInsights(userId: string | undefined): UseCrmInsightsResult {
   const [insights, setInsights] = useState<CrmInsights | null>(null);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [interactions, setInteractions] = useState<LeadInteraction[]>([]);
   const [loading, setLoading] = useState(false);
   const [tick, setTick] = useState(0);
 
@@ -56,21 +60,25 @@ export function useCrmInsights(userId: string | undefined): UseCrmInsightsResult
   useEffect(() => {
     if (!userId) {
       setInsights(null);
+      setLeads([]);
+      setInteractions([]);
       return;
     }
     let cancelled = false;
     setLoading(true);
     void (async () => {
-      const [leads, interactions]: [Lead[], LeadInteraction[]] = await Promise.all([
+      const [leadsData, interactionsData]: [Lead[], LeadInteraction[]] = await Promise.all([
         listLeads(userId),
         listAllInteractionsForUser(userId),
       ]);
       if (cancelled) return;
-      setInsights(computeCrmInsights(leads, interactions));
+      setLeads(leadsData);
+      setInteractions(interactionsData);
+      setInsights(computeCrmInsights(leadsData, interactionsData));
       setLoading(false);
     })();
     return () => { cancelled = true; };
   }, [userId, tick]);
 
-  return { insights, loading, refresh };
+  return { insights, leads, interactions, loading, refresh };
 }

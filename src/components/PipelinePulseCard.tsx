@@ -17,13 +17,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { Activity, AlertCircle, ArrowRight, Target, TrendingUp } from "lucide-react";
+import { StaleLeadDraft } from "@/components/StaleLeadDraft";
 
 const MAX_STALE_TO_SHOW = 3;
 
 export function PipelinePulseCard() {
   const { language } = useLanguage();
   const { user } = useAuth();
-  const { insights, loading } = useCrmInsights(user?.id);
+  const { insights, leads, interactions, loading } = useCrmInsights(user?.id);
 
   if (loading || !insights || insights.totalLeads === 0) return null;
 
@@ -61,18 +62,32 @@ export function PipelinePulseCard() {
                   </Badge>
                 </div>
                 <ul className="mt-1 space-y-0.5">
-                  {insights.staleLeads.slice(0, MAX_STALE_TO_SHOW).map((s) => (
-                    <li key={s.leadId} className="text-[11px] text-muted-foreground flex items-center gap-1" dir="auto">
-                      <span className="truncate">{s.name}</span>
-                      <span className="opacity-70">·</span>
-                      <span className="opacity-70 shrink-0">
-                        {tx({ he: `${s.daysSinceLastTouch} ימים`, en: `${s.daysSinceLastTouch}d` }, language)}
-                      </span>
-                      <Link to={`/crm/${s.leadId}`} className="ms-auto text-primary hover:underline shrink-0">
-                        <ArrowRight className="h-3 w-3" />
-                      </Link>
-                    </li>
-                  ))}
+                  {insights.staleLeads.slice(0, MAX_STALE_TO_SHOW).map((s) => {
+                    const fullLead = leads.find((l) => l.id === s.leadId);
+                    if (!fullLead) {
+                      return (
+                        <li key={s.leadId} className="text-[11px] text-muted-foreground flex items-center gap-1" dir="auto">
+                          <span className="truncate">{s.name}</span>
+                          <span className="opacity-70">·</span>
+                          <span className="opacity-70 shrink-0">
+                            {tx({ he: `${s.daysSinceLastTouch} ימים`, en: `${s.daysSinceLastTouch}d` }, language)}
+                          </span>
+                          <Link to={`/crm/${s.leadId}`} className="ms-auto text-primary hover:underline shrink-0">
+                            <ArrowRight className="h-3 w-3" />
+                          </Link>
+                        </li>
+                      );
+                    }
+                    return (
+                      <StaleLeadDraft
+                        key={s.leadId}
+                        lead={fullLead}
+                        interactions={interactions}
+                        crmInsights={insights}
+                        daysSinceLastTouch={s.daysSinceLastTouch}
+                      />
+                    );
+                  })}
                 </ul>
               </div>
             </div>
