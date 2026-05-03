@@ -45,7 +45,20 @@ WHERE status='closed' AND acquisition_source IS NOT NULL
 - אחרי 30 יום עדיין < 5: להעביר ל-deep-refactor.md, לבטל Wedge 7 בסבב הנוכחי
 
 ### Branch Workflow Decision (פעולה ד')
-החלטה: כל הסבב על branch אחד `claude/improve-app-utility-l9ps6` עם commit נפרד פר wedge. נימוק: ארז שאל אבל לא הכריע. ה-default הזה משמר commits אטומיים עם reversibility פר wedge דרך git revert, בלי overhead של branch-per-wedge merging. ניתן לשינוי בקריאה הבאה אם ארז מעדיף branch-per-wedge.
+סטטוס: CONFIRMED על ידי ארז.
+כל הסבב על branch אחד `claude/improve-app-utility-l9ps6` עם commit נפרד פר wedge. reversibility דרך git revert. אם אחרי Wedge 3 history מבלבל, מעבר ל-branch-per-wedge.
+
+### Pre-Wedge-1 Verification (חובה בקריאה הבאה)
+ארז סימן את ה-default 0% של מטריקה 5 (Plan completion rate) כחשוד. לפני התחלת Wedge 1:
+
+1. הרצת בדיקה: count(savedPlans) חלקי count(distinct users שהשלימו Intake)
+   - מקור: supabase profiles + plans tables, או localStorage funnelforge-plans + funnelforge-intake-signal
+   - גודל מדגם: כל המשתמשים הזמינים, חלון 30 יום
+2. אם הספירה > 0%: לעדכן business-baseline.md מטריקה 5 לערך האמיתי, ולהמשיך ל-Wedge 1
+3. אם הספירה = 0% אמיתי: STOP, לדווח לארז. שבעת ה-wedges לא יזיזו את הצוואר העיקרי. ארז יחליט אם wedge 0 חדש (Plan Completion) קודם ל-1.
+
+### Composite Call Permission
+הקריאה הבאה היא composite מותר: verification של 5 דקות + (תנאי) Wedge 1 implementation. חריגה מ-one-wedge-per-session מאושרת על ידי ארז.
 
 ## Wedge Status Tracker
 

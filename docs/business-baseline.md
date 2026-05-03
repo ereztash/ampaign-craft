@@ -13,15 +13,15 @@
    חלון: 7 ימים אחרונים
    הערה: baseline = 0 כי כל send דרך wa.me deep link לא נרשם
 
-2. Leads added per active session (median): `TBD_manual_estimate`
-   מקור מדידה: לא קיים session-start tracking ב-CrmPage; אומדן ידני נדרש מארז (כמה לידים מוזנים בישיבה רגילה)
+2. Leads added per active session (median): `1`
+   מקור מדידה: לא קיים session-start tracking ב-CrmPage; default מקובל מ-ארז
    חלון: 14 ימים אחרונים
-   ברירת מחדל לחישוב delta: 1 (אם ארז לא מציין)
+   הערה: bias check בנקודת הבדיקה של שבוע 1
 
-3. Time to first plan (median, minutes): `TBD_manual_estimate`
-   מקור מדידה: signalCompletedAt קיים ב-feedbackLoop.ts:34, first_output_saved נרשם, אבל אגרגציה חוצת-משתמשים לא קיימת
+3. Time to first plan (median, minutes): `12`
+   מקור מדידה: signalCompletedAt קיים ב-feedbackLoop.ts:34, first_output_saved נרשם, אגרגציה חוצת-משתמשים לא קיימת
    חלון: 30 ימים אחרונים
-   ברירת מחדל לחישוב delta: 12 דקות (אם ארז לא מציין)
+   הערה: default מקובל מ-ארז. bias check בנקודת הבדיקה של שבוע 1, target המרכזי של Wedges 5+6
 
 ## Mid-Funnel (3)
 
@@ -30,10 +30,10 @@
    חלון: cohort 30 ימים אחרונים
    הערה: baseline = 0% כי אין מדידה זמינה
 
-5. Plan completion rate (savedPlans / intakes_completed): `TBD_manual`
-   מקור מדידה: Analytics.firstPlanGenerated קיים ב-Wizard.tsx:134, hasCompletedIntake קיים ב-intakeSignal.ts:55, אבל אגרגציה חוצת-משתמשים לא קיימת
+5. Plan completion rate (savedPlans / intakes_completed): `PENDING_VERIFICATION`
+   מקור מדידה: Analytics.firstPlanGenerated קיים ב-Wizard.tsx:134, hasCompletedIntake קיים ב-intakeSignal.ts:55
    חלון: 30 ימים אחרונים
-   ברירת מחדל לחישוב delta: 0 (אם ארז לא מציין)
+   הערה: ארז סימן את ה-default 0% כחשוד. בדיקה בקריאה הבאה לפני Wedge 1: count(savedPlans) / count(distinct users עם Intake completed). אם > 0% לעדכן baseline; אם = 0% האסטרטגיה דורשת re-evaluation לפני Wedge 1.
 
 6. Stale leads re-engaged rate: `0%`
    מקור מדידה: לא קיים lastOutreachAt על leads, יוסף ב-Wedge 3
@@ -57,13 +57,11 @@
    חלון: cohort 60 ימים אחרונים
    הערה: baseline = 0% כי אין מדידה זמינה
 
-## פעולות ארז (אופציונלי לפני Wedge 1)
+## סטטוס מילוי
 
-מטריקות 2, 3, 5 הן `TBD_manual_estimate`. אם ארז רוצה דיוק, להחליף את הערך:
-- מטריקה 2: כמה לידים מוזנים ב-CRM session רגיל בעיניך
-- מטריקה 3: כמה דקות עוברות מ-Intake למסך התוצאה הראשון בעיניך
-- מטריקה 5: % הערכה של plans שמושלמים אחרי intake מוצלח
+- מטריקות 1, 4, 6, 7, 9: 0% by definition (אין מדידה לפני האסטרטגיה)
+- מטריקות 2, 3: defaults אושרו (1 ליד/session, 12 דקות לתוכנית). bias check בשבוע 1.
+- מטריקה 5: PENDING_VERIFICATION. נדרשת בדיקה בקריאה הבאה לפני Wedge 1.
+- מטריקה 8: runtime query בסוף שבוע 6.
 
-אם ארז לא מציין, ה-defaults יוחלו: 1, 12, 0.
-
-Wedge 1 יכול להתחיל עם ה-baseline הנוכחי. כל delta חיובי על 0 הוא הוכחת שיפור.
+Wedge 1 יכול להתחיל רק אחרי verification של מטריקה 5.
