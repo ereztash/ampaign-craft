@@ -109,16 +109,21 @@ interface LeadFormDialogProps {
   trigger: React.ReactNode;
   initial?: Lead;
   defaultStatus?: LeadStatus;
-  onSave: (form: LeadFormState, existing?: Lead) => Promise<void>;
+  onSave: (form: LeadFormState, existing?: Lead) => Promise<Lead | null>;
+  /** Wedge 4: render only name/phone/source for create flow. */
+  quickMode?: boolean;
+  /** Wedge 4: navigate to LeadDetail after a quick-mode create. */
+  onAfterCreate?: (lead: Lead) => void;
 }
 
-function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: LeadFormDialogProps) {
+function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave, quickMode = false, onAfterCreate }: LeadFormDialogProps) {
   const { language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<LeadFormState>(
     initial ? leadToForm(initial) : blankForm(defaultStatus)
   );
   const [saving, setSaving] = useState(false);
+  const isQuick = quickMode && !initial;
 
   const set = <K extends keyof LeadFormState>(k: K, v: LeadFormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -127,9 +132,10 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
     if (!form.name.trim() || saving) return;
     setSaving(true);
     try {
-      await onSave(form, initial);
+      const result = await onSave(form, initial);
       setOpen(false);
       if (!initial) setForm(blankForm(defaultStatus));
+      if (isQuick && result && onAfterCreate) onAfterCreate(result);
     } finally {
       setSaving(false);
     }
@@ -156,52 +162,64 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
             <Input id="lead-phone" dir="ltr" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="050-000-0000" />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="lead-email" className="text-xs" dir="auto">{tx({ he: "אימייל", en: "Email" }, language)}</Label>
-            <Input id="lead-email" dir="ltr" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="name@company.com" />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="lead-biz" className="text-xs" dir="auto">{tx({ he: "שם עסק", en: "Business" }, language)}</Label>
-            <Input id="lead-biz" dir="auto" value={form.business} onChange={(e) => set("business", e.target.value)} placeholder={tx({ he: "שם החברה", en: "Company name" }, language)} />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <Label className="text-xs" dir="auto">{tx({ he: "ערך עסקה (₪)", en: "Deal Value (₪)" }, language)}</Label>
-              <Input dir="ltr" type="number" min={0} value={form.valueNIS || ""} onChange={(e) => set("valueNIS", Number(e.target.value))} placeholder="0" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs" dir="auto">{tx({ he: "סטטוס", en: "Status" }, language)}</Label>
-              <Select value={form.status} onValueChange={(v) => set("status", v as LeadStatus)}>
-                <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {COLUMNS.map((col) => (
-                    <SelectItem key={col.id} value={col.id} className="text-xs">{tx(col, language)}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="lead-followup" className="text-xs" dir="auto">{tx({ he: "פולואפ הבא", en: "Next Follow-up" }, language)}</Label>
-            <Input id="lead-followup" dir="ltr" type="date" value={form.nextFollowup} onChange={(e) => set("nextFollowup", e.target.value)} />
-          </div>
-          <div className="space-y-1">
             <Label htmlFor="lead-source" className="text-xs" dir="auto">{tx({ he: "מקור (איך הגיע אליך?)", en: "Source (how did they find you?)" }, language)}</Label>
             <Input id="lead-source" dir="auto" value={form.source} onChange={(e) => set("source", e.target.value)} placeholder={tx({ he: "פייסבוק, הפניה, אתר...", en: "Facebook, referral, website..." }, language)} />
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="lead-whyus" className="text-xs" dir="auto">{tx({ he: "למה דווקא אצלך? (הסיבה הראשית שלהם)", en: "Why you? (their main reason)" }, language)}</Label>
-            <Textarea id="lead-whyus" dir="auto" rows={2} value={form.whyUs} onChange={(e) => set("whyUs", e.target.value)} placeholder={tx({ he: "מה שכנע אותם לפנות אליך דווקא?", en: "What convinced them to reach out specifically to you?" }, language)} className="resize-none text-xs" />
-          </div>
-          {showLostReason && (
-            <div className="space-y-1">
-              <Label htmlFor="lead-lost" className="text-xs" dir="auto">{tx({ he: "סיבת הפסד", en: "Lost reason" }, language)}</Label>
-              <Textarea id="lead-lost" dir="auto" rows={2} value={form.lostReason} onChange={(e) => set("lostReason", e.target.value)} placeholder={tx({ he: "מה גרם להם לבחור אחרת?", en: "What made them go elsewhere?" }, language)} className="resize-none text-xs" />
-            </div>
+          {!isQuick && (
+            <>
+              <div className="space-y-1">
+                <Label htmlFor="lead-email" className="text-xs" dir="auto">{tx({ he: "אימייל", en: "Email" }, language)}</Label>
+                <Input id="lead-email" dir="ltr" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="name@company.com" />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="lead-biz" className="text-xs" dir="auto">{tx({ he: "שם עסק", en: "Business" }, language)}</Label>
+                <Input id="lead-biz" dir="auto" value={form.business} onChange={(e) => set("business", e.target.value)} placeholder={tx({ he: "שם החברה", en: "Company name" }, language)} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs" dir="auto">{tx({ he: "ערך עסקה (₪)", en: "Deal Value (₪)" }, language)}</Label>
+                  <Input dir="ltr" type="number" min={0} value={form.valueNIS || ""} onChange={(e) => set("valueNIS", Number(e.target.value))} placeholder="0" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs" dir="auto">{tx({ he: "סטטוס", en: "Status" }, language)}</Label>
+                  <Select value={form.status} onValueChange={(v) => set("status", v as LeadStatus)}>
+                    <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {COLUMNS.map((col) => (
+                        <SelectItem key={col.id} value={col.id} className="text-xs">{tx(col, language)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="lead-followup" className="text-xs" dir="auto">{tx({ he: "פולואפ הבא", en: "Next Follow-up" }, language)}</Label>
+                <Input id="lead-followup" dir="ltr" type="date" value={form.nextFollowup} onChange={(e) => set("nextFollowup", e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="lead-whyus" className="text-xs" dir="auto">{tx({ he: "למה דווקא אצלך? (הסיבה הראשית שלהם)", en: "Why you? (their main reason)" }, language)}</Label>
+                <Textarea id="lead-whyus" dir="auto" rows={2} value={form.whyUs} onChange={(e) => set("whyUs", e.target.value)} placeholder={tx({ he: "מה שכנע אותם לפנות אליך דווקא?", en: "What convinced them to reach out specifically to you?" }, language)} className="resize-none text-xs" />
+              </div>
+              {showLostReason && (
+                <div className="space-y-1">
+                  <Label htmlFor="lead-lost" className="text-xs" dir="auto">{tx({ he: "סיבת הפסד", en: "Lost reason" }, language)}</Label>
+                  <Textarea id="lead-lost" dir="auto" rows={2} value={form.lostReason} onChange={(e) => set("lostReason", e.target.value)} placeholder={tx({ he: "מה גרם להם לבחור אחרת?", en: "What made them go elsewhere?" }, language)} className="resize-none text-xs" />
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label htmlFor="lead-notes" className="text-xs" dir="auto">{tx({ he: "הערות", en: "Notes" }, language)}</Label>
+                <Textarea id="lead-notes" dir="auto" rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder={tx({ he: "הערות חופשיות...", en: "Free notes..." }, language)} className="resize-none text-xs" />
+              </div>
+            </>
           )}
-          <div className="space-y-1">
-            <Label htmlFor="lead-notes" className="text-xs" dir="auto">{tx({ he: "הערות", en: "Notes" }, language)}</Label>
-            <Textarea id="lead-notes" dir="auto" rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder={tx({ he: "הערות חופשיות...", en: "Free notes..." }, language)} className="resize-none text-xs" />
-          </div>
+          {isQuick && (
+            <p className="text-[11px] text-muted-foreground" dir="auto">
+              {tx({
+                he: "אחרי שמירה תועבר לכרטיס הליד כדי להוסיף פרטים נוספים.",
+                en: "After saving you'll be taken to the lead card to add more details.",
+              }, language)}
+            </p>
+          )}
           <Button className="w-full" onClick={handleSubmit} disabled={!form.name.trim() || saving}>
             {saving
               ? tx({ he: "שומר...", en: "Saving..." }, language)
@@ -218,7 +236,7 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave }: Le
 interface LeadCardProps {
   lead: Lead;
   col: ColDef;
-  onEdit: (form: LeadFormState, existing?: Lead) => Promise<void>;
+  onEdit: (form: LeadFormState, existing?: Lead) => Promise<Lead | null>;
   onDelete: (id: string) => Promise<void>;
   onMove: (id: string, status: LeadStatus) => Promise<void>;
   language: "he" | "en";
@@ -351,8 +369,8 @@ const CrmPage = () => {
   }, [user?.id]);
 
   const handleSave = useCallback(
-    async (form: LeadFormState, existing?: Lead) => {
-      if (!user?.id) return;
+    async (form: LeadFormState, existing?: Lead): Promise<Lead | null> => {
+      if (!user?.id) return null;
       const isFirst = leads.length === 0 && !existing;
       const payload = {
         name: form.name.trim(),
@@ -371,24 +389,33 @@ const CrmPage = () => {
         const updated = await updateLead(existing.id, payload);
         if (!updated) {
           toast({ title: tx({ he: "השמירה נכשלה", en: "Save failed" }, language), variant: "destructive" });
-          return;
+          return null;
         }
         setLeads((prev) => prev.map((l) => (l.id === existing.id ? updated : l)));
         toast({ title: tx({ he: "הליד עודכן", en: "Lead updated" }, language) });
+        return updated;
       } else {
         const created = await createLead(user.id, payload);
         if (!created) {
           toast({ title: tx({ he: "השמירה נכשלה", en: "Save failed" }, language), variant: "destructive" });
-          return;
+          return null;
         }
         setLeads((prev) => [created, ...prev]);
         toast({ title: tx({ he: "ליד חדש נוסף", en: "Lead added" }, language) });
         if (isFirst) {
           Analytics.firstLeadLogged(user.id, created.id, created.source || undefined);
         }
+        return created;
       }
     },
     [user?.id, leads.length, toast, language],
+  );
+
+  const handleQuickAfterCreate = useCallback(
+    (created: Lead) => {
+      navigate(`/crm/${created.id}`);
+    },
+    [navigate],
   );
 
   const handleDelete = useCallback(
@@ -475,6 +502,8 @@ const CrmPage = () => {
               </Button>
             }
             onSave={handleSave}
+            quickMode
+            onAfterCreate={handleQuickAfterCreate}
           />
         </div>
 
@@ -522,6 +551,8 @@ const CrmPage = () => {
                 </Button>
               }
               onSave={handleSave}
+              quickMode
+              onAfterCreate={handleQuickAfterCreate}
             />
           </div>
         )}
@@ -558,6 +589,8 @@ const CrmPage = () => {
                     }
                     defaultStatus={col.id}
                     onSave={handleSave}
+                    quickMode
+                    onAfterCreate={handleQuickAfterCreate}
                   />
                 </div>
               );
