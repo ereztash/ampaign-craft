@@ -45,6 +45,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { WhatsAppSendButton } from "@/components/WhatsAppSendButton";
 import { EmailComposer } from "@/components/EmailComposer";
+import { SilentBoundary } from "@/components/SilentBoundary";
 import {
   Plus, Users, MoreVertical, Pencil, Trash2, Calendar,
   DollarSign, Building2,
@@ -329,7 +330,9 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, language }: LeadCardPro
 
       {lead.phone && (
         <div onClick={stop} onKeyDown={stop} className="pt-0.5">
-          <WhatsAppSendButton message={waMessage} defaultPhone={lead.phone} size="sm" label={tx({ he: "WhatsApp", en: "WhatsApp" }, language)} recommendationId={`whatsapp.lead.${lead.id}`} leadId={lead.id} />
+          <SilentBoundary tag="WhatsAppSendButton.LeadCard">
+            <WhatsAppSendButton message={waMessage} defaultPhone={lead.phone} size="sm" label={tx({ he: "WhatsApp", en: "WhatsApp" }, language)} recommendationId={`whatsapp.lead.${lead.id}`} leadId={lead.id} />
+          </SilentBoundary>
         </div>
       )}
       {!lead.phone && lead.email && (

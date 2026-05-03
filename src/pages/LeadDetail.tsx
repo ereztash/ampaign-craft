@@ -23,6 +23,7 @@ import {
 import { useLeadCoach } from "@/hooks/useLeadCoach";
 import { LeadCoachPanel } from "@/components/LeadCoachPanel";
 import { OutreachReplyPrompt } from "@/components/OutreachReplyPrompt";
+import { SilentBoundary } from "@/components/SilentBoundary";
 import { addInteraction, type InteractionType } from "@/services/leadsService";
 
 const INTERACTION_TYPES: { id: InteractionType; he: string; en: string }[] = [
@@ -150,7 +151,9 @@ const LeadDetail = () => {
           </CardContent>
         </Card>
 
-        <OutreachReplyPrompt leadId={lead.id} leadValueNIS={lead.valueNIS} />
+        <SilentBoundary tag="OutreachReplyPrompt">
+          <OutreachReplyPrompt leadId={lead.id} leadValueNIS={lead.valueNIS} />
+        </SilentBoundary>
 
         <div className="mb-4">
           <LeadCoachPanel recommendations={recommendations} loading={loading} />

@@ -25,10 +25,14 @@ interface OutreachLogEntry {
 }
 
 function appendOutreachLog(entry: OutreachLogEntry): void {
-  const key = "funnelforge-outreach-log";
-  const existing = safeStorage.getJSON<OutreachLogEntry[]>(key, []);
-  const trimmed = [...existing.filter((e) => e.leadId !== entry.leadId), entry].slice(-200);
-  safeStorage.setJSON(key, trimmed);
+  try {
+    const key = "funnelforge-outreach-log";
+    const existing = safeStorage.getJSON<OutreachLogEntry[]>(key, []);
+    const trimmed = [...existing.filter((e) => e.leadId !== entry.leadId), entry].slice(-200);
+    safeStorage.setJSON(key, trimmed);
+  } catch {
+    // localStorage can throw on quota exceeded or in private mode
+  }
 }
 
 interface WhatsAppSendButtonProps {
@@ -73,13 +77,17 @@ export function WhatsAppSendButton({
 
   const recordSend = (sentPhone: string) => {
     if (!recommendationId) return;
-    captureOutcome(
-      recommendationId,
-      user?.id ?? null,
-      "navigated",
-      7,
-      leadId ? 1 : null,
-    );
+    try {
+      captureOutcome(
+        recommendationId,
+        user?.id ?? null,
+        "navigated",
+        7,
+        leadId ? 1 : null,
+      );
+    } catch {
+      // outcome capture failures must not block the actual send
+    }
     if (leadId) {
       appendOutreachLog({
         leadId,

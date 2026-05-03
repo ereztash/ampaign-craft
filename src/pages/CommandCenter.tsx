@@ -43,6 +43,7 @@ import { hasCompletedIntake } from "@/engine/intake/intakeSignal";
 import { recordRouteVisit } from "@/engine/intake/feedbackLoop";
 import IntakeReframeBanner from "@/components/intake/IntakeReframeBanner";
 import { TimeToValueBadge } from "@/components/TimeToValueBadge";
+import { SilentBoundary } from "@/components/SilentBoundary";
 import { NextStepCard } from "@/components/NextStepCard";
 import { AchievementShelf } from "@/components/AchievementShelf";
 
@@ -235,7 +236,9 @@ const CommandCenter = () => {
     <main className="min-h-full bg-background">
       <div className="container mx-auto max-w-5xl px-4 py-6 space-y-8">
         <IntakeReframeBanner />
-        <TimeToValueBadge />
+        <SilentBoundary tag="TimeToValueBadge">
+          <TimeToValueBadge />
+        </SilentBoundary>
         <motion.section {...mp} className="text-center space-y-2">
           {user && profile.lastFormData ? (
             <>

@@ -19,6 +19,7 @@ import { tx } from "@/i18n/tx";
 import { Activity, AlertCircle, ArrowRight, Target, TrendingUp } from "lucide-react";
 import { StaleLeadDraft } from "@/components/StaleLeadDraft";
 import { ChannelROIStrip } from "@/components/ChannelROIStrip";
+import { SilentBoundary } from "@/components/SilentBoundary";
 
 const MAX_STALE_TO_SHOW = 3;
 
@@ -80,13 +81,14 @@ export function PipelinePulseCard() {
                       );
                     }
                     return (
-                      <StaleLeadDraft
-                        key={s.leadId}
-                        lead={fullLead}
-                        interactions={interactions}
-                        crmInsights={insights}
-                        daysSinceLastTouch={s.daysSinceLastTouch}
-                      />
+                      <SilentBoundary key={s.leadId} tag="StaleLeadDraft">
+                        <StaleLeadDraft
+                          lead={fullLead}
+                          interactions={interactions}
+                          crmInsights={insights}
+                          daysSinceLastTouch={s.daysSinceLastTouch}
+                        />
+                      </SilentBoundary>
                     );
                   })}
                 </ul>
@@ -161,7 +163,9 @@ export function PipelinePulseCard() {
           </div>
         )}
 
-        <ChannelROIStrip leads={leads} />
+        <SilentBoundary tag="ChannelROIStrip">
+          <ChannelROIStrip leads={leads} />
+        </SilentBoundary>
 
         <Link to="/crm" className="block">
           <Button variant="ghost" size="sm" className="w-full text-xs gap-1 h-7">
