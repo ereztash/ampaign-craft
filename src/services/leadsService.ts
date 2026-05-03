@@ -6,7 +6,22 @@
 // these tables yet — same pattern as other freshly-added tables.
 //
 // All calls are user-scoped via RLS (auth.uid() = user_id).
+//
+// Every write race-checks against a 10s timeout so a paused project,
+// stuck token refresh, or misconfigured env doesn't hang the UI.
 // ═══════════════════════════════════════════════
+
+const WRITE_TIMEOUT_MS = 10_000;
+
+function withTimeout<T>(p: PromiseLike<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`leadsService:${label} timed out after ${ms}ms`)), ms);
+    Promise.resolve(p).then(
+      (v) => { clearTimeout(t); resolve(v); },
+      (e) => { clearTimeout(t); reject(e); },
+    );
+  });
+}
 
 import { supabaseLoose as db } from "@/integrations/supabase/loose";
 import { logger } from "@/lib/logger";
@@ -164,39 +179,57 @@ export async function getLead(leadId: string): Promise<Lead | null> {
 }
 
 export async function createLead(userId: string, input: LeadInsert): Promise<Lead | null> {
-  const { data, error } = await db
-    .from("leads")
-    .insert(leadToRow(input, userId))
-    .select()
-    .single();
-  if (error) {
-    logger.error("leadsService.createLead", error);
+  try {
+    const { data, error } = await withTimeout(
+      db.from("leads").insert(leadToRow(input, userId)).select().single(),
+      WRITE_TIMEOUT_MS,
+      "createLead",
+    );
+    if (error) {
+      logger.error("leadsService.createLead", error);
+      return null;
+    }
+    return data ? mapLead(data as LeadRow) : null;
+  } catch (err) {
+    logger.error("leadsService.createLead.timeout", err);
     return null;
   }
-  return data ? mapLead(data as LeadRow) : null;
 }
 
 export async function updateLead(leadId: string, patch: LeadUpdate): Promise<Lead | null> {
-  const { data, error } = await db
-    .from("leads")
-    .update(leadToRow(patch))
-    .eq("id", leadId)
-    .select()
-    .single();
-  if (error) {
-    logger.error("leadsService.updateLead", error);
+  try {
+    const { data, error } = await withTimeout(
+      db.from("leads").update(leadToRow(patch)).eq("id", leadId).select().single(),
+      WRITE_TIMEOUT_MS,
+      "updateLead",
+    );
+    if (error) {
+      logger.error("leadsService.updateLead", error);
+      return null;
+    }
+    return data ? mapLead(data as LeadRow) : null;
+  } catch (err) {
+    logger.error("leadsService.updateLead.timeout", err);
     return null;
   }
-  return data ? mapLead(data as LeadRow) : null;
 }
 
 export async function deleteLead(leadId: string): Promise<boolean> {
-  const { error } = await db.from("leads").delete().eq("id", leadId);
-  if (error) {
-    logger.error("leadsService.deleteLead", error);
+  try {
+    const { error } = await withTimeout(
+      db.from("leads").delete().eq("id", leadId),
+      WRITE_TIMEOUT_MS,
+      "deleteLead",
+    );
+    if (error) {
+      logger.error("leadsService.deleteLead", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    logger.error("leadsService.deleteLead.timeout", err);
     return false;
   }
-  return true;
 }
 
 export async function countLeads(userId: string): Promise<number> {
