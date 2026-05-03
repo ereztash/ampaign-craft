@@ -11,10 +11,12 @@ vi.mock("@/lib/industryBenchmarks", () => ({
     {
       metric: { he: "CPC", en: "CPC" },
       value: "₪1.80-3.50",
+      context: { he: "עלות לקליק", en: "Cost per click" },
     },
     {
       metric: { he: "CTR", en: "CTR" },
       value: "1.5-3.2%",
+      context: { he: "שיעור קליקים", en: "Click-through rate" },
     },
   ]),
 }));
@@ -53,8 +55,8 @@ describe("CompetitiveIntelligenceDashboard", () => {
 
   it("shows KPI metrics", () => {
     render(<CompetitiveIntelligenceDashboard industry="tech" />);
-    expect(screen.getByText("CPC")).toBeInTheDocument();
-    expect(screen.getByText("CTR")).toBeInTheDocument();
+    expect(screen.getAllByText("CPC")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("CTR")[0]).toBeInTheDocument();
   });
 
   it("shows industry avg labels", () => {

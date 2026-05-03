@@ -63,7 +63,7 @@ describe("NeuroStorytellingTab", () => {
 
   it("shows the axiom text", () => {
     render(<NeuroStorytellingTab data={mockData} />);
-    expect(screen.getByText("Some axiom text")).toBeInTheDocument();
+    expect(screen.getAllByText("Some axiom text")[0]).toBeInTheDocument();
   });
 
   it("shows the neuroAxiom label key", () => {

@@ -156,35 +156,33 @@ ${oneLinerBlock(result)}
 
 export function buildUsabilityPrompt(persona: SyntheticPersona, result: DifferentiationResult): string {
   return `
-אתה משחק פרסונה עסקית. ענה בכנות — לא ניסיון לרצות, לא ניסיון לתקוף. תגיד מה אתה באמת היית עושה.
+${ANTI_FLATTERY}
 
 ${personaContext(persona)}
 
 ${oneLinerBlock(result)}
 
-המשימה: בתור הפרסונה — בהינתן המשפט שלמעלה, האם היית שולח אותו ללקוח הבא שלך?
-החזר JSON:
+המשימה: בתור הפרסונה — תגיד אם היית משתמש במשפט הזה. החזר JSON:
 {
   "would_use": boolean,
-  "where": string[],               // מקומות ספציפיים (לדוגמה: ["פרופיל לינקדאין", "פתיחה לשיחת מכירה"]). [] אם לא.
-  "confidence": number             // 0-100. כמה בטוח שזה ינחית אצל לקוח אמיתי שלך.
+  "where": string[],               // איפה הייתי משתמש (לדוגמה: ["פרופיל לינקדאין", "פתיחה לשיחת מכירה"]). [] אם לא הייתי משתמש בכלל.
+  "confidence": number             // 0-100. כמה בטוח שזה ינחית עבורי.
 }
 `.trim();
 }
 
 export function buildOwnershipPrompt(persona: SyntheticPersona, result: DifferentiationResult): string {
   return `
-אתה משחק פרסונה עסקית. ענה בכנות — לא ניסיון לרצות, לא ניסיון לתקוף.
+${ANTI_FLATTERY}
 
 ${personaContext(persona)}
 
 ${oneLinerBlock(result)}
 
-המשימה: בתור הפרסונה — קרא את המשפט. האם זה נשמע כמו מילים שאתה היית אומר, או כמו מי שקרא עליך וניסה לסכם?
-החזר JSON:
+המשימה: בתור הפרסונה — תגיד אם המשפט הזה מרגיש לך שלך. החזר JSON:
 {
-  "feels_mine": boolean,           // true = אני יכול לשלוח את זה כי זה נשמע כמוני. false = זה נשמע כמו AI שניסה לתאר אותי.
-  "what_to_change": string         // משפט אחד קצר: מה הייתי מנסח אחרת כדי שירגיש שלי. "" אם לא צריך לשנות כלום.
+  "feels_mine": boolean,           // האם זה נשמע כאילו אני כתבתי, או כאילו AI כפה עלי
+  "what_to_change": string         // משפט אחד: מה הייתי משנה כדי שירגיש שלי. "" אם הוא בסדר.
 }
 `.trim();
 }

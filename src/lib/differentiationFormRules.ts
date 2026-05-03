@@ -4,6 +4,21 @@
 
 import { PhaseId, DifferentiationFormData } from "@/types/differentiation";
 
+// Phase 3 (hidden) stores ashamed-pain answers as dynamic keys on the form
+// object, not in the typed ashamedPains[] array (which is only populated by
+// the AI after the phase runs). Validation must check the individual keys.
+const ASHAMED_PAIN_KEYS = [
+  "ashamedPain_process",
+  "ashamedPain_knowledge",
+  "ashamedPain_resource",
+  "ashamedPain_comparison",
+] as const;
+
+function countFilledPains(formData: DifferentiationFormData): number {
+  const fd = formData as DifferentiationFormData & Record<string, string>;
+  return ASHAMED_PAIN_KEYS.filter((k) => (fd[k] || "").trim().length > 0).length;
+}
+
 export function canProceedPhase(phaseId: PhaseId, formData: DifferentiationFormData): boolean {
   switch (phaseId) {
     case "surface":
@@ -25,7 +40,7 @@ export function canProceedPhase(phaseId: PhaseId, formData: DifferentiationFormD
     case "hidden":
       return (
         formData.hiddenValues.length >= 4 &&
-        formData.ashamedPains.length >= 2
+        countFilledPains(formData) >= 2
       );
     case "mapping":
       return (
@@ -87,18 +102,20 @@ export function describeBlockingField(
           en: "Describe where competitors sound like you",
         };
       return null;
-    case "hidden":
+    case "hidden": {
       if (formData.hiddenValues.length < 4)
         return {
           he: "דרג/י לפחות 4 ערכים נסתרים",
           en: "Rate at least 4 hidden values",
         };
-      if (formData.ashamedPains.length < 2)
+      const filled = countFilledPains(formData);
+      if (filled < 2)
         return {
-          he: "תאר/י לפחות 2 כאבים נסתרים",
-          en: "Describe at least 2 hidden pains",
+          he: `תאר/י לפחות 2 כאבים נסתרים (מולאו ${filled} מתוך 4)`,
+          en: `Describe at least 2 hidden pains (${filled} of 4 filled)`,
         };
       return null;
+    }
     case "mapping":
       if (formData.competitorArchetypes.length < 1)
         return {
