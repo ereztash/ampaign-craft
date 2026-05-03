@@ -417,9 +417,13 @@ const CrmPage = () => {
 
   const handleQuickAfterCreate = useCallback(
     (created: Lead) => {
-      navigate(`/crm/${created.id}`);
+      // Wedge 4 originally navigated to /crm/:id for progressive disclosure.
+      // Disabled because LeadDetail mounts useLeadCoach (3 supabase reads +
+      // heavy compute) which compounds perceived save latency. Users can
+      // still click into the lead from the kanban after save.
+      void created;
     },
-    [navigate],
+    [],
   );
 
   const handleDelete = useCallback(
