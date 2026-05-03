@@ -12,6 +12,7 @@
 // ═══════════════════════════════════════════════
 
 const WRITE_TIMEOUT_MS = 10_000;
+const READ_TIMEOUT_MS = 8_000;
 
 function withTimeout<T>(p: PromiseLike<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -166,16 +167,21 @@ export async function listLeads(userId: string): Promise<Lead[]> {
 }
 
 export async function getLead(leadId: string): Promise<Lead | null> {
-  const { data, error } = await db
-    .from("leads")
-    .select("*")
-    .eq("id", leadId)
-    .maybeSingle();
-  if (error) {
-    logger.error("leadsService.getLead", error);
+  try {
+    const { data, error } = await withTimeout(
+      db.from("leads").select("*").eq("id", leadId).maybeSingle(),
+      READ_TIMEOUT_MS,
+      "getLead",
+    );
+    if (error) {
+      logger.error("leadsService.getLead", error);
+      return null;
+    }
+    return data ? mapLead(data as LeadRow) : null;
+  } catch (err) {
+    logger.error("leadsService.getLead.timeout", err);
     return null;
   }
-  return data ? mapLead(data as LeadRow) : null;
 }
 
 export async function createLead(userId: string, input: LeadInsert): Promise<Lead | null> {
@@ -247,16 +253,21 @@ export async function countLeads(userId: string): Promise<number> {
 // ─── Interactions ───────────────────────────────
 
 export async function listInteractions(leadId: string): Promise<LeadInteraction[]> {
-  const { data, error } = await db
-    .from("lead_interactions")
-    .select("*")
-    .eq("lead_id", leadId)
-    .order("occurred_at", { ascending: false });
-  if (error) {
-    logger.error("leadsService.listInteractions", error);
+  try {
+    const { data, error } = await withTimeout(
+      db.from("lead_interactions").select("*").eq("lead_id", leadId).order("occurred_at", { ascending: false }),
+      READ_TIMEOUT_MS,
+      "listInteractions",
+    );
+    if (error) {
+      logger.error("leadsService.listInteractions", error);
+      return [];
+    }
+    return ((data as InteractionRow[] | null) ?? []).map(mapInteraction);
+  } catch (err) {
+    logger.error("leadsService.listInteractions.timeout", err);
     return [];
   }
-  return ((data as InteractionRow[] | null) ?? []).map(mapInteraction);
 }
 
 export async function addInteraction(
@@ -283,18 +294,23 @@ export async function getCachedRecommendations(leadId: string): Promise<{
   recommendations: unknown;
   computedAt: string;
 } | null> {
-  const { data, error } = await db
-    .from("lead_recommendations_cache")
-    .select("recommendations, computed_at")
-    .eq("lead_id", leadId)
-    .maybeSingle();
-  if (error) {
-    logger.error("leadsService.getCachedRecommendations", error);
+  try {
+    const { data, error } = await withTimeout(
+      db.from("lead_recommendations_cache").select("recommendations, computed_at").eq("lead_id", leadId).maybeSingle(),
+      READ_TIMEOUT_MS,
+      "getCachedRecommendations",
+    );
+    if (error) {
+      logger.error("leadsService.getCachedRecommendations", error);
+      return null;
+    }
+    if (!data) return null;
+    const row = data as { recommendations: unknown; computed_at: string };
+    return { recommendations: row.recommendations, computedAt: row.computed_at };
+  } catch (err) {
+    logger.error("leadsService.getCachedRecommendations.timeout", err);
     return null;
   }
-  if (!data) return null;
-  const row = data as { recommendations: unknown; computed_at: string };
-  return { recommendations: row.recommendations, computedAt: row.computed_at };
 }
 
 export async function upsertCachedRecommendations(
