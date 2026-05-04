@@ -1,11 +1,35 @@
 # FunnelForge — הוראות המשך עבודה
 
 ## ענף פעיל
-`claude/continue-checkpoint-166-gQl3G`
+`claude/outreach-resistance-protocol-msm7K`
 
 ---
 
-## מה הושלם בסשן האחרון (2026-05-02)
+## מה הושלם בסשן האחרון (2026-05-04)
+
+### תיקון באג CRM — דיאלוג שנסגר על כישלון save
+
+**קובץ שעודכן:** `src/pages/CrmPage.tsx`
+
+**הבאג:** ב-`LeadFormDialog.handleSubmit`, `setOpen(false)` נקרא ללא תנאי אחרי `onSave`, גם כש-`createLead` החזיר `null` (שגיאת Supabase). הדיאלוג נסגר, הטופס אופס, נראה כהצלחה — אבל הליד לא נשמר.
+
+**התיקון:** הוספת `if (!result) return;` לפני `setOpen(false)` — בכישלון הדיאלוג נשאר פתוח.
+
+**אימות ב-Supabase (via MCP):**
+- שלושת טבלאות ה-CRM קיימות ב-production: `leads`, `lead_interactions`, `lead_recommendations_cache`
+- RLS policies תקינות — INSERT מגביל ל-`auth.uid() = user_id`
+- הבעיה הייתה אך ורק UX, לא DB
+
+### מחקר — Outreach Resistance Protocol
+דיון קונספטואלי על מסגרת פנייה קרה (לא הוטמע בקוד):
+- מסלול התנגדות: `מי זה → למה אני → אמינות → ערך → מה רוצים`
+- 6 שלבים: רלוונטיות → אמינות → פרסונליזציה → ערך → אנושיות → בקשה קטנה
+- שלב 0 חסר במסגרת המקורית: "האם אני פותח את זה בכלל?" (subject/preview)
+- פוטנציאל כ-meta-logic ל-OutreachComposer — שאלה פתוחה: AI-generated draft vs. HITL wizard
+
+---
+
+## מה הושלם בסשן הקודם (2026-05-02)
 
 ### Slice 3 — ViewModel layer + ESLint engine-import boundary
 
@@ -107,5 +131,6 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 ## ענפים רלוונטיים
 
-- `claude/continue-checkpoint-166-gQl3G` — **ענף פעיל**
+- `claude/outreach-resistance-protocol-msm7K` — **ענף פעיל**
+- `claude/continue-checkpoint-166-gQl3G` — ענף קודם (merged לתוך הנוכחי)
 - `perf/reactive-core` — DRAFT, ממתין ל-preview env validation

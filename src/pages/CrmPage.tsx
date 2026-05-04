@@ -134,9 +134,10 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave, quic
     setSaving(true);
     try {
       const result = await onSave(form, initial);
+      if (!result) return;
       setOpen(false);
       if (!initial) setForm(blankForm(defaultStatus));
-      if (isQuick && result && onAfterCreate) onAfterCreate(result);
+      if (isQuick && onAfterCreate) onAfterCreate(result);
     } finally {
       setSaving(false);
     }
