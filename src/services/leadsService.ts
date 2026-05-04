@@ -27,6 +27,14 @@ function withTimeout<T>(p: PromiseLike<T>, ms: number, label: string): Promise<T
 import { supabaseLoose as db } from "@/integrations/supabase/loose";
 import { logger } from "@/lib/logger";
 
+// Last write error exposed for caller-side toasts. Only the code/hint is
+// stored — never the full message which may contain PII.
+let _lastWriteError: string | null = null;
+export function getLastLeadWriteError(): string | null { return _lastWriteError; }
+function storeError(e: { code?: string; hint?: string } | null) {
+  _lastWriteError = e ? (e.hint ?? e.code ?? "unknown") : null;
+}
+
 // ─── Types ──────────────────────────────────────
 
 export type LeadStatus = "lead" | "meeting" | "proposal" | "closed" | "lost";
@@ -190,6 +198,7 @@ export async function getLead(leadId: string): Promise<Lead | null> {
 }
 
 export async function createLead(userId: string, input: LeadInsert): Promise<Lead | null> {
+  storeError(null);
   try {
     const { data, error } = await withTimeout(
       db.from("leads").insert(leadToRow(input, userId)).select().single(),
@@ -197,17 +206,20 @@ export async function createLead(userId: string, input: LeadInsert): Promise<Lea
       "createLead",
     );
     if (error) {
+      storeError(error);
       logger.error("leadsService.createLead", error);
       return null;
     }
     return data ? mapLead(data as LeadRow) : null;
   } catch (err) {
+    storeError({ hint: "timeout" });
     logger.error("leadsService.createLead.timeout", err);
     return null;
   }
 }
 
 export async function updateLead(leadId: string, patch: LeadUpdate): Promise<Lead | null> {
+  storeError(null);
   try {
     const { data, error } = await withTimeout(
       db.from("leads").update(leadToRow(patch)).eq("id", leadId).select().single(),
@@ -215,11 +227,13 @@ export async function updateLead(leadId: string, patch: LeadUpdate): Promise<Lea
       "updateLead",
     );
     if (error) {
+      storeError(error);
       logger.error("leadsService.updateLead", error);
       return null;
     }
     return data ? mapLead(data as LeadRow) : null;
   } catch (err) {
+    storeError({ hint: "timeout" });
     logger.error("leadsService.updateLead.timeout", err);
     return null;
   }
