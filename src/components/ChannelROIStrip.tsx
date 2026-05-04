@@ -14,7 +14,7 @@ import { TrendingUp } from "lucide-react";
 import {
   captureRecommendationShown,
   captureOutcome,
-} from "@/engine/outcomeLoopEngine";
+} from "@/viewmodels";
 
 interface ChannelStat {
   source: string;

@@ -24,20 +24,27 @@ import { useArchetype } from "@/contexts/ArchetypeContext";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getIsraeliToolsSummary } from "@/lib/toolRecommendations";
 import { getIndustryBenchmarks } from "@/lib/industryBenchmarks";
-import { calculateHealthScore } from "@/engine/healthScoreEngine";
-import { loadChatInsights, loadImportedDataSignals, loadMetaSignals } from "@/engine/userKnowledgeGraph";
+import {
+  calculateHealthScore,
+  loadChatInsights,
+  loadImportedDataSignals,
+  loadMetaSignals,
+  buildUserKnowledgeGraph,
+  calculateCostOfInaction,
+  generateCLGStrategy,
+  generateRetentionFlywheel,
+  personalizeResult,
+  calculateValueScore,
+  detectBottlenecks,
+  generateInsights,
+  getLoopSnapshot,
+  getInsightUsageCount,
+  generateReflectiveAction,
+} from "@/viewmodels";
+import type { StylomeVoice } from "@/viewmodels";
 import { getSocialProof } from "@/lib/socialProofData";
 import { calculateRoi } from "@/lib/roiCalculator";
-import { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { getEventsForField } from "@/lib/israeliMarketCalendar";
-import { generateCLGStrategy } from "@/engine/clgEngine";
-import { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
-import { personalizeResult } from "@/engine/funnelEngine";
-import { buildUserKnowledgeGraph, StylomeVoice } from "@/engine/userKnowledgeGraph";
-import { calculateValueScore } from "@/engine/hormoziValueEngine";
-import { detectBottlenecks } from "@/engine/bottleneckEngine";
-import { generateInsights } from "@/engine/insightsEngine";
-import { getLoopSnapshot, getInsightUsageCount } from "@/engine/weeklyLoopEngine";
 import GlobalInsightHero from "@/components/GlobalInsightHero";
 import { safeStorage } from "@/lib/safeStorage";
 import { DifferentiationResult } from "@/types/differentiation";
@@ -57,7 +64,6 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import BackToHub from "@/components/BackToHub";
 import ReflectiveCard from "@/components/reflective/ReflectiveCard";
-import { generateReflectiveAction } from "@/engine/optimization/reflectiveAction";
 
 interface ResultsDashboardProps {
   result: FunnelResult;

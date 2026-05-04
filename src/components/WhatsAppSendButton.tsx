@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MessageCircle, Send, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { captureOutcome } from "@/engine/outcomeLoopEngine";
+import { captureOutcome } from "@/viewmodels";
 import { safeStorage } from "@/lib/safeStorage";
 
 interface OutreachLogEntry {

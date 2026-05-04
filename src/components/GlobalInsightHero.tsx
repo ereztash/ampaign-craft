@@ -1,9 +1,5 @@
-import type { Bottleneck } from "@/engine/bottleneckEngine";
-import { selectTactic } from "@/engine/bottleneckEngine";
-import type { HealthScore } from "@/engine/healthScoreEngine";
-import type { BusinessInsight } from "@/engine/insightsEngine";
-import type { LoopSnapshot } from "@/engine/weeklyLoopEngine";
-import { commitToAction, reportOutcome, startNewWeek, getStreak } from "@/engine/weeklyLoopEngine";
+import type { Bottleneck, BusinessInsight, LoopSnapshot, HealthScore } from "@/viewmodels";
+import { selectTactic, commitToAction, reportOutcome, startNewWeek, getStreak } from "@/viewmodels";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

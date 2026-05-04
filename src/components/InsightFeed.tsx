@@ -4,17 +4,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import InsightCard, { InsightVariant } from "@/components/InsightCard";
-import type { Bottleneck } from "@/engine/bottleneckEngine";
-import { getRecommendedNextStep } from "@/engine/nextStepEngine";
-import type { WeeklyPulse } from "@/engine/pulseEngine";
-import type { UserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import type { Bottleneck, WeeklyPulse, UserKnowledgeGraph } from "@/viewmodels";
+import { getRecommendedNextStep, captureRecommendationShown, captureVariantPick, captureOutcome, buildContextSnapshot } from "@/viewmodels";
 import { tx } from "@/i18n/tx";
-import {
-  captureRecommendationShown,
-  captureVariantPick,
-  captureOutcome,
-  buildContextSnapshot,
-} from "@/engine/outcomeLoopEngine";
 import { ThumbsUp, RefreshCw, X } from "lucide-react";
 
 interface FeedItem {

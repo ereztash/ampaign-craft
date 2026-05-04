@@ -5,11 +5,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Lead, LeadInteraction } from "@/services/leadsService";
-import type { CrmInsights } from "@/engine/crmInsightEngine";
-import { generateLeadRecommendations } from "@/engine/leadCoachEngine";
+import type { CrmInsights } from "@/viewmodels";
+import { generateLeadRecommendations, captureRecommendationShown } from "@/viewmodels";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { captureRecommendationShown } from "@/engine/outcomeLoopEngine";
 import { WhatsAppSendButton } from "@/components/WhatsAppSendButton";
 import { tx } from "@/i18n/tx";
 

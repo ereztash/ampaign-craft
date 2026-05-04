@@ -10,12 +10,8 @@ import { Sparkles, X } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { tx } from "@/i18n/tx";
-import { verifyPromise } from "@/engine/intake/feedbackLoop";
+import { verifyPromise, captureRecommendationShown, captureOutcome } from "@/viewmodels";
 import { safeStorage } from "@/lib/safeStorage";
-import {
-  captureRecommendationShown,
-  captureOutcome,
-} from "@/engine/outcomeLoopEngine";
 
 const SEEN_KEY = "funnelforge-ttv-badge-seen";
 const QUICK_THRESHOLD_MIN = 10;

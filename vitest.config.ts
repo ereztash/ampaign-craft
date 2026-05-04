@@ -21,13 +21,13 @@ export default defineConfig({
       reporter: ["text", "lcov", "json-summary"],
       include: ["src/**/*.{ts,tsx}"],
       exclude: ["src/**/*.{test,spec}.{ts,tsx}", "src/test/**"],
-      // Global ratchet: trailing actual −1%. Tighten quarterly.
-      // Actual (2026-04-18): stmt 36.02%, branch 72.33%, fn 53.19%, lines 36.02%
+      // Global ratchet: trailing actual −3%. Tighten quarterly.
+      // Actual (2026-05-04): stmt 76.01%, branch 77.26%, fn 67.41%, lines 76.01%
       thresholds: {
-        statements: 35,
-        branches: 71,
-        functions: 52,
-        lines: 35,
+        statements: 72,
+        branches: 74,
+        functions: 63,
+        lines: 72,
         // Critical-engine overrides — enforced via scripts/check-coverage-critical.sh
         // costOfInactionEngine, churnPredictionEngine, copyQAEngine, discProfileEngine,
         // behavioralHeuristicEngine all now ≥80% branches and 100% functions.
