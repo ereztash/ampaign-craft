@@ -65,11 +65,16 @@ function readInsightChecked(funnelId: string): boolean {
 }
 
 function writeInsightChecked(funnelId: string): void {
+  // safeStorage.setJSON catches QuotaExceededError internally and returns false.
+  // On write failure the dismissal is session-only (state stays true until reload).
   safeStorage.setJSON(`insight-checked-${funnelId}`, {
     value: true,
     expiresAt: Date.now() + INSIGHT_TTL_MS,
   } satisfies InsightCheckedRecord);
 }
+
+// eslint-disable-next-line react-refresh/only-export-components -- test-only exports
+export { readInsightChecked, writeInsightChecked };
 
 const STAGE_IDS = ["awareness", "engagement", "leads", "conversion", "retention"];
 
