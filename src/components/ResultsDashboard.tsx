@@ -64,6 +64,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import BackToHub from "@/components/BackToHub";
 import ReflectiveCard from "@/components/reflective/ReflectiveCard";
+import { computeRenderGate } from "@/lib/renderGate";
 
 interface ResultsDashboardProps {
   result: FunnelResult;
@@ -72,6 +73,8 @@ interface ResultsDashboardProps {
   onNewPlan: () => void;
   /** When true, removes top offset meant for legacy fixed Header */
   embeddedInShell?: boolean;
+  /** Live Fogg B=MAT score from behavioralActionEngine (0-1). Drives unified render gate. */
+  foggScore?: number;
 }
 
 const STAGE_IDS = ["awareness", "engagement", "leads", "conversion", "retention"];
@@ -84,7 +87,7 @@ const NEURO_LABELS: Record<string, { emoji: string; vector: { he: string; en: st
   retention: { emoji: "●", vector: { he: "נאמנות", en: "Loyalty" }, desc: { he: "שמור על קשר ארוך טווח", en: "Maintain a long-term relationship" } },
 };
 
-const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, embeddedInShell }: ResultsDashboardProps) => {
+const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, embeddedInShell, foggScore }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
   const { profile, completeMilestone } = useUserProfile();
   const reducedMotion = useReducedMotion();
@@ -98,7 +101,16 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   // Adaptive tabs — archetype overrides applied at "confident" and "strong" tiers
   const { uiConfig, confidenceTier } = useArchetype();
   const archetypeOverride = { config: uiConfig, tier: confidenceTier };
-  const tabs = getTabConfig(result, profile, archetypeOverride);
+
+  // Unified render gate: foggScore from BAE is preferred; falls back to
+  // experienceLevel + confidenceTier when the score isn't yet available.
+  const gate = computeRenderGate({
+    foggScore,
+    experienceLevel: result.formData.experienceLevel,
+    confidenceTier,
+  });
+
+  const tabs = getTabConfig(result, profile, archetypeOverride, gate.tier);
   const archetypeDefaultTab = (confidenceTier === "confident" || confidenceTier === "strong")
     ? uiConfig.defaultTab
     : null;

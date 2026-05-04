@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { tx } from "@/i18n/tx";
 import { ChevronDown, Copy, Check, AlertTriangle, TrendingUp } from "lucide-react";
+import { label, SEVERITY_LABEL, CHANNEL_LABEL, TIMING_LABEL } from "@/lib/uiVocabulary";
 import { toast } from "sonner";
 import type { ChurnRiskAssessment } from "@/engine/churnPredictionEngine";
 
@@ -128,7 +129,7 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
               <div key={i} className={`rounded-lg border p-2.5 ${signal.severity === "high" ? "border-destructive/30 bg-destructive/5" : signal.severity === "medium" ? "border-amber-500/20" : ""}`}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-medium">{signal.signal}</span>
-                  <Badge variant={SEVERITY_VARIANT[signal.severity]} className="text-xs">{signal.severity}</Badge>
+                  <Badge variant={SEVERITY_VARIANT[signal.severity]} className="text-xs">{label(SEVERITY_LABEL, signal.severity, language)}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground" dir="auto">{signal.description[language]}</p>
               </div>
@@ -160,8 +161,8 @@ export function ChurnPredictionCard({ assessment }: ChurnPredictionCardProps) {
                       {stageInterventions.map((int, i) => (
                         <div key={i} className="flex items-start gap-3 rounded-lg border p-2.5">
                           <div className="flex flex-col items-center shrink-0 gap-1">
-                            <Badge variant="outline" className="text-xs">{int.channel}</Badge>
-                            <span className="text-xs text-muted-foreground">{int.timing}</span>
+                            <Badge variant="outline" className="text-xs">{label(CHANNEL_LABEL, int.channel, language)}</Badge>
+                            <span className="text-xs text-muted-foreground">{label(TIMING_LABEL, int.timing, language)}</span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium" dir="auto">{int.action[language]}</p>

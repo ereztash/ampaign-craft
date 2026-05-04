@@ -204,6 +204,7 @@ const StrategyCanvas = () => {
         result={plan.result}
         defaultTab={focus}
         embeddedInShell
+        foggScore={motivationState.foggScore}
         onEdit={() => navigate("/wizard")}
         onNewPlan={() => navigate("/wizard")}
       />

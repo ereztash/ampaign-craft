@@ -128,3 +128,13 @@ export {
   getEPSVerdict,
   getPredictiveContentVerdict,
 } from "./analytics.vm";
+
+export type { FoggLeg, ProspectProfile } from "./prospect-intelligence.vm";
+export {
+  triggerProspectResearch,
+  getProspectProfile,
+  clearProspectProfile,
+} from "./prospect-intelligence.vm";
+
+export type { PhaseId, PhaseConfig, PhaseQuestion } from "./differentiation-phases.vm";
+export { PHASES, getPhaseById, getQuestionsForPhase } from "./differentiation-phases.vm";
