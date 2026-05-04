@@ -17,6 +17,7 @@
 // ═══════════════════════════════════════════════
 
 import { lazy, Suspense, useState } from "react";
+import { safeStorage } from "@/lib/safeStorage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,6 +43,33 @@ import { InsightActionCard } from "@/components/InsightActionCard";
 import { cn } from "@/lib/utils";
 
 const WhatsAppTemplatesPanel = lazy(() => import("@/components/WhatsAppTemplatesPanel"));
+
+const INSIGHT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+interface InsightCheckedRecord {
+  value: boolean;
+  expiresAt: number;
+}
+
+function readInsightChecked(funnelId: string): boolean {
+  const stored = safeStorage.getJSON<InsightCheckedRecord | null>(
+    `insight-checked-${funnelId}`,
+    null,
+  );
+  if (!stored) return false;
+  if (Date.now() > stored.expiresAt) {
+    safeStorage.remove(`insight-checked-${funnelId}`);
+    return false;
+  }
+  return stored.value;
+}
+
+function writeInsightChecked(funnelId: string): void {
+  safeStorage.setJSON(`insight-checked-${funnelId}`, {
+    value: true,
+    expiresAt: Date.now() + INSIGHT_TTL_MS,
+  } satisfies InsightCheckedRecord);
+}
 
 const STAGE_IDS = ["awareness", "engagement", "leads", "conversion", "retention"];
 
@@ -122,7 +150,7 @@ const StrategyTab = ({
   const [stagesOpen, setStagesOpen] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [tipsOpen, setTipsOpen] = useState(false);
-  const [insightChecked, setInsightChecked] = useState(false);
+  const [insightChecked, setInsightChecked] = useState(() => readInsightChecked(result.id));
 
   const worst =
     healthScore.breakdown.length > 0
@@ -178,7 +206,10 @@ const StrategyTab = ({
               { label: { he: "לא רלוונטי לעכשיו", en: "Not relevant now" }, action: "reject" },
             ]}
             onCheck={(action) => {
-              if (action === "accept" || action === "reject") setInsightChecked(true);
+              if (action === "accept" || action === "reject") {
+                writeInsightChecked(result.id);
+                setInsightChecked(true);
+              }
             }}
           />
         </div>
