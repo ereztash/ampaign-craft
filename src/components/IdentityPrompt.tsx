@@ -122,8 +122,8 @@ export default function IdentityPrompt({ onComplete, email = "" }: IdentityPromp
             <p className="text-sm text-muted-foreground" dir="auto">
               {tx(
                 {
-                  he: "משפט אחד מספיק — נסיק את השאר",
-                  en: "One sentence is enough — we'll infer the rest",
+                  he: "משפט אחד מספיק - נסיק את השאר",
+                  en: "One sentence is enough - we'll infer the rest",
                 },
                 language,
               )}

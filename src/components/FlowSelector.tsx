@@ -60,8 +60,8 @@ export default function FlowSelector({ profile, onSelect }: FlowSelectorProps) {
           <p className="text-sm text-muted-foreground" dir="auto">
             {tx(
               {
-                he: "בחר את הנתיב שמתאים לך עכשיו — אפשר לשנות בכל עת",
-                en: "Choose the path that fits you now — you can change anytime",
+                he: "בחר את הנתיב שמתאים לך עכשיו - אפשר לשנות בכל עת",
+                en: "Choose the path that fits you now - you can change anytime",
               },
               language,
             )}
@@ -95,8 +95,8 @@ export default function FlowSelector({ profile, onSelect }: FlowSelectorProps) {
               <p className="text-sm text-muted-foreground" dir="auto">
                 {tx(
                   {
-                    he: "קפוץ ישר לדשבורד — נמלא את הפערים בדרך",
-                    en: "Jump straight to the dashboard — we'll fill gaps along the way",
+                    he: "קפוץ ישר לדשבורד - נמלא את הפערים בדרך",
+                    en: "Jump straight to the dashboard - we'll fill gaps along the way",
                   },
                   language,
                 )}
@@ -140,8 +140,8 @@ export default function FlowSelector({ profile, onSelect }: FlowSelectorProps) {
               <p className="text-sm text-muted-foreground" dir="auto">
                 {tx(
                   {
-                    he: "5 שלבים לבידול אמיתי — מה שרוב העסקים מפספסים",
-                    en: "5 phases to real differentiation — what most businesses miss",
+                    he: "5 שלבים לבידול אמיתי - מה שרוב העסקים מפספסים",
+                    en: "5 phases to real differentiation - what most businesses miss",
                   },
                   language,
                 )}
@@ -178,8 +178,8 @@ export default function FlowSelector({ profile, onSelect }: FlowSelectorProps) {
         <p className="text-center text-xs text-muted-foreground mt-2" dir="auto">
           {tx(
             {
-              he: "שני הנתיבים מובילים לאותו מקום — רק הקצב שונה",
-              en: "Both paths lead to the same destination — just at different speeds",
+              he: "שני הנתיבים מובילים לאותו מקום - רק הקצב שונה",
+              en: "Both paths lead to the same destination - just at different speeds",
             },
             language,
           )}
