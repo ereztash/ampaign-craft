@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { tx } from "@/i18n/tx";
 import { Loader2, ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { triggerProspectResearch } from "@/viewmodels";
 
 interface AuthModalProps {
   open: boolean;
@@ -73,6 +74,7 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
 
   const [view, setView] = useState<View>("auth");
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -83,6 +85,7 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
   const reset = () => {
     setView("auth");
     setEmail("");
+    setFullName("");
     setPassword("");
     setError(null);
     setSuccess(null);
@@ -118,6 +121,8 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
         variant: "destructive",
       });
     } else if (mode === "register") {
+      // Fire-and-forget prospect research — stores result in safeStorage for first-screen use
+      void triggerProspectResearch(email, fullName);
       setSuccess(tx({ he: "נרשמת בהצלחה!", en: "Registered successfully!" }, language));
       setTimeout(() => handleOpenChange(false), 1000);
     } else {
@@ -276,6 +281,22 @@ const AuthModal = ({ open, onOpenChange }: AuthModalProps) => {
                   {socialButtons}
 
                   <OrDivider language={language} />
+
+                  {/* Full name — register only */}
+                  {mode === "register" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="register-fullname">{tx({ he: "שם מלא", en: "Full name" }, language)}</Label>
+                      <Input
+                        id="register-fullname"
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder={tx({ he: "ישראל ישראלי", en: "Jane Smith" }, language)}
+                        dir="auto"
+                        autoComplete="name"
+                      />
+                    </div>
+                  )}
 
                   {/* Email */}
                   <div className="space-y-2">

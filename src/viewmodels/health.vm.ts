@@ -3,7 +3,7 @@
 // Components import from here, never directly from the engine.
 
 import type { HealthScore, HealthScoreBreakdown } from "@/engine/healthScoreEngine";
-import { getHealthScoreColor } from "@/engine/healthScoreEngine";
+import { calculateHealthScore, getHealthScoreColor } from "@/engine/healthScoreEngine";
 import type { BilingualText } from "@/types/i18n";
 
 export type { HealthScore, HealthScoreBreakdown };
@@ -58,5 +58,4 @@ export function toHealthScoreVM(hs: HealthScore): HealthScoreVM {
   };
 }
 
-/** Re-exported so components never need to reach into the engine for this util. */
-export { getHealthScoreColor };
+export { calculateHealthScore, getHealthScoreColor };

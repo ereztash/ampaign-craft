@@ -26,14 +26,21 @@ initGA4();
       };
     };
     const w = window as Window & SentryGlobal;
+    const env = (import.meta.env.VITE_ENV as string | undefined) ?? "production";
+    // Higher trace sampling in non-production to aid debugging;
+    // capped at 10% in production to control Sentry quota.
+    const tracesSampleRate = env === "production" ? 0.1 : env === "staging" ? 0.5 : 1.0;
+
     w.Sentry?.init({
       dsn,
-      environment: (import.meta.env.VITE_ENV as string | undefined) ?? "production",
-      tracesSampleRate: 0.1,
-      // Aggressive redaction: the previous beforeSend only deleted
-      // event.request.data and left JWTs in Authorization/Cookie headers,
-      // query strings, and breadcrumb data. We now scrub every known
-      // sensitive surface before the event leaves the browser.
+      environment: env,
+      tracesSampleRate,
+      // Replay: 0% normal sessions, 100% on error — captures the session
+      // leading up to every uncaught exception for post-mortem debugging.
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 1.0,
+      // Aggressive redaction: scrub JWTs, emails, phone numbers, and
+      // Stripe/Supabase key prefixes from every event and breadcrumb.
       beforeSend(event: Record<string, unknown>) {
         return scrubSentryEvent(event);
       },

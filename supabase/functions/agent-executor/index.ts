@@ -102,23 +102,49 @@ Deno.serve(async (req) => {
       throw new ValidationError("temperature must be in [0, 2]");
     }
     const selectedTemperature = typeof rawTemp === "number" ? rawTemp : 0;
-    const selectedModel = model;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: selectedModel,
-        max_tokens: selectedMaxTokens,
-        temperature: selectedTemperature,
-        system: systemPrompt || "You are a helpful assistant. Respond in JSON when asked.",
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+    // Model fallback chain: when a model is overloaded (529) or unavailable (503),
+    // retry once with the next cheaper model. This prevents a single provider
+    // outage from failing all agent runs.
+    const MODEL_FALLBACK: Partial<Record<string, string>> = {
+      "claude-opus-4-7":      "claude-sonnet-4-6",
+      "claude-opus-4-6":      "claude-sonnet-4-6",
+      "claude-sonnet-4-6":    "claude-haiku-4-5-20251001",
+      "claude-sonnet-4-20250514": "claude-haiku-4-5-20251001",
+    };
+
+    async function callAnthropic(modelId: string, retryAfterMs?: number): Promise<{ response: Response; usedModel: string }> {
+      if (retryAfterMs) {
+        await new Promise((r) => setTimeout(r, retryAfterMs));
+      }
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: modelId,
+          max_tokens: selectedMaxTokens,
+          temperature: selectedTemperature,
+          system: systemPrompt || "You are a helpful assistant. Respond in JSON when asked.",
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+
+      // Retry with fallback model on overload (529) or transient server error (503).
+      if ((res.status === 529 || res.status === 503) && MODEL_FALLBACK[modelId]) {
+        const fallback = MODEL_FALLBACK[modelId]!;
+        console.warn(`agent-executor: ${modelId} returned ${res.status}, falling back to ${fallback}`);
+        return callAnthropic(fallback, 1_000);
+      }
+
+      return { response: res, usedModel: modelId };
+    }
+
+    const { response, usedModel } = await callAnthropic(model);
+    const selectedModel = usedModel;
 
     const data = await response.json();
 

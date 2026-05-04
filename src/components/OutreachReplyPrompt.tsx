@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { tx } from "@/i18n/tx";
-import { captureOutcome } from "@/engine/outcomeLoopEngine";
+import { captureOutcome } from "@/viewmodels";
 import { safeStorage } from "@/lib/safeStorage";
 import { CheckCircle2, X, TrendingUp } from "lucide-react";
 

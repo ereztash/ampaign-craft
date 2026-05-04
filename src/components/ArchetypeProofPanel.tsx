@@ -19,6 +19,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getArchetypeUIConfig } from "@/lib/archetypeUIConfig";
 import type { ArchetypeId } from "@/types/archetype";
 import { ChevronRight, Diff, Lightbulb } from "lucide-react";
+import { label, CONFIDENCE_TIER_LABEL } from "@/lib/uiVocabulary";
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -288,7 +289,7 @@ export function ArchetypeProofPanel() {
             {l === "he" ? "רמת ביטחון בסיווג שלך:" : "Classification confidence:"}
           </span>
           <Badge variant="outline" className="text-xs">
-            {profile?.confidenceTier ?? "none"} ({Math.round((profile?.confidence ?? 0) * 100)}%)
+            {label(CONFIDENCE_TIER_LABEL, profile?.confidenceTier ?? "none", l)} ({Math.round((profile?.confidence ?? 0) * 100)}%)
           </Badge>
         </div>
       </CardContent>

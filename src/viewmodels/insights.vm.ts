@@ -2,13 +2,24 @@
 // Bridges bottleneckEngine, insightsEngine, weeklyLoopEngine → UI props.
 
 import type { Bottleneck, BottleneckModule, BottleneckSeverity } from "@/engine/bottleneckEngine";
-import { selectTactic } from "@/engine/bottleneckEngine";
+import { selectTactic, detectBottlenecks } from "@/engine/bottleneckEngine";
 import type { BusinessInsight } from "@/engine/insightsEngine";
+import { generateInsights } from "@/engine/insightsEngine";
 import type { LoopSnapshot, WeeklyCommitment, LoopState } from "@/engine/weeklyLoopEngine";
+import {
+  commitToAction,
+  reportOutcome,
+  startNewWeek,
+  getStreak,
+  getLoopSnapshot,
+  getInsightUsageCount,
+} from "@/engine/weeklyLoopEngine";
 import type { BilingualText } from "@/types/i18n";
 
 // ── Re-exports (components import types from here, never the engine) ──────────
 export type { BottleneckModule, BottleneckSeverity, LoopState };
+export type { Bottleneck, LoopSnapshot, WeeklyCommitment, BusinessInsight };
+export { selectTactic, detectBottlenecks, generateInsights, commitToAction, reportOutcome, startNewWeek, getStreak, getLoopSnapshot, getInsightUsageCount };
 
 // ── InsightVM ─────────────────────────────────────────────────────────────────
 

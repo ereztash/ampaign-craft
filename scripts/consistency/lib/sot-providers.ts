@@ -90,7 +90,7 @@ export function countI18nKeys(): number {
   const filePath = repoPath("src/i18n/translations.ts");
   if (!fs.existsSync(filePath)) return 0;
   const src = fs.readFileSync(filePath, "utf8");
-  return (src.match(/^  [a-zA-Z_]\w*\s*:/gm) ?? []).length;
+  return (src.match(/^ {2}[a-zA-Z_]\w*\s*:/gm) ?? []).length;
 }
 
 // ── Archetype and loop counts (derived from source) ──────────────────────────

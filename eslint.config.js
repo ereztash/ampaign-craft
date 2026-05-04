@@ -5,7 +5,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  { ignores: ["dist", "coverage"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -151,14 +151,10 @@ export default tseslint.config(
   //  direct @/engine/* imports on main before this boundary was enforced.)
   {
     files: [
-      // original 16
-      "src/components/GlobalInsightHero.tsx",
+      // original 16 — migrated: GlobalInsightHero, InsightFeed, IntelligenceSynthesisDashboard, ResultsDashboard (2026-05-04)
       "src/components/RetentionGrowthTab.tsx",
       "src/components/UVPSynthesisTab.tsx",
-      "src/components/InsightFeed.tsx",
       "src/components/EmailTemplateGallery.tsx",
-      "src/components/IntelligenceSynthesisDashboard.tsx",
-      "src/components/ResultsDashboard.tsx",
       "src/components/ArchetypePipelineGuide.tsx",
       "src/components/ContentTab.tsx",
       "src/components/StrategyMap.tsx",

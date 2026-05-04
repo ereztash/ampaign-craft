@@ -341,7 +341,7 @@ function buildDerivedInsights(
   // Top pain point
   const topPainPoint = diff?.tradeoffs?.[0]
     ? { he: diff.tradeoffs[0].weakness, en: diff.tradeoffs[0].weakness }
-    : (INDUSTRY_PAIN_POINTS[field]?.[0] || INDUSTRY_PAIN_POINTS.other[0]);
+    : (INDUSTRY_PAIN_POINTS[field]?.[0] || INDUSTRY_PAIN_POINTS.other?.[0]);
 
   // Industry pain points
   const industryPainPoints = INDUSTRY_PAIN_POINTS[field] || INDUSTRY_PAIN_POINTS.other;

@@ -20,12 +20,8 @@ import { Progress } from "@/components/ui/progress";
 import { Brain, Target, Users, Lightbulb, TrendingUp } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-import type { EPSResult } from "@/engine/emotionalPerformanceEngine";
-import type { CrossDomainReport } from "@/engine/crossDomainBenchmarkEngine";
-import type { PredictiveContentScore } from "@/engine/predictiveContentScoreEngine";
-import type { CohortAssignment } from "@/engine/behavioralCohortEngine";
-import { getEPSVerdict } from "@/engine/emotionalPerformanceEngine";
-import { getPredictiveContentVerdict } from "@/engine/predictiveContentScoreEngine";
+import type { EPSResult, CrossDomainReport, PredictiveContentScore, CohortAssignment } from "@/viewmodels";
+import { getEPSVerdict, getPredictiveContentVerdict } from "@/viewmodels";
 import { SectionInsightBanner } from "@/components/SectionInsightBanner";
 
 interface IntelligenceSynthesisDashboardProps {

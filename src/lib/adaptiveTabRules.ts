@@ -2,6 +2,7 @@ import { BusinessFingerprint } from "@/engine/businessFingerprintEngine";
 import { FunnelResult } from "@/types/funnel";
 import { UserProfile } from "@/contexts/UserProfileContext";
 import type { ArchetypeUIConfig, ConfidenceTier, TabId } from "@/types/archetype";
+import { type FoggTier, deriveFoggTier } from "@/lib/renderGate";
 
 export interface TabConfig {
   id: string;
@@ -29,13 +30,23 @@ export function getTabConfig(
   result: FunnelResult,
   profile: UserProfile,
   archetypeOverride?: ArchetypeTabOverride | null,
+  foggTier?: FoggTier,
 ): TabConfig[] {
   const { formData } = result;
   const showBrandDna =
     formData.businessField === "personalBrand" || formData.businessField === "services";
-  const isAdvanced = formData.experienceLevel === "advanced";
-  const isIntermediate = formData.experienceLevel === "intermediate";
-  const isBeginner = formData.experienceLevel === "beginner" || formData.experienceLevel === "";
+
+  // Unified gate: foggTier overrides raw experienceLevel when provided.
+  // Falls back to deriving the tier from the legacy signal so callers that
+  // haven't migrated yet continue to work without change.
+  const resolvedTier: FoggTier = foggTier ?? deriveFoggTier({
+    experienceLevel: formData.experienceLevel,
+    confidenceTier: archetypeOverride?.tier,
+  });
+
+  const isAdvanced    = resolvedTier === "high";
+  const isIntermediate = resolvedTier === "medium";
+  const isBeginner    = resolvedTier === "low";
 
   const tabs: TabConfig[] = [
     // Strategy — core funnel + channels + Israeli tools + tips (collapsible)

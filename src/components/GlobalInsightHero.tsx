@@ -1,13 +1,10 @@
-import type { Bottleneck } from "@/engine/bottleneckEngine";
-import { selectTactic } from "@/engine/bottleneckEngine";
-import type { HealthScore } from "@/engine/healthScoreEngine";
-import type { BusinessInsight } from "@/engine/insightsEngine";
-import type { LoopSnapshot } from "@/engine/weeklyLoopEngine";
-import { commitToAction, reportOutcome, startNewWeek, getStreak } from "@/engine/weeklyLoopEngine";
+import type { Bottleneck, BusinessInsight, LoopSnapshot, HealthScore } from "@/viewmodels";
+import { selectTactic, commitToAction, reportOutcome, startNewWeek, getStreak } from "@/viewmodels";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { label, SEVERITY_LABEL, INSIGHT_TYPE_LABEL } from "@/lib/uiVocabulary";
 
 interface GlobalInsightHeroProps {
   bottlenecks: Bottleneck[];
@@ -217,7 +214,7 @@ export function GlobalInsightHero({
       {/* InsightLadder — static progress indicator */}
       <InsightLadder activeStep={ladderStep} language={language} />
       {hasInsight && (() => {
-        const insight = insights[0];
+        const insight = insights?.[0];
         return (
           <Card className={cn("border-s-4", INSIGHT_BORDER[insight.type] ?? "border-primary bg-primary/5")}>
             <CardContent className="p-4">
@@ -227,13 +224,7 @@ export function GlobalInsightHero({
                     variant={insight.type === "risk" ? "destructive" : "secondary"}
                     className="text-xs mb-1"
                   >
-                    {insight.type === "risk"
-                      ? t("סיכון", "Risk")
-                      : insight.type === "win"
-                        ? t("הישג", "Win")
-                        : insight.type === "pattern"
-                          ? t("מגמה", "Trend")
-                          : t("טיפ", "Tip")}
+                    {label(INSIGHT_TYPE_LABEL, insight.type, language)}
                   </Badge>
                   <p className="text-sm font-semibold text-foreground" dir="auto">{insight.title[language]}</p>
                   <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{insight.body[language]}</p>
@@ -250,7 +241,7 @@ export function GlobalInsightHero({
       })()}
 
       {hasBottleneck && (() => {
-        const b = bottlenecks[0];
+        const b = bottlenecks?.[0];
         return (
           <Card className={cn("border-s-4", SEVERITY_BORDER[b.severity] ?? "border-primary bg-primary/5")}>
             <CardContent className="p-4 space-y-2">
@@ -258,9 +249,9 @@ export function GlobalInsightHero({
                 <div className="min-w-0">
                   <Badge
                     variant={b.severity === "critical" ? "destructive" : "secondary"}
-                    className="text-xs mb-1 capitalize"
+                    className="text-xs mb-1"
                   >
-                    {b.severity}
+                    {label(SEVERITY_LABEL, b.severity, language)}
                   </Badge>
                   <p className="text-sm font-semibold text-foreground" dir="auto">{b.title[language]}</p>
                   <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{b.description[language]}</p>
