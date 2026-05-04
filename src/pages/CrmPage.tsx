@@ -135,9 +135,12 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave, quic
     setSaving(true);
     try {
       const result = await onSave(form, initial);
-      setOpen(false);
-      if (!initial) setForm(blankForm(defaultStatus));
-      if (isQuick && result && onAfterCreate) onAfterCreate(result);
+      if (result) {
+        setOpen(false);
+        if (!initial) setForm(blankForm(defaultStatus));
+        if (isQuick && onAfterCreate) onAfterCreate(result);
+      }
+      // If result is null the toast was already shown by handleSave; keep dialog open.
     } finally {
       setSaving(false);
     }
@@ -351,7 +354,7 @@ function LeadCard({ lead, col, onEdit, onDelete, onMove, language }: LeadCardPro
 
 const CrmPage = () => {
   const { language } = useLanguage();
-  const { user } = useAuth();
+  const { user, isLocalAuth } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -505,6 +508,17 @@ const CrmPage = () => {
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 pt-4 pb-16 max-w-7xl">
         <BackToHub currentPage={tx({ he: "CRM", en: "CRM" }, language)} />
+        {isLocalAuth && (
+          <div className="mb-4 rounded-lg border border-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-700 px-4 py-3 text-sm text-yellow-800 dark:text-yellow-300" dir="auto">
+            {tx(
+              {
+                he: "CRM פועל במצב לא-מקוון - שמירה ל-Supabase לא תעבוד. התחבר עם חשבון Supabase לשמירה.",
+                en: "CRM is running in offline mode - saving to Supabase will not work. Sign in with a Supabase account to save.",
+              },
+              language,
+            )}
+          </div>
+        )}
 
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>

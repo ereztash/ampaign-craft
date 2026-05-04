@@ -27,12 +27,18 @@ function withTimeout<T>(p: PromiseLike<T>, ms: number, label: string): Promise<T
 import { supabaseLoose as db } from "@/integrations/supabase/loose";
 import { logger } from "@/lib/logger";
 
-// Last write error exposed for caller-side toasts. Only the code/hint is
-// stored — never the full message which may contain PII.
+// Last write error exposed for caller-side toasts.
 let _lastWriteError: string | null = null;
 export function getLastLeadWriteError(): string | null { return _lastWriteError; }
-function storeError(e: { code?: string; hint?: string } | null) {
-  _lastWriteError = e ? (e.hint ?? e.code ?? "unknown") : null;
+function storeError(e: { code?: string; hint?: string; message?: string } | null) {
+  if (!e) { _lastWriteError = null; return; }
+  // Prefer hint (human-readable from Postgres), then message, then code.
+  const raw = e.hint ?? e.message ?? e.code ?? "unknown";
+  // Strip PII patterns before storing (emails, Israeli phones, UUIDs).
+  _lastWriteError = raw
+    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "[email]")
+    .replace(/\b0(5[0-9]|7[27-9])[-\s]?\d{7}\b/g, "[phone]")
+    .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, "[id]");
 }
 
 // ─── Types ──────────────────────────────────────
