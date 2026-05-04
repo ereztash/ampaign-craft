@@ -246,16 +246,18 @@ interface LeadCardProps {
 function LeadCard({ lead, col, onEdit, onDelete, onMove, language }: LeadCardProps) {
   const navigate = useNavigate();
   const followupDate = lead.nextFollowup ? new Date(lead.nextFollowup) : null;
-  const isOverdue = followupDate && followupDate < new Date() && lead.status !== "closed" && lead.status !== "lost";
+  // Compare against start-of-today (local) so a follow-up set for today never shows as overdue.
+  const todayStart = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; })();
+  const isOverdue = followupDate && followupDate < todayStart && lead.status !== "closed" && lead.status !== "lost";
   const detailPath = `/crm/${lead.id}`;
   const waMessage = [
     `שלום ${lead.name}!`,
-    lead.business ? `(${lead.business})` : "",
+    ...(lead.business ? [`(${lead.business})`] : []),
     ``,
     `רציתי לעקוב אחרי השיחה שלנו.`,
     ``,
     `מצפה לשמוע ממך 🙏`,
-  ].filter(Boolean).join("\n");
+  ].join("\n");
   // Stop click bubbling so action controls don't also trigger card navigation.
   const stop = (e: React.MouseEvent | React.KeyboardEvent) => e.stopPropagation();
 
@@ -471,7 +473,8 @@ const CrmPage = () => {
 
   const totalValue = leads.filter((l) => l.status === "closed").reduce((s, l) => s + l.valueNIS, 0);
   const openValue = leads.filter((l) => !["closed", "lost"].includes(l.status)).reduce((s, l) => s + l.valueNIS, 0);
-  const overdueCount = leads.filter((l) => l.nextFollowup && new Date(l.nextFollowup) < new Date() && !["closed", "lost"].includes(l.status)).length;
+  const _todayStart = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; })();
+  const overdueCount = leads.filter((l) => l.nextFollowup && new Date(l.nextFollowup) < _todayStart && !["closed", "lost"].includes(l.status)).length;
 
   if (!user) {
     return (
