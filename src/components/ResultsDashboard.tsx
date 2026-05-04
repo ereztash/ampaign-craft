@@ -118,6 +118,8 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
   const tabMap = new Map(tabs.map((t) => [t.id, t]));
   const isSimplified = (id: string) => tabMap.get(id)?.simplifiedMode ?? false;
 
+  const [activeTab, setActiveTab] = useState(defaultTab);
+
   // Load saved differentiation + stylome from localStorage (if available)
   const diffResult = useMemo<DifferentiationResult | null>(
     () => safeStorage.getJSON<DifferentiationResult | null>("funnelforge-differentiation-result", null),
@@ -182,6 +184,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
 
   // Track feature usage when switching tabs
   const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
     trackFeature(tabId);
   };
 
@@ -400,8 +403,8 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         )}
 
         {/* === CONSOLIDATED TABS === */}
-        <Tabs defaultValue={defaultTab} className="mb-8" onValueChange={handleTabChange}>
-          <AdaptiveTabNav tabs={tabs} />
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-8">
+          <AdaptiveTabNav tabs={tabs} activeTab={activeTab} onTabSelect={handleTabChange} />
           <Suspense
             fallback={
               <div className="mt-6 space-y-4" aria-busy="true" aria-live="polite">

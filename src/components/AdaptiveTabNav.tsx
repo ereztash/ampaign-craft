@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -9,6 +8,11 @@ import { BarChart3, FileText, TrendingUp } from "lucide-react";
 
 interface AdaptiveTabNavProps {
   tabs: TabConfig[];
+  /** The currently active sub-tab id (controlled by parent Tabs value). */
+  activeTab: string;
+  /** Called when the user selects a tab — either by clicking a super-tab group
+   *  (navigates to that group's first sub-tab) or by clicking a sub-tab directly. */
+  onTabSelect: (tabId: string) => void;
 }
 
 const GROUP_CONFIG = {
@@ -19,10 +23,9 @@ const GROUP_CONFIG = {
 
 const GROUP_ORDER: (keyof typeof GROUP_CONFIG)[] = ["strategy", "content", "growth"];
 
-const AdaptiveTabNav = ({ tabs }: AdaptiveTabNavProps) => {
+const AdaptiveTabNav = ({ tabs, activeTab, onTabSelect }: AdaptiveTabNavProps) => {
   const { t, language } = useLanguage();
   const isMobile = useIsMobile();
-  const [activeGroup, setActiveGroup] = useState<string>("strategy");
 
   // Group tabs by super-tab
   const groups = GROUP_ORDER.map((groupId) => ({
@@ -31,7 +34,11 @@ const AdaptiveTabNav = ({ tabs }: AdaptiveTabNavProps) => {
     tabs: tabs.filter((tab) => tab.group === groupId),
   })).filter((g) => g.tabs.length > 0);
 
-  const activeGroupTabs = groups.find((g) => g.id === activeGroup)?.tabs || tabs;
+  // Derived from the active tab — single source of truth, no local state.
+  const activeGroup =
+    tabs.find((t) => t.id === activeTab)?.group ?? groups[0]?.id ?? GROUP_ORDER[0];
+
+  const activeGroupTabs = groups.find((g) => g.id === activeGroup)?.tabs ?? tabs;
 
   return (
     <div className="space-y-2">
@@ -44,7 +51,10 @@ const AdaptiveTabNav = ({ tabs }: AdaptiveTabNavProps) => {
             <button
               key={group.id}
               type="button"
-              onClick={() => setActiveGroup(group.id)}
+              onClick={() => {
+                const firstTab = group.tabs[0];
+                if (firstTab) onTabSelect(firstTab.id);
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 isActive
                   ? "bg-primary/10 text-primary"

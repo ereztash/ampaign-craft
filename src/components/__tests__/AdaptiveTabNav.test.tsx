@@ -18,71 +18,103 @@ vi.mock("@/hooks/use-mobile", () => ({
 const mockTabs = [
   { id: "analytics", labelKey: "tabAnalytics", group: "strategy" as const, visible: true, priority: 10 },
   { id: "content", labelKey: "tabContent", group: "content" as const, visible: true, priority: 20 },
-  { id: "growth", labelKey: "tabGrowth", group: "growth" as const, visible: true, priority: 30 },
+  { id: "sales", labelKey: "tabSales", group: "growth" as const, visible: true, priority: 30 },
   { id: "hooks", labelKey: "tabHooks", group: "content" as const, visible: true, priority: 40, badge: { he: "חדש", en: "New" } },
 ];
 
 describe("AdaptiveTabNav", () => {
-  it("renders without crashing", () => {
+  it("renders group navigation buttons", () => {
     render(
-      <Tabs defaultValue="analytics">
-        <AdaptiveTabNav tabs={mockTabs} />
+      <Tabs value="analytics" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="analytics" onTabSelect={vi.fn()} />
       </Tabs>
     );
-    expect(document.querySelector("[class*='flex']")).toBeTruthy();
-  });
-
-  it("shows group navigation buttons", () => {
-    render(
-      <Tabs defaultValue="analytics">
-        <AdaptiveTabNav tabs={mockTabs} />
-      </Tabs>
-    );
-    // Group buttons for strategy, content, and growth should appear
     expect(screen.getByText("groupStrategy")).toBeInTheDocument();
     expect(screen.getByText("groupContent")).toBeInTheDocument();
     expect(screen.getByText("groupGrowth")).toBeInTheDocument();
   });
 
-  it("shows sub-tabs within active group", () => {
+  it("highlights the group that contains the active tab", () => {
     render(
-      <Tabs defaultValue="analytics">
-        <AdaptiveTabNav tabs={mockTabs} />
+      <Tabs value="sales" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="sales" onTabSelect={vi.fn()} />
       </Tabs>
     );
-    // Default group is "strategy", should show analytics tab
-    expect(screen.getByText("tabAnalytics")).toBeInTheDocument();
+    const growthBtn = screen.getByText("groupGrowth").closest("button")!;
+    expect(growthBtn.className).toMatch(/bg-primary/);
+    const strategyBtn = screen.getByText("groupStrategy").closest("button")!;
+    expect(strategyBtn.className).not.toMatch(/bg-primary/);
   });
 
-  it("switches to content group on click", () => {
+  it("derives activeGroup from activeTab prop — no stale local state", () => {
+    const { rerender } = render(
+      <Tabs value="analytics" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="analytics" onTabSelect={vi.fn()} />
+      </Tabs>
+    );
+    // Initially in strategy group
+    expect(screen.getByText("groupStrategy").closest("button")!.className).toMatch(/bg-primary/);
+
+    // Simulate parent switching to a growth tab
+    rerender(
+      <Tabs value="sales" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="sales" onTabSelect={vi.fn()} />
+      </Tabs>
+    );
+    expect(screen.getByText("groupGrowth").closest("button")!.className).toMatch(/bg-primary/);
+    expect(screen.getByText("groupStrategy").closest("button")!.className).not.toMatch(/bg-primary/);
+  });
+
+  it("calls onTabSelect with first tab of group when super-tab is clicked", () => {
+    const onTabSelect = vi.fn();
     render(
-      <Tabs defaultValue="content">
-        <AdaptiveTabNav tabs={mockTabs} />
+      <Tabs value="analytics" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="analytics" onTabSelect={onTabSelect} />
       </Tabs>
     );
     fireEvent.click(screen.getByText("groupContent"));
-    expect(screen.getByText("tabContent")).toBeInTheDocument();
+    // First tab in content group by priority is "content" (priority 20)
+    expect(onTabSelect).toHaveBeenCalledWith("content");
   });
 
-  it("renders with empty tabs array", () => {
+  it("shows sub-tabs of the active group only", () => {
     render(
-      <Tabs defaultValue="x">
-        <AdaptiveTabNav tabs={[]} />
+      <Tabs value="analytics" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="analytics" onTabSelect={vi.fn()} />
       </Tabs>
     );
-    // Should not crash with empty tabs
+    expect(screen.getByText("tabAnalytics")).toBeInTheDocument();
+    expect(screen.queryByText("tabContent")).not.toBeInTheDocument();
+    expect(screen.queryByText("tabSales")).not.toBeInTheDocument();
+  });
+
+  it("falls back to first available group when activeTab is unknown", () => {
+    render(
+      <Tabs value="nonexistent" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="nonexistent" onTabSelect={vi.fn()} />
+      </Tabs>
+    );
+    // Should highlight first group (strategy) — no crash, no undefined active
+    const strategyBtn = screen.getByText("groupStrategy").closest("button")!;
+    expect(strategyBtn.className).toMatch(/bg-primary/);
+  });
+
+  it("renders with empty tabs array without crashing", () => {
+    render(
+      <Tabs value="x" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={[]} activeTab="x" onTabSelect={vi.fn()} />
+      </Tabs>
+    );
     expect(document.querySelector("[class*='space-y-2']")).toBeTruthy();
   });
 
-  it("shows badge indicator when a tab has a badge", () => {
+  it("shows badge dot when a tab in the group has a badge", () => {
     render(
-      <Tabs defaultValue="hooks">
-        <AdaptiveTabNav tabs={mockTabs} />
+      <Tabs value="content" onValueChange={vi.fn()}>
+        <AdaptiveTabNav tabs={mockTabs} activeTab="content" onTabSelect={vi.fn()} />
       </Tabs>
     );
-    // Click content group to see badge indicator
-    fireEvent.click(screen.getByText("groupContent"));
-    // The badge dot span should be present
+    // content group has "hooks" tab with a badge → dot indicator on groupContent button
     const dotSpans = document.querySelectorAll(".rounded-full.bg-accent");
     expect(dotSpans.length).toBeGreaterThanOrEqual(1);
   });
