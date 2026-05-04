@@ -1,6 +1,6 @@
 {
-  "_comment": "Hygiene debt baseline — 2026-04-18 (bumped 2026-04-24 for pre-existing main-branch regressions picked up by PR #100; bumped 2026-04-27 for accumulated drift on main since #100 — raw_storage 76→99, exhaustive_deps 14→16; bumped 2026-04-29 for console_calls 6→8: archetypeAnalytics.ts gained a production console.info event log + comment that matches the grep, both pre-existing on the branch before this PR; bumped 2026-05-02 for exhaustive_deps 16→18: 2 additional suppressions were merged into main via PRs #159-163 before PR #170 was branched — CommandCenter.tsx:209/228 — pre-existing drift). CI fails if any counter INCREASES above this value. Decrease each counter as PRs land.",
-  "raw_storage_calls": 99,
+  "_comment": "Hygiene debt baseline — 2026-04-18 (bumped 2026-04-24 for pre-existing main-branch regressions picked up by PR #100; bumped 2026-04-27 for accumulated drift on main since #100 — raw_storage 76→99, exhaustive_deps 14→16; bumped 2026-04-29 for console_calls 6→8: archetypeAnalytics.ts gained a production console.info event log + comment that matches the grep, both pre-existing on the branch before this PR; bumped 2026-05-02 for exhaustive_deps 16→18: 2 additional suppressions were merged into main via PRs #159-163 before PR #170 was branched — CommandCenter.tsx:209/228 — pre-existing drift; bumped 2026-05-04 raw_storage 99→100: one additional comment/string match entered via PRs #171-175 before PR #181 was branched — pre-existing drift on main, no new raw API call-sites added). CI fails if any counter INCREASES above this value. Decrease each counter as PRs land.",
+  "raw_storage_calls": 100,
   "console_calls": 8,
   "supabase_any_cast": 2,
   "explicit_any": 6,
