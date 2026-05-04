@@ -1,6 +1,5 @@
 import type { Bottleneck, BusinessInsight, LoopSnapshot, HealthScore } from "@/viewmodels";
 import { selectTactic, commitToAction, reportOutcome, startNewWeek, getStreak, getLoopOnboarded, setLoopOnboarded } from "@/viewmodels";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -76,7 +75,6 @@ export function GlobalInsightHero({
 }: GlobalInsightHeroProps) {
   const t = (he: string, en: string) => (language === "he" ? he : en);
   const { state, commitment, daysSinceCommit } = loopSnapshot;
-  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
 
   const isAccountabilityActive =
     state === "awaiting_report" ||
@@ -91,7 +89,7 @@ export function GlobalInsightHero({
 
   // ─── Loop onboarding card — shown once, before user's first commitment ──────
   const streak = getStreak();
-  const showOnboarding = streak === 0 && !onboardingDismissed && !getLoopOnboarded();
+  const showOnboarding = streak === 0 && !getLoopOnboarded();
   if (showOnboarding) {
     return (
       <Card className="mb-4 border-primary/20 bg-primary/5">
@@ -109,7 +107,6 @@ export function GlobalInsightHero({
             size="sm"
             onClick={() => {
               setLoopOnboarded();
-              setOnboardingDismissed(true);
               onLoopStateChange();
             }}
           >
