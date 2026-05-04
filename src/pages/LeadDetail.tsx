@@ -26,6 +26,14 @@ import { OutreachReplyPrompt } from "@/components/OutreachReplyPrompt";
 import { SilentBoundary } from "@/components/SilentBoundary";
 import { addInteraction, type InteractionType } from "@/services/leadsService";
 
+const STATUS_LABEL: Record<string, { he: string; en: string }> = {
+  lead:     { he: "ליד",    en: "Lead"     },
+  meeting:  { he: "פגישה",  en: "Meeting"  },
+  proposal: { he: "הצעה",   en: "Proposal" },
+  closed:   { he: "סגור ✓", en: "Closed ✓" },
+  lost:     { he: "אבוד",   en: "Lost"     },
+};
+
 const INTERACTION_TYPES: { id: InteractionType; he: string; en: string }[] = [
   { id: "note",    he: "הערה",    en: "Note" },
   { id: "call",    he: "שיחה",   en: "Call" },
@@ -115,7 +123,7 @@ const LeadDetail = () => {
           <CardHeader>
             <CardTitle className="flex items-center justify-between gap-2">
               <span dir="auto">{lead.name}</span>
-              <Badge variant="outline" className="text-xs">{lead.status}</Badge>
+              <Badge variant="outline" className="text-xs">{tx(STATUS_LABEL[lead.status] ?? { he: lead.status, en: lead.status }, language)}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">

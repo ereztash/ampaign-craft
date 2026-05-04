@@ -154,16 +154,21 @@ function leadToRow(input: LeadInsert | LeadUpdate, userId?: string): Record<stri
 // ─── Lead CRUD ──────────────────────────────────
 
 export async function listLeads(userId: string): Promise<Lead[]> {
-  const { data, error } = await db
-    .from("leads")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  if (error) {
-    logger.error("leadsService.listLeads", error);
+  try {
+    const { data, error } = await withTimeout(
+      db.from("leads").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+      READ_TIMEOUT_MS,
+      "listLeads",
+    );
+    if (error) {
+      logger.error("leadsService.listLeads", error);
+      return [];
+    }
+    return ((data as LeadRow[] | null) ?? []).map(mapLead);
+  } catch (err) {
+    logger.error("leadsService.listLeads.timeout", err);
     return [];
   }
-  return ((data as LeadRow[] | null) ?? []).map(mapLead);
 }
 
 export async function getLead(leadId: string): Promise<Lead | null> {
@@ -276,16 +281,21 @@ export async function addInteraction(
   type: InteractionType,
   note: string,
 ): Promise<LeadInteraction | null> {
-  const { data, error } = await db
-    .from("lead_interactions")
-    .insert({ lead_id: leadId, user_id: userId, type, note })
-    .select()
-    .single();
-  if (error) {
-    logger.error("leadsService.addInteraction", error);
+  try {
+    const { data, error } = await withTimeout(
+      db.from("lead_interactions").insert({ lead_id: leadId, user_id: userId, type, note }).select().single(),
+      WRITE_TIMEOUT_MS,
+      "addInteraction",
+    );
+    if (error) {
+      logger.error("leadsService.addInteraction", error);
+      return null;
+    }
+    return data ? mapInteraction(data as InteractionRow) : null;
+  } catch (err) {
+    logger.error("leadsService.addInteraction.timeout", err);
     return null;
   }
-  return data ? mapInteraction(data as InteractionRow) : null;
 }
 
 // ─── Recommendation cache ───────────────────────
