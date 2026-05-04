@@ -51,7 +51,8 @@ import {
   DollarSign, Building2,
 } from "lucide-react";
 import {
-  listLeads, createLead, updateLead, deleteLead, type Lead, type LeadStatus,
+  listLeads, createLead, updateLead, deleteLead, getLastLeadWriteError,
+  type Lead, type LeadStatus,
 } from "@/services/leadsService";
 
 // ─── Column definitions ───────────────────────────────────────────────────────
@@ -160,7 +161,7 @@ function LeadFormDialog({ trigger, initial, defaultStatus = "lead", onSave, quic
           </div>
           <div className="space-y-1">
             <Label htmlFor="lead-phone" className="text-xs" dir="auto">{tx({ he: "טלפון", en: "Phone" }, language)}</Label>
-            <Input id="lead-phone" dir="ltr" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="050-000-0000" />
+            <Input id="lead-phone" dir="ltr" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="050-0000000 / 0500000000" />
           </div>
           <div className="space-y-1">
             <Label htmlFor="lead-source" className="text-xs" dir="auto">{tx({ he: "מקור (איך הגיע אליך?)", en: "Source (how did they find you?)" }, language)}</Label>
@@ -380,8 +381,8 @@ const CrmPage = () => {
       const isFirst = leads.length === 0 && !existing;
       const payload = {
         name: form.name.trim(),
-        phone: form.phone,
-        email: form.email,
+        phone: form.phone.trim(),
+        email: form.email.trim(),
         business: form.business,
         status: form.status,
         notes: form.notes,
@@ -394,7 +395,12 @@ const CrmPage = () => {
       if (existing) {
         const updated = await updateLead(existing.id, payload);
         if (!updated) {
-          toast({ title: tx({ he: "השמירה נכשלה", en: "Save failed" }, language), variant: "destructive" });
+          const reason = getLastLeadWriteError();
+          toast({
+            title: tx({ he: "השמירה נכשלה", en: "Save failed" }, language),
+            description: reason ?? undefined,
+            variant: "destructive",
+          });
           return null;
         }
         setLeads((prev) => prev.map((l) => (l.id === existing.id ? updated : l)));
@@ -403,7 +409,12 @@ const CrmPage = () => {
       } else {
         const created = await createLead(user.id, payload);
         if (!created) {
-          toast({ title: tx({ he: "השמירה נכשלה", en: "Save failed" }, language), variant: "destructive" });
+          const reason = getLastLeadWriteError();
+          toast({
+            title: tx({ he: "השמירה נכשלה", en: "Save failed" }, language),
+            description: reason ?? undefined,
+            variant: "destructive",
+          });
           return null;
         }
         setLeads((prev) => [created, ...prev]);
