@@ -43,12 +43,12 @@ const FOGG_LEG_COPY: Record<string, { he: string; en: string }> = {
     en: "Let's start by defining one clear goal for the next month",
   },
   ability: {
-    he: "נמצא 3 פעולות שאפשר לבצע עכשיו — ללא תקציב גדול",
-    en: "Let's find 3 actions you can take right now — no big budget needed",
+    he: "נמצא 3 פעולות שאפשר לבצע עכשיו - ללא תקציב גדול",
+    en: "Let's find 3 actions you can take right now - no big budget needed",
   },
   trigger: {
-    he: "כבר יש לך בסיס — נייצר את ה-trigger שיזיז את הגלגל",
-    en: "You already have a foundation — let's create the trigger that gets things moving",
+    he: "כבר יש לך בסיס - נייצר את ה-trigger שיזיז את הגלגל",
+    en: "You already have a foundation - let's create the trigger that gets things moving",
   },
 };
 
@@ -82,8 +82,8 @@ export default function ProspectWelcomeScreen({
               <p className="text-sm text-muted-foreground" dir="auto">
                 {tx(
                   {
-                    he: "ספר לנו קצת על העסק שלך — כך נוכל להתאים את כל ההמלצות בדיוק לך",
-                    en: "Tell us a bit about your business — so we can tailor every recommendation to you",
+                    he: "ספר לנו קצת על העסק שלך - כך נוכל להתאים את כל ההמלצות בדיוק לך",
+                    en: "Tell us a bit about your business - so we can tailor every recommendation to you",
                   },
                   language,
                 )}
@@ -139,12 +139,12 @@ export default function ProspectWelcomeScreen({
           <div className="space-y-2">
             <Button className="w-full" onClick={handleContinue} disabled={loading}>
               <ArrowRight className={`h-4 w-4 ${isHe ? "rtl:rotate-180 me-2" : "me-2"}`} />
-              {tx({ he: "נכון — בוא נרוץ", en: "That's right — let's go" }, language)}
+              {tx({ he: "נכון - בוא נרוץ", en: "That's right - let's go" }, language)}
             </Button>
             {onCorrect && (
               <Button variant="ghost" size="sm" className="w-full gap-1.5" onClick={onCorrect}>
                 <HelpCircle className="h-3.5 w-3.5" />
-                {tx({ he: "לא מדויק — אתקן", en: "Not quite — let me correct it" }, language)}
+                {tx({ he: "לא מדויק - אתקן", en: "Not quite - let me correct it" }, language)}
               </Button>
             )}
           </div>
