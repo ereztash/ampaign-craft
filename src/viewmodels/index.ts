@@ -32,6 +32,8 @@ export {
   getStreak,
   getLoopSnapshot,
   getInsightUsageCount,
+  getLoopOnboarded,
+  setLoopOnboarded,
   toInsightVM,
   toBottleneckVM,
   toLoopStateVM,

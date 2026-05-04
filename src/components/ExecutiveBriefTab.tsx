@@ -249,7 +249,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
         </CardContent>
       </Card>
 
-      {/* NRR Scenarios */}
+      {/* NRR Scenarios — auto-gated by sales model */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
@@ -257,7 +257,23 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <NRRScenarioBar scenarios={brief.nrrScenarios} language={language} />
+          {result.formData.salesModel === "subscription" ? (
+            <NRRScenarioBar scenarios={brief.nrrScenarios} language={language} />
+          ) : result.formData.salesModel === "oneTime" || result.formData.salesModel === "leads" ? (
+            <p className="text-sm text-muted-foreground" dir="auto">
+              {tx(
+                { he: "החלק הזה רלוונטי לעסקים עם הכנסה חוזרת. נראה שאין לך כזו כרגע — נדלג.", en: "This section applies to businesses with recurring revenue. Looks like yours doesn't have that yet — skipping." },
+                language,
+              )}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground" dir="auto">
+              {tx(
+                { he: "כדי לראות את החלק הזה, חזור לטופס וענה על השאלה על מודל ההכנסה.", en: "To see this section, go back to the form and answer the question about your revenue model." },
+                language,
+              )}
+            </p>
+          )}
         </CardContent>
       </Card>
 

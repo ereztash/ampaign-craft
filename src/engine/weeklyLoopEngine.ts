@@ -311,6 +311,20 @@ export function abandonCommitment(): void {
   logger.info("weeklyLoop.abandon", { module: archived.module });
 }
 
+// ── Loop onboarding ──
+
+const LOOP_ONBOARDED_KEY = "funnelforge-loop-onboarded";
+
+/** True once the user has dismissed the accountability-loop onboarding card. */
+export function getLoopOnboarded(): boolean {
+  return safeStorage.getJSON<boolean>(LOOP_ONBOARDED_KEY, false);
+}
+
+/** Mark the onboarding card as permanently dismissed. No TTL. */
+export function setLoopOnboarded(): void {
+  safeStorage.setJSON(LOOP_ONBOARDED_KEY, true);
+}
+
 /**
  * How many times the user has committed to an action via the InsightHero.
  * Used for Fading Scaffolding: tactic detail level adapts to experience.

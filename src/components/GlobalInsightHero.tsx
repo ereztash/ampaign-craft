@@ -1,5 +1,6 @@
 import type { Bottleneck, BusinessInsight, LoopSnapshot, HealthScore } from "@/viewmodels";
-import { selectTactic, commitToAction, reportOutcome, startNewWeek, getStreak } from "@/viewmodels";
+import { selectTactic, commitToAction, reportOutcome, startNewWeek, getStreak, getLoopOnboarded, setLoopOnboarded } from "@/viewmodels";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -75,6 +76,7 @@ export function GlobalInsightHero({
 }: GlobalInsightHeroProps) {
   const t = (he: string, en: string) => (language === "he" ? he : en);
   const { state, commitment, daysSinceCommit } = loopSnapshot;
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
 
   const isAccountabilityActive =
     state === "awaiting_report" ||
@@ -87,10 +89,39 @@ export function GlobalInsightHero({
 
   if (!isAccountabilityActive && !hasInsight && !hasBottleneck) return null;
 
+  // ─── Loop onboarding card — shown once, before user's first commitment ──────
+  const streak = getStreak();
+  const showOnboarding = streak === 0 && !onboardingDismissed && !getLoopOnboarded();
+  if (showOnboarding) {
+    return (
+      <Card className="mb-4 border-primary/20 bg-primary/5">
+        <CardContent className="p-4 space-y-3">
+          <p className="text-sm font-semibold text-foreground" dir="auto">
+            {t("לפני שמתחילים — איך זה עובד", "Before we start — here's how it works")}
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed" dir="auto">
+            {t(
+              "כל שבוע נשאל אותך משהו אחד: מה הצלחת לעשות מהתוכנית. לא בוחנים אותך. רק עוקבים יחד אחרי מה שזז.",
+              "Each week we'll ask you one thing: what you got done from the plan. We're not testing you — just tracking together what's actually moving.",
+            )}
+          </p>
+          <Button
+            size="sm"
+            onClick={() => {
+              setLoopOnboarded();
+              setOnboardingDismissed(true);
+              onLoopStateChange();
+            }}
+          >
+            {t("הבנתי, התחל", "Got it, let's start")}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // ─── Layer 0: Accountability loop ──────────────────────────────
   if (isAccountabilityActive && commitment) {
-    const streak = getStreak();
-
     if (state === "between_weeks") {
       return (
         <Card className="mb-4 border-accent/30 bg-accent/5">

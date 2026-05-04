@@ -13,13 +13,15 @@ import {
   getStreak,
   getLoopSnapshot,
   getInsightUsageCount,
+  getLoopOnboarded,
+  setLoopOnboarded,
 } from "@/engine/weeklyLoopEngine";
 import type { BilingualText } from "@/types/i18n";
 
 // ── Re-exports (components import types from here, never the engine) ──────────
 export type { BottleneckModule, BottleneckSeverity, LoopState };
 export type { Bottleneck, LoopSnapshot, WeeklyCommitment, BusinessInsight };
-export { selectTactic, detectBottlenecks, generateInsights, commitToAction, reportOutcome, startNewWeek, getStreak, getLoopSnapshot, getInsightUsageCount };
+export { selectTactic, detectBottlenecks, generateInsights, commitToAction, reportOutcome, startNewWeek, getStreak, getLoopSnapshot, getInsightUsageCount, getLoopOnboarded, setLoopOnboarded };
 
 // ── InsightVM ─────────────────────────────────────────────────────────────────
 
