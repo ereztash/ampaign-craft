@@ -17,9 +17,9 @@ const GRADE_CONFIG = {
 
 const DIMENSION_LABELS = {
   dreamOutcome: { he: "תוצאה חלומית", en: "Dream Outcome" },
-  perceivedLikelihood: { he: "סיכוי נתפס", en: "Perceived Likelihood" },
-  timeDelay: { he: "השהיית זמן", en: "Time Delay" },
-  effortSacrifice: { he: "מאמץ והקרבה", en: "Effort & Sacrifice" },
+  perceivedLikelihood: { he: "כמה הלקוח מאמין שזה יעבוד לו", en: "How much the customer believes it will work" },
+  timeDelay: { he: "כמה זמן עד שהוא רואה תוצאה", en: "Time until they see results" },
+  effortSacrifice: { he: "מה הוא צריך לעשות / לוותר עליו", en: "What they need to do or give up" },
 } as const;
 
 function ScoreBar({ label, score, color }: { label: string; score: number; color: string }) {
@@ -50,7 +50,7 @@ export function HormoziValueCard({ data }: HormoziValueCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">
-            {language === "he" ? "משוואת ערך הורמוזי" : "Hormozi Value Equation"}
+            {language === "he" ? "מה הופך את ההצעה שלך לבלתי-נדחית" : "What makes your offer irresistible"}
           </CardTitle>
           <Badge className={`${grade.color} text-white`}>
             {grade.label[language]}
@@ -82,7 +82,7 @@ export function HormoziValueCard({ data }: HormoziValueCardProps) {
         {/* Optimization Priority */}
         <div className="rounded-lg border p-4 bg-primary/5 dark:bg-primary/10">
           <p className="text-sm font-semibold mb-1 text-foreground" dir="auto">
-            {language === "he" ? "עדיפות לשיפור:" : "Optimization Priority:"}
+            {language === "he" ? "איפה הכי כדאי להשקיע מאמץ:" : "Where to focus your effort next:"}
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed" dir="auto">
             {data.optimizationPriority[language]}

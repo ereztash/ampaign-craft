@@ -197,10 +197,12 @@ export const translations = {
 
   // Results Actions
   editPlan: { he: "ערוך תוכנית", en: "Edit Plan" },
-  exportPdf: { he: "ייצא PDF", en: "Export PDF" },
-  savePlan: { he: "שמור תוכנית", en: "Save Plan" },
+  exportLabel: { he: "ייצא", en: "Export" },
+  exportPdfOption: { he: "ייצא PDF", en: "Export PDF" },
+  savePlan: { he: "שמור", en: "Save" },
   sharePlan: { he: "שתף", en: "Share" },
   newPlan: { he: "תוכנית חדשה", en: "New Plan" },
+  continuePlan: { he: "המשך לעבוד על התוכנית", en: "Continue working on your plan" },
 
   // Results Details
   recommendedChannels: { he: "ערוצים מומלצים", en: "Recommended Channels" },
@@ -258,7 +260,7 @@ export const translations = {
   // Consolidated Tabs
   tabPlanning: { he: "תכנון", en: "Planning" },
   tabContent: { he: "תוכן", en: "Content" },
-  tabAnalytics: { he: "אנליטיקס", en: "Analytics" },
+  tabAnalytics: { he: "מספרים שכדאי לדעת", en: "Numbers Worth Knowing" },
   contentSubNavHooks: { he: "הוקים", en: "Hooks" },
   contentSubNavCopyLab: { he: "Copy Lab", en: "Copy Lab" },
   contentSubNavNeuro: { he: "Neuro-Story", en: "Neuro-Story" },
@@ -295,9 +297,9 @@ export const translations = {
   unlockFullView: { he: "רוצה לראות את הגרסה המלאה? שנה רמת ניסיון ל\"בינוני\" או \"מתקדם\"", en: "Want the full version? Change experience level to \"Intermediate\" or \"Advanced\"" },
 
   // Stylome Extractor
-  tabStylome: { he: "טביעת סגנון", en: "Stylome" },
-  stylomeSubtitle: { he: "מחלץ טביעת סגנון אישית: הדבק דגימות כתיבה וקבל System Prompt לשכפול הקול שלך", en: "Personal style fingerprint: paste writing samples and get a System Prompt to clone your voice" },
-  beginnerStylomeTitle: { he: "מחלץ טביעת סגנון", en: "Style Fingerprint" },
+  tabStylome: { he: "הקול הייחודי שלך", en: "Your Unique Voice" },
+  stylomeSubtitle: { he: "ניתוח של איך אתה כותב — כדי שכל תוכן עתידי ישמע באמת ממך, לא ממכונה", en: "An analysis of how you write — so all future content sounds genuinely like you, not a machine" },
+  beginnerStylomeTitle: { he: "הקול הייחודי שלך", en: "Your Unique Voice" },
   beginnerStylomeSubtitle: { he: "הדבק טקסטים שכתבת (וואטסאפ, אימייל, פוסט) וקבל פרומפט AI שכותב כמוך", en: "Paste texts you've written (WhatsApp, email, post) and get an AI prompt that writes like you" },
 
   // Sales Tab
@@ -356,7 +358,10 @@ export const translations = {
   // Pricing & Retention tabs
   tabPricing: { he: "תמחור", en: "Pricing" },
   tabRetention: { he: "שימור וצמיחה", en: "Retention" },
-  tabBrief: { he: "בריף מנהלים", en: "Exec Brief" },
+  tabBrief: { he: "סיכום העסק שלך", en: "Your Business Summary" },
+  loopOnboardingTitle: { he: "לפני שמתחילים — איך זה עובד", en: "Before we start — here's how it works" },
+  loopOnboardingBody: { he: "כל שבוע נשאל אותך משהו אחד: מה הצלחת לעשות מהתוכנית. לא בוחנים אותך. רק עוקבים יחד אחרי מה שזז.", en: "Each week we'll ask you one thing: what you got done from the plan. We're not testing you — just tracking together what's actually moving." },
+  loopOnboardingCta: { he: "הבנתי, התחל", en: "Got it, let's start" },
   groupStrategy: { he: "אסטרטגיה", en: "Strategy" },
   groupContent: { he: "תוכן", en: "Content" },
   groupGrowth: { he: "צמיחה", en: "Growth" },

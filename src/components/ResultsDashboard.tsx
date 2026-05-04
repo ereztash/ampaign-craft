@@ -59,7 +59,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
-import { Edit, Download, Save, Share2, Plus, AlertTriangle, Bot, ArrowRight } from "lucide-react";
+import { Save, AlertTriangle, Bot, ArrowRight, ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import BackToHub from "@/components/BackToHub";
@@ -188,6 +189,13 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
     trackFeature(tabId);
   };
 
+  const navigateToFirstTab = useCallback(() => {
+    const firstTabId = tabs[0]?.id || "strategy";
+    handleTabChange(firstTabId);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleTabChange is stable (defined in same render scope without deps)
+  }, [tabs]);
+
   // Data for planning tab (memoized)
   const israeliTools = useMemo(() => getIsraeliToolsSummary(), []);
   const benchmarks = useMemo(() => getIndustryBenchmarks(result.formData.businessField), [result.formData.businessField]);
@@ -285,11 +293,11 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         {graph.derived.coldStartMode && (
           <motion.div {...motionProps} className="mb-6 rounded-xl border border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-700/40 dark:bg-emerald-900/20 p-4 text-start space-y-2">
             <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200" dir="auto">
-              {tx({ he: "נקודת התחלה: כך תשפרו את התוכנית:", en: "Starting point: here's how to improve your plan:" }, language)}
+              {tx({ he: "מה עוד יעזור לדייק את התוכנית", en: "What else can sharpen the plan" }, language)}
             </p>
             <ul className="text-xs text-emerald-800 dark:text-emerald-300 space-y-1 list-disc list-inside" dir="auto">
-              <li>{tx({ he: "חברו מקור נתונים (Meta Ads, CSV) לקבלת תובנות מבוססות מספרים אמיתיים", en: "Connect a data source (Meta Ads, CSV) for insights based on real numbers" }, language)}</li>
-              <li>{tx({ he: "הריצו ניתוח סגנון כתיבה כדי שהקופי יתאים לקול שלכם", en: "Run a writing style analysis so copy matches your voice" }, language)}</li>
+              <li>{tx({ he: "אין לך עדיין מספרים? התחל עם הערכה מהירה ב-3 שאלות", en: "No numbers yet? Start with a quick 3-question estimate" }, language)}</li>
+              <li>{tx({ he: "כבר יש לך נתונים ממקום אחר (Meta, גוגל, Excel)? חבר אותם כאן", en: "Already have data elsewhere (Meta, Google, Excel)? Connect it here" }, language)}</li>
               <li>{tx({ he: "נסו את המאמן השיווקי. כל שיחה מחדדת את האסטרטגיה", en: "Try the AI Coach. Every conversation sharpens the strategy" }, language)}</li>
             </ul>
           </motion.div>
@@ -327,36 +335,6 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* Cost of Inaction Banner */}
-        <Card className="mb-6 border-destructive/20 bg-destructive/5">
-          <CardContent className="p-4 space-y-3">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <span className="text-2xl" role="img" aria-hidden="true">🔥</span>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground" dir="auto">{costOfInaction.lossFramedMessage[language]}</p>
-                <p className="text-xs text-muted-foreground mt-0.5" dir="auto">{costOfInaction.comparisonMessage[language]}</p>
-              </div>
-            </div>
-            {/* Compounding loss timeline */}
-            <div className="grid grid-cols-3 gap-2 pt-1">
-              <div className="rounded-lg border border-destructive/10 p-2 text-center">
-                <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.threeMonth.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">{tx({ he: "3 חודשים", en: "3 months" }, language)}</div>
-              </div>
-              <div className="rounded-lg border border-destructive/10 p-2 text-center">
-                <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.sixMonth.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">{tx({ he: "6 חודשים", en: "6 months" }, language)}</div>
-              </div>
-              <div className="rounded-lg border border-destructive/10 p-2 text-center">
-                <div className="text-sm font-bold text-destructive">₪{costOfInaction.compoundingLoss.twelveMonth.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">{tx({ he: "12 חודשים", en: "12 months" }, language)}</div>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground" dir="auto">{costOfInaction.competitorGapMessage[language]}</p>
-            <p className="text-xs font-semibold text-destructive mt-1" dir="auto">{costOfInaction.urgencyMessage[language]}</p>
-          </CardContent>
-        </Card>
 
         {/* Peer Benchmark */}
         <div className="mb-6">
@@ -433,6 +411,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
               marketEvents={marketEvents}
               flywheel={flywheel}
               clgStrategy={clgStrategy}
+              costOfInaction={costOfInaction}
               recommendedChannelsLabel={t("recommendedChannels")}
             />
           </TabsContent>
@@ -525,24 +504,28 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
         </div>
       </div>
 
-      {/* Sticky Action Bar — always visible */}
+      {/* Sticky Action Bar — 3 actions */}
       <div className="fixed bottom-0 inset-x-0 z-40 glass-card border-t" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="mx-auto flex max-w-5xl items-center justify-center gap-2 px-4 py-2.5">
-          <Button variant="outline" size="sm" onClick={onEdit} className="gap-1.5">
-            <Edit className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("editPlan")}</span>
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportPdf} className="gap-1.5">
-            <Download className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("exportPdf")}</span>
+          <Button size="sm" onClick={navigateToFirstTab} className="gap-1.5 bg-primary text-primary-foreground border-0">
+            <span className="hidden sm:inline">{t("continuePlan")}</span>
+            <span className="sm:hidden">▶</span>
           </Button>
           <Button variant="outline" size="sm" onClick={savePlan} className="gap-1.5">
             <Save className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("savePlan")}</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={sharePlan} className="gap-1.5">
-            <Share2 className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("sharePlan")}</span>
-          </Button>
-          <Button size="sm" onClick={onNewPlan} className="gap-1.5 bg-primary text-primary-foreground border-0">
-            <Plus className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{t("newPlan")}</span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <span className="hidden sm:inline">{t("exportLabel")}</span>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportPdf}>{t("exportPdfOption")}</DropdownMenuItem>
+              <DropdownMenuItem onClick={sharePlan}>{t("sharePlan")}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       {/* Bottom spacer for sticky bar */}

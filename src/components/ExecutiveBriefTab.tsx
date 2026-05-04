@@ -144,7 +144,7 @@ function NRRScenarioBar({ scenarios, language }: { scenarios: [NRRScenario, NRRS
         </div>
       ))}
       <p className="text-xs text-muted-foreground">
-        {tx({ he: "NRR = Net Revenue Retention. מעל 100% = צמיחה מהלקוחות הקיימים.", en: "NRR = Net Revenue Retention. Above 100% = growth from existing customers." }, language)}
+        {tx({ he: "אם המספר הזה מעל 100%, הלקוחות שלך מביאים יותר כסף השנה מאשר בשנה שעברה — בלי שהוצאת כסף על השגת לקוחות חדשים.", en: "If this number is above 100%, your existing customers are bringing in more revenue this year than last — without spending on acquiring new ones." }, language)}
       </p>
     </div>
   );
@@ -213,7 +213,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
-              {tx({ he: "סיכום מנהלים", en: "Executive Summary" }, language)}
+              {tx({ he: "הסיכום שלך", en: "Your Summary" }, language)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -253,7 +253,7 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {tx({ he: "תרחישי NRR (Net Revenue Retention)", en: "NRR Scenarios (Net Revenue Retention)" }, language)}
+            {tx({ he: "כמה כסף נשאר אצלך מלקוחות חוזרים", en: "Revenue retained from returning customers" }, language)}
           </CardTitle>
         </CardHeader>
         <CardContent>

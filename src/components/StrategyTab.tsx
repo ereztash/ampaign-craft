@@ -35,6 +35,7 @@ import type { getIsraeliToolsSummary } from "@/lib/toolRecommendations";
 import type { getEventsForField } from "@/lib/israeliMarketCalendar";
 import type { generateRetentionFlywheel } from "@/engine/retentionFlywheelEngine";
 import type { generateCLGStrategy } from "@/engine/clgEngine";
+import type { calculateCostOfInaction } from "@/engine/costOfInactionEngine";
 import { funnelStageColors, chartColorPalette } from "@/lib/colorSemantics";
 import { getToolsForChannel } from "@/lib/toolRecommendations";
 import { HormoziValueCard } from "@/components/HormoziValueCard";
@@ -122,6 +123,7 @@ export interface StrategyTabProps {
   marketEvents: ReturnType<typeof getEventsForField>;
   flywheel: ReturnType<typeof generateRetentionFlywheel>;
   clgStrategy: ReturnType<typeof generateCLGStrategy>;
+  costOfInaction: ReturnType<typeof calculateCostOfInaction>;
   recommendedChannelsLabel: string;
 }
 
@@ -150,6 +152,7 @@ const StrategyTab = ({
   marketEvents,
   flywheel,
   clgStrategy,
+  costOfInaction,
   recommendedChannelsLabel,
 }: StrategyTabProps) => {
   const [stagesOpen, setStagesOpen] = useState(true);
@@ -308,6 +311,28 @@ const StrategyTab = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Cost-of-Inaction — toned-down section, not a banner */}
+      <div className="mb-6 rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+        <div dir="auto">
+          <p className="text-sm font-medium text-foreground">{costOfInaction.lossFramedMessage[language]}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{costOfInaction.comparisonMessage[language]}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="rounded-lg border p-2 text-center">
+            <div className="text-sm font-semibold text-foreground">₪{costOfInaction.compoundingLoss.threeMonth.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "3 חודשים", en: "3 months" }, language)}</div>
+          </div>
+          <div className="rounded-lg border p-2 text-center">
+            <div className="text-sm font-semibold text-foreground">₪{costOfInaction.compoundingLoss.sixMonth.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "6 חודשים", en: "6 months" }, language)}</div>
+          </div>
+          <div className="rounded-lg border p-2 text-center">
+            <div className="text-sm font-semibold text-foreground">₪{costOfInaction.compoundingLoss.twelveMonth.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground">{tx({ he: "12 חודשים", en: "12 months" }, language)}</div>
+          </div>
+        </div>
+      </div>
 
       {/* Hormozi Value Equation */}
       <div className="mb-6">
