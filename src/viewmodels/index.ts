@@ -64,7 +64,8 @@ export type {
   ChurnRiskVM,
   ChurnInterventionVM,
 } from "./user-profile.vm";
-export { toDISCProfileVM, toNextStepVM, toChurnRiskVM } from "./user-profile.vm";
+export { toDISCProfileVM, toNextStepVM, toChurnRiskVM, inferDISCProfile, assessChurnRisk } from "./user-profile.vm";
+export type { DISCProfile, ChurnRiskAssessment } from "./user-profile.vm";
 
 export type {
   RecommendationSource,
@@ -127,6 +128,10 @@ export {
   generateReflectiveAction,
   getEPSVerdict,
   getPredictiveContentVerdict,
+  calculateEPS,
+  generateCrossDomainInsights,
+  assignToCohort,
+  generateRetentionStrategy,
 } from "./analytics.vm";
 
 export type { FoggLeg, ProspectProfile } from "./prospect-intelligence.vm";
