@@ -1,40 +1,41 @@
 # FunnelForge — הוראות המשך עבודה
 
 ## ענף פעיל
-`claude/continue-checkpoint-166-gQl3G`
+`claude/plan-repo-cleanup-OiANP`
 
 ---
 
-## מה הושלם בסשן האחרון (2026-05-02)
+## מה הושלם בסשן האחרון (2026-05-06)
 
-### Slice 3 — ViewModel layer + ESLint engine-import boundary
+### Repo Cleanup — ניקוי ריפוזיטורי מלא
 
-**קבצים שנוצרו:**
-- `src/viewmodels/health.vm.ts` — `HealthScoreVM` + `toHealthScoreVM` adapter; re-export של `getHealthScoreColor`
-- `src/viewmodels/insights.vm.ts` — `InsightVM`, `BottleneckVM`, `LoopStateVM` + adapters
-- `src/viewmodels/user-profile.vm.ts` — `DISCProfileVM`, `NextStepVM`, `ChurnRiskVM` + adapters
-- `src/viewmodels/index.ts` — barrel, נקודת import יחידה לכל ה-ViewModels
+**קבצים שנמחקו:**
+- `all_migrations.sql` — dump מיותר, קיים ב-`supabase/migrations/`
+- `bun.lockb` — פורמט בינארי ישן, מוחלף ע"י `bun.lock`
+- `package-lock.json` — npm lockfile, הפרויקט משתמש ב-Bun
 
-**קבצים שעודכנו:**
-- `eslint.config.js` — rule חדשה `no-restricted-imports` ב-`src/components/**` שאוסרת `@/engine/*`; debt allowlist של 16 קומפוננטות שטרם מוּגרו
+**ViewModel layer — השלמת מיגרציה מלאה:**
+- 26 קבצי `.vm.ts` ב-`src/viewmodels/` (14 חדשים נוצרו בסשן זה)
+- 86 טיפוסים/פונקציות שהיו חסרים נוספו לbarrel
+- **54 קומפוננטות production** הוגרו מ-`@/engine/*` ל-`@/viewmodels`
+- אפס imports ישירים מ-`@/engine/*` נשארו בקומפוננטות production
+- `eslint.config.js` allowlist עודכן — קומפוננטות שהוגרו הוסרו
 
-### Typography / IA — StrategyTab
-- `InsightActionCard` בראש הטאב עם "3 הפעולות הדחופות עכשיו" — נגזר מ-worst health-score gaps, נעלם אחרי אישור המשתמש
-- כרטיסי שלבי המשפך עטופים ב-Collapsible "תוכנית שלבים מלאה" (ברירת מחדל: פתוח)
-- `healthScore` prop type עבר מ-`ReturnType<typeof calculateHealthScore>` ל-`HealthScore` מ-`@/viewmodels`
-- תיקון em-dash ב-`PublicLandingDifferentiation.tsx` שעצר את ה-build
+**ViewModels קיימים (`src/viewmodels/`):**
+analytics, behavioral-action, blackboard, brand, business-fingerprint,
+churn, crm-leads, data-import, differentiation, differentiation-phases,
+executive-brief, export, guidance, health, insights, intake, moat,
+next-step, outcome-loop, pricing, prospect-intelligence, referral,
+sales, stylome, training, user-profile
+
+### Slice 3 — ViewModel layer + ESLint engine-import boundary (2026-05-02)
+- `src/viewmodels/health.vm.ts`, `insights.vm.ts`, `user-profile.vm.ts` — adapters ראשוניים
+- `eslint.config.js` — rule `no-restricted-imports` error-level ב-`src/components/**`
+- Typography / IA ב-StrategyTab: InsightActionCard, Collapsible phase plan
 
 ---
 
 ## המשך — עבודה ממתינה
-
-### מיגרציית ViewModel debt — 16 קומפוננטות (בתוך allowlist)
-בסדר עדיפות יורד לפי תדירות שימוש:
-1. `GlobalInsightHero.tsx` — bottleneck, health, insights, weeklyLoop
-2. `InsightFeed.tsx` — bottleneck, nextStep, pulse, ukg, outcomeLoop
-3. `ResultsDashboard.tsx` — מנועים רבים (מיגרציה ראשית)
-4. `IntelligenceSynthesisDashboard.tsx` — EPS, crossDomain, predictive, cohort
-5. שאר 12 הקומפוננטות ב-allowlist
 
 ### Drafts Inbox — A+B Workstream (ממתין ל-5 ראיונות משתמש)
 1. go/no-go: האם משתמש מבין הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
@@ -107,5 +108,5 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 ## ענפים רלוונטיים
 
-- `claude/continue-checkpoint-166-gQl3G` — **ענף פעיל**
+- `claude/plan-repo-cleanup-OiANP` — **ענף פעיל** (repo cleanup + viewmodel migration)
 - `perf/reactive-core` — DRAFT, ממתין ל-preview env validation
