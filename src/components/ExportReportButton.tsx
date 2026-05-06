@@ -9,7 +9,7 @@ import { FileDown, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { logger } from "@/lib/logger";
 import type { FunnelResult } from "@/types/funnel";
-import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { calculateHealthScore } from "@/viewmodels";
 
 interface ExportReportButtonProps {
   result: FunnelResult;

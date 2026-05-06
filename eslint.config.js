@@ -145,71 +145,8 @@ export default tseslint.config(
       ],
     },
   },
-  // Engine-import debt — components not yet migrated to the ViewModel layer.
-  // Do NOT add new entries here; migrate instead.
-  // (2026-05-02: expanded from 16 → 58 entries to cover all components that had
-  //  direct @/engine/* imports on main before this boundary was enforced.)
-  {
-    files: [
-      // original 16 — migrated: GlobalInsightHero, InsightFeed, IntelligenceSynthesisDashboard, ResultsDashboard (2026-05-04)
-      "src/components/RetentionGrowthTab.tsx",
-      "src/components/UVPSynthesisTab.tsx",
-      "src/components/EmailTemplateGallery.tsx",
-      "src/components/ArchetypePipelineGuide.tsx",
-      "src/components/ContentTab.tsx",
-      "src/components/StrategyMap.tsx",
-      "src/components/ChurnPlaybookTab.tsx",
-      "src/components/ChurnPredictionCard.tsx",
-      "src/components/DISCProfileCard.tsx",
-      "src/components/DataImportModal.tsx",
-      "src/components/OutputFeedback.tsx",
-      "src/components/SmartOnboarding.tsx",
-      // pre-existing debt discovered when boundary was first enforced (2026-05-02)
-      "src/components/AdminArchetypeDebugPanel.tsx",
-      "src/components/AiCoachChat.tsx",
-      "src/components/AnalyticsTab.tsx",
-      "src/components/ArchetypeProfileCard.tsx",
-      "src/components/BusinessDNACard.tsx",
-      "src/components/BusinessPulseBar.tsx",
-      "src/components/DifferentiationPhaseCard.tsx",
-      "src/components/DifferentiationResult.tsx",
-      "src/components/DifferentiationTranscriptWizard.tsx",
-      "src/components/DifferentiationWizard.tsx",
-      "src/components/ExecutiveBriefTab.tsx",
-      "src/components/ExportReportButton.tsx",
-      "src/components/IdentityStrip.tsx",
-      "src/components/InsightCloud.tsx",
-      "src/components/InsightsCard.tsx",
-      "src/components/LandingPage.tsx",
-      "src/components/LeadCoachPanel.tsx",
-      "src/components/MarketingWrapped.tsx",
-      "src/components/MetaMonitor.tsx",
-      "src/components/NeuroClosingCard.tsx",
-      "src/components/NudgeBanner.tsx",
-      "src/components/PricingIntelligenceTab.tsx",
-      "src/components/PricingWizard.tsx",
-      "src/components/PricingWizardResults.tsx",
-      "src/components/ProcessingScreen.tsx",
-      "src/components/QuoteBuilder.tsx",
-      "src/components/ReferralDashboard.tsx",
-      "src/components/SalesTab.tsx",
-      "src/components/StrategyTab.tsx",
-      "src/components/StylomeExtractor.tsx",
-      "src/components/UVPFormatCard.tsx",
-      "src/components/WeeklyActionCard.tsx",
-      "src/components/__tests__/InsightFeed.test.tsx",
-      "src/components/__tests__/NeuroClosingCard.test.tsx",
-      "src/components/__tests__/NudgeBanner.test.tsx",
-      "src/components/__tests__/PricingWizardResults.test.tsx",
-      "src/components/intake/IntakePromiseHeader.tsx",
-      "src/components/intake/IntakeReframeBanner.tsx",
-      "src/components/intake/__tests__/IntakePromiseHeader.test.tsx",
-      "src/components/intake/__tests__/IntakeReframeBanner.test.tsx",
-      "src/components/moat/PrincipleTraceModal.tsx",
-      "src/components/reflective/ReflectiveCard.tsx",
-    ],
-    rules: { "no-restricted-imports": "off" },
-  },
+  // Engine-import debt cleared 2026-05-06 — all components now route through
+  // @/viewmodels. The boundary is enforced project-wide; no allowlist needed.
 
   // ─── Logging boundary enforcement ────────────────────────────────────────
   // Direct console.* usage is banned in src; use logger from @/lib/logger

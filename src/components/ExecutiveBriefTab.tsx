@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
-import { buildExecutiveBrief, type TrafficLight, type BriefRisk, type NRRScenario, type ActionItem } from "@/engine/executiveBriefEngine";
+import { buildUserKnowledgeGraph } from "@/viewmodels";
+import { buildExecutiveBrief, type TrafficLight, type BriefRisk, type NRRScenario, type ActionItem } from "@/viewmodels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

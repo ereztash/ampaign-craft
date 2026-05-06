@@ -5,7 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { neuroVectorColors } from "@/lib/colorSemantics";
 import { FunnelResult } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
-import { analyzeCopy } from "@/engine/copyQAEngine";
+import { analyzeCopy } from "@/viewmodels";
 import { scoreHebrewCopy, getHebrewCopyRules } from "@/lib/hebrewCopyOptimizer";
 import { safeStorage } from "@/lib/safeStorage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

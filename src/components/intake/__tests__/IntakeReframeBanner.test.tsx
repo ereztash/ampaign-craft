@@ -11,8 +11,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import IntakeReframeBanner from "../IntakeReframeBanner";
-import { setIntakeSignal } from "@/engine/intake/intakeSignal";
-import { recordRouteVisit } from "@/engine/intake/feedbackLoop";
+import { setIntakeSignal } from "@/viewmodels";
+import { recordRouteVisit } from "@/viewmodels";
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),

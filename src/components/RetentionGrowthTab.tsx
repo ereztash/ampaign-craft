@@ -1,9 +1,9 @@
 import { useMemo, useState, lazy, Suspense } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
-import { assessChurnRisk } from "@/engine/churnPredictionEngine";
+import { generateRetentionStrategy } from "@/viewmodels";
+import { buildUserKnowledgeGraph } from "@/viewmodels";
+import { assessChurnRisk } from "@/viewmodels";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

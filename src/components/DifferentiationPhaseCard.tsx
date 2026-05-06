@@ -1,6 +1,6 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PhaseQuestion, DifferentiationFormData, HiddenValueScore, HiddenValueType, CompetitorArchetype, CompetitorArchetypeId, BuyingCommitteeRole, BuyingCommitteeRoleId, ClaimExample } from "@/types/differentiation";
-import { HIDDEN_VALUES, COMPETITOR_ARCHETYPES as ARCHETYPE_DEFS, BUYING_COMMITTEE_ROLES as ROLE_DEFS } from "@/engine/differentiationKnowledge";
+import { HIDDEN_VALUES, COMPETITOR_ARCHETYPES as ARCHETYPE_DEFS, BUYING_COMMITTEE_ROLES as ROLE_DEFS } from "@/viewmodels";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";

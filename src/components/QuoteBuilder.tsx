@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, ArrowRight, Plus, Trash2, FileText, Check, Download, Link2 } from "lucide-react";
 import type { FormData, FunnelResult } from "@/types/funnel";
-import type { UserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import type { UserKnowledgeGraph } from "@/viewmodels";
 import type { PricingIntelligenceResult, BilingualText } from "@/types/pricing";
 import type {
   Quote,
@@ -26,8 +26,8 @@ import type {
   QuoteDiscount,
 } from "@/types/quote";
 import { calculateQuoteTotal, formatQuotePrice } from "@/types/quote";
-import { assembleQuote } from "@/engine/quoteAssemblyEngine";
-import { generatePricingIntelligence } from "@/engine/pricingIntelligenceEngine";
+import { assembleQuote } from "@/viewmodels";
+import { generatePricingIntelligence } from "@/viewmodels";
 import QuotePreview from "./QuotePreview";
 
 interface QuoteBuilderProps {

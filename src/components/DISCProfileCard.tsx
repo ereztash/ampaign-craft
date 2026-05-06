@@ -2,7 +2,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import type { DISCProfile } from "@/engine/discProfileEngine";
+import type { DISCProfile } from "@/viewmodels";
 import { tx } from "@/i18n/tx";
 
 interface DISCProfileCardProps {

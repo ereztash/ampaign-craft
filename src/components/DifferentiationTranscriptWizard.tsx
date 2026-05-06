@@ -27,15 +27,15 @@ import {
 
 import { InsightActionCard } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
-import { STAGES, detectStagesInTranscript, type StageDetectionReport } from "@/engine/differentiation/conversationStages";
-import { PRINCIPLES_BY_CODE, type PrincipleAgentOutput, type ConvergenceReport } from "@/engine/differentiation/principles";
-import { runPrincipleScan } from "@/engine/differentiation/principleAgents";
-import { readFileAsText, downloadDifferentiationMarkdown, downloadPlanStage1Markdown } from "@/engine/differentiation/transcriptIO";
+import { STAGES, detectStagesInTranscript, type StageDetectionReport } from "@/viewmodels";
+import { PRINCIPLES_BY_CODE, type PrincipleAgentOutput, type ConvergenceReport } from "@/viewmodels";
+import { runPrincipleScan } from "@/viewmodels";
+import { readFileAsText, downloadDifferentiationMarkdown, downloadPlanStage1Markdown } from "@/viewmodels";
 import {
   buildDraftFromScanOutputs,
   isTranscriptWizardStepValid,
   type TranscriptWizardStepId,
-} from "@/engine/differentiation/transcriptWizardLogic";
+} from "@/viewmodels";
 
 // ───────────────────────────────────────────────
 // Types

@@ -8,7 +8,7 @@ import {
   FingerprintDimensions,
   DIMENSION_LABELS,
   ARCHETYPE_LABELS,
-} from "@/engine/businessFingerprintEngine";
+} from "@/viewmodels";
 
 interface BusinessDNACardProps {
   fingerprint: BusinessFingerprint;

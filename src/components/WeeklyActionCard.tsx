@@ -21,7 +21,7 @@ import {
   Users,
 } from "lucide-react";
 import { tx } from "@/i18n/tx";
-import type { Bottleneck, BottleneckModule } from "@/engine/bottleneckEngine";
+import type { Bottleneck, BottleneckModule } from "@/viewmodels";
 import type { GuidanceItem } from "@/types/meta";
 import {
   commitToAction,
@@ -32,7 +32,7 @@ import {
   getLoopSnapshot,
   type LoopSnapshot,
   type ReportOutcome,
-} from "@/engine/weeklyLoopEngine";
+} from "@/viewmodels";
 import { fetchCohortPriors, type CohortPriors } from "@/services/cohortBenchmarks";
 import { Analytics } from "@/lib/analytics";
 

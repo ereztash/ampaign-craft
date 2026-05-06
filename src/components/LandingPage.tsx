@@ -10,7 +10,7 @@ import { tx } from "@/i18n/tx";
 import { ArrowDown, BarChart3, Target, Rocket, Clock, FileText, Hammer, Megaphone, LineChart, Database, Zap, Flame, Crosshair, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { getTotalUsers } from "@/lib/socialProofData";
-import { generateWeeklyPulse } from "@/engine/pulseEngine";
+import { generateWeeklyPulse } from "@/viewmodels";
 import { useAchievements } from "@/hooks/useAchievements";
 import { safeStorage } from "@/lib/safeStorage";
 import MarketingWrapped from "@/components/MarketingWrapped";

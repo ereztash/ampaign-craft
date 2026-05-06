@@ -5,7 +5,7 @@ import { FormData } from "@/types/funnel";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";
 import { motion, AnimatePresence } from "framer-motion";
-import type { AgentInsight } from "@/engine/blackboard/partialRunner";
+import type { AgentInsight } from "@/viewmodels";
 
 interface ProcessingScreenProps {
   onComplete: () => void;

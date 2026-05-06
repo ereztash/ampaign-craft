@@ -16,7 +16,7 @@ import { ChevronDown, Sparkles, Loader2 } from "lucide-react";
 import { useArchetype } from "@/contexts/ArchetypeContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { ArchetypeId } from "@/types/archetype";
-import { deriveHeuristicSet } from "@/engine/behavioralHeuristicEngine";
+import { deriveHeuristicSet } from "@/viewmodels";
 
 // ═══════════════════════════════════════════════
 // METADATA

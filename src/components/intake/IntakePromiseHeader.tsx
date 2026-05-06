@@ -14,8 +14,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { tx } from "@/i18n/tx";
-import { getIntakeSignal } from "@/engine/intake/intakeSignal";
-import type { IntakeRouteTarget } from "@/engine/intake/types";
+import { getIntakeSignal } from "@/viewmodels";
+import type { IntakeRouteTarget } from "@/viewmodels";
 
 interface Props {
   moduleTarget: IntakeRouteTarget;

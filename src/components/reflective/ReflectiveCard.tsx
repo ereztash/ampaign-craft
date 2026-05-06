@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import type { ActionCard, ActionSignal } from "@/engine/optimization/reflectiveAction";
+import type { ActionCard, ActionSignal } from "@/viewmodels";
 
 interface ReflectiveCardProps {
   card: ActionCard;

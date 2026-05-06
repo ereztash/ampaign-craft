@@ -4,7 +4,7 @@ import { useArchetype } from "@/contexts/ArchetypeContext";
 import { Badge } from "@/components/ui/badge";
 import { Flame, User, Sparkles } from "lucide-react";
 import { tx } from "@/i18n/tx";
-import { getStreak } from "@/engine/weeklyLoopEngine";
+import { getStreak } from "@/viewmodels";
 import type { ConfidenceTier } from "@/types/archetype";
 
 /**

@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ThumbsUp, ThumbsDown, Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
-import { updateFeedback, type FeedbackRating } from "@/engine/trainingDataEngine";
+import { updateFeedback, type FeedbackRating } from "@/viewmodels";
 
 interface OutputFeedbackProps {
   pairId: string | null;

@@ -1,50 +1,38 @@
 # FunnelForge — הוראות המשך עבודה
 
 ## ענף פעיל
-`claude/continue-checkpoint-166-gQl3G`
+`claude/app-evaluation-strategy-SkmAh`
 
 ---
 
-## מה הושלם בסשן האחרון (2026-05-02)
+## מה הושלם בסשן האחרון (2026-05-06)
 
-### Slice 3 — ViewModel layer + ESLint engine-import boundary
+### Slice 4 — מיגרציית ViewModel debt הושלמה במלואה
 
-**קבצים שנוצרו:**
-- `src/viewmodels/health.vm.ts` — `HealthScoreVM` + `toHealthScoreVM` adapter; re-export של `getHealthScoreColor`
-- `src/viewmodels/insights.vm.ts` — `InsightVM`, `BottleneckVM`, `LoopStateVM` + adapters
-- `src/viewmodels/user-profile.vm.ts` — `DISCProfileVM`, `NextStepVM`, `ChurnRiskVM` + adapters
-- `src/viewmodels/index.ts` — barrel, נקודת import יחידה לכל ה-ViewModels
+**מצב סופי**: אפס `@/engine/*` imports ב-`src/components/**`. כל ה-allowlist נוקה.
+ESLint rule `no-restricted-imports` פעיל גלובלית בלי חריגים.
+
+**ViewModel files חדשים (re-export pattern):**
+- `behavioral-heuristic.vm.ts`, `brand-vector.vm.ts`, `business-fingerprint.vm.ts`
+- `churn.vm.ts`, `copy-qa.vm.ts`, `data-import.vm.ts`
+- `differentiation.vm.ts`, `differentiation-transcript.vm.ts`
+- `executive-brief.vm.ts`, `export.vm.ts`, `guidance.vm.ts`
+- `neuro-closing.vm.ts`, `behavioral-action.vm.ts`, `training-data.vm.ts`
+- `pricing.vm.ts`, `agent-blackboard.vm.ts`, `quote.vm.ts`
+- `referral.vm.ts`, `retention-growth.vm.ts`, `sales-pipeline.vm.ts`
+- `stylome.vm.ts`, `uvp-synthesis.vm.ts`, `weekly-loop.vm.ts`
+- `moat.vm.ts`, `pulse.vm.ts`
+
+**VMs קיימים שהורחבו:**
+- `analytics.vm.ts` — נוספו `calculateEPS`, `generateCrossDomainInsights`, `assignToCohort`
+- `intake.vm.ts` — נוספו טיפוסי intake, `getIntakeSignal`, `setIntakeSignal`, `recordRouteVisit`, `detectBehaviorMismatch`
+- `next-step.vm.ts` — נוסף `generateWeeklyPulse`
+- `user-profile.vm.ts` — נחשף `DISCProfile`, `inferDISCProfile`, `ChurnRiskAssessment`
 
 **קבצים שעודכנו:**
-- `eslint.config.js` — rule חדשה `no-restricted-imports` ב-`src/components/**` שאוסרת `@/engine/*`; debt allowlist של 16 קומפוננטות שטרם מוּגרו
-
-### Typography / IA — StrategyTab
-- `InsightActionCard` בראש הטאב עם "3 הפעולות הדחופות עכשיו" — נגזר מ-worst health-score gaps, נעלם אחרי אישור המשתמש
-- כרטיסי שלבי המשפך עטופים ב-Collapsible "תוכנית שלבים מלאה" (ברירת מחדל: פתוח)
-- `healthScore` prop type עבר מ-`ReturnType<typeof calculateHealthScore>` ל-`HealthScore` מ-`@/viewmodels`
-- תיקון em-dash ב-`PublicLandingDifferentiation.tsx` שעצר את ה-build
-
----
-
-## המשך — עבודה ממתינה
-
-### מיגרציית ViewModel debt — 16 קומפוננטות (בתוך allowlist)
-בסדר עדיפות יורד לפי תדירות שימוש:
-1. `GlobalInsightHero.tsx` — bottleneck, health, insights, weeklyLoop
-2. `InsightFeed.tsx` — bottleneck, nextStep, pulse, ukg, outcomeLoop
-3. `ResultsDashboard.tsx` — מנועים רבים (מיגרציה ראשית)
-4. `IntelligenceSynthesisDashboard.tsx` — EPS, crossDomain, predictive, cohort
-5. שאר 12 הקומפוננטות ב-allowlist
-
-### Drafts Inbox — A+B Workstream (ממתין ל-5 ראיונות משתמש)
-1. go/no-go: האם משתמש מבין הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
-2. 10 מוקים ויזואליים → module WhatsApp Drafts
-
-### engineActivationRules.ts (Lazy Activation Pattern)
-**קובץ להוסיף**: `src/engine/engineActivationRules.ts`
-```ts
-{ engineId, condition: (signals) => boolean, mode: "passive" | "standby" | "active" }
-```
+- 52 קבצים ב-`src/components/**` עברו מ-`@/engine/*` ל-`@/viewmodels`
+- `eslint.config.js` — נמחק בלוק "Engine-import debt allowlist" (54 entries)
+- `src/viewmodels/index.ts` — barrel הורחב לכלול את כל ה-VMs החדשים
 
 ---
 
@@ -77,7 +65,7 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 **ESLint enforcement:**
 - `no-restricted-imports` — error-level ב-`src/components/**`
-- debt allowlist = `eslint.config.js` בלוק "Engine-import debt"
+- debt allowlist נוקה במלואו ב-2026-05-06; אין חריגים כיום
 
 ---
 
@@ -107,5 +95,15 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 ## ענפים רלוונטיים
 
-- `claude/continue-checkpoint-166-gQl3G` — **ענף פעיל**
+- `claude/app-evaluation-strategy-SkmAh` — **ענף פעיל**
+- `claude/continue-checkpoint-166-gQl3G` — היסטורי
 - `perf/reactive-core` — DRAFT, ממתין ל-preview env validation
+
+---
+
+## משימות ממתינות (לא חסומות בקוד)
+
+### Drafts Inbox — A+B Workstream
+ממתין ל-5 ראיונות משתמש (אנושיים — לא ניתן להשלים אוטומטית):
+1. go/no-go: האם משתמש מבין הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
+2. 10 מוקים ויזואליים → module WhatsApp Drafts

@@ -5,7 +5,7 @@
 
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import type { PricingWizardRecommendation } from "@/engine/pricingWizardEngine";
+import type { PricingWizardRecommendation } from "@/viewmodels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
