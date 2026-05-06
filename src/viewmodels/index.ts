@@ -346,6 +346,57 @@ export {
   computePricingWizardRecommendation,
 } from "./pricing.vm";
 
+// ── Pricing wedge: Israeli psychology + experiment loop (2026-05-06) ─────────
+export type {
+  CulturalSegment,
+  SegmentPricingProfile,
+  TashlumimSplit,
+  PriceWindow,
+  CalendarTimingAdvice,
+  VATFraming,
+  AnchoredPrice,
+  PriceFraming,
+  FramedPrice,
+  PricingRiskFlag,
+  IsraeliPricingAnalysis,
+  IsraeliIndustryBenchmark,
+} from "./israeli-pricing.vm";
+export {
+  SEGMENT_PROFILES,
+  VAT_RATE,
+  ISRAELI_INDUSTRY_BENCHMARKS,
+  getSegmentProfile,
+  suggestTashlumim,
+  getCalendarTiming,
+  frameVAT,
+  anchorWithBuffer,
+  chooseFraming,
+  detectPricingRisks,
+  analyzeIsraeliPricing,
+  getIsraeliBenchmark,
+} from "./israeli-pricing.vm";
+
+export type {
+  ExperimentStatus,
+  CustomerOutcome,
+  PricedProspect,
+  PricingExperiment,
+  ExperimentResult,
+  ExperimentRecommendation,
+  NextExperiment,
+  PricingConfidenceTier,
+} from "./pricing-experiment.vm";
+export {
+  createExperiment,
+  getActiveExperiment,
+  getAllExperiments,
+  logProspectOutcome,
+  abandonExperiment,
+  analyzeExperiment,
+  proposeNextExperiment,
+  getCurrentConfidence,
+} from "./pricing-experiment.vm";
+
 export type { AgentInsight } from "./agent-blackboard.vm";
 export { runPartialAgents } from "./agent-blackboard.vm";
 

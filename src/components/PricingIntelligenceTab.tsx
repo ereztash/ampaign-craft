@@ -14,6 +14,26 @@ import { Copy, Check, ChevronDown, DollarSign, Layers, Shield, MessageSquare, Ba
 import { toast } from "sonner";
 import { InsightActionCard } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
+import IsraeliPricingPsychologyCard from "@/components/IsraeliPricingPsychologyCard";
+import PricingExperimentLab from "@/components/PricingExperimentLab";
+import type { CulturalSegment } from "@/viewmodels";
+
+function inferSegment(formData: FunnelResult["formData"]): CulturalSegment {
+  const audience = (formData.audienceType ?? "").toLowerCase();
+  const field = (formData.businessField ?? "").toLowerCase();
+  if (field.includes("tech") || field.includes("saas") || audience.includes("b2b")) return "tech_b2b";
+  if (audience.includes("חרדי") || audience.includes("chareidi")) return "chareidi";
+  if (audience.includes("דתי") || audience.includes("dati")) return "dati_leumi";
+  if (audience.includes("ערב") || audience.includes("arab")) return "arab";
+  if (audience.includes("רוס") || audience.includes("russian")) return "russian";
+  return "mainstream";
+}
+
+function inferPosition(competitivePosition: string): "premium" | "value" | "parity" {
+  if (competitivePosition === "premium") return "premium";
+  if (competitivePosition === "below_market") return "value";
+  return "parity";
+}
 
 interface Props { result: FunnelResult }
 
@@ -33,6 +53,11 @@ const PricingIntelligenceTab = ({ result }: Props) => {
   };
 
   const userState = getPersistedUserState();
+  const inferredSegment = useMemo(() => inferSegment(result.formData), [result.formData]);
+  const inferredPosition = useMemo(
+    () => inferPosition(pricing.competitivePosition.position),
+    [pricing.competitivePosition.position],
+  );
 
   return (
     <div className="space-y-6">
@@ -228,6 +253,19 @@ const PricingIntelligenceTab = ({ result }: Props) => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Israeli Pricing Psychology — Hebrew moat */}
+      <IsraeliPricingPsychologyCard
+        basePrice={pricing.pricingModel.anchorPrice}
+        isB2B={inferredSegment === "tech_b2b"}
+        position={inferredPosition}
+      />
+
+      {/* Pricing Experiment Lab — stickiness loop */}
+      <PricingExperimentLab
+        recommendedPrice={pricing.pricingModel.anchorPrice}
+        segment={inferredSegment}
+      />
 
       {/* Subscription Economics (conditional) */}
       {pricing.subscriptionEconomics && (
