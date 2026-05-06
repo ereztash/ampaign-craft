@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { NudgeBanner } from "../NudgeBanner";
-import type { BehavioralNudge } from "@/engine/behavioralActionEngine";
+import type { BehavioralNudge } from "@/viewmodels";
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),

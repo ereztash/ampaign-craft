@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { NeuroClosingCard } from "../NeuroClosingCard";
-import type { NeuroClosingStrategy } from "@/engine/neuroClosingEngine";
+import type { NeuroClosingStrategy } from "@/viewmodels";
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),

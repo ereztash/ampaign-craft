@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 import type { FunnelResult } from "@/types/funnel";
-import type { Bottleneck } from "@/engine/bottleneckEngine";
-import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import type { Bottleneck } from "@/viewmodels";
+import { calculateHealthScore } from "@/viewmodels";
 
 const NODES: { id: Bottleneck["module"]; label: { he: string; en: string }; route: string }[] = [
   { id: "differentiation", label: { he: "בידול", en: "Differentiation" }, route: "/differentiate" },

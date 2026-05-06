@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { SavedPlan } from "@/types/funnel";
-import { calculateHealthScore } from "@/engine/healthScoreEngine";
+import { calculateHealthScore } from "@/viewmodels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { tx } from "@/i18n/tx";

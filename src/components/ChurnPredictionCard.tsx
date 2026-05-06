@@ -8,7 +8,7 @@ import { tx } from "@/i18n/tx";
 import { ChevronDown, Copy, Check, AlertTriangle, TrendingUp } from "lucide-react";
 import { label, SEVERITY_LABEL, CHANNEL_LABEL, TIMING_LABEL } from "@/lib/uiVocabulary";
 import { toast } from "sonner";
-import type { ChurnRiskAssessment } from "@/engine/churnPredictionEngine";
+import type { ChurnRiskAssessment } from "@/viewmodels";
 
 interface ChurnPredictionCardProps {
   assessment: ChurnRiskAssessment;

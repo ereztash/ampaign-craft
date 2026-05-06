@@ -5,7 +5,7 @@ import { authFetch } from "@/lib/authFetch";
 import { readTextStream } from "@/lib/streamToText";
 import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
-import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice, loadImportedDataSignals } from "@/engine/userKnowledgeGraph";
+import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice, loadImportedDataSignals } from "@/viewmodels";
 import { safeStorage } from "@/lib/safeStorage";
 import { classifyUserState, persistCoachMode } from "@/lib/userStateClassifier";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

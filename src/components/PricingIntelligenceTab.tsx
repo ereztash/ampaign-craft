@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { generatePricingIntelligence } from "@/engine/pricingIntelligenceEngine";
-import { buildUserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import { generatePricingIntelligence } from "@/viewmodels";
+import { buildUserKnowledgeGraph } from "@/viewmodels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

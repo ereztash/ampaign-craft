@@ -1,7 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getHealthScoreColor } from "@/engine/healthScoreEngine";
+import { getHealthScoreColor } from "@/viewmodels";
 import { tx } from "@/i18n/tx";
 import { Flame, Database, AlertTriangle, FileText, Layers } from "lucide-react";
 

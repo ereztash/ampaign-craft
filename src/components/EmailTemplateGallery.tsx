@@ -12,8 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, Download, Clock, Mail } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
-import { downloadExport } from "@/engine/exportEngine";
-import type { ExportResult } from "@/engine/exportEngine";
+import { downloadExport } from "@/viewmodels";
+import type { ExportResult } from "@/viewmodels";
 // xlsx is loaded on-demand inside exportTemplate (dynamic import below) to
 // keep it out of the main bundle.
 

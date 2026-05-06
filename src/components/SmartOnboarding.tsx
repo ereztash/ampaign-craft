@@ -4,7 +4,7 @@ import { Analytics } from "@/lib/analytics";
 import { safeStorage } from "@/lib/safeStorage";
 import { usePartialAgents } from "@/hooks/usePartialAgents";
 import InsightCloud from "@/components/InsightCloud";
-import type { AgentInsight } from "@/engine/blackboard/partialRunner";
+import type { AgentInsight } from "@/viewmodels";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import {
 import type { BusinessField, AudienceType, MainGoal, SalesModel } from "@/types/funnel";
 import type { UnifiedProfile, ValuePriority } from "@/types/profile";
 import { getIndustryDefaults, INITIAL_UNIFIED_PROFILE } from "@/types/profile";
-import { computeFingerprint } from "@/engine/businessFingerprintEngine";
+import { computeFingerprint } from "@/viewmodels";
 
 const ONBOARDING_DRAFT_KEY = "funnelforge-onboarding-draft";
 

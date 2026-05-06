@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { ImportedDataset, DatasetSchema } from "@/types/importedData";
-import { parseXlsxFile, detectSchema, validateDataset } from "@/engine/dataImportEngine";
+import { parseXlsxFile, detectSchema, validateDataset } from "@/viewmodels";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

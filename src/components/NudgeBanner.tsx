@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import type { BehavioralNudge } from "@/engine/behavioralActionEngine";
+import type { BehavioralNudge } from "@/viewmodels";
 import { useArchetypeCopyTone } from "@/hooks/useArchetypeCopyTone";
 import { useAuth } from "@/contexts/AuthContext";
 import { useArchetype } from "@/contexts/ArchetypeContext";
@@ -13,7 +13,7 @@ import {
   captureRecommendationShown,
   captureVariantPick,
   captureOutcome,
-} from "@/engine/outcomeLoopEngine";
+} from "@/viewmodels";
 
 const NUDGE_CONFIG: Record<string, { icon: typeof AlertTriangle; accent: string }> = {
   loss_aversion:    { icon: AlertTriangle, accent: "border-destructive/30 bg-destructive/5 dark:bg-destructive/10" },

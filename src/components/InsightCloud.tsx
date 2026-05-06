@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Brain } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import type { AgentInsight } from "@/engine/blackboard/partialRunner";
+import type { AgentInsight } from "@/viewmodels";
 
 interface InsightCloudProps {
   insights: AgentInsight[];

@@ -3,7 +3,7 @@
 
 import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { generateInsights, type BusinessInsight } from "@/engine/insightsEngine";
+import { generateInsights, type BusinessInsight } from "@/viewmodels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";

@@ -7,7 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { tx } from "@/i18n/tx";
 import { ChevronDown, Copy, Check, Shield, Zap } from "lucide-react";
 import { toast } from "sonner";
-import type { NeuroClosingStrategy } from "@/engine/neuroClosingEngine";
+import type { NeuroClosingStrategy } from "@/viewmodels";
 
 interface NeuroClosingCardProps {
   strategy: NeuroClosingStrategy;

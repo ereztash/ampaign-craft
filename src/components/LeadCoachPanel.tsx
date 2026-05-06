@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
 import { Sparkles, Compass, Clock, Target } from "lucide-react";
-import type { LeadRecommendation, RecommendationCategory, Framework } from "@/engine/leadCoachEngine";
+import type { LeadRecommendation, RecommendationCategory, Framework } from "@/viewmodels";
 
 const CATEGORY_META: Record<RecommendationCategory, {
   he: string; en: string;

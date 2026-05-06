@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { X, RefreshCw } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { tx } from "@/i18n/tx";
-import { detectBehaviorMismatch } from "@/engine/intake/feedbackLoop";
+import { detectBehaviorMismatch } from "@/viewmodels";
 
 const IntakeReframeBanner = () => {
   const { language } = useLanguage();

@@ -12,7 +12,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import IntakePromiseHeader from "../IntakePromiseHeader";
-import { setIntakeSignal } from "@/engine/intake/intakeSignal";
+import { setIntakeSignal } from "@/viewmodels";
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),
