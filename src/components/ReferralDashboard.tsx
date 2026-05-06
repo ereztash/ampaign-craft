@@ -22,7 +22,7 @@ import {
   getReferralStats,
   getReferralLink,
   REFERRAL_REWARDS,
-} from "@/engine/referralEngine";
+} from "@/viewmodels";
 import { trackShareCreated } from "@/services/eventQueue";
 
 // ─── Reward tiers config ─────────────────────────

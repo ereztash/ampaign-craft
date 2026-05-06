@@ -3,12 +3,11 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import {
+import type {
   BusinessFingerprint,
   FingerprintDimensions,
-  DIMENSION_LABELS,
-  ARCHETYPE_LABELS,
-} from "@/engine/businessFingerprintEngine";
+} from "@/viewmodels";
+import { DIMENSION_LABELS, ARCHETYPE_LABELS } from "@/viewmodels";
 
 interface BusinessDNACardProps {
   fingerprint: BusinessFingerprint;

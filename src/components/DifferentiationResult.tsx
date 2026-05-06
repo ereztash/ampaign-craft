@@ -11,8 +11,8 @@ import {
 import { tx } from "@/i18n/tx";
 import { Sparkles, ShieldCheck, Map, Users, Scale, BarChart3, FileText, ArrowLeft, ChevronDown } from "lucide-react";
 import PrincipleTraceModal from "@/components/moat/PrincipleTraceModal";
-import { getIntakeSignal } from "@/engine/intake/intakeSignal";
-import type { IntakeNeed } from "@/engine/intake/types";
+import { getIntakeSignal } from "@/viewmodels";
+import type { IntakeNeed } from "@/viewmodels";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
 import { track } from "@/lib/analytics";

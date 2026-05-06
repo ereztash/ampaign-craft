@@ -85,8 +85,8 @@ export type {
 } from "./crm-leads.vm";
 export { generateLeadRecommendations } from "./crm-leads.vm";
 
-export type { PromiseVerification, BehaviorMismatch } from "./intake.vm";
-export { verifyPromise } from "./intake.vm";
+export type { PromiseVerification, BehaviorMismatch, IntakeNeed, IntakeRouteTarget } from "./intake.vm";
+export { verifyPromise, getIntakeSignal, detectBehaviorMismatch } from "./intake.vm";
 
 export type {
   CompoundingLoss,
