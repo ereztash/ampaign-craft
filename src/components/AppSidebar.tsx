@@ -23,6 +23,7 @@ import type { NavItemId } from "@/types/archetype";
 import { tx } from "@/i18n/tx";
 import { HIDE_INCOMPLETE } from "@/lib/validateEnv";
 import { isAdminRole } from "@/lib/roles";
+import { isWedgeMode, isModuleEnabled, type WedgeModule } from "@/lib/wedgeMode";
 
 const AdminArchetypeDebugPanel = lazy(() => import("@/components/AdminArchetypeDebugPanel"));
 
@@ -88,13 +89,21 @@ const AppSidebar = () => {
   // Module reordering: "confident" and "strong" — lower friction since modules
   // are already numbered and users expect their order to reflect priority (H5)
   const modulesReordered = confidenceTier === "confident" || confidenceTier === "strong";
+  // Wedge mode: filter out modules that are not part of the active wedge.
+  // Hidden modules still have routes (they render LockedModuleScreen), but
+  // they don't appear in the sidebar so the focus stays on the active wedge.
+  const wedgeActive = isWedgeMode();
   const orderedModules = useMemo<NavItem[]>(() => {
-    if (!modulesReordered) return MODULE_ITEMS;
+    const filtered = wedgeActive
+      ? MODULE_ITEMS.filter((i) => isModuleEnabled(i.id as WedgeModule))
+      : MODULE_ITEMS;
+
+    if (!modulesReordered || filtered.length <= 1) return filtered;
     const ids = reorderNavItems(
-      MODULE_ITEMS.map((i) => i.id),
+      filtered.map((i) => i.id),
       uiConfig.modulesOrder,
     );
-    const map = new globalThis.Map<NavItemId, NavItem>(MODULE_ITEMS.map((i) => [i.id, i] as [NavItemId, NavItem]));
+    const map = new globalThis.Map<NavItemId, NavItem>(filtered.map((i) => [i.id, i] as [NavItemId, NavItem]));
     // Re-number icons after reordering
     return ids.map((id, idx) => {
       const item = map.get(id);
@@ -104,7 +113,7 @@ const AppSidebar = () => {
         icon: <span className="font-mono text-xs w-4 text-center">{idx + 1}</span>,
       };
     }).filter(Boolean) as NavItem[];
-  }, [uiConfig.modulesOrder, modulesReordered]);
+  }, [uiConfig.modulesOrder, modulesReordered, wedgeActive]);
 
   return (
     <>

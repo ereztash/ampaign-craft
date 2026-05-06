@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { FunnelResult } from "@/types/funnel";
+import { trackFirstValueSeen } from "@/lib/wedgeTelemetry";
 import { generatePricingIntelligence } from "@/viewmodels";
 import { buildUserKnowledgeGraph } from "@/viewmodels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,11 +41,20 @@ interface Props { result: FunnelResult }
 
 const PricingIntelligenceTab = ({ result }: Props) => {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const isHe = language === "he";
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const mountedAtRef = useRef<number>(performance.now());
 
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
   const pricing = useMemo(() => generatePricingIntelligence(result.formData, graph), [result.formData, graph]);
+
+  useEffect(() => {
+    if (pricing?.pricingModel?.anchorPrice) {
+      const ttfvMs = Math.round(performance.now() - mountedAtRef.current);
+      trackFirstValueSeen("pricing", ttfvMs, { userId: user?.id });
+    }
+  }, [pricing?.pricingModel?.anchorPrice, user?.id]);
 
   const copyText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
