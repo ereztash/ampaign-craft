@@ -132,11 +132,11 @@ export function getTrialDays(): number {
 
 // ── Hardcoded sentinel values (business decisions; human-maintained) ──────────
 
-/** Canonical Pro tier price in ILS. Update here if pricing changes. */
-export function proPriceIls(): number { return 99; }
+/** Canonical Pro tier price in ILS. Source: src/lib/pricingTiers.ts (priceMonthly). */
+export function proPriceIls(): number { return 129; }
 
-/** Canonical Business tier price in ILS. */
-export function businessPriceIls(): number { return 249; }
+/** Canonical Business tier price in ILS. Source: src/lib/pricingTiers.ts (priceMonthly). */
+export function businessPriceIls(): number { return 299; }
 
 /** Monthly AI Coach message quota for Pro. */
 export function proAiCoachMsgs(): number { return 75; }
@@ -147,8 +147,8 @@ export function proWhatsappMonthly(): number { return 10; }
 /** Seat count for Business tier. */
 export function businessSeats(): number { return 3; }
 
-/** Annual discount percentage. */
-export function annualDiscountPct(): number { return 20; }
+/** Annual discount percentage. Source: src/lib/pricingTiers.ts (annualSavingsPct). */
+export function annualDiscountPct(): number { return 35; }
 
 /** Number of closed feedback loops. */
 export function loopCount(): number { return 6; }

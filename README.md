@@ -77,7 +77,7 @@ The honest competitive map (see [`docs/competitor-research/`](./docs/competitor-
 | **Behavioral science** | ✅ PSM + Hormozi + Decoy + CoI + DISC | ⚠️ limited | ❌ copy only | ❌ | ❌ |
 | **Closed feedback loops** | ✅ 6 self-correcting loops | ⚠️ analytics only | ❌ | ❌ | ❌ |
 | **Archetype-adaptive UI** | ✅ 5 archetypes, L1–L5 | ❌ | ❌ | ❌ | ❌ |
-| **Price (monthly)** | ₪99 Pro / ₪249 Business | $20/seat+ | $49 | $97 | $29/user |
+| **Price (monthly)** | ₪129 Pro / ₪299 Business | $20/seat+ | $49 | $97 | $29/user |
 
 ---
 
@@ -123,27 +123,27 @@ The honest competitive map (see [`docs/competitor-research/`](./docs/competitor-
 | Tier | Price | Highlights |
 |------|-------|------------|
 | **Free** | ₪0/mo | 3 funnels, core modules, 1 seat |
-| **Pro** | ₪99/mo | Unlimited funnels, AI Coach 75 msgs, WhatsApp 10/mo, PDF export, 14-day trial |
-| **Business** | ₪249/mo | Unlimited AI, unlimited WhatsApp, Campaign Cockpit, branded reports, 3 seats |
+| **Pro** | ₪129/mo (₪84/mo annual) | Unlimited funnels, AI Coach 75 msgs + ₪2.50/overage, WhatsApp 10/mo, PDF export, 14-day trial |
+| **Business** | ₪299/mo (₪194/mo annual) | Unlimited AI, unlimited WhatsApp, Campaign Cockpit, branded reports, 3 seats |
 
-Annual plans save 20%.
+Annual plans save 35% (`src/lib/pricingTiers.ts` is canonical).
 
 ---
 
 ## Architecture Overview
 
-**MAS-CC / Blackboard** — 14 specialized agents, 126 engines, 6 closed loops.
+**MAS-CC / Blackboard** — 14 specialized agents, 128 engines, 6 closed loops.
 
 ```
   UI Layer ──────────── React + shadcn/ui + RTL + Archetype-adaptive
-                        181 components · 35 pages · 28 hooks · L1-L5
+                        185 components · 36 pages · 28 hooks · L1-L5
   ViewModel Layer ───── src/viewmodels/ — stable UI contracts, adapter fns
                         ESLint boundary: components may not import @/engine/* directly
   Context Layer ────── Auth · Archetype · UserProfile · DataSource
   GRAOS Overlay (M1-M6)  Regime · Anomaly · Forecast · DAPL · Verifier
   Blackboard / MAS-CC — 14 agents, write-gated JSONB state
                         KGraph · Funnel · DISC · Hormozi · CoI · QA · Φ_META
-  Pure Engine Layer - 126 files (52 named *Engine.ts + helpers)
+  Pure Engine Layer - 128 files (54 named *Engine.ts + helpers)
                         Behavioral Science · Pricing · Churn · Copy QA
   LLM Router ────────── Haiku $0.003 / Sonnet $0.015 / Opus $0.075
                         Cost caps · fallback chains · tier-gated by subscription
@@ -226,7 +226,7 @@ At ₪136/mo ARPU and ~$0.04 per generation, a user generating 10 plans/month co
 | Language | TypeScript |
 | Test framework | Vitest + React Testing Library |
 | CI | GitHub Actions (typecheck · lint · test · build) |
-| Engines | 126 pure-function engines |
+| Engines | 128 pure-function engines |
 | Agents | 14 files (2 LLM-backed: qaContent + debugSwarm; 11 deterministic; 1 orchestrator) |
 | Closed loops | 6 |
 | Archetypes | 5 |
