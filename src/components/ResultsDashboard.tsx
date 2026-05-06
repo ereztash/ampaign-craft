@@ -15,6 +15,8 @@ const RetentionGrowthTab = lazy(() => import("@/components/RetentionGrowthTab"))
 const StrategyTab = lazy(() => import("@/components/StrategyTab"));
 const ExecutiveBriefTab = lazy(() => import("@/components/ExecutiveBriefTab"));
 import { useMetaAuth } from "@/hooks/useMetaAuth";
+import { useEngineOrchestrator } from "@/hooks/useEngineOrchestrator";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -90,6 +92,7 @@ const NEURO_LABELS: Record<string, { emoji: string; vector: { he: string; en: st
 const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, embeddedInShell, foggScore }: ResultsDashboardProps) => {
   const { t, language } = useLanguage();
   const { profile, completeMilestone } = useUserProfile();
+  const { user } = useAuth();
   const reducedMotion = useReducedMotion();
   const isHe = language === "he";
   const { auth, accounts, loading: metaLoading, error: metaError, connect, disconnect, disabled: metaDisabled } = useMetaAuth();
@@ -144,6 +147,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
 
   // MOAT features (memoized — pass UKG for cross-domain enrichment)
   const healthScore = useMemo(() => calculateHealthScore(result, graph), [result, graph]);
+  const { activeEngines, resolveMode } = useEngineOrchestrator(user?.id, healthScore.total);
   const costOfInaction = useMemo(() => calculateCostOfInaction(result, graph), [result, graph]);
   const marketEvents = useMemo(() => getEventsForField(result.formData.businessField || "other"), [result.formData.businessField]);
   const clgStrategy = useMemo(() => generateCLGStrategy(result.formData), [result.formData]);
@@ -477,7 +481,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
 
           {/* Tab: Sales Pipeline */}
           <TabsContent value="sales" className="mt-6">
-            <SalesTab result={result} />
+            <SalesTab result={result} engineMode={resolveMode("salesPipelineEngine")} />
           </TabsContent>
 
           {/* Tab: Pricing Intelligence */}
@@ -490,7 +494,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
           {/* Tab: Retention & Growth */}
           <TabsContent value="retention" className="mt-6">
             <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading...</div>}>
-              <RetentionGrowthTab result={personalizedResult} />
+              <RetentionGrowthTab result={personalizedResult} engineMode={resolveMode("retentionFlywheelEngine")} />
             </Suspense>
           </TabsContent>
 

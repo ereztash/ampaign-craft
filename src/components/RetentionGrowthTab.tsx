@@ -14,20 +14,25 @@ import { Copy, Check, ChevronDown, UserPlus, AlertTriangle, Gift, TrendingUp, He
 import { toast } from "sonner";
 import { InsightActionCard } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
+import type { ActivationMode } from "@/viewmodels";
 
 const ChurnPlaybookTab = lazy(() => import("@/components/ChurnPlaybookTab"));
 
-interface Props { result: FunnelResult }
+interface Props {
+  result: FunnelResult;
+  engineMode?: ActivationMode;
+}
 
-const RetentionGrowthTab = ({ result }: Props) => {
+const RetentionGrowthTab = ({ result, engineMode = "active" }: Props) => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("retention");
+  const isPassive = engineMode === "passive";
 
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
-  const retention = useMemo(() => generateRetentionStrategy(result.formData, graph), [result.formData, graph]);
-  const churnRisk = useMemo(() => assessChurnRisk(result.formData), [result.formData]);
+  const retention = useMemo(() => isPassive ? null : generateRetentionStrategy(result.formData, graph), [isPassive, result.formData, graph]);
+  const churnRisk = useMemo(() => isPassive ? null : assessChurnRisk(result.formData), [isPassive, result.formData]);
 
   const topSignal = retention.churnPlaybook.signals[0];
   const userState = getPersistedUserState();

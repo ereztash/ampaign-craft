@@ -29,12 +29,15 @@ import type { Quote } from "@/types/quote";
 import QuoteBuilder from "@/components/QuoteBuilder";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
+import type { ActivationMode } from "@/viewmodels";
 
 interface SalesTabProps {
   result: FunnelResult;
+  /** Activation mode from useEngineOrchestrator. Defaults to "active" (always run). */
+  engineMode?: ActivationMode;
 }
 
-const SalesTab = ({ result }: SalesTabProps) => {
+const SalesTab = ({ result, engineMode = "active" }: SalesTabProps) => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
   const diffResult = useMemo<DifferentiationResult | null>(
@@ -46,11 +49,12 @@ const SalesTab = ({ result }: SalesTabProps) => {
     [],
   );
   const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
-  const pipeline = useMemo(() => generateSalesPipeline(result, graph), [result, graph]);
-  const closingFrameworks = useMemo(() => getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c"), [pipeline.salesType, result.formData.audienceType]);
-  const buyerPersonality = useMemo(() => detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [result.formData]);
-  const discProfile = useMemo(() => inferDISCProfile(result.formData, graph), [result.formData, graph]);
-  const neuroClosing = useMemo(() => generateClosingStrategy(discProfile, result.formData), [discProfile, result.formData]);
+  const isPassive = engineMode === "passive";
+  const pipeline = useMemo(() => isPassive ? null : generateSalesPipeline(result, graph), [isPassive, result, graph]);
+  const closingFrameworks = useMemo(() => pipeline ? getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c") : [], [pipeline, result.formData.audienceType]);
+  const buyerPersonality = useMemo(() => isPassive ? null : detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [isPassive, result.formData]);
+  const discProfile = useMemo(() => isPassive ? null : inferDISCProfile(result.formData, graph), [isPassive, result.formData, graph]);
+  const neuroClosing = useMemo(() => discProfile ? generateClosingStrategy(discProfile, result.formData) : null, [discProfile, result.formData]);
   const personalityProfile = BUYER_PERSONALITIES.find((p) => p.id === buyerPersonality)!;
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
