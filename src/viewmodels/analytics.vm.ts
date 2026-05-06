@@ -52,3 +52,10 @@ export type {
   BehavioralCohort,
   CohortAssignment,
 } from "@/engine/behavioralCohortEngine";
+export { assignToCohort } from "@/engine/behavioralCohortEngine";
+
+export { calculateEPS } from "@/engine/emotionalPerformanceEngine";
+
+export { generateCrossDomainInsights } from "@/engine/crossDomainBenchmarkEngine";
+
+export { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";

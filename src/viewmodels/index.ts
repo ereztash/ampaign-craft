@@ -138,3 +138,21 @@ export {
 
 export type { PhaseId, PhaseConfig, PhaseQuestion } from "./differentiation-phases.vm";
 export { PHASES, getPhaseById, getQuestionsForPhase } from "./differentiation-phases.vm";
+
+export * from "./behavioral-action.vm";
+export * from "./business-fingerprint.vm";
+export * from "./pricing.vm";
+export * from "./sales.vm";
+
+export * from "./differentiation.vm";
+export * from "./moat.vm";
+export * from "./churn.vm";
+export * from "./stylome.vm";
+export * from "./brand.vm";
+
+export * from "./guidance.vm";
+export * from "./data-import.vm";
+export * from "./export.vm";
+export * from "./referral.vm";
+export * from "./training.vm";
+export * from "./blackboard.vm";

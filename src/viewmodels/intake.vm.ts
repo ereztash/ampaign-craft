@@ -8,3 +8,7 @@ export type {
 } from "@/engine/intake/feedbackLoop";
 
 export { verifyPromise } from "@/engine/intake/feedbackLoop";
+
+export { getIntakeSignal } from "@/engine/intake/intakeSignal";
+export { detectBehaviorMismatch } from "@/engine/intake/feedbackLoop";
+export type { IntakeNeed, IntakeRouteTarget } from "@/engine/intake/types";
