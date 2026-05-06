@@ -5,9 +5,9 @@
 
 ## Wedge Mode פעיל
 
-ברירת מחדל: **`pricing-only`** (החל מ-2026-05-06).
-4 מודולים מוסתרים מהניווט: `differentiate`, `wizard` (Marketing), `sales`, `retention`.
-מסך נעול עבור route מוסתר נרשם כ-`wedge.locked_module_clicked`.
+ברירת מחדל: **`all`** (הוחזר ב-2026-05-06 — חשיפה מלאה של כל 5 המודולים).
+המודולים הזמינים: `differentiate`, `wizard` (Marketing), `sales`, `pricing`, `retention`.
+מצבי ניסוי (`pricing-only`, `marketing-only`, `differentiate-only`) עדיין נתמכים — ניתן להפעיל מ-`/admin/wedge` או env. במצב hide+learn, route מוסתר נרשם כ-`wedge.locked_module_clicked`.
 
 **שליטה ב-runtime**: `/admin/wedge` (owner only) → לחיצה משנה את המצב + רענון אוטומטי.
 
