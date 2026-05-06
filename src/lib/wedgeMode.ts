@@ -10,8 +10,8 @@
 //   1. localStorage  — runtime override for admins/dev (key: WEDGE_MODE_KEY)
 //   2. URL ?wedge=…  — easy testing without persistence
 //   3. import.meta.env.VITE_WEDGE_MODE — build-time override
-//   4. DEFAULT_MODE fallback — flipped to "pricing-only" 2026-05-06 to ship
-//      the focused single-wedge experience by default. Override via /admin/wedge.
+//   4. DEFAULT_MODE fallback — reverted to "all" 2026-05-06 to re-expose all
+//      modules. Override via /admin/wedge or VITE_WEDGE_MODE.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { safeStorage } from "@/lib/safeStorage";
@@ -29,7 +29,7 @@ export const WEDGE_MODES: WedgeMode[] = ["all", "pricing-only", "marketing-only"
 
 const STORAGE_KEY = "funnelforge.wedge.mode";
 const ALL_MODULES: WedgeModule[] = ["differentiate", "wizard", "sales", "pricing", "retention"];
-const DEFAULT_MODE: WedgeMode = "pricing-only";
+const DEFAULT_MODE: WedgeMode = "all";
 
 const ENABLED_MAP: Record<WedgeMode, WedgeModule[]> = {
   "all": ALL_MODULES,
