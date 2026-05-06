@@ -9,8 +9,9 @@
 // Resolution order (first wins):
 //   1. localStorage  — runtime override for admins/dev (key: WEDGE_MODE_KEY)
 //   2. URL ?wedge=…  — easy testing without persistence
-//   3. import.meta.env.VITE_WEDGE_MODE — build-time default
-//   4. "all" fallback
+//   3. import.meta.env.VITE_WEDGE_MODE — build-time override
+//   4. DEFAULT_MODE fallback — flipped to "pricing-only" 2026-05-06 to ship
+//      the focused single-wedge experience by default. Override via /admin/wedge.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { safeStorage } from "@/lib/safeStorage";
@@ -28,6 +29,7 @@ export const WEDGE_MODES: WedgeMode[] = ["all", "pricing-only", "marketing-only"
 
 const STORAGE_KEY = "funnelforge.wedge.mode";
 const ALL_MODULES: WedgeModule[] = ["differentiate", "wizard", "sales", "pricing", "retention"];
+const DEFAULT_MODE: WedgeMode = "pricing-only";
 
 const ENABLED_MAP: Record<WedgeMode, WedgeModule[]> = {
   "all": ALL_MODULES,
@@ -67,7 +69,7 @@ function readEnvMode(): WedgeMode | null {
 }
 
 export function getWedgeMode(): WedgeMode {
-  return readLocalStorageMode() ?? readUrlMode() ?? readEnvMode() ?? "all";
+  return readLocalStorageMode() ?? readUrlMode() ?? readEnvMode() ?? DEFAULT_MODE;
 }
 
 export function setWedgeMode(mode: WedgeMode): void {
