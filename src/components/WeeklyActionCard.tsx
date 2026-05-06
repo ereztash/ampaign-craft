@@ -21,16 +21,12 @@ import {
   Users,
 } from "lucide-react";
 import { tx } from "@/i18n/tx";
-import type { Bottleneck, BottleneckModule } from "@/engine/bottleneckEngine";
+import type { Bottleneck, BottleneckModule, LoopSnapshot } from "@/viewmodels";
+import { commitToAction, reportOutcome, startNewWeek, getLoopSnapshot } from "@/viewmodels";
 import type { GuidanceItem } from "@/types/meta";
 import {
-  commitToAction,
-  reportOutcome,
-  startNewWeek,
   abandonCommitment,
   continueCommitment,
-  getLoopSnapshot,
-  type LoopSnapshot,
   type ReportOutcome,
 } from "@/engine/weeklyLoopEngine";
 import { fetchCohortPriors, type CohortPriors } from "@/services/cohortBenchmarks";

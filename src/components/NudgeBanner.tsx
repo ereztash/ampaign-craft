@@ -13,7 +13,7 @@ import {
   captureRecommendationShown,
   captureVariantPick,
   captureOutcome,
-} from "@/engine/outcomeLoopEngine";
+} from "@/viewmodels";
 
 const NUDGE_CONFIG: Record<string, { icon: typeof AlertTriangle; accent: string }> = {
   loss_aversion:    { icon: AlertTriangle, accent: "border-destructive/30 bg-destructive/5 dark:bg-destructive/10" },
