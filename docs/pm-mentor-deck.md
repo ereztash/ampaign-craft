@@ -12,7 +12,7 @@
 - **Founder**: solo. Erez is the only human committer. 98 commits authored by Claude Code, 52 by Erez, 5 dependabot. `git shortlog`.
 - **Velocity**: hours, not days. Today (2026-05-06) the wedge default was flipped to pricing-only, hit a safeStorage runtime crash in prod, was patched, and reverted to "all" - 6 PRs merged in one day.
 - **Runway**: ₪350K seed ask = 18-month runway to ₪1M ARR trigger. Currently un-funded; founder is bootstrapping. `docs/financials.md:67`.
-- **Codebase scale (actual, today)**: 69 engines, 130 components, 30 edge functions. README claims 126/181/29 - **drift**.
+- **Codebase scale (after today's README fix)**: 128 engines (top-level + subdirs), 185 components (incl. `ui/`), 36 pages, 29 edge functions (excl. `_shared`), 51 migrations. README + consistency SOT now aligned. `npm run consistency` exits clean.
 - **Public-beta promised Q2 2026**: README still says "live demo pending public-beta release Q2 2026" while we *are* in Q2. Either we ship the beta in weeks, or that line moves.
 
 ---
@@ -94,7 +94,7 @@ Source: `src/lib/pricingTiers.ts:82-177`.
 
 - **Two unlock paths**: pay, or `canAccessByData` - earn the feature by feeding the system data. `src/hooks/useFeatureGate.ts:24-30`. Progressive-disclosure incentive orthogonal to payment.
 - **Modeled unit economics** (`docs/financials.md`, all unobserved): ARPU ₪136, churn 2.5%, LTV ₪5K, CAC ₪200, LTV:CAC = 25x, payback 1.6 months, gross margin ~78%.
-- **Discrepancy I will flag live**: `docs/financials.md` and `README.md:217` still list ₪99/₪249. Code is canonical at ₪129/₪299. Pick one before any pricing-page experiment.
+- **Pricing alignment fixed today**: README + consistency SOT (`scripts/consistency/lib/sot-providers.ts`) now match `pricingTiers.ts` at ₪129/₪299/35%. `docs/financials.md` still shows the old ₪99/₪249/20% and is the next doc to align (lower urgency, internal financial planning doc).
 
 ---
 
@@ -365,11 +365,11 @@ Per `README.md` and verified in code:
 | 2 | Plan completion = `STRUCTURALLY_UNMEASURABLE` | no `aarrr.activation.intake_completed` event; `business-baseline.md:33-36` | add event + fire in `Intake.tsx` submit | ~10 LOC |
 | 3 | D7/D30 retention = 0% (no aggregator) | `Analytics.weeklyActive` fires but never rolls up; `business-baseline.md:28-31` | nightly Supabase RPC counting distinct user_ids in `event_queue` per day | ~30 LOC SQL + 1 cron |
 | 4 | LLM cost is browser-side only | `AdminLLMCost.tsx:97` "not server-side telemetry" | mirror llmRouter usage to a Supabase `llm_usage` table; aggregate in admin | ~50 LOC + migration |
-| 5 | Pricing inconsistency 3 places | code ₪129/₪299; `financials.md` ₪99/₪249; `README.md:217` ₪99/₪249 | choose canonical and propagate | doc fix or 6 LOC |
+| 5 | Pricing inconsistency | ~~code ₪129/₪299; `financials.md` ₪99/₪249; `README.md` ₪99/₪249~~ **FIXED today**: README + SOT aligned to code. `docs/financials.md` remains old (lower urgency) | done in this PR |
 | 6 | Hard dependency chain (3/5 modules need plan) | `SalesEntry.tsx:27-42`, `PricingEntry.tsx:109-123`, `RetentionEntry.tsx:71-80` | decision: gate engines too vs. heuristic preview (current) | product call |
 | 7 | Data-gate may cannibalise revenue | `useFeatureGate.ts:25` `canAccessByData` bypasses payment | A/B test data-gate ON vs OFF; measure paywall_viewed -> upgrade | flag + 1 experiment |
 | 8 | No `sales.*` or `retention.template_copied` events | silent Copy buttons in `SalesTab.tsx:300-307` and `RetentionGrowthTab.tsx:136-138` | add 2 typed events | ~6 LOC |
-| 9 | README drift | claims 126/181/29; actual 69/130/30 | regenerate counts; CI guard | done in prior PR; verify |
+| 9 | README drift | claims 126/181/29; actual 128/185/29 (post-fix) | **FIXED today**: README aligned, `npm run consistency` clean | done in this PR |
 
 Risks 1, 2, 3, 4, 8 are **all instrumentation**. Single PR closes the measurement gap before any next experiment.
 

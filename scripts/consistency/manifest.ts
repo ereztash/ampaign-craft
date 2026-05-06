@@ -261,7 +261,7 @@ export const NUMERIC_CLAIMS: NumericClaim[] = [
   // ── Pricing / quotas ──────────────────────────
   {
     id: "tier-pro-price-ils",
-    description: "Pro tier monthly price in ILS (canonical: 99)",
+    description: "Pro tier monthly price in ILS (canonical: 129)",
     sot: sot.proPriceIls,
     appearances: [
       {
@@ -282,7 +282,7 @@ export const NUMERIC_CLAIMS: NumericClaim[] = [
 
   {
     id: "tier-business-price-ils",
-    description: "Business tier monthly price in ILS (canonical: 249)",
+    description: "Business tier monthly price in ILS (canonical: 299)",
     sot: sot.businessPriceIls,
     appearances: [
       {
@@ -363,7 +363,7 @@ export const NUMERIC_CLAIMS: NumericClaim[] = [
 
   {
     id: "annual-discount-pct",
-    description: "Annual plan discount percentage (canonical: 20)",
+    description: "Annual plan discount percentage (canonical: 35)",
     sot: sot.annualDiscountPct,
     appearances: [
       {
