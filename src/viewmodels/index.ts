@@ -162,3 +162,4 @@ export * from "./export.vm";
 export * from "./referral.vm";
 export * from "./training.vm";
 export * from "./blackboard.vm";
+export * from "./engine-orchestrator.vm";
