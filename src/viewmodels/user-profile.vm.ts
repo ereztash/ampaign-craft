@@ -59,6 +59,12 @@ export function toNextStepVM(step: NextStep): NextStepVM {
   };
 }
 
+// ── Re-exports (raw engine types/functions components may need directly) ──────
+export type { DISCProfile } from "@/engine/discProfileEngine";
+export { inferDISCProfile } from "@/engine/discProfileEngine";
+export type { ChurnRiskAssessment } from "@/engine/churnPredictionEngine";
+export { assessChurnRisk } from "@/engine/churnPredictionEngine";
+
 // ── ChurnRiskVM ───────────────────────────────────────────────────────────────
 
 export interface ChurnInterventionVM {
