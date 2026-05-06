@@ -81,7 +81,21 @@ export type AARRREventName =
   | "differentiation.real_world_use_reported"
   | "differentiation.positive_signal_reported"
   | "differentiation.not_mine_feedback"
-  | "differentiation.unclear_feedback";
+  | "differentiation.unclear_feedback"
+  // Wedge instrumentation — measures whether a single-module entry point
+  // produces stronger conversion / stickiness than the full 5-module app.
+  // Phantom-interest signals (locked_module_clicked, unlock_clicked) reveal
+  // which module the market actually pulls toward as the second wedge.
+  | "wedge.mode_resolved"
+  | "wedge.module_view"
+  | "wedge.locked_module_clicked"
+  | "wedge.unlock_requested"
+  | "wedge.first_value_seen"
+  | "wedge.experiment_started"
+  | "wedge.experiment_outcome_logged"
+  | "wedge.experiment_completed"
+  | "wedge.experiment_abandoned"
+  | "wedge.next_experiment_started";
 
 export type AnalyticsEventName = AARRREventName | EventType;
 

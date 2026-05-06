@@ -20,6 +20,14 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Beaker, Play, Copy, Check, RefreshCcw, X, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  trackExperimentStarted,
+  trackOutcomeLogged,
+  trackExperimentCompleted,
+  trackExperimentAbandoned,
+  trackNextExperimentStarted,
+} from "@/lib/wedgeTelemetry";
 
 interface Props {
   recommendedPrice: number;
@@ -37,6 +45,7 @@ const OUTCOME_LABELS: Record<CustomerOutcome, { he: string; en: string; emoji: s
 
 const PricingExperimentLab = ({ recommendedPrice, segment }: Props) => {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const isHe = language === "he";
   const [activeExperiment, setActiveExperiment] = useState<PricingExperiment | null>(null);
   const [confidence, setConfidence] = useState(getCurrentConfidence());
@@ -51,6 +60,13 @@ const PricingExperimentLab = ({ recommendedPrice, segment }: Props) => {
     const exp = createExperiment({ testedPrice: recommendedPrice, segment, cohortSize: 5 });
     setActiveExperiment(exp);
     setConfidence(getCurrentConfidence());
+    trackExperimentStarted({
+      experimentId: exp.id,
+      testedPrice: exp.testedPrice,
+      segment,
+      cohortSize: exp.cohortSize,
+      userId: user?.id,
+    });
     toast.success(tx({ he: "ניסוי חדש נפתח. בהצלחה!", en: "New experiment started. Good luck!" }, language));
   };
 
@@ -59,11 +75,34 @@ const PricingExperimentLab = ({ recommendedPrice, segment }: Props) => {
     const updated = logProspectOutcome(activeExperiment.id, prospectId, outcome);
     setActiveExperiment(updated);
     setConfidence(getCurrentConfidence());
+    trackOutcomeLogged({
+      experimentId: activeExperiment.id,
+      outcome,
+      userId: user?.id,
+    });
+    if (updated && updated.status === "complete") {
+      const result = analyzeExperiment(updated);
+      trackExperimentCompleted({
+        experimentId: updated.id,
+        acceptanceRate: result.acceptanceRate,
+        recommendation: result.recommendation,
+        cohortSize: updated.cohortSize,
+        durationMs: (updated.closedAt ?? Date.now()) - updated.createdAt,
+        userId: user?.id,
+      });
+    }
   };
 
   const handleAbandon = () => {
     if (!activeExperiment) return;
+    const loggedCount = activeExperiment.prospects.filter((p) => p.outcome !== null).length;
     abandonExperiment(activeExperiment.id);
+    trackExperimentAbandoned({
+      experimentId: activeExperiment.id,
+      loggedCount,
+      cohortSize: activeExperiment.cohortSize,
+      userId: user?.id,
+    });
     setActiveExperiment(null);
     setConfidence(getCurrentConfidence());
     toast.info(tx({ he: "הניסוי נסגר", en: "Experiment closed" }, language));
@@ -237,6 +276,8 @@ const PricingExperimentLab = ({ recommendedPrice, segment }: Props) => {
                 <Button
                   size="sm"
                   onClick={() => {
+                    const prevId = activeExperiment.id;
+                    const prevPrice = activeExperiment.testedPrice;
                     const exp = createExperiment({
                       testedPrice: nextExperiment.proposedPrice,
                       segment,
@@ -245,6 +286,14 @@ const PricingExperimentLab = ({ recommendedPrice, segment }: Props) => {
                     });
                     setActiveExperiment(exp);
                     setConfidence(getCurrentConfidence());
+                    trackNextExperimentStarted({
+                      prevExperimentId: prevId,
+                      newExperimentId: exp.id,
+                      prevPrice,
+                      newPrice: exp.testedPrice,
+                      recommendation: result.recommendation,
+                      userId: user?.id,
+                    });
                   }}
                   className="w-full"
                 >
