@@ -1,7 +1,21 @@
 # FunnelForge — הוראות המשך עבודה
 
 ## ענף פעיל
-`claude/app-evaluation-strategy-SkmAh`
+`claude/pricing-wedge-10x` (ניסויי, מתוך `claude/app-evaluation-strategy-SkmAh`)
+
+## Wedge Mode פעיל
+
+ברירת מחדל: **`pricing-only`** (החל מ-2026-05-06).
+4 מודולים מוסתרים מהניווט: `differentiate`, `wizard` (Marketing), `sales`, `retention`.
+מסך נעול עבור route מוסתר נרשם כ-`wedge.locked_module_clicked`.
+
+**שליטה ב-runtime**: `/admin/wedge` (owner only) → לחיצה משנה את המצב + רענון אוטומטי.
+
+**שליטה בבילד**: `VITE_WEDGE_MODE=pricing-only|all|marketing-only|differentiate-only` ב-`.env`.
+
+**שליטה בקוד**: `DEFAULT_MODE` ב-`src/lib/wedgeMode.ts`.
+
+ה-data לבחינת התוצאה זמין ב-`/admin/aarrr` תחת events `wedge.*`.
 
 ---
 
