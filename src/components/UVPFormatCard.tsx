@@ -6,7 +6,7 @@ import { tx } from "@/i18n/tx";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
-import type { UVPVariant } from "@/engine/uvpSynthesisEngine";
+import type { UVPVariant } from "@/viewmodels";
 
 interface UVPFormatCardProps {
   variant: UVPVariant;

@@ -170,7 +170,7 @@ export default tseslint.config(
       "src/components/AnalyticsTab.tsx",
       "src/components/ArchetypeProfileCard.tsx",
       "src/components/BusinessDNACard.tsx",
-      "src/components/BusinessPulseBar.tsx",
+      // "src/components/BusinessPulseBar.tsx", -- already clean (no engine imports found)
       "src/components/DifferentiationPhaseCard.tsx",
       "src/components/DifferentiationResult.tsx",
       "src/components/DifferentiationTranscriptWizard.tsx",
@@ -180,7 +180,7 @@ export default tseslint.config(
       "src/components/IdentityStrip.tsx",
       "src/components/InsightCloud.tsx",
       "src/components/InsightsCard.tsx",
-      "src/components/LandingPage.tsx",
+      // "src/components/LandingPage.tsx", -- migrated 2026-05-06
       "src/components/LeadCoachPanel.tsx",
       "src/components/MarketingWrapped.tsx",
       "src/components/MetaMonitor.tsx",
@@ -201,12 +201,12 @@ export default tseslint.config(
       "src/components/__tests__/NeuroClosingCard.test.tsx",
       "src/components/__tests__/NudgeBanner.test.tsx",
       "src/components/__tests__/PricingWizardResults.test.tsx",
-      "src/components/intake/IntakePromiseHeader.tsx",
-      "src/components/intake/IntakeReframeBanner.tsx",
+      // "src/components/intake/IntakePromiseHeader.tsx", -- migrated 2026-05-06
+      // "src/components/intake/IntakeReframeBanner.tsx", -- migrated 2026-05-06
       "src/components/intake/__tests__/IntakePromiseHeader.test.tsx",
       "src/components/intake/__tests__/IntakeReframeBanner.test.tsx",
-      "src/components/moat/PrincipleTraceModal.tsx",
-      "src/components/reflective/ReflectiveCard.tsx",
+      // "src/components/moat/PrincipleTraceModal.tsx", -- migrated 2026-05-06
+      // "src/components/reflective/ReflectiveCard.tsx", -- migrated 2026-05-06
     ],
     rules: { "no-restricted-imports": "off" },
   },

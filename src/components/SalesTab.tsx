@@ -1,10 +1,12 @@
 import { useMemo, useState, useCallback, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/viewmodels";
-import { buildUserKnowledgeGraph, type StylomeVoice } from "@/viewmodels";
-import { inferDISCProfile } from "@/viewmodels";
-import { generateClosingStrategy } from "@/viewmodels";
+import {
+  generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES,
+  buildUserKnowledgeGraph, type StylomeVoice,
+  inferDISCProfile,
+  generateClosingStrategy,
+} from "@/viewmodels";
 import { DISCProfileCard } from "@/components/DISCProfileCard";
 import { NeuroClosingCard } from "@/components/NeuroClosingCard";
 import { DifferentiationResult } from "@/types/differentiation";

@@ -147,6 +147,7 @@ export * from "./sales.vm";
 export * from "./differentiation.vm";
 export * from "./moat.vm";
 export * from "./churn.vm";
+export * from "./executive-brief.vm";
 export * from "./stylome.vm";
 export * from "./brand.vm";
 
