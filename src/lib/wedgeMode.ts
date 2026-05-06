@@ -49,7 +49,7 @@ const MODULE_LABELS: Record<WedgeModule, { he: string; en: string }> = {
 // ── Resolution ──────────────────────────────────────────────────────────────
 
 function readLocalStorageMode(): WedgeMode | null {
-  const raw = safeStorage.getItem(STORAGE_KEY);
+  const raw = safeStorage.getString(STORAGE_KEY, "");
   if (!raw) return null;
   return WEDGE_MODES.includes(raw as WedgeMode) ? (raw as WedgeMode) : null;
 }
@@ -73,11 +73,11 @@ export function getWedgeMode(): WedgeMode {
 }
 
 export function setWedgeMode(mode: WedgeMode): void {
-  safeStorage.setItem(STORAGE_KEY, mode);
+  safeStorage.setString(STORAGE_KEY, mode);
 }
 
 export function clearWedgeMode(): void {
-  safeStorage.removeItem(STORAGE_KEY);
+  safeStorage.remove(STORAGE_KEY);
 }
 
 // ── Queries ─────────────────────────────────────────────────────────────────

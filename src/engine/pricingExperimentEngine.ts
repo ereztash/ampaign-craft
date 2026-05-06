@@ -92,17 +92,11 @@ export interface NextExperiment {
 // ── Storage ────────────────────────────────────────────────────────────────
 
 function loadExperiments(): PricingExperiment[] {
-  const raw = safeStorage.getItem(STORAGE_KEY);
-  if (!raw) return [];
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
+  return safeStorage.getJSON<PricingExperiment[]>(STORAGE_KEY, []);
 }
 
 function saveExperiments(experiments: PricingExperiment[]): void {
-  safeStorage.setItem(STORAGE_KEY, JSON.stringify(experiments));
+  safeStorage.setJSON(STORAGE_KEY, experiments);
 }
 
 // ── Experiment lifecycle ────────────────────────────────────────────────────
