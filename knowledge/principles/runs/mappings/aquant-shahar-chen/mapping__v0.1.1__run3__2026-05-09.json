@@ -1,0 +1,146 @@
+{
+  "metadata": {
+    "candidate_slug": "aquant-shahar-chen",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.25,
+    "run_number": 3,
+    "timestamp_iso": "2026-05-09T20:19:27.121Z",
+    "input_bundle_hash_sha256": "94f577e0193322b5cb124626a378be3d30b0b9de0c6ffca8cc1d6df8ceaa7d7b",
+    "cost_usd": 0.027738,
+    "usage": {
+      "input_tokens": 2646,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1320,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Shahar Chen",
+    "company": "Aquant",
+    "extraction_source_url": "https://medium.com/authority-magazine/shahar-chen-of-aquant-on-five-things-you-need-to-create-a-highly-successful-career-in-the-ai-4cb68dff3d51",
+    "mappings": [
+      {
+        "ceo_term": "widening skills gap",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P12"
+        ],
+        "primary_principle": "P03",
+        "confidence": "medium",
+        "reasoning": "Naming a 'widening skills gap' reframes the buyer's problem from a technology deficit to a human-capital crisis, which is a cognitive frame shift; it also implies a cost-of-doing-nothing (P12) but that quantification is absent here."
+      },
+      {
+        "ceo_term": "harnessing the existing data of companies",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05"
+        ],
+        "primary_principle": "P05",
+        "confidence": "high",
+        "reasoning": "This phrase names a specific mechanism — using the client's own proprietary data as the input — which is a 'we do X through Y' methodology articulation."
+      },
+      {
+        "ceo_term": "holistic generative AI solution for the service industry",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09",
+          "P02"
+        ],
+        "primary_principle": "P09",
+        "confidence": "medium",
+        "reasoning": "Positioning the solution as purpose-built for 'the service industry' signals domain-native language and vertical empathy (P09); the phrase also attempts a single-sentence repeatable offer (P02) but lacks enough specificity for high confidence on that principle."
+      },
+      {
+        "ceo_term": "stringent security measures to prevent internet uploads",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P11"
+        ],
+        "primary_principle": "P11",
+        "confidence": "medium",
+        "reasoning": "Emphasizing data-containment security shifts perceived deployment risk away from the buyer, which is semantically equivalent to a risk-reversal posture even without an explicit pilot or exit clause."
+      },
+      {
+        "ceo_term": "conservative industry",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09"
+        ],
+        "primary_principle": "P09",
+        "confidence": "high",
+        "reasoning": "Labeling the target vertical as 'conservative' demonstrates that Chen speaks the buyer's cultural and industry language natively, which is the core of domain-empathy translation."
+      },
+      {
+        "ceo_term": "human element",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09",
+          "P03"
+        ],
+        "primary_principle": "P09",
+        "confidence": "medium",
+        "reasoning": "Foregrounding the 'human element' reflects fluency in the emotional and cultural concerns of service-industry buyers (P09), and also begins to reframe how those buyers should think about AI adoption (P03)."
+      },
+      {
+        "ceo_term": "AI is not here to replace anyone",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P04"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "This statement directly reframes the buyer's (and end-user's) mental model of AI from threat/replacement to augmentation, which is a textbook cognitive frame shift; it also functions as a soft non-displacement declaration (P04) but without the explicit 'we don't serve X' structure."
+      }
+    ],
+    "unmapped_ceo_terms": [],
+    "ambiguous_mappings": [
+      {
+        "ceo_term": "human element",
+        "candidate_principles": [
+          "P09",
+          "P03"
+        ],
+        "reasoning": "The phrase equally signals domain-native cultural fluency (P09) and a reframing of buyer anxieties about AI (P03); neither principle clearly dominates without additional context."
+      },
+      {
+        "ceo_term": "holistic generative AI solution for the service industry",
+        "candidate_principles": [
+          "P09",
+          "P02"
+        ],
+        "reasoning": "The vertical specificity points to domain empathy (P09), but the compressed, repeatable phrasing also resembles a one-sentence offer articulation (P02); the lack of a crisp mechanism makes P02 uncertain."
+      }
+    ],
+    "mapping_summary": {
+      "total_terms_mapped": 7,
+      "total_terms_unmapped": 0,
+      "principles_referenced": [
+        "P03",
+        "P12",
+        "P05",
+        "P09",
+        "P02",
+        "P11",
+        "P04"
+      ],
+      "principles_with_high_confidence_mapping": [
+        "P05",
+        "P09",
+        "P03"
+      ]
+    }
+  }
+}
