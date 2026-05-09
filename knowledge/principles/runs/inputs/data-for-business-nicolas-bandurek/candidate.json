@@ -1,0 +1,35 @@
+{
+  "candidate_name": "Nicolas Bandurek",
+  "company": "Data for Business",
+  "recommended_track": "breadth",
+  "sources": [
+    {
+      "source_id": "01",
+      "filename": "source-01-blog.md",
+      "url": "https://www.isrdfb.com/blog (3 blog posts: digitaltransformation, changemanage, humancapital)",
+      "type": "blog posts authored by CEO (first-party but distinct from website marketing copy; analytical content)",
+      "date": "2022-11 to 2023-04",
+      "is_independent": false
+    },
+    {
+      "source_id": "02",
+      "filename": "source-02-website-lectures.md",
+      "url": "https://www.isrdfb.com/ddlecture + /inolecture",
+      "type": "workshop/lecture pages on company website (first-party; describes methodology + bio)",
+      "date": "2023",
+      "is_independent": false
+    }
+  ],
+  "research_notes": {
+    "test_type": "BENCHMARK — not standard candidate evaluation",
+    "purpose": "Compare engine output (synthesis) against Erez's prior 3-document manual synthesis on the same subject. The user has a separate checklist of expected themes that will be sent AFTER extraction runs (to avoid biasing the engine).",
+    "subject_relationship": "Nicolas Bandurek is Erez's mentor. 3 strategic documents already exist (Erez-authored, validated operationally — they power an active bot writing in Nicolas's voice). Those documents are deliberately NOT in the bundle.",
+    "icp_note": "Nicolas is consultancy, not B2B SaaS Growth-Stage. ICP fit is NOT the test. Test is whether engine on public raw data converges with Erez's manual synthesis.",
+    "corpus_summary": {
+      "independent_sources": 0,
+      "first_party_sources": "all (website pages, blog posts, LinkedIn)",
+      "missing": "Book excerpts from 'יומן מסע אל הטרנספורמציה הדיגיטלית' — PDF was 403 to WebFetch; user may provide selected chapters separately",
+      "implication": "Bundle is first-party-only. Self-articulation bias is high (CEO describes himself in his own terms; engine reflects rather than discovers). Document this in the report; Erez's checklist comparison is the actual test."
+    }
+  }
+}
