@@ -4,6 +4,23 @@
 
 ---
 
+## MVP Final Status (2026-05-09, tag `mvp-v1.0`)
+
+ה-MVP נסגר עם 3 candidates שעברו pipeline מלא. ראה דוח ב-[`reports/mvp-final.md`](./reports/mvp-final.md).
+
+| # | Candidate | Status | Track | תוצאה |
+|---|-----------|--------|-------|-------|
+| 1 | Roy Danon / Buildots | ✅ הורץ | depth | 6/9 metrics, P02+P03+P05+P09 stable |
+| 2 | Shahar Chen / Aquant | ✅ הורץ | depth + breadth (×2 sources) | 6/9 → 7/9 metrics; ceiling broken P09 7,8,7 → 8,8,8 |
+| 3 | Roi Ravhon / Finout | ✅ הורץ | depth | 6/9 metrics, P02+P05+P15 stable |
+| 4 | Itamar Friedman / Qodo | reserve | — | לא הורץ ב-MVP |
+| 5 | Ben Reuveni / Gloat | reserve | — | לא הורץ ב-MVP |
+| 6 | Bar Mor / Agora | reserve | — | לא הורץ ב-MVP |
+
+**Nicolas Bandurek (Data for Business)** — benchmark test attempted but archived 2026-05-09: source-asymmetry between Erez's NotebookLM-based manual synthesis and the engine's web-only bundle would have tested the source gap, not the engine. Bundle moved to `runs/archived/`.
+
+---
+
 ## רקע: שלושה מחקרי Deep Research
 
 | מקור | מועמדים שהציע | חוזק | חולשה |
