@@ -1,0 +1,13 @@
+{
+  "candidate_name": "Roy Danon",
+  "company": "Buildots",
+  "source_url": "https://www.unite.ai/roy-danon-ceo-of-buildots-interview-series/",
+  "source_date": "2020-06-01",
+  "source_type": "long-form Q&A interview (8 questions, ~700 CEO words)",
+  "research_notes": {
+    "selected_from": "Doc 1 (English TL;DR) — research-recommended #1 candidate; Q&A structure ideal for benchmarking",
+    "verification": "Unite.AI page returned full Q&A via WebFetch on 2026-05-09",
+    "secondary_sources": "buildots.com homepage hero + about page (fetched 2026-05-09)",
+    "linkedin": "Requires manual paste from user (LinkedIn blocks fetchers)"
+  }
+}
