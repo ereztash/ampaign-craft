@@ -1,0 +1,684 @@
+{
+  "metadata": {
+    "candidate_slug": "aquant-shahar-chen",
+    "artifact_type": "synthesis",
+    "prompt_version": "0.3.0",
+    "prompt_hash_sha256": "b8513b51a1ffe0933a92bb34a47affb81ee066aeebbbdcbe56acbffbe316e243",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-opus-4-7",
+    "temperature": 0.3,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T20:54:30.642Z",
+    "input_bundle_hash_sha256": "7df3124fbbd45140c2e07bb8f719191c6d33f2bc73c068253dfbf541f6af3fde",
+    "cost_usd": 1.1121750000000001,
+    "usage": {
+      "input_tokens": 22470,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 10335,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Shahar Chen",
+    "company": "Aquant",
+    "source_url": "https://medium.com/authority-magazine/shahar-chen-of-aquant-on-five-things-you-need-to-create-a-highly-successful-career-in-the-ai-4cb68dff3d51",
+    "synthesis_timestamp": "2026-05-09T12:00:00Z",
+    "principleOutputs": [
+      {
+        "principleCode": "P01",
+        "principleName": "Action-Defeats-Helplessness / פעולה מפחיתה חוסר-אונים",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "No deliverable-cycle language, no 'first win in X days' evidence, no engagement-cycle structural support. Aquant's framing is about ongoing AI assistance, not discrete deliverables.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "case studies לא מכילים תוצרים דיסקרטיים",
+            "triggered": false,
+            "evidence": ""
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Empathy-First",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "headline + 50 first words language dominance",
+          "tiebreakerOutcome": "competing_wins",
+          "reasoning": "Chen's quote about understanding the human element / fears of technicians is empathy-leaning, not action-leaning."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P02",
+        "principleName": "Explanation-Efficiency / יעילות הסבר",
+        "relevanceScore": 6,
+        "evidenceQuotes": [
+          {
+            "quote": "We built Aquant to help teams narrow the growing skills gap and turn the service department into a profit center",
+            "context": "Website mission statement",
+            "evidenceType": "both",
+            "lexicalMatch": "Hero/mission converges on 'skills gap' phrasing repeated in About",
+            "structuralMatch": "Headline ≤30 words; same 'skills gap' phrase appears in Authority Magazine quote and About paragraph"
+          },
+          {
+            "quote": "My business partner and I identified an unresolved issue within the service sector — one rooted in the widening skills gap — and recognized that the solution lay in harnessing the existing data of companies.",
+            "context": "Founding insight in Authority Magazine",
+            "evidenceType": "lexical",
+            "lexicalMatch": "Same 'skills gap' + 'data of companies' framing as website",
+            "structuralMatch": "Cross-source convergence on identical core concepts"
+          }
+        ],
+        "summaryObservation": "Strong convergence on 'skills gap' + 'turn service into profit center' + 'service data' across Authority Magazine, Emerj, and website. Tagline ('most strategic AI platform for service') is short and consistent.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "headline/About/Hero מציגים 3+ ניסוחים שונים מהותית",
+            "triggered": false,
+            "evidence": ""
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Category-Depth",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "About first paragraph length",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About paragraph is moderate length; no 'between X and Y' / 'neither X nor Y' new-category language."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P03",
+        "principleName": "Cognitive-Frame-Shift / הסטת מסגרת תפיסתית",
+        "relevanceScore": 6,
+        "evidenceQuotes": [
+          {
+            "quote": "A service technician might hear the word AI and their immediate thought is, 'They're introducing a new system to take over my role.' AI is not here to replace anyone, AI is here to help us be the best we can be at what we do.",
+            "context": "Reframing AI fear in conservative service industry",
+            "evidenceType": "lexical",
+            "lexicalMatch": "'people think they need X but really need Y' pattern: 'they think AI replaces, actually AI helps them'",
+            "structuralMatch": ""
+          },
+          {
+            "quote": "Ten years ago, all we cared about was that the technician that was assigned to solve our cable issues at home would arrive on time. Now arriving on time is given. Now I expect that you're going to arrive and you're going to solve my problem.",
+            "context": "Reframing what 'good service' means today",
+            "evidenceType": "lexical",
+            "lexicalMatch": "'actually it's about' pattern - reframing service from punctuality to first-time-fix",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Two distinct frame-shifts: (1) AI replacement → AI augmentation; (2) service = punctuality → service = first-time-fix. Lexical clear; structural support thin (no case studies showing client mid-engagement reframing).",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין case studies שבהם הלקוח שינה דעתו במהלך ה-engagement",
+            "triggered": true,
+            "evidence": "No case studies in source material showing client reframing."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Confirmation-Of-Existing-Frame",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline challenge vs affirmation",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "Chen's framing actively challenges the 'AI replaces jobs' default."
+        },
+        "notes": "Score capped at 6 due to missing structural tier."
+      },
+      {
+        "principleCode": "P04",
+        "principleName": "Tradeoff-Declaration / הצהרת ויתור",
+        "relevanceScore": 3,
+        "evidenceQuotes": [],
+        "summaryObservation": "No 'we don't do X' language. The website lists multiple verticals (industrial equipment, medical devices, manufacturing, food equipment, high-tech, electronics, printing) — broad applicability rather than declared exclusion.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "ה-About מזכיר מספר types של לקוחות ללא חפיפה",
+            "triggered": true,
+            "evidence": "About lists 7+ industries without exclusion."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Universal-Solution-Claim",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline emphasis (exclusion vs applicability)",
+          "tiebreakerOutcome": "competing_wins",
+          "reasoning": "Headline emphasizes 'most strategic AI platform for service' — broad service applicability."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P05",
+        "principleName": "Mechanism-Articulation / ניסוח מנגנון",
+        "relevanceScore": 5,
+        "evidenceQuotes": [
+          {
+            "quote": "Aquant's agentic platform transforms data into practical insights, captures and scales expert knowledge, and makes AI deployment frictionless, all so every team member can make confident decisions, even in high-stakes situations.",
+            "context": "Website About mechanism description",
+            "evidenceType": "lexical",
+            "lexicalMatch": "'we do X through Y' pattern: capture expert knowledge → scale → confident decisions",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Some mechanism articulation ('agentic platform', 'capture expert knowledge', 'persona-based guidance') but no named methodology/framework. Differentiators listed but not assembled into a named playbook.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "methodology מוזכרת פעם אחת ולא חוזרת ב-case studies",
+            "triggered": false,
+            "evidence": "No case studies provided in source set."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Outcome-First-Promise",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "About first paragraph (methodology name vs number)",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About leads with mechanism description, not numerical results."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P06",
+        "principleName": "Time-to-First-Value / זמן לערך ראשון",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No time-to-value language, no day/week numbers in any source.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין אזכור זמן ב-case studies או עדויות",
+            "triggered": true,
+            "evidence": "No time markers anywhere."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Compounding-Slow-Build",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline time horizon",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P07",
+        "principleName": "Decision-Latency-Reduction / קיצור זמן החלטה",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No sales-cycle data, no decision-speed language.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין נתון זמן/פגישות ב-case studies",
+            "triggered": true,
+            "evidence": "Absent."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Deliberative-Thoroughness",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Median meetings before close",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P08",
+        "principleName": "Cycle-Compression-Through-Templating / קיצור מחזור על ידי תבנית",
+        "relevanceScore": 4,
+        "evidenceQuotes": [
+          {
+            "quote": "persona-based guidance tailored to specific roles (contact center agents, field technicians, etc.); end-to-end agentic platform supporting prebuilt and custom agents",
+            "context": "Website differentiators",
+            "evidenceType": "structural",
+            "lexicalMatch": "",
+            "structuralMatch": "'prebuilt agents' suggests templating; 'persona-based' suggests repeatable patterns"
+          }
+        ],
+        "summaryObservation": "Some hint of templating via 'prebuilt agents' and 'persona-based guidance' but no named framework or playbook visible. No engagement-length data.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין named template/framework פומבי",
+            "triggered": true,
+            "evidence": "No named framework in any source."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Bespoke-Per-Engagement",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Public named framework presence",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Templating signals weak; no framework name."
+        },
+        "notes": "Score capped at 4 per dual-tier policy (structural only, no lexical)."
+      },
+      {
+        "principleCode": "P09",
+        "principleName": "Domain-Empathy-Translation / שטף תחומי",
+        "relevanceScore": 8,
+        "evidenceQuotes": [
+          {
+            "quote": "When you're talking about copilots for specific industries like manufacturing or service or any of these, it becomes even more critical that the answer will be accurate. And it will take time for you to get to the right answer without calling the guy that might be on a conference call for four hours, or maybe the guy retired yesterday. He's no longer available, but you'll still know.",
+            "context": "Vertical-specific copilot accuracy challenge",
+            "evidenceType": "both",
+            "lexicalMatch": "Industry-specific terminology, real workflow constraints (technician retired, conference call)",
+            "structuralMatch": "Acknowledgment of real industry constraints, not just jargon"
+          },
+          {
+            "quote": "I don't want three guys to come to my house. I don't want three guys to come to the hospital and fix that MRI. I want the first guy that comes in to know everything there is to know about that machine and solve my problem.",
+            "context": "Field service technician reality",
+            "evidenceType": "both",
+            "lexicalMatch": "Specific service scenarios: cable tech, MRI, hospital — domain-precise examples",
+            "structuralMatch": "Customer types listed: field technicians, call centers, customer self-service teams, service leaders"
+          },
+          {
+            "quote": "Aquant helps companies that build, sell, and service complex equipment turn data into AI agents",
+            "context": "Website positioning",
+            "evidenceType": "structural",
+            "lexicalMatch": "",
+            "structuralMatch": "Vertical-specific ICP: complex equipment service across industrial, medical, manufacturing, food, electronics"
+          }
+        ],
+        "summaryObservation": "Strong domain empathy — Chen speaks the language of field service (technicians, MRIs, first-time-fix, knowledge in heads of retiring experts). Multiple verticals but all unified under 'service of complex equipment' — vertical depth, not horizontal generalism.",
+        "differentiationHypothesis": "Aquant differentiates by deep service-industry domain fluency: speaks the language of field technicians and service leaders, frames AI around real industry pain (skills gap, retiring experts, first-time-fix expectations) rather than generic AI capabilities.",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "שפה גנרית-עסקית ללא ספציפיות תחומית",
+            "triggered": false,
+            "evidence": ""
+          },
+          {
+            "disqualifier": "case studies חוצים ענפים לא קשורים",
+            "triggered": false,
+            "evidence": "All verticals share 'complex equipment service' core."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Generalist-Cross-Pollination",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "About — vertical depth vs industry breadth",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About is unified around 'service of complex equipment' — vertical depth."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P10",
+        "principleName": "Onboarding-Velocity / מהירות onboarding",
+        "relevanceScore": 3,
+        "evidenceQuotes": [
+          {
+            "quote": "makes AI deployment frictionless",
+            "context": "Website differentiator",
+            "evidenceType": "lexical",
+            "lexicalMatch": "'frictionless' hints at velocity",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "'Frictionless deployment' is a hint but no ramp-time numbers, no onboarding timing data.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין onboarding time מוזכר",
+            "triggered": true,
+            "evidence": "No specific times."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Deep-Custom-Onboarding",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Pricing/About — self-serve vs white-glove",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Insufficient signal either way."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P11",
+        "principleName": "Risk-Reversal / היפוך סיכון",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No pilot/trial/money-back language.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין שום אזכור pilot/trial/reversal",
+            "triggered": true,
+            "evidence": "Absent."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "High-Conviction-Commitment",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Default contract structure",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P12",
+        "principleName": "Loss-Avoided-Quantification / כימות הפסד שנמנע",
+        "relevanceScore": 4,
+        "evidenceQuotes": [
+          {
+            "quote": "the knowledge in the test used to be in the head of people right in their mind as an experience that they gain. Now that knowledge is the IP of the company, the IT of the manufacturing company, then it stays in the organization forever.",
+            "context": "Knowledge loss when experts retire",
+            "evidenceType": "lexical",
+            "lexicalMatch": "Implicit cost-of-inaction (lost expert knowledge) but unquantified",
+            "structuralMatch": ""
+          },
+          {
+            "quote": "turn the service department into a profit center",
+            "context": "Mission",
+            "evidenceType": "lexical",
+            "lexicalMatch": "Implies current cost center loss but no $ figures",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Loss frame is present (skills gap, retiring experts, service-as-cost-center) but never quantified with dollar figures.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין מספרים $ ב-case studies",
+            "triggered": true,
+            "evidence": "No dollar figures in any source."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Aspirational-Gain-Promise",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": true,
+          "tiebreakerDimension": "Hero leading with cost-of-inaction vs aspirational outcome",
+          "tiebreakerOutcome": "competing_wins",
+          "reasoning": "Tagline 'most strategic AI platform for service' + 'turn into profit center' lead with aspirational gain, not loss."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P13",
+        "principleName": "Competitive-Displacement-Evidence / ראיות עקירה תחרותית",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No competitor names, no displacement evidence.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "אין competitors named ב-case studies",
+            "triggered": true,
+            "evidence": "Absent."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "New-Logo-Only",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Case study ratio",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Insufficient signal."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P14",
+        "principleName": "Pricing-Power-from-Niche / כוח תמחור מנישה",
+        "relevanceScore": 4,
+        "evidenceQuotes": [
+          {
+            "quote": "Aquant helps companies that build, sell, and service complex equipment",
+            "context": "ICP definition",
+            "evidenceType": "structural",
+            "lexicalMatch": "",
+            "structuralMatch": "Niche defined: complex-equipment service"
+          }
+        ],
+        "summaryObservation": "Niche is defined (service of complex equipment) but no pricing visible, no premium-positioning lexical signals.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "מחירים לא premium יחסית לקטגוריה",
+            "triggered": false,
+            "evidence": "No pricing visible to evaluate."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Volume-Pricing-Commodity",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Pricing position relative to category median",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Pricing not visible."
+        },
+        "notes": "Score capped at 4 per dual-tier (structural only)."
+      },
+      {
+        "principleCode": "P15",
+        "principleName": "Legitimacy-Driver / מניע לגיטימציה",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "No customer logos, certifications, or advisory board mentioned in source content.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "logos מוצגים אבל אין case studies עם אותם brands",
+            "triggered": false,
+            "evidence": "No logos visible in extracted material."
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Underdog-Authenticity",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Hero/About opener",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires clearly."
+        },
+        "notes": ""
+      }
+    ],
+    "convergenceReport": {
+      "strongSignals": [
+        "P09"
+      ],
+      "weakSignals": [
+        "P02",
+        "P03"
+      ],
+      "belowThreshold": [
+        "P05",
+        "P08",
+        "P12",
+        "P14",
+        "P04",
+        "P10",
+        "P01",
+        "P15",
+        "P06",
+        "P07",
+        "P11",
+        "P13"
+      ],
+      "convergence": "weak",
+      "corePrinciples": [
+        "P09"
+      ]
+    },
+    "synthesisMetadata": {
+      "ctmAxisDistribution": {
+        "M_principlesScoredHigh": [],
+        "T_principlesScoredHigh": [
+          "P09"
+        ],
+        "C_principlesScoredHigh": []
+      },
+      "competingPairResolutions": {
+        "totalPairsBothFired": 1,
+        "tiebreakersUsed": 1,
+        "metaPolicyNeitherOutcomes": 0
+      },
+      "disqualifiersFlagged": [
+        {
+          "principleCode": "P03",
+          "disqualifier": "אין case studies שבהם הלקוח שינה דעתו במהלך ה-engagement"
+        },
+        {
+          "principleCode": "P04",
+          "disqualifier": "ה-About מזכיר מספר types של לקוחות ללא חפיפה"
+        },
+        {
+          "principleCode": "P06",
+          "disqualifier": "אין אזכור זמן ב-case studies או עדויות"
+        },
+        {
+          "principleCode": "P07",
+          "disqualifier": "אין נתון זמן/פגישות ב-case studies"
+        },
+        {
+          "principleCode": "P08",
+          "disqualifier": "אין named template/framework פומבי"
+        },
+        {
+          "principleCode": "P10",
+          "disqualifier": "אין onboarding time מוזכר"
+        },
+        {
+          "principleCode": "P11",
+          "disqualifier": "אין שום אזכור pilot/trial/reversal"
+        },
+        {
+          "principleCode": "P12",
+          "disqualifier": "אין מספרים $ ב-case studies"
+        },
+        {
+          "principleCode": "P13",
+          "disqualifier": "אין competitors named ב-case studies"
+        }
+      ]
+    }
+  }
+}
