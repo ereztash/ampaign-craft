@@ -1,0 +1,697 @@
+{
+  "metadata": {
+    "candidate_slug": "buildots-roy-danon",
+    "artifact_type": "synthesis",
+    "prompt_version": "0.2.1",
+    "prompt_hash_sha256": "1187f81e474393c281798926a5594b0f02c78c084b410bd0e5ad76dad79d4d80",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-opus-4-7",
+    "temperature": 0.3,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T19:53:38.054Z",
+    "input_bundle_hash_sha256": "fdea80b8b60ae316872bbeed685c138c1ad9d592c4128ecd58e8051f496284f4",
+    "cost_usd": 1.147965,
+    "usage": {
+      "input_tokens": 21721,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 10962,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Roy Danon",
+    "company": "Buildots",
+    "source_url": "https://www.unite.ai/roy-danon-ceo-of-buildots-interview-series/",
+    "synthesis_timestamp": "2026-05-09T00:00:00Z",
+    "principleOutputs": [
+      {
+        "principleCode": "P01",
+        "principleName": "Action-Defeats-Helplessness / פעולה מפחיתה חוסר-אונים",
+        "relevanceScore": 4,
+        "evidenceQuotes": [
+          {
+            "quote": "KNOW. ACT. OUTPERFORM.",
+            "context": "Website hero H1",
+            "evidenceType": "lexical",
+            "lexicalMatch": "action verb 'ACT'",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Website headline uses imperative 'ACT' and About says 'take action', but no structural evidence of discrete deliverables, ≤14-day wins, or testimonials about defeating stuck states.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "case studies don't contain discrete deliverables",
+            "triggered": true,
+            "evidence": "No case studies present in source; interview describes ongoing monitoring not discrete wins"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Empathy-First",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "headline + first 50 words language dominance",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Only Action signals present; Empathy not in evidence."
+        },
+        "notes": "Lexical-only without structural support; capped at 4."
+      },
+      {
+        "principleCode": "P02",
+        "principleName": "Explanation-Efficiency / יעילות הסבר",
+        "relevanceScore": 6,
+        "evidenceQuotes": [
+          {
+            "quote": "KNOW. ACT. OUTPERFORM. Construction intelligence to power your whole operation.",
+            "context": "Website hero — extremely tight 3-word H1 plus single-line subhead",
+            "evidenceType": "both",
+            "lexicalMatch": "headline ≤30 words; consistent phrasing",
+            "structuralMatch": "headline ≤30 words"
+          },
+          {
+            "quote": "Buildots provides construction companies with a seamless way to turn construction sites into digitally managed environments. Tracking and logging any activity, from a single electrical outlet to the installation of windows.",
+            "context": "Genesis answer — concise framing of what Buildots does",
+            "evidenceType": "lexical",
+            "lexicalMatch": "compact self-description",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Hero H1 is exceptionally compact (3 words) and About first paragraph is ~55 words, with consistent 'construction intelligence' phrasing across hero and About. However, LinkedIn About is empty so 3-source convergence is incomplete.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "headline/About/Hero present 3+ substantively different phrasings",
+            "triggered": false,
+            "evidence": ""
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Category-Depth",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "About first paragraph length",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About first paragraph ≈55 words → Efficiency range; no 'between X and Y' category-creation language."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P03",
+        "principleName": "Cognitive-Frame-Shift / הסטת מסגרת תפיסתית",
+        "relevanceScore": 6,
+        "evidenceQuotes": [
+          {
+            "quote": "It took us over 6 months to fully understand what today seems almost trivial to us, and that is a construction site is a manufacturing facility. It's a one-off, temporary and extremely dynamic one, but at the end of the day, a building is a product, built according to highly detailed designs and timelines.",
+            "context": "Genesis story — explicit reframing of construction-site-as-manufacturing-plant",
+            "evidenceType": "both",
+            "lexicalMatch": "'is a' reframe; 'at the end of the day' marks frame correction",
+            "structuralMatch": "the reframe is the founding insight that drives the entire product (Mission Control Room metaphor follows)"
+          },
+          {
+            "quote": "By generating the digital twin with the Buildots system, we create what we call The Construction Mission Control Room. This control room is the equivalent of what exists on any other manufacturing plant, a place where controllers and managers visit to find answers to questions they have regarding the ongoing processes.",
+            "context": "Reframe is operationalized into product naming",
+            "evidenceType": "structural",
+            "lexicalMatch": "",
+            "structuralMatch": "reframing translated into different actions/product (not merely rhetorical)"
+          }
+        ],
+        "summaryObservation": "Strong frame-shift: 'construction site = manufacturing facility' is explicit, and the reframe drives concrete product (Mission Control Room) — not merely rhetorical. However, no customer case study showing customer changed mind; reframe is founder-side.",
+        "differentiationHypothesis": "Buildots' differentiation is reframing construction sites as manufacturing facilities, which licenses process-control tooling that incumbents (still in '2D CAD' mindset) cannot offer.",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no case studies where the customer changed mind during engagement",
+            "triggered": true,
+            "evidence": "Source contains no customer case studies showing pre/post frame change"
+          },
+          {
+            "disqualifier": "reframing remains rhetorical only and isn't translated into different actions",
+            "triggered": false,
+            "evidence": "Reframe is translated into Mission Control Room product"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Confirmation-Of-Existing-Frame",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline challenge vs affirmation",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "Frame-shift signals dominate; no affirmation language."
+        },
+        "notes": "Disqualifier (a) triggered caps at 4-6 range; kept at 6 because the structural reframe-to-product link is strong despite missing customer testimonials."
+      },
+      {
+        "principleCode": "P04",
+        "principleName": "Tradeoff-Declaration / הצהרת ויתור",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No 'we don't do X', no explicit non-customers, no narrowed ICP. Messaging emphasizes broad applicability to construction companies generally.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no single example of a customer turned away",
+            "triggered": true,
+            "evidence": "None present"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Universal-Solution-Claim",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline emphasis (exclusion vs applicability)",
+          "tiebreakerOutcome": "competing_wins",
+          "reasoning": "Hero says 'power your whole operation' — applicability framing, not exclusion."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P05",
+        "principleName": "Mechanism-Articulation / ניסוח מנגנון",
+        "relevanceScore": 6,
+        "evidenceQuotes": [
+          {
+            "quote": "Our solution utilizes wearable cameras and computer vision algorithms to automatically determine the status of each construction element that appears in the model. Essentially, Buildots is transforming the model into what the industry calls a 'digital twin', a digital representation of what was planned originally together with what is being built in reality at any given point during the construction.",
+            "context": "How the system works — explicit HOW",
+            "evidenceType": "both",
+            "lexicalMatch": "'we do X through Y' pattern; named concept 'digital twin', 'Construction Mission Control Room'",
+            "structuralMatch": "named methodology/framework appears on website"
+          },
+          {
+            "quote": "Buildots' Computer Vision system transforms unstructured visual data, the output of wearable 360 cameras, into structured data. This data represents the status of each activity on the construction site. Buildots' system analyzes the designs and schedule information to understand what is expected at each point in the 3D space, and automatically determines whether activities are on track, or not.",
+            "context": "Step-by-step mechanism description",
+            "evidenceType": "both",
+            "lexicalMatch": "ordered process steps",
+            "structuralMatch": "documented mechanism"
+          }
+        ],
+        "summaryObservation": "Strong mechanism articulation: wearable 360 cameras → computer vision → BIM digital twin → Mission Control Room. Named artifacts ('digital twin', 'Construction Mission Control Room') and clear HOW chain. Capped at 6 because no case studies in source showing methodology repeated across 3+ engagements.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "methodology mentioned once and not repeated across case studies",
+            "triggered": false,
+            "evidence": "Mechanism described consistently across multiple Q&A turns"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Outcome-First-Promise",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": true,
+          "tiebreakerDimension": "About first paragraph (methodology name vs number)",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About first paragraph cites 'computer vision and deep learning algorithms' (methodology) as the path to outcomes; methodology naming dominates."
+        },
+        "notes": "McKinsey '50%' figure and 'outperform' lexicon point to outcome framing too, but mechanism wins per About first paragraph."
+      },
+      {
+        "principleCode": "P06",
+        "principleName": "Time-to-First-Value / זמן לערך ראשון",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "No mention of days/weeks to first value, no 'within 7 days' language, no time-to-value metric. Construction projects are inherently long-running.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no time references in case studies or testimonials",
+            "triggered": true,
+            "evidence": "No time-to-value figures present"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Compounding-Slow-Build",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline time horizon",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P07",
+        "principleName": "Decision-Latency-Reduction / קיצור זמן החלטה",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No sales-cycle data, no meeting counts, no decision speed framing.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no time/meeting metric in case studies",
+            "triggered": true,
+            "evidence": "None"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Deliberative-Thoroughness",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Median meetings before close",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P08",
+        "principleName": "Cycle-Compression-Through-Templating / קיצור מחזור על ידי תבנית",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "No named playbook/template/framework for delivery; no engagement-length-decreasing data. 'Mission Control Room' is a product metaphor, not a delivery template.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no public named template/framework",
+            "triggered": true,
+            "evidence": "No delivery template named"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Bespoke-Per-Engagement",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Public named framework presence",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P09",
+        "principleName": "Domain-Empathy-Translation / שטף תחומי",
+        "relevanceScore": 7,
+        "evidenceQuotes": [
+          {
+            "quote": "Until very recently highly complex projects were still being planned in 2D CAD, with elements such as walls represented with a plain line. In addition, each type of works had a separate set of plans, making it impossible to distinguish if objects were clashing, leading to a huge headache for teams to execute the plans.",
+            "context": "Background on BIM — uses construction-specific terminology (CAD, clashing, set of plans)",
+            "evidenceType": "lexical",
+            "lexicalMatch": "industry terminology: 2D CAD, clashing, sets of plans, subcontractor",
+            "structuralMatch": ""
+          },
+          {
+            "quote": "The type of insights ranges from a delayed activity, a misplaced electrical socket, or a specific subcontractor constantly delivering late.",
+            "context": "Concrete construction-domain examples",
+            "evidenceType": "lexical",
+            "lexicalMatch": "domain-specific job concerns (subcontractor lateness, electrical socket placement)",
+            "structuralMatch": ""
+          },
+          {
+            "quote": "Since 2018, Buildots has championed construction leaders in their quest for operational excellence. Our work combines decades of construction expertise with computer vision and deep learning algorithms.",
+            "context": "About first paragraph claims construction-vertical specialization",
+            "evidenceType": "structural",
+            "lexicalMatch": "vertical-specific positioning",
+            "structuralMatch": "About states vertical depth ('decades of construction expertise')"
+          }
+        ],
+        "summaryObservation": "Strong vertical specialization in construction with accurate domain language (BIM, 2D CAD, clashing, subcontractors, electrical sockets, site walks) and About claims 'decades of construction expertise.' Single-vertical focus is explicit.",
+        "differentiationHypothesis": "Buildots' differentiation is deep construction-vertical fluency — speaking the language of BIM, subcontractors, and site walks — versus generalist CV/AI vendors that would require customers to translate.",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "generic business language without domain specificity",
+            "triggered": false,
+            "evidence": ""
+          },
+          {
+            "disqualifier": "case studies cross unrelated industries",
+            "triggered": false,
+            "evidence": "Single vertical (construction)"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Generalist-Cross-Pollination",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "About — vertical depth vs industry breadth",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About explicitly anchors in construction expertise; no cross-industry positioning."
+        },
+        "notes": "Note CEO's genesis answer says founders had 'no prior experience or link to the construction sector' — minor tension with About's 'decades of construction expertise' claim, but vertical specialization is now structurally entrenched."
+      },
+      {
+        "principleCode": "P10",
+        "principleName": "Onboarding-Velocity / מהירות onboarding",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No ramp-time data, no onboarding duration, no self-serve framing.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no onboarding time mentioned",
+            "triggered": true,
+            "evidence": "None"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Deep-Custom-Onboarding",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Pricing/About — self-serve vs white-glove emphasis",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P11",
+        "principleName": "Risk-Reversal / היפוך סיכון",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No pilot/trial/money-back/phased rollout language anywhere in source.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no mention of pilot/trial/reversal",
+            "triggered": true,
+            "evidence": "None"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "High-Conviction-Commitment",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Default contract structure",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P12",
+        "principleName": "Loss-Avoided-Quantification / כימות הפסד שנמנע",
+        "relevanceScore": 4,
+        "evidenceQuotes": [
+          {
+            "quote": "In their latest major industry research, McKinsey claimed that the sector's productivity can be improved by 50% through the introduction of modern process control systems (such as Buildots), and that is just the tip of the iceberg in terms of the technologies BIM enables.",
+            "context": "Single quantified figure — gain frame, not loss frame",
+            "evidenceType": "lexical",
+            "lexicalMatch": "quantified figure (50%) but expressed as gain ('productivity can be improved')",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Single McKinsey 50% figure exists, but framed as productivity gain, not loss-avoided. No '$X per month wasted' framing. This actually fits Aspirational-Gain-Promise more than Loss-Avoided.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": true,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no $ numbers in case studies",
+            "triggered": true,
+            "evidence": "No customer-specific $ loss figures"
+          },
+          {
+            "disqualifier": "all messaging upbeat without acknowledging current loss",
+            "triggered": true,
+            "evidence": "Hero is 'KNOW. ACT. OUTPERFORM.' — gain frame"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Aspirational-Gain-Promise",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Hero leading with cost-of-inaction vs aspirational outcome",
+          "tiebreakerOutcome": "competing_wins",
+          "reasoning": "Hero 'OUTPERFORM' is aspirational; 50% McKinsey figure is gain-framed."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P13",
+        "principleName": "Competitive-Displacement-Evidence / ראיות עקירה תחרותית",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No competitor names, no displacement language, no switching cost discussion.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no competitors named in case studies",
+            "triggered": true,
+            "evidence": "None"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "New-Logo-Only",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Case study ratio",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither fires; no case studies in source."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P14",
+        "principleName": "Pricing-Power-from-Niche / כוח תמחור מנישה",
+        "relevanceScore": 3,
+        "evidenceQuotes": [],
+        "summaryObservation": "Vertical focus on construction is clear (supports niche dimension), but no pricing visibility, no premium pricing language, no explicit ICP narrowing within construction.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "ICP described broadly",
+            "triggered": false,
+            "evidence": "Vertical is narrow but no sub-ICP within construction"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Volume-Pricing-Commodity",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Pricing position relative to category median",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "No pricing data."
+        },
+        "notes": "Structural niche only without pricing/lexical signals; capped at 4."
+      },
+      {
+        "principleCode": "P15",
+        "principleName": "Legitimacy-Driver / מניע לגיטימציה",
+        "relevanceScore": 4,
+        "evidenceQuotes": [
+          {
+            "quote": "In their latest major industry research, McKinsey claimed that the sector's productivity can be improved by 50% through the introduction of modern process control systems (such as Buildots)",
+            "context": "McKinsey citation as authority anchor",
+            "evidenceType": "lexical",
+            "lexicalMatch": "well-known authority brand cited",
+            "structuralMatch": ""
+          },
+          {
+            "quote": "10 years after Aviv Leibovici (CPO), Yakir Sudry (CTO) and I first met in the Israel Defense Forces' (IDF) elite unit Talpiot",
+            "context": "IDF Talpiot as legitimacy/credentialing",
+            "evidenceType": "lexical",
+            "lexicalMatch": "elite-institution credential",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Two legitimacy anchors (McKinsey citation, IDF Talpiot pedigree), but no enterprise customer logos in source, no advisory board, no certifications. Lexical-only without structural visible-logo support.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "logos shown but no case studies with same brands",
+            "triggered": false,
+            "evidence": "No logos in source"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Underdog-Authenticity",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Hero/About opener (brands vs founder)",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "Founder-IDF story present but McKinsey/authority signals dominate slightly; both partial, capped at 4 due to missing structural tier."
+        },
+        "notes": "Capped at 4 per dual-tier policy (lexical only)."
+      }
+    ],
+    "convergenceReport": {
+      "strongSignals": [],
+      "weakSignals": [
+        "P09",
+        "P02",
+        "P03",
+        "P05"
+      ],
+      "belowThreshold": [
+        "P01",
+        "P12",
+        "P15",
+        "P14",
+        "P06",
+        "P08",
+        "P04",
+        "P07",
+        "P10",
+        "P11",
+        "P13"
+      ],
+      "convergence": "weak",
+      "corePrinciples": []
+    },
+    "synthesisMetadata": {
+      "ctmAxisDistribution": {
+        "M_principlesScoredHigh": [
+          "P03",
+          "P05"
+        ],
+        "T_principlesScoredHigh": [
+          "P09"
+        ],
+        "C_principlesScoredHigh": []
+      },
+      "competingPairResolutions": {
+        "totalPairsBothFired": 1,
+        "tiebreakersUsed": 1,
+        "metaPolicyNeitherOutcomes": 0
+      },
+      "disqualifiersFlagged": [
+        {
+          "principleCode": "P01",
+          "disqualifier": "case studies don't contain discrete deliverables"
+        },
+        {
+          "principleCode": "P03",
+          "disqualifier": "no case studies where the customer changed mind during engagement"
+        },
+        {
+          "principleCode": "P04",
+          "disqualifier": "no single example of a customer turned away"
+        },
+        {
+          "principleCode": "P06",
+          "disqualifier": "no time references in case studies or testimonials"
+        },
+        {
+          "principleCode": "P07",
+          "disqualifier": "no time/meeting metric in case studies"
+        },
+        {
+          "principleCode": "P08",
+          "disqualifier": "no public named template/framework"
+        },
+        {
+          "principleCode": "P10",
+          "disqualifier": "no onboarding time mentioned"
+        },
+        {
+          "principleCode": "P11",
+          "disqualifier": "no mention of pilot/trial/reversal"
+        },
+        {
+          "principleCode": "P12",
+          "disqualifier": "no $ numbers in case studies; all messaging upbeat without acknowledging current loss"
+        },
+        {
+          "principleCode": "P13",
+          "disqualifier": "no competitors named in case studies"
+        }
+      ]
+    }
+  }
+}

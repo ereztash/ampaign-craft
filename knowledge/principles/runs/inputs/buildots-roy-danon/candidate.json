@@ -1,13 +1,22 @@
 {
   "candidate_name": "Roy Danon",
   "company": "Buildots",
-  "source_url": "https://www.unite.ai/roy-danon-ceo-of-buildots-interview-series/",
-  "source_date": "2020-06-01",
-  "source_type": "long-form Q&A interview (8 questions, ~700 CEO words)",
+  "recommended_track": "depth",
+  "sources": [
+    {
+      "source_id": "01",
+      "filename": "source-01-uniteai.md",
+      "url": "https://www.unite.ai/roy-danon-ceo-of-buildots-interview-series/",
+      "type": "long-form Q&A interview (8 questions, ~787 CEO words)",
+      "date": "2021-02-01",
+      "is_independent": true
+    }
+  ],
   "research_notes": {
     "selected_from": "Doc 1 (English TL;DR) — research-recommended #1 candidate; Q&A structure ideal for benchmarking",
     "verification": "Unite.AI page returned full Q&A via WebFetch on 2026-05-09",
     "secondary_sources": "buildots.com homepage hero + about page (fetched 2026-05-09)",
-    "linkedin": "Requires manual paste from user (LinkedIn blocks fetchers)"
+    "linkedin": "Headline only ('CEO & Co-Founder at Buildots'); no About section published",
+    "track_decision": "depth (Track B). Citybiz Q&A returned 403 to WebFetch; BDC Magazine had no verbatim quotes from Roy Danon. Per user direction 2026-05-09: run Phase 1 on existing v0.2.0 extraction first, decide breadth-first migration empirically based on synthesis results."
   }
 }

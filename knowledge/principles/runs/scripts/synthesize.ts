@@ -110,28 +110,32 @@ async function buildSystemPrompt(): Promise<string> {
 
 async function buildUserPrompt(slug: string, playbookFull: string): Promise<string> {
   const bundle = await readInputBundle(slug);
+  const primary = bundle.sources[0];
+  if (!primary) {
+    throw new Error(`No primary source found for ${slug}`);
+  }
   return `PRIMARY SOURCE METADATA:
-- candidate_name: ${bundle.candidate_name}
-- company: ${bundle.company}
-- source_url: ${bundle.source_url}
-- source_date: ${bundle.source_date ?? "(not available)"}
-- source_type: ${bundle.source_type}
+- candidate_name: ${bundle.meta.candidate_name}
+- company: ${bundle.meta.company}
+- source_url: ${primary.url}
+- source_date: ${primary.date ?? "(not available)"}
+- source_type: ${primary.type}
 
 PRIMARY SOURCE CONTENT:
 ---
-${bundle.primary_source}
+${primary.content}
 ---
 
 REQUIRED SECONDARY SOURCES (for dual-tier evidence):
-- LinkedIn headline: ${bundle.linkedin_headline}
+- LinkedIn headline: ${bundle.first_party.linkedin_headline}
 - LinkedIn About (full):
-${bundle.linkedin_about}
+${bundle.first_party.linkedin_about}
 
 - Website hero (h1 + sub):
-${bundle.website_hero}
+${bundle.first_party.website_hero}
 
 - Website About first paragraph:
-${bundle.website_about_first}
+${bundle.first_party.website_about_first}
 
 PLAYBOOK (full text, all 15 entries with policy):
 ---
