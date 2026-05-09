@@ -1,3 +1,7 @@
+<!-- prompt-version: 0.2.1 -->
+<!-- last-modified: 2026-05-09 -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = multi-source input required; 0.2.0 = handle absent LinkedIn About; 0.2.1 = embed full output schema in system prompt (LLM was returning empty principleOutputs because schema was outside the prompt code block) -->
+
 # Synthesizer Prompt
 
 מטרה: לקרוא את ה-source החיצוני של candidate (ראיון/פודקאסט/מאמר), לעבד אותו מול הפלייבוק המלא, ולייצר ציוני principle עם evidence quotes ו-Disqualifier checks.
@@ -39,7 +43,84 @@ Strict rules:
 
 7. After all 15 are scored, produce a ConvergenceReport per the aggregation rule (≥3 strong signals = "strong" convergence; otherwise "weak").
 
-Output format: a single JSON object matching the schema below. Output JSON only, no commentary.
+Output format: a single JSON object using EXACTLY the field structure below. Do NOT invent new field names. Do NOT rename fields. Do NOT skip required fields. Output JSON only, no commentary, no markdown code fences.
+
+REQUIRED OUTPUT STRUCTURE (use exactly):
+{
+  "candidate_name": "string",
+  "company": "string",
+  "source_url": "string",
+  "synthesis_timestamp": "ISO 8601 datetime",
+  "principleOutputs": [
+    // EXACTLY 15 entries, one per principle P01..P15. Order: P01, P02, ..., P15.
+    {
+      "principleCode": "P01" | "P02" | ... | "P15",
+      "principleName": "full name from playbook (e.g., 'Action-Defeats-Helplessness / פעולה מפחיתה חוסר-אונים')",
+      "relevanceScore": integer 0-10,
+      "evidenceQuotes": [
+        {
+          "quote": "verbatim from source, ≥30 words preferred",
+          "context": "what topic/question this addresses",
+          "evidenceType": "lexical" | "structural" | "both",
+          "lexicalMatch": "which lexical signal from playbook this fits, or empty string",
+          "structuralMatch": "which structural signal from playbook this fits, or empty string"
+        }
+      ],
+      "summaryObservation": "1-2 sentences on why this score was given",
+      "differentiationHypothesis": "if score ≥7, the hypothesis this principle generates; empty string if score <7",
+      "dualTierEvidence": {
+        "lexicalPresent": boolean,
+        "structuralPresent": boolean,
+        "contradictionNoted": boolean,
+        "scoreCappedDueToMissingTier": boolean
+      },
+      "disqualifiersChecked": [
+        {
+          "disqualifier": "verbatim disqualifier text from playbook",
+          "triggered": boolean,
+          "evidence": "quote/observation that triggered it; empty if not triggered"
+        }
+      ],
+      "competingPrincipleResolution": {
+        "competingPrinciple": "name from playbook (e.g., 'Empathy-First')",
+        "thisPrincipleSignalsPresent": boolean,
+        "competingPrincipleSignalsPresent": boolean,
+        "tiebreakerApplied": boolean,
+        "tiebreakerDimension": "from playbook verbatim (e.g., 'headline + first 50 words language dominance')",
+        "tiebreakerOutcome": "this_wins" | "competing_wins" | "both_score_low_per_meta_policy" | "not_applicable",
+        "reasoning": "one sentence"
+      },
+      "notes": "any flags, caveats, or observations not captured above; empty string if none"
+    }
+  ],
+  "convergenceReport": {
+    "strongSignals": ["list of P-codes with relevanceScore >= 8, sorted desc by score"],
+    "weakSignals": ["list of P-codes with 6 <= relevanceScore < 8, sorted desc"],
+    "belowThreshold": ["list of P-codes with relevanceScore < 6, sorted desc"],
+    "convergence": "strong" | "weak",
+    "corePrinciples": ["copy of strongSignals"]
+  },
+  "synthesisMetadata": {
+    "ctmAxisDistribution": {
+      "M_principlesScoredHigh": ["P-codes from M-axis (P01-P05) with relevanceScore >= 7"],
+      "T_principlesScoredHigh": ["P-codes from T-axis (P06-P10) with relevanceScore >= 7"],
+      "C_principlesScoredHigh": ["P-codes from C-axis (P11-P15) with relevanceScore >= 7"]
+    },
+    "competingPairResolutions": {
+      "totalPairsBothFired": integer,
+      "tiebreakersUsed": integer,
+      "metaPolicyNeitherOutcomes": integer
+    },
+    "disqualifiersFlagged": [
+      {
+        "principleCode": "P-code",
+        "disqualifier": "verbatim disqualifier text"
+      }
+    ]
+  }
+}
+
+CRITICAL: principleOutputs MUST contain exactly 15 entries (one per P01..P15). Skipping a principle is a structural failure.
 ```
 
 ---
@@ -47,6 +128,8 @@ Output format: a single JSON object matching the schema below. Output JSON only,
 ## User Prompt Template
 
 **Multi-source requirement:** ה-Synthesizer דורש לפחות 2 sources distinct, כדי ש-dual-tier evidence יוכל להתקיים. Source יחיד (interview בלבד) ייצר lexical-only signals ויחסום את רוב ה-principles ב-score 4. אם המקור החיצוני העיקרי הוא היחיד הזמין, יש לוודא שה-LinkedIn About + Website hero + LinkedIn headline משלימים — כל אחד מהם נחשב source נפרד לצורך זיהוי structural patterns (consistency across sources, length distribution, framing repetition).
+
+**Absent secondaries — interpretable, not blocking:** אם אחד ממקורות ה-secondary חסר באופן אובייקטיבי (למשל: ל-CEO אין About section ב-LinkedIn, או החברה לא פרסמה About page באתר), ה-source מועבר עם marker מפורש כמו `(absent — no About section published)`. ה-Synthesizer מטפל בזה כ-data, לא כ-error: היעדר About עצמו הוא signal (CEO לא משקיע ב-personal-brand articulation; אולי P02 Explanation-Efficiency חלש; אולי P15 Legitimacy-Driver לא מעניין אותו). אסור לדחות synthesis על בסיס secondary בודד שחסר. דרושים ≥3 secondaries non-absent ביחד עם ה-primary source כדי לרוץ.
 
 ```
 PRIMARY SOURCE METADATA:

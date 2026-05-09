@@ -1,3 +1,7 @@
+<!-- prompt-version: 0.1.0 -->
+<!-- last-modified: 2026-05-09 -->
+<!-- changelog: 0.1.0 = initial 15-line index; tied to playbook v0.2.0 -->
+
 # Playbook Index
 
 מבנה קצרצר של 15 העקרונות. מיועד **רק** ל-Mapper LLM. אסור להעביר אותו ל-Extractor (שאסור לדעת על הפלייבוק) ואסור להחליף בו את הפלייבוק המלא ל-Synthesizer (שצריך גישה ל-Evidence Signatures, Decision Rules, ו-Disqualifiers).

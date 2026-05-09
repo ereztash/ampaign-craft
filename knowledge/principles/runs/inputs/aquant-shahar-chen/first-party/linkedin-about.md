@@ -1,0 +1,1 @@
+(LinkedIn About not yet collected — placeholder. Search snippets indicate Shahar Chen is described as having "15+ years of business and technical expertise in B2B software — especially SaaS service software" per Service Council podcast page; this is title/bio context, not a published About paragraph. Treat as absent for synthesis purposes.)
