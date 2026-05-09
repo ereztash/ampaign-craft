@@ -9,7 +9,7 @@
     "model": "deterministic (no LLM)",
     "temperature": 0,
     "run_number": 0,
-    "timestamp_iso": "2026-05-09T20:19:27.569Z",
+    "timestamp_iso": "2026-05-09T20:33:06.466Z",
     "input_bundle_hash_sha256": "94f577e0193322b5cb124626a378be3d30b0b9de0c6ffca8cc1d6df8ceaa7d7b",
     "cost_usd": 0,
     "usage": {
@@ -19,65 +19,103 @@
   },
   "data": {
     "metrics": {
-      "ground_truth_coverage": {
-        "description": "% of principles ranked ≥7 by synthesis that match the mapper's expected primaries (consensus high+medium).",
+      "ground_truth_coverage_at_6": {
+        "description": "% of mapper-expected principles that synthesis scored ≥6 (playbook's weakSignals threshold). Answers: does the synthesis FIND the theme at all?",
         "expected_principles": [
           "P03",
           "P05",
           "P09",
           "P11"
         ],
-        "synthesis_top_principles_per_run": [
+        "synthesis_at_6_per_run": [
           [
+            "P02",
             "P09"
           ],
           [
+            "P03",
             "P09"
           ],
           [
+            "P02",
             "P09"
           ]
         ],
         "matches_per_run": [
           1,
-          1,
+          2,
           1
         ],
         "coverage_pct_per_run": [
           25,
-          25,
+          50,
           25
         ],
-        "average_coverage_pct": 25,
+        "average_coverage_pct": 33.333333333333336,
         "threshold_pct": 60,
         "pass": false
       },
-      "hallucination_rate": {
-        "description": "% of synthesis principles ranked ≥7 that DO NOT appear in mapper's expected primaries.",
-        "high_score_principles_per_run": [
+      "ground_truth_coverage_at_8": {
+        "description": "% of mapper-expected principles that synthesis scored ≥8 (playbook's strongSignals threshold). Answers: does the synthesis FLAG it as strong?",
+        "expected_principles": [
+          "P03",
+          "P05",
+          "P09",
+          "P11"
+        ],
+        "synthesis_at_8_per_run": [
+          [],
           [
             "P09"
           ],
+          []
+        ],
+        "matches_per_run": [
+          0,
+          1,
+          0
+        ],
+        "coverage_pct_per_run": [
+          0,
+          25,
+          0
+        ],
+        "average_coverage_pct": 8.333333333333334,
+        "threshold_pct": 30,
+        "pass": false
+      },
+      "synthesis_only_themes_at_6": {
+        "description": "% of synthesis principles ≥6 that DO NOT appear in mapper's expected primaries. NOT a hallucination metric — Mapper is term-based, Synthesizer can detect content-meta features (e.g., Domain-Empathy via industry-language use). Informational only; no pass/fail threshold.",
+        "synthesis_at_6_per_run": [
           [
+            "P02",
             "P09"
           ],
           [
+            "P03",
+            "P09"
+          ],
+          [
+            "P02",
             "P09"
           ]
         ],
-        "unmapped_high_scores_per_run": [
+        "not_in_mapper_per_run": [
+          [
+            "P02"
+          ],
           [],
-          [],
-          []
+          [
+            "P02"
+          ]
         ],
-        "rate_pct_per_run": [
+        "pct_synthesis_only_per_run": [
+          50,
           0,
-          0,
-          0
+          50
         ],
-        "average_rate_pct": 0,
-        "threshold_pct": 30,
-        "pass": true
+        "average_pct": 33.333333333333336,
+        "note": "High % means synthesis identifies themes the Mapper can't see (epistemic difference, not error). Inspect not_in_mapper_per_run manually to verify with source."
       },
       "ctm_axis_match": {
         "description": "Whether the top-scoring principle's CTM axis matches the mapper's expected axes.",
@@ -247,9 +285,9 @@
       "evidence_density": {
         "description": "Average number of evidence quotes per high-score principle.",
         "high_score_principles_per_run": [
-          1,
-          1,
-          1
+          2,
+          2,
+          2
         ],
         "avg_quotes_per_high_score": 2,
         "threshold_min_quotes": 1,
@@ -314,7 +352,7 @@
     },
     "summary": {
       "decision_gate_eligible": true,
-      "passed_count": 7,
+      "passed_count": 6,
       "total_count": 9,
       "overall": "partial_or_fail"
     }

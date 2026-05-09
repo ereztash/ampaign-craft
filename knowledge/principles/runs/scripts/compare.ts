@@ -109,10 +109,14 @@ const CTM_AXIS: Record<string, "M" | "T" | "C"> = {
 
 interface ComparisonMetrics {
   // Per-synthesis-run metrics (averaged across runs)
-  ground_truth_coverage: {
+  // TWO-LAYER coverage: weak signal (≥6, the playbook's own weakSignals threshold)
+  // AND strong signal (≥8, the playbook's own strongSignals threshold). Don't
+  // collapse to one — both pieces of information matter (does the synthesis
+  // FIND the theme at all? does it FLAG it as strong?).
+  ground_truth_coverage_at_6: {
     description: string;
     expected_principles: string[];
-    synthesis_top_principles_per_run: string[][];
+    synthesis_at_6_per_run: string[][];
     matches_per_run: number[];
     coverage_pct_per_run: number[];
     average_coverage_pct: number;
@@ -120,14 +124,29 @@ interface ComparisonMetrics {
     pass: boolean;
   };
 
-  hallucination_rate: {
+  ground_truth_coverage_at_8: {
     description: string;
-    high_score_principles_per_run: string[][];
-    unmapped_high_scores_per_run: string[][];
-    rate_pct_per_run: number[];
-    average_rate_pct: number;
+    expected_principles: string[];
+    synthesis_at_8_per_run: string[][];
+    matches_per_run: number[];
+    coverage_pct_per_run: number[];
+    average_coverage_pct: number;
     threshold_pct: number;
     pass: boolean;
+  };
+
+  // Renamed from hallucination_rate. Reframed: synthesis identifies themes
+  // the Mapper can't see (Mapper is term-based; synthesizer can detect
+  // content-meta features like Domain-Empathy via industry-language use).
+  // High % here is NOT necessarily hallucination — it's epistemic difference.
+  // The metric is informational only; the prior pass/fail threshold is removed.
+  synthesis_only_themes_at_6: {
+    description: string;
+    synthesis_at_6_per_run: string[][];
+    not_in_mapper_per_run: string[][];
+    pct_synthesis_only_per_run: number[];
+    average_pct: number;
+    note: string;
   };
 
   ctm_axis_match: {
@@ -284,33 +303,50 @@ async function main() {
     ),
   );
 
-  // Per-run analysis
-  const synthesisTopPerRun = synthesisArtifacts.map((s) =>
+  // Per-run analysis: collect synthesis principles at TWO score thresholds
+  // (≥6 = playbook's weakSignals, ≥8 = playbook's strongSignals).
+  const synthesisAt6PerRun = synthesisArtifacts.map((s) =>
     s.data.principleOutputs
-      .filter((p) => p.relevanceScore >= 7)
+      .filter((p) => p.relevanceScore >= 6)
+      .map((p) => p.principleCode),
+  );
+  const synthesisAt8PerRun = synthesisArtifacts.map((s) =>
+    s.data.principleOutputs
+      .filter((p) => p.relevanceScore >= 8)
       .map((p) => p.principleCode),
   );
 
-  // Metric 1: ground_truth_coverage
-  const matchesPerRun = synthesisTopPerRun.map(
+  // Metric 1a: ground_truth_coverage_at_6
+  const matchesAt6PerRun = synthesisAt6PerRun.map(
     (top) => top.filter((p) => expectedPrinciples.includes(p)).length,
   );
-  const coveragePctPerRun = matchesPerRun.map((m) =>
+  const coverageAt6PctPerRun = matchesAt6PerRun.map((m) =>
     expectedPrinciples.length === 0 ? 100 : (m / expectedPrinciples.length) * 100,
   );
-  const avgCoverage =
-    coveragePctPerRun.reduce((a, b) => a + b, 0) / coveragePctPerRun.length;
+  const avgCoverageAt6 =
+    coverageAt6PctPerRun.reduce((a, b) => a + b, 0) / coverageAt6PctPerRun.length;
 
-  // Metric 2: hallucination_rate
-  const unmappedHighScoresPerRun = synthesisTopPerRun.map((top) =>
+  // Metric 1b: ground_truth_coverage_at_8
+  const matchesAt8PerRun = synthesisAt8PerRun.map(
+    (top) => top.filter((p) => expectedPrinciples.includes(p)).length,
+  );
+  const coverageAt8PctPerRun = matchesAt8PerRun.map((m) =>
+    expectedPrinciples.length === 0 ? 100 : (m / expectedPrinciples.length) * 100,
+  );
+  const avgCoverageAt8 =
+    coverageAt8PctPerRun.reduce((a, b) => a + b, 0) / coverageAt8PctPerRun.length;
+
+  // Metric 2: synthesis_only_themes_at_6 (renamed/reframed from hallucination_rate)
+  const synthesisOnlyAt6PerRun = synthesisAt6PerRun.map((top) =>
     top.filter((p) => !expectedPrinciples.includes(p)),
   );
-  const ratePctPerRun = unmappedHighScoresPerRun.map((u, i) =>
-    synthesisTopPerRun[i].length === 0 ? 0 : (u.length / synthesisTopPerRun[i].length) * 100,
+  const synthesisOnlyPctPerRun = synthesisOnlyAt6PerRun.map((u, i) =>
+    synthesisAt6PerRun[i].length === 0 ? 0 : (u.length / synthesisAt6PerRun[i].length) * 100,
   );
-  const avgRate = ratePctPerRun.reduce((a, b) => a + b, 0) / ratePctPerRun.length;
+  const avgSynthesisOnly =
+    synthesisOnlyPctPerRun.reduce((a, b) => a + b, 0) / synthesisOnlyPctPerRun.length;
 
-  // Metric 3: ctm_axis_match
+  // Metric 3: ctm_axis_match — uses ≥6 (any signal), not ≥7
   const expectedAxes = Array.from(
     new Set(expectedPrinciples.map((p) => CTM_AXIS[p]).filter(Boolean)),
   );
@@ -404,32 +440,41 @@ async function main() {
   const inputHashes = new Set(synthesisArtifacts.map((s) => s.metadata.input_bundle_hash_sha256));
 
   // Thresholds (per test-subjects.md strategy)
-  const COVERAGE_THRESHOLD = 60;
-  const HALLUCINATION_THRESHOLD = 30;
+  const COVERAGE_AT_6_THRESHOLD = 60; // can the playbook FIND the theme at all?
+  const COVERAGE_AT_8_THRESHOLD = 30; // does the playbook FLAG it as strong?
   const AXIS_MATCH_THRESHOLD = 60;
   const STABILITY_THRESHOLD = 1.5;
   const EVIDENCE_MIN_QUOTES = 1;
   const SCORE_SPREAD_THRESHOLD = 2.0;
 
   const metrics: ComparisonMetrics = {
-    ground_truth_coverage: {
-      description: "% of principles ranked ≥7 by synthesis that match the mapper's expected primaries (consensus high+medium).",
+    ground_truth_coverage_at_6: {
+      description: "% of mapper-expected principles that synthesis scored ≥6 (playbook's weakSignals threshold). Answers: does the synthesis FIND the theme at all?",
       expected_principles: expectedPrinciples,
-      synthesis_top_principles_per_run: synthesisTopPerRun,
-      matches_per_run: matchesPerRun,
-      coverage_pct_per_run: coveragePctPerRun,
-      average_coverage_pct: avgCoverage,
-      threshold_pct: COVERAGE_THRESHOLD,
-      pass: avgCoverage >= COVERAGE_THRESHOLD,
+      synthesis_at_6_per_run: synthesisAt6PerRun,
+      matches_per_run: matchesAt6PerRun,
+      coverage_pct_per_run: coverageAt6PctPerRun,
+      average_coverage_pct: avgCoverageAt6,
+      threshold_pct: COVERAGE_AT_6_THRESHOLD,
+      pass: avgCoverageAt6 >= COVERAGE_AT_6_THRESHOLD,
     },
-    hallucination_rate: {
-      description: "% of synthesis principles ranked ≥7 that DO NOT appear in mapper's expected primaries.",
-      high_score_principles_per_run: synthesisTopPerRun,
-      unmapped_high_scores_per_run: unmappedHighScoresPerRun,
-      rate_pct_per_run: ratePctPerRun,
-      average_rate_pct: avgRate,
-      threshold_pct: HALLUCINATION_THRESHOLD,
-      pass: avgRate <= HALLUCINATION_THRESHOLD,
+    ground_truth_coverage_at_8: {
+      description: "% of mapper-expected principles that synthesis scored ≥8 (playbook's strongSignals threshold). Answers: does the synthesis FLAG it as strong?",
+      expected_principles: expectedPrinciples,
+      synthesis_at_8_per_run: synthesisAt8PerRun,
+      matches_per_run: matchesAt8PerRun,
+      coverage_pct_per_run: coverageAt8PctPerRun,
+      average_coverage_pct: avgCoverageAt8,
+      threshold_pct: COVERAGE_AT_8_THRESHOLD,
+      pass: avgCoverageAt8 >= COVERAGE_AT_8_THRESHOLD,
+    },
+    synthesis_only_themes_at_6: {
+      description: "% of synthesis principles ≥6 that DO NOT appear in mapper's expected primaries. NOT a hallucination metric — Mapper is term-based, Synthesizer can detect content-meta features (e.g., Domain-Empathy via industry-language use). Informational only; no pass/fail threshold.",
+      synthesis_at_6_per_run: synthesisAt6PerRun,
+      not_in_mapper_per_run: synthesisOnlyAt6PerRun,
+      pct_synthesis_only_per_run: synthesisOnlyPctPerRun,
+      average_pct: avgSynthesisOnly,
+      note: "High % means synthesis identifies themes the Mapper can't see (epistemic difference, not error). Inspect not_in_mapper_per_run manually to verify with source.",
     },
     ctm_axis_match: {
       description: "Whether the top-scoring principle's CTM axis matches the mapper's expected axes.",
@@ -450,7 +495,7 @@ async function main() {
     },
     evidence_density: {
       description: "Average number of evidence quotes per high-score principle.",
-      high_score_principles_per_run: synthesisTopPerRun.map((t) => t.length),
+      high_score_principles_per_run: synthesisAt6PerRun.map((t) => t.length),
       avg_quotes_per_high_score: avgQuotesPerHighScore,
       threshold_min_quotes: EVIDENCE_MIN_QUOTES,
       pass: avgQuotesPerHighScore >= EVIDENCE_MIN_QUOTES,
@@ -493,9 +538,10 @@ async function main() {
   };
 
   // Summary
+  // synthesis_only_themes_at_6 has no pass/fail (informational only).
   const decisionGates = [
-    metrics.ground_truth_coverage.pass,
-    metrics.hallucination_rate.pass,
+    metrics.ground_truth_coverage_at_6.pass,
+    metrics.ground_truth_coverage_at_8.pass,
     metrics.ctm_axis_match.pass,
     metrics.stability.pass,
     metrics.evidence_density.pass,
@@ -545,8 +591,9 @@ async function main() {
   console.log(`  - overall: ${summary.overall}`);
   console.log(``);
   console.log(`[compare] per-metric pass/fail:`);
-  console.log(`  - ground_truth_coverage: ${metrics.ground_truth_coverage.pass ? "PASS" : "FAIL"} (${metrics.ground_truth_coverage.average_coverage_pct.toFixed(1)}% / ${metrics.ground_truth_coverage.threshold_pct}%)`);
-  console.log(`  - hallucination_rate: ${metrics.hallucination_rate.pass ? "PASS" : "FAIL"} (${metrics.hallucination_rate.average_rate_pct.toFixed(1)}% / ≤${metrics.hallucination_rate.threshold_pct}%)`);
+  console.log(`  - ground_truth_coverage_at_6: ${metrics.ground_truth_coverage_at_6.pass ? "PASS" : "FAIL"} (${metrics.ground_truth_coverage_at_6.average_coverage_pct.toFixed(1)}% / ${metrics.ground_truth_coverage_at_6.threshold_pct}%) — finds the theme`);
+  console.log(`  - ground_truth_coverage_at_8: ${metrics.ground_truth_coverage_at_8.pass ? "PASS" : "FAIL"} (${metrics.ground_truth_coverage_at_8.average_coverage_pct.toFixed(1)}% / ${metrics.ground_truth_coverage_at_8.threshold_pct}%) — flags it strong`);
+  console.log(`  - synthesis_only_themes_at_6: INFO ONLY (${metrics.synthesis_only_themes_at_6.average_pct.toFixed(1)}%) — themes Mapper missed; inspect manually`);
   console.log(`  - ctm_axis_match: ${metrics.ctm_axis_match.pass ? "PASS" : "FAIL"} (${metrics.ctm_axis_match.match_pct.toFixed(1)}% / ${metrics.ctm_axis_match.threshold_pct}%)`);
   console.log(`  - stability: ${metrics.stability.pass ? "PASS" : "FAIL"} (max variance ${metrics.stability.max_variance_observed.toFixed(2)} / ≤${metrics.stability.threshold})`);
   console.log(`  - evidence_density: ${metrics.evidence_density.pass ? "PASS" : "FAIL"} (avg ${metrics.evidence_density.avg_quotes_per_high_score.toFixed(2)} quotes / ≥${metrics.evidence_density.threshold_min_quotes})`);
