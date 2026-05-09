@@ -212,11 +212,23 @@ async function findLatestArtifact(slug: string, type: string, prefix: string): P
   return path.join(dir, matchingFiles[0]);
 }
 
-async function findAllSynthesisRuns(slug: string, version: string): Promise<string[]> {
+async function findAllSynthesisRuns(slug: string, _hintedVersion: string): Promise<string[]> {
+  // Find synthesis files for this slug at the latest available version.
+  // (Originally tried to match the extractor's prompt_version, but the
+  // synthesizer has its own version that may differ. Pick the highest
+  // version present in the directory.)
   const dir = path.join(RUNS_ROOT, "syntheses", slug);
   const files = await readdir(dir);
-  return files
-    .filter((f) => f.startsWith(`synthesis__v${version}__run`) && f.endsWith(".json"))
+  const synth = files.filter((f) => f.startsWith("synthesis__v") && f.endsWith(".json"));
+  if (synth.length === 0) return [];
+  const versions = new Set<string>();
+  for (const f of synth) {
+    const m = f.match(/^synthesis__v([\d.]+)__/);
+    if (m) versions.add(m[1]);
+  }
+  const latest = [...versions].sort().reverse()[0];
+  return synth
+    .filter((f) => f.startsWith(`synthesis__v${latest}__run`))
     .sort()
     .map((f) => path.join(dir, f));
 }
@@ -236,10 +248,22 @@ async function main() {
 
   // Load artifacts
   const extractionPath = await findLatestArtifact(slug, "extractions", "extraction__");
-  const mappingAggPath = await findLatestArtifact(slug, "mappings", "mapping__");
+  // Mapper writes per-run files AND an aggregate file. We always want the aggregate.
+  const mappingAggDir = path.join(RUNS_ROOT, "mappings", slug);
+  const mappingFiles = await readdir(mappingAggDir);
+  const mappingAggregates = mappingFiles
+    .filter((f) => f.includes("__aggregate__") && f.endsWith(".json"))
+    .sort()
+    .reverse();
+  if (mappingAggregates.length === 0) {
+    throw new Error(
+      `No mapping aggregate file found for ${slug}. Run mapper first; it writes mapping__v...__aggregate__date.json.`,
+    );
+  }
+  const finalMappingAggPath = path.join(mappingAggDir, mappingAggregates[0]);
 
   const extractionArtifact = await readArtifact<ExtractionData>(extractionPath);
-  const mappingArtifact = await readArtifact<MappingAggregateData>(mappingAggPath);
+  const mappingArtifact = await readArtifact<MappingAggregateData>(finalMappingAggPath);
 
   const synthesisVersion = extractionArtifact.metadata.prompt_version; // assume same major version
   const synthesisFiles = await findAllSynthesisRuns(slug, synthesisVersion);

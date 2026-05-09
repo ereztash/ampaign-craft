@@ -1,6 +1,6 @@
-<!-- prompt-version: 0.1.0 -->
+<!-- prompt-version: 0.1.1 -->
 <!-- last-modified: 2026-05-09 -->
-<!-- changelog: 0.1.0 = initial release; runs at temperature 0.25 with N=3 stability aggregation -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = embed full output schema in system prompt (LLM was returning {"mapping": ...} singular and copying extraction fields like "what_ceo_emphasizes_as_proof") -->
 
 # Mapper Prompt
 
@@ -27,14 +27,54 @@ You are NOT deciding which principle "wins."
 You are mapping language to language.
 
 Strict rules:
-1. For each item in the extraction's `in_ceo_own_terminology`, `what_ceo_explicitly_says_they_are_NOT`, `what_ceo_emphasizes_as_proof`, and `tradeoffs_or_constraints_acknowledged` arrays, decide which principle (or principles) it maps to semantically.
+1. For each item in the extraction's `in_ceo_own_terminology` (under `core_differentiation_claim`), `what_ceo_explicitly_says_they_are_NOT`, `company_specific_proof_points`, `industry_supporting_claims`, and `tradeoffs_or_constraints_acknowledged` arrays, decide which principle (or principles) it maps to semantically.
 2. A single CEO term may map to zero, one, or multiple principles. If multiple, list all and explain which is primary.
 3. If a CEO term doesn't fit any principle in the index, place it in `unmapped_ceo_terms` with a brief reason.
 4. Confidence levels: "high" — clear semantic match; "medium" — plausible but multiple plausible principles; "low" — best available match but stretched.
 5. Do not invent terms. Use only what's in the extraction object.
 6. Do not assume axes (M/T/C) determine the mapping. Map specifically to principle codes, not to axes.
 
-Output format: a single JSON object matching the schema below. Output JSON only, no commentary.
+Output format: a single JSON object using EXACTLY the field structure below. Do NOT invent new field names. Do NOT rename fields (e.g., do not return "mapping" singular instead of "mappings"). Do NOT copy fields from the extraction object — your output is a NEW structure. Output JSON only, no commentary, no markdown code fences.
+
+REQUIRED OUTPUT STRUCTURE (use exactly):
+{
+  "candidate_name": "string",
+  "company": "string",
+  "extraction_source_url": "string (copy from extraction.source_url)",
+  "mappings": [
+    // one entry per CEO term mapped (from in_ceo_own_terminology and the other arrays listed above)
+    {
+      "ceo_term": "exact term/phrase from extraction",
+      "ceo_term_source_field": "in_ceo_own_terminology" | "what_ceo_explicitly_says_they_are_NOT" | "company_specific_proof_points" | "industry_supporting_claims" | "tradeoffs_or_constraints_acknowledged" | "supporting_verbatim_quotes[N]",
+      "playbook_principles": ["P-codes, primary first"],
+      "primary_principle": "single P-code = playbook_principles[0]",
+      "confidence": "high" | "medium" | "low",
+      "reasoning": "one sentence explaining the semantic match (no evidence citation, just the equivalence)"
+    }
+  ],
+  "unmapped_ceo_terms": [
+    {
+      "term": "string",
+      "source_field": "string",
+      "reasoning": "one sentence why it doesn't fit any principle"
+    }
+  ],
+  "ambiguous_mappings": [
+    {
+      "ceo_term": "string",
+      "candidate_principles": ["≥2 P-codes"],
+      "reasoning": "why it could fit multiple equally"
+    }
+  ],
+  "mapping_summary": {
+    "total_terms_mapped": integer,
+    "total_terms_unmapped": integer,
+    "principles_referenced": ["distinct P-codes appearing in any high or medium confidence mapping"],
+    "principles_with_high_confidence_mapping": ["P-codes that received ≥1 high-confidence mapping"]
+  }
+}
+
+CRITICAL: the top-level field is "mappings" (plural). Do NOT output "mapping" (singular). The "mappings" array contains the per-term semantic mappings, one entry per term.
 ```
 
 ---

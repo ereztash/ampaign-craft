@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "candidate_slug": "buildots-roy-danon",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.25,
+    "run_number": 2,
+    "timestamp_iso": "2026-05-09T20:05:44.541Z",
+    "input_bundle_hash_sha256": "b370aef91c59024745682d2c11d0abe189e76f18d695a4e0b5fa8bd49db06334",
+    "cost_usd": 0.033195,
+    "usage": {
+      "input_tokens": 2760,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1661,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Roy Danon",
+    "company": "Buildots",
+    "extraction_source_url": "https://www.unite.ai/roy-danon-ceo-of-buildots-interview-series/",
+    "mappings": [
+      {
+        "ceo_term": "digital twin",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P05"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "Reframing a BIM model as a living 'digital twin' that merges plan with reality shifts the buyer's mental model of what a construction model is and can do."
+      },
+      {
+        "ceo_term": "actuals",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09",
+          "P03"
+        ],
+        "primary_principle": "P09",
+        "confidence": "high",
+        "reasoning": "Borrowing the manufacturing term 'actuals' to describe real-time construction status is a direct instance of speaking the buyer's operational language natively."
+      },
+      {
+        "ceo_term": "Construction Mission Control Room",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P09",
+          "P02"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "Naming the product output a 'Mission Control Room' reframes how construction managers conceptualize site oversight, borrowing a mental model from aerospace/manufacturing to shift their frame of reference."
+      },
+      {
+        "ceo_term": "wearable 360 cameras",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05"
+        ],
+        "primary_principle": "P05",
+        "confidence": "high",
+        "reasoning": "Wearable 360 cameras are the named physical mechanism ('Y') through which Buildots executes its data-collection methodology ('X'), fitting the mechanism-articulation pattern directly."
+      },
+      {
+        "ceo_term": "computer vision algorithms",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05"
+        ],
+        "primary_principle": "P05",
+        "confidence": "high",
+        "reasoning": "Computer vision algorithms are the named technical mechanism that converts visual input into structured status data, a clear articulation of how the solution works."
+      },
+      {
+        "ceo_term": "structured data from unstructured visual data",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05",
+          "P02"
+        ],
+        "primary_principle": "P05",
+        "confidence": "high",
+        "reasoning": "This phrase names the core transformation mechanism — converting raw visual footage into actionable structured data — which is the essence of mechanism articulation."
+      },
+      {
+        "ceo_term": "digitally managed environments",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03"
+        ],
+        "primary_principle": "P03",
+        "confidence": "medium",
+        "reasoning": "Describing a construction site as a 'digitally managed environment' reframes the buyer's conception of what a job site is, shifting it from a physical-only space to a managed digital system."
+      },
+      {
+        "ceo_term": "McKinsey claimed that the sector's productivity can be improved by 50% through the introduction of modern process control systems (such as Buildots)",
+        "ceo_term_source_field": "industry_supporting_claims",
+        "playbook_principles": [
+          "P12",
+          "P15"
+        ],
+        "primary_principle": "P12",
+        "confidence": "medium",
+        "reasoning": "A 50% productivity improvement claim quantifies the cost of not adopting modern process control, functioning as a loss-avoided figure; the McKinsey citation also lends third-party legitimacy."
+      },
+      {
+        "ceo_term": "Until very recently highly complex projects were still being planned in 2D CAD, with elements such as walls represented with a plain line",
+        "ceo_term_source_field": "industry_supporting_claims",
+        "playbook_principles": [
+          "P03",
+          "P12"
+        ],
+        "primary_principle": "P03",
+        "confidence": "medium",
+        "reasoning": "Highlighting the industry's primitive baseline (2D CAD lines for walls) frames the buyer's current state as inadequate, reinforcing the cognitive shift toward 3D/BIM-based digital management."
+      },
+      {
+        "ceo_term": "Systems like Buildots rely on the existence of BIM to operate",
+        "ceo_term_source_field": "tradeoffs_or_constraints_acknowledged",
+        "playbook_principles": [
+          "P04"
+        ],
+        "primary_principle": "P04",
+        "confidence": "medium",
+        "reasoning": "Acknowledging that BIM is a prerequisite implicitly defines a non-customer (those without BIM adoption), which is semantically equivalent to a tradeoff or explicit scope declaration."
+      }
+    ],
+    "unmapped_ceo_terms": [],
+    "ambiguous_mappings": [
+      {
+        "ceo_term": "McKinsey claimed that the sector's productivity can be improved by 50% through the introduction of modern process control systems (such as Buildots)",
+        "candidate_principles": [
+          "P12",
+          "P15"
+        ],
+        "reasoning": "The 50% productivity figure maps to P12 (quantifying the cost of inaction) while the McKinsey attribution maps equally well to P15 (using a known brand as a legitimacy/value proxy); both fits are plausible and neither clearly dominates."
+      },
+      {
+        "ceo_term": "Construction Mission Control Room",
+        "candidate_principles": [
+          "P03",
+          "P09",
+          "P02"
+        ],
+        "reasoning": "The term reframes the buyer's mental model (P03), uses manufacturing-native language the buyer recognizes (P09), and is compact enough to be repeated in one sentence (P02), making all three principles plausible simultaneously."
+      }
+    ],
+    "mapping_summary": {
+      "total_terms_mapped": 10,
+      "total_terms_unmapped": 0,
+      "principles_referenced": [
+        "P03",
+        "P05",
+        "P09",
+        "P02",
+        "P12",
+        "P15",
+        "P04"
+      ],
+      "principles_with_high_confidence_mapping": [
+        "P03",
+        "P05",
+        "P09"
+      ]
+    }
+  }
+}

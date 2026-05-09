@@ -1,0 +1,209 @@
+{
+  "metadata": {
+    "candidate_slug": "buildots-roy-danon",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "sonnet (aggregated × 3)",
+    "temperature": 0.25,
+    "run_number": 0,
+    "timestamp_iso": "2026-05-09T20:06:12.251Z",
+    "input_bundle_hash_sha256": "b370aef91c59024745682d2c11d0abe189e76f18d695a4e0b5fa8bd49db06334",
+    "cost_usd": 0.099675,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+    }
+  },
+  "data": {
+    "aggregate": [
+      {
+        "ceo_term": "digital twin",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: The 'digital twin' concept reframes the buyer's mental model of a construction site from a physical, untracked environment into a continuously updated digital representation — a classic cognitive frame shift.",
+          "run2: Reframing a BIM model as a living 'digital twin' that merges plan with reality shifts the buyer's mental model of what a construction model is and can do.",
+          "run3: Reframing a BIM model as a 'digital twin' — a live representation of planned vs. actual — shifts the buyer's mental model of what a construction site can be, which is the essence of a cognitive frame shift."
+        ]
+      },
+      {
+        "ceo_term": "actuals",
+        "primary_principle_consensus": null,
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P05"
+          },
+          {
+            "run": 2,
+            "principle": "P09"
+          },
+          {
+            "run": 3,
+            "principle": "P05"
+          }
+        ],
+        "consensus_level": "no_consensus",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: 'Actuals' names the specific data layer that Buildots adds on top of BIM plans — a named mechanism describing what the system produces and how it differs from the plan.",
+          "run2: Borrowing the manufacturing term 'actuals' to describe real-time construction status is a direct instance of speaking the buyer's operational language natively.",
+          "run3: Introducing 'actuals' as a named data layer added on top of the BIM plan describes a specific mechanism — the 'what we do through Y' of Buildots' methodology — while also borrowing manufacturing-floor language native to the buyer's operational world."
+        ]
+      },
+      {
+        "ceo_term": "Construction Mission Control Room",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Framing a construction site management interface as a 'Mission Control Room' equivalent to a manufacturing plant reframes the buyer's mental model of how construction oversight should work.",
+          "run2: Naming the product output a 'Mission Control Room' reframes how construction managers conceptualize site oversight, borrowing a mental model from aerospace/manufacturing to shift their frame of reference.",
+          "run3: Naming the output a 'Mission Control Room' reframes how construction managers conceptualize site oversight, borrowing a mental model from aerospace/manufacturing to shift the buyer's frame of reference."
+        ]
+      },
+      {
+        "ceo_term": "wearable 360 cameras",
+        "primary_principle_consensus": "P05",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P05"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Wearable 360 cameras are the named physical mechanism ('we do X through Y') by which Buildots collects the visual data that powers its system.",
+          "run2: Wearable 360 cameras are the named physical mechanism ('Y') through which Buildots executes its data-collection methodology ('X'), fitting the mechanism-articulation pattern directly.",
+          "run3: Wearable 360 cameras are the named physical mechanism ('we do X through Y') by which Buildots collects the unstructured visual data that feeds its system."
+        ]
+      },
+      {
+        "ceo_term": "computer vision algorithms",
+        "primary_principle_consensus": "P05",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P05"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Computer vision algorithms are the named technical methodology through which unstructured visual data is converted into structured construction status data.",
+          "run2: Computer vision algorithms are the named technical mechanism that converts visual input into structured status data, a clear articulation of how the solution works.",
+          "run3: Computer vision algorithms are the named technical mechanism that converts raw visual input into structured construction-status data, directly articulating the 'how' of Buildots' differentiation."
+        ]
+      },
+      {
+        "ceo_term": "structured data from unstructured visual data",
+        "primary_principle_consensus": "P05",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P05"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: This phrase articulates the core mechanism — the transformation process from raw camera footage to actionable construction status — fitting the named methodology pattern of P05.",
+          "run2: This phrase names the core transformation mechanism — converting raw visual footage into actionable structured data — which is the essence of mechanism articulation.",
+          "run3: This phrase names the core transformation mechanism — converting raw camera footage into actionable status data — which is a precise articulation of the methodology Buildots employs."
+        ]
+      },
+      {
+        "ceo_term": "digitally managed environments",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Describing a construction site as a 'digitally managed environment' reframes the buyer's conception of what a construction site can and should be, shifting the mental model from analog to digital operations.",
+          "run2: Describing a construction site as a 'digitally managed environment' reframes the buyer's conception of what a job site is, shifting it from a physical-only space to a managed digital system.",
+          "run3: Describing a construction site as a 'digitally managed environment' reframes the buyer's conception of what a site can be, though it is a broader aspiration rather than a tightly defined mechanism or frame shift on its own."
+        ]
+      },
+      {
+        "ceo_term": "McKinsey claimed that the sector's productivity can be improved by 50% through the introduction of modern process control systems (such as Buildots)",
+        "primary_principle_consensus": "P12",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P12"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: A 50% productivity improvement claim quantifies the cost of not adopting modern process control, mapping primarily to loss-avoided quantification, while the McKinsey citation also functions as a legitimacy driver.",
+          "run2: A 50% productivity improvement claim quantifies the cost of not adopting modern process control, functioning as a loss-avoided figure; the McKinsey citation also lends third-party legitimacy.",
+          "run3: A 50% productivity improvement claim quantifies the cost of not adopting modern process control, mapping primarily to loss-avoided quantification, while the McKinsey citation also functions as a legitimacy driver."
+        ]
+      },
+      {
+        "ceo_term": "Until very recently highly complex projects were still being planned in 2D CAD, with elements such as walls represented with a plain line",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Highlighting the primitive state of prior planning tools (2D CAD, walls as plain lines) frames the contrast that makes the digital twin approach a cognitive leap — a reframing of what planning and tracking can look like.",
+          "run2: Highlighting the industry's primitive baseline (2D CAD lines for walls) frames the buyer's current state as inadequate, reinforcing the cognitive shift toward 3D/BIM-based digital management.",
+          "run3: Highlighting the industry's prior reliance on 2D CAD establishes the contrast needed to shift the buyer's mental model toward what modern, data-rich construction management looks like."
+        ]
+      },
+      {
+        "ceo_term": "Systems like Buildots rely on the existence of BIM to operate",
+        "primary_principle_consensus": "P04",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P04"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Acknowledging that BIM is a prerequisite implicitly defines who is NOT a viable customer (those without BIM), which is semantically equivalent to a tradeoff declaration about the boundaries of the offer.",
+          "run2: Acknowledging that BIM is a prerequisite implicitly defines a non-customer (those without BIM adoption), which is semantically equivalent to a tradeoff or explicit scope declaration.",
+          "run3: Acknowledging that BIM is a prerequisite implicitly defines who is not a viable customer (non-BIM adopters), which is semantically close to a tradeoff declaration or non-customer boundary."
+        ]
+      }
+    ],
+    "summary": {
+      "total_distinct_terms": 10,
+      "high_consensus": 9,
+      "medium_consensus": 0,
+      "low_consensus": 0,
+      "no_consensus": 1
+    }
+  }
+}
