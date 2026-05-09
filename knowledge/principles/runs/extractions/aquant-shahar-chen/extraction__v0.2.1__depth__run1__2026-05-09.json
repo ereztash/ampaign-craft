@@ -1,0 +1,81 @@
+{
+  "metadata": {
+    "candidate_slug": "aquant-shahar-chen",
+    "artifact_type": "extraction",
+    "prompt_version": "0.2.1",
+    "prompt_hash_sha256": "111cf55bb8d95a1cceb0d80150bc881d0493f16bd7f876563dbe43c9bd76dc50",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.5,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T20:12:15.329Z",
+    "input_bundle_hash_sha256": "94f577e0193322b5cb124626a378be3d30b0b9de0c6ffca8cc1d6df8ceaa7d7b",
+    "cost_usd": 0.018387,
+    "usage": {
+      "input_tokens": 1664,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 893,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Shahar Chen",
+    "company": "Aquant",
+    "source_url": "https://medium.com/authority-magazine/shahar-chen-of-aquant-on-five-things-you-need-to-create-a-highly-successful-career-in-the-ai-4cb68dff3d51",
+    "source_date": "2024",
+    "source_type": "long-form Authority Magazine interview (career advice format with differentiation context)",
+    "source_word_count": 250,
+    "core_differentiation_claim": {
+      "summary_3_5_sentences": "Chen frames Aquant's differentiation around identifying 'an unresolved issue within the service sector — one rooted in the widening skills gap' and solving it by 'harnessing the existing data of companies.' The company operates in what Chen calls a 'conservative industry' where the human element — including 'concerns and even fears' about AI — is 'super critical' to address. Rather than positioning AI as a replacement for service technicians, Chen argues 'AI is not here to replace anyone, AI is here to help us be the best we can be at what we do.' Aquant's current work centers on 'delivering a holistic generative AI solution for the service industry while implementing stringent security measures to prevent internet uploads.'",
+      "in_ceo_own_terminology": [
+        "widening skills gap",
+        "harnessing the existing data of companies",
+        "holistic generative AI solution for the service industry",
+        "stringent security measures to prevent internet uploads",
+        "conservative industry",
+        "human element",
+        "AI is not here to replace anyone"
+      ]
+    },
+    "supporting_verbatim_quotes": [
+      {
+        "quote": "My business partner and I identified an unresolved issue within the service sector — one rooted in the widening skills gap — and recognized that the solution lay in harnessing the existing data of companies.",
+        "context": "Chen describing the founding insight and origin of Aquant's focus"
+      },
+      {
+        "quote": "Delivering a holistic generative AI solution for the service industry while implementing stringent security measures to prevent internet uploads is truly an exhilarating undertaking.",
+        "context": "Chen describing current projects at Aquant"
+      },
+      {
+        "quote": "When starting a career in any industry, you have to recognize and begin understanding the people you'll be working alongside. And when it comes to a conservative industry like ours, understanding the human element, the concerns and even fears — is super critical. To many people, AI is a scary word. A service technician might hear the word AI and their immediate thought is, 'They're introducing a new system to take over my role.' AI is not here to replace anyone, AI is here to help us be the best we can be at what we do.",
+        "context": "Chen on the challenge of introducing AI in the service industry and Aquant's positioning around augmentation rather than replacement"
+      }
+    ],
+    "what_ceo_explicitly_says_they_are_NOT": [],
+    "company_specific_proof_points": [],
+    "industry_supporting_claims": [],
+    "tradeoffs_or_constraints_acknowledged": [],
+    "extraction_notes": {
+      "source_thinness_observed": true,
+      "verbatim_vs_paraphrase_ratio": "mostly_verbatim",
+      "fields_empty_due_to_source_absence": [
+        "what_ceo_explicitly_says_they_are_NOT",
+        "company_specific_proof_points",
+        "industry_supporting_claims",
+        "tradeoffs_or_constraints_acknowledged"
+      ]
+    },
+    "_validation": {
+      "quality": "high",
+      "failures": []
+    },
+    "_track": "depth"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "candidate_name": "Shahar Chen",
+  "company": "Aquant",
+  "recommended_track": "depth",
+  "sources": [
+    {
+      "source_id": "01",
+      "filename": "source-01-authority-magazine.md",
+      "url": "https://medium.com/authority-magazine/shahar-chen-of-aquant-on-five-things-you-need-to-create-a-highly-successful-career-in-the-ai-4cb68dff3d51",
+      "type": "long-form Authority Magazine interview (career advice format with differentiation context)",
+      "date": "2024",
+      "is_independent": true
+    }
+  ],
+  "research_notes": {
+    "selected_from": "Doc 1 (English TL;DR) — research-recommended candidate; ~2,200 words claimed verified by web_fetch on Authority Magazine",
+    "verification": "Authority Magazine page fetched 2026-05-09. WebFetch summarized; verbatim recovery via two prompts yielded ~7-8 quotes. Combined here as primary source.",
+    "secondary_sources": "aquant.ai/company/about-us (fetched 2026-05-09)",
+    "linkedin": "Headline only ('CEO & Co-Founder at Aquant'); About section pending manual collection. Using marker pattern from Buildots.",
+    "track_decision": "depth (Track B). Same constraint as Buildots — only 1 independent source with substantive verbatim content recoverable via WebFetch. Emerj podcast and Service Council pages are episode landings without transcripts.",
+    "different_from_buildots": "Different industry (field-service AI vs construction AI), different positioning archetype (Domain-Empathy + service intelligence vs Mechanism + digital twin). Comparing two single-source candidates from different verticals tests whether the playbook discriminates."
+  }
+}
