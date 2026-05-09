@@ -1,6 +1,6 @@
-<!-- prompt-version: 0.2.1 -->
+<!-- prompt-version: 0.3.0 -->
 <!-- last-modified: 2026-05-09 -->
-<!-- changelog: 0.1.0 = initial; 0.1.1 = multi-source input required; 0.2.0 = handle absent LinkedIn About; 0.2.1 = embed full output schema in system prompt (LLM was returning empty principleOutputs because schema was outside the prompt code block) -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = multi-source input required; 0.2.0 = handle absent LinkedIn About; 0.2.1 = embed full output schema in system prompt; 0.3.0 = synthesize.ts now passes additional independent sources (sources[1..N]) when available, allowing structural patterns across sources to be visible to the Synthesizer (the missing piece on single-source). No prompt-text change; version bump for filename separation between single-source and multi-source runs. -->
 
 # Synthesizer Prompt
 

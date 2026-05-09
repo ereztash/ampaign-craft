@@ -114,6 +114,32 @@ async function buildUserPrompt(slug: string, playbookFull: string): Promise<stri
   if (!primary) {
     throw new Error(`No primary source found for ${slug}`);
   }
+
+  // ADDITIONAL INDEPENDENT SOURCES (sources[1..N], if any). These are
+  // independent verbatim sources beyond the primary. Their presence allows
+  // the Synthesizer to assess structural patterns across sources (consistency
+  // of message, terminology recurrence, framing variance) — the missing piece
+  // when running on single-source input.
+  const additionalIndependentSources = bundle.sources.slice(1);
+  const additionalSourcesBlock =
+    additionalIndependentSources.length === 0
+      ? ""
+      : "\n\nADDITIONAL INDEPENDENT SOURCES (cross-source structural evidence):\n" +
+        additionalIndependentSources
+          .map(
+            (s) => `[SOURCE source_id="${s.source_id}"]
+- url: ${s.url}
+- type: ${s.type}
+- date: ${s.date ?? "(not available)"}
+
+CONTENT:
+---
+${s.content}
+---
+[END SOURCE source_id="${s.source_id}"]`,
+          )
+          .join("\n\n");
+
   return `PRIMARY SOURCE METADATA:
 - candidate_name: ${bundle.meta.candidate_name}
 - company: ${bundle.meta.company}
@@ -124,9 +150,9 @@ async function buildUserPrompt(slug: string, playbookFull: string): Promise<stri
 PRIMARY SOURCE CONTENT:
 ---
 ${primary.content}
----
+---${additionalSourcesBlock}
 
-REQUIRED SECONDARY SOURCES (for dual-tier evidence):
+REQUIRED SECONDARY SOURCES (for dual-tier evidence — first-party content; NOT independent):
 - LinkedIn headline: ${bundle.first_party.linkedin_headline}
 - LinkedIn About (full):
 ${bundle.first_party.linkedin_about}
