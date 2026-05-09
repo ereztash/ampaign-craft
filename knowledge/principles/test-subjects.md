@@ -49,13 +49,99 @@
 
 ## אסטרטגיית הטסט (Phase 0 → 4)
 
-### עקרונות מבניים (החלטות מתועדות)
+### Architecture: Breadth-First (preferred) + Depth-First (fallback)
+
+ב-2026-05-09, האסטרטגיה עברה revision מהותי. Pattern recognition דורש breadth, לא depth. Architecture הקודמת (single source ≥1,500 מילים) הוחלפה ב-breadth-first על מקורות עצמאיים מרובים.
+
+**שני tracks מקבילים, NON-COMPARABLE בלי calibration נפרד:**
+
+```
+Track A — BREADTH-FIRST (preferred)
+  Trigger: candidate has ≥3 INDEPENDENT sources (interview/podcast/profile article;
+           NOT website/LinkedIn/press releases — those are first-party)
+  Schema: recurring_themes (extractor v0.3.0+)
+  Phase 1+: synthesis runs against full bundle
+
+Track B — DEPTH-FIRST (fallback)
+  Trigger: candidate has 1-2 independent sources (presence-thin)
+  Schema: core_differentiation_claim (extractor v0.2.x)
+  Phase 1+: synthesis runs against single primary + first-party
+  Documented limitation: thin anchor; results not directly comparable to Track A
+```
+
+**Cross-method comparability — explicit statement:**
+
+ב-Phase 2, התוצאות מוצגות **בנפרד** עבור Track A ועבור Track B. אסור לקבץ outcomes כדי להגיד "הplaybook עובד ב-X% מהcandidates" — ה-architectures שונים, ה-baselines שונים, ה-decision gates שונים. **המסקנה הסופית של ה-Test היא:**
+
+- "הplaybook לחברות עם presence ציבורית רחבה (Track A)" — תוצאת מסויימת
+- "הplaybook לחברות עם presence ציבורית מוגבלת (Track B)" — תוצאת אחרת
+
+Cross-method conclusions ("הplaybook עובד באופן אוניברסלי") דורשות calibration step נפרד שלא נכלל ב-Phase 1-3 הנוכחיים.
+
+### Mapping של candidates ל-Tracks (לפי independent source count, מאומת 2026-05-09)
+
+**Track A (≥3 independent sources):**
+1. Buildots / Roy Danon — Unite.AI, Citybiz, BDC Magazine
+2. Finout / Roi Ravhon — Pitango Founder Story, VMblog, InfoQ
+3. Agora / Bar Mor — Pulse 2.0, Authority Mag, TechCrunch
+4. Qodo / Itamar Friedman — NotAnotherCEO, StartupHub.ai, TestGuild
+5. Gloat / Ben Reuveni — HBS podcast, Pulse 2.0, Accel
+6. Aquant / Shahar Chen — Authority Mag (~2,200w), Emerj, Service Council
+
+**Track B (1-2 independent sources, fallback handling required):**
+- Voyantis / Ido Wiesenberg — 2-3 (Spotify 37m + ?Prescriptive AI status)
+- LayerX / Or Eshed — 2 (Brave podcast, FinSMEs)
+- Apiiro / Idan Plotnik — 2 (SecureTalk, SC World)
+- Reco / Ofer Klein — 1-2 (Business Insider × 2 — same publication, possibly count as 1)
+- FundGuard / Lior Yogev — 1 (Calcalist Tech video)
+
+### Validation Quality — Dual-Path Logic (Track A only)
+
+ב-Track A, `validation_quality` נקבע דטרמיניסטית לפי **OR פנימי** של שני נתיבים:
+
+```
+Path (a) — RECURRENCE WITH LEXICAL SIMILARITY:
+  ≥3 distinct recurring_themes total
+  AND ≥2 themes שמקיימים את שני התנאים:
+    (i)  מופיעים ב-≥2 independent sources
+    (ii) ≥1 verbatim term/phrase מתוך ceo_terminology נצפה
+         identical (לא רק "דומה") בין ה-appearances
+  Rationale: הסיכון ב-loose recurrence בtriangulation על n=3
+             הוא שטחי (noise statistical). דרישת שיתוף terminology
+             ספציפי מסננת pseudo-recurrence.
+
+Path (b) — DEPTH-WITH-SELF-REINFORCEMENT (לא "validation"):
+  ≥1 theme שמופיע במקור עצמאי 1 בעמקות ≥200 words CEO-speech
+  AND אותו theme (במונחים identical או paraphrase קרוב)
+      מהדהד ב-first-party content (LinkedIn/website)
+  IMPORTANT NAMING: זה לא "external validation". First-party הוא
+                    הניסוח של החברה/מנכ"ל עצמם. נוכחות הtheme גם
+                    שם משקף consistency של מסר, לא אישור עצמאי.
+                    ה-path משרת fallback מתודולוגי, לא תוקף-חיצוני.
+
+low = שום נתיב לא מתקיים
+```
+
+**הסבר על Path (a) constraint (i)+(ii) המחמיר:** במקור הצעתי "≥2 sources בכל לשון". המציאות עם n=3 הוא שזה רעש. שלושה ראיונות שונים באותם מילים כלליים יכולים להיראות כ-"recurrence" שטחי. דרישת term identical מסננת.
+
+### Validation Quality — Track B (depth-first)
+
+נשאר identical לlogic של גרסת Extractor 0.2.x:
+```
+quality = "high" אם פחות מ-2 כשלים מ-3:
+  - summary_3_5_sentences ≥80 מילים
+  - ≥2 verbatim quotes >30 מילים
+  - ≥3 terms ב-in_ceo_own_terminology
+```
+
+### עקרונות מבניים (תקפים לשני ה-tracks)
 
 1. **3-tier separation בין LLM calls** — Extractor (no playbook), Synthesizer (full playbook), Mapper (playbook index only). אסור context-sharing.
 2. **Ground truth = ניסוח המנכ"ל עצמו**, לא ניחוש מראש איזה principle "אמור" לעלות. כל decision gate נמדד מול ה-extraction של אותו candidate.
 3. **No "Expected outcome" pre-anchoring.** אין לכתוב מראש "ב-Buildots צפוי P05 בציון 8-9". זה confirmation bias.
 4. **Tag-and-continue ל-extraction דליל.** מועמדים עם `validation_quality: low` נכנסים לסינתזה אבל לא ל-decision gates.
 5. **Phase 4 (Disqualifier stress) נדחה** עד שיש signal אמפירי מ-Phase 1-3 על איזה disqualifier לבחון.
+6. **Dual-track non-comparable.** תוצאות Track A ו-Track B לא מתקבצות ל-aggregate metric יחיד; כל phase report מציג את שני ה-tracks בנפרד עם decision gates שונים.
 
 ---
 

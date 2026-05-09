@@ -323,83 +323,191 @@ export function todayDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-// ─── Input bundle ─────────────────────────────────────────────────────────
+// ─── Input bundle (v2 — Track A/B architecture) ───────────────────────────
 
-export interface CandidateInputBundle {
-  candidate_slug: string;
+export type Track = "breadth" | "depth";
+
+export interface SourceMetadata {
+  source_id: string;
+  filename: string;
+  url: string;
+  type: string;
+  date: string | null;
+  is_independent: boolean;
+}
+
+export interface SourceWithContent extends SourceMetadata {
+  content: string;
+}
+
+export interface CandidateBundleMeta {
   candidate_name: string;
   company: string;
-  source_url: string;
-  source_date: string | null;
-  source_type: string;
-  primary_source: string;
+  recommended_track: Track;
+  sources: SourceMetadata[];
+  research_notes?: unknown;
+}
+
+export interface FirstPartyContent {
   linkedin_headline: string;
   linkedin_about: string;
   website_hero: string;
   website_about_first: string;
+  /** Concatenated lowercase text used for validation Path (b) echo checks. */
+  combined_lowercase: string;
+}
+
+export interface InputBundle {
+  candidate_slug: string;
+  meta: CandidateBundleMeta;
+  sources: SourceWithContent[];
+  first_party: FirstPartyContent;
   bundle_hash: string;
 }
 
-export async function readInputBundle(slug: string): Promise<CandidateInputBundle> {
+/**
+ * Read the new bundle layout:
+ *   runs/inputs/<slug>/
+ *     candidate.json
+ *     sources/source-NN-<short>.md
+ *     first-party/{linkedin-headline.txt, linkedin-about.md, website-hero.md, website-about-first.md}
+ *
+ * For backward-compat with the v0.2.x flat layout (primary-source.md + flat
+ * first-party files in the candidate dir), we auto-detect and lift to v2.
+ */
+export async function readInputBundle(slug: string): Promise<InputBundle> {
   const dir = path.join(RUNS_ROOT, "inputs", slug);
   const candidateMetaPath = path.join(dir, "candidate.json");
-
   if (!existsSync(candidateMetaPath)) {
-    throw new Error(
-      `Input bundle not found at ${dir}. Required: candidate.json + 5 source files.`,
-    );
+    throw new Error(`Input bundle not found at ${dir}. Required: candidate.json`);
   }
+  const rawMeta = JSON.parse(await readFile(candidateMetaPath, "utf8"));
 
-  const meta = JSON.parse(await readFile(candidateMetaPath, "utf8"));
+  const sourcesDir = path.join(dir, "sources");
+  const fpDir = path.join(dir, "first-party");
+  const isV2Layout = existsSync(sourcesDir);
 
-  const requiredFiles: Array<keyof CandidateInputBundle> = [
-    "primary_source",
-    "linkedin_headline",
-    "linkedin_about",
-    "website_hero",
-    "website_about_first",
-  ];
-  const fileMap: Record<string, string> = {
-    primary_source: "primary-source.md",
-    linkedin_headline: "linkedin-headline.txt",
-    linkedin_about: "linkedin-about.md",
-    website_hero: "website-hero.md",
-    website_about_first: "website-about-first.md",
-  };
+  let meta: CandidateBundleMeta;
+  let sources: SourceWithContent[];
+  let firstParty: FirstPartyContent;
 
-  const contents: Record<string, string> = {};
-  for (const key of requiredFiles) {
-    const fileName = fileMap[key];
-    const filePath = path.join(dir, fileName);
-    if (!existsSync(filePath)) {
+  if (isV2Layout) {
+    if (!Array.isArray(rawMeta.sources)) {
       throw new Error(
-        `Input bundle for ${slug} missing required file: ${fileName}. ` +
-          `Synthesizer requires multi-source input — see runs/README.md.`,
+        `candidate.json for ${slug} missing required "sources" array (v2 layout).`,
       );
     }
-    contents[key] = await readFile(filePath, "utf8");
+    meta = {
+      candidate_name: rawMeta.candidate_name,
+      company: rawMeta.company,
+      recommended_track: rawMeta.recommended_track ?? "breadth",
+      sources: rawMeta.sources,
+      research_notes: rawMeta.research_notes,
+    };
+    sources = await Promise.all(
+      meta.sources.map(async (s) => {
+        const filePath = path.join(sourcesDir, s.filename);
+        if (!existsSync(filePath)) {
+          throw new Error(`Source file missing: sources/${s.filename}`);
+        }
+        return { ...s, content: await readFile(filePath, "utf8") };
+      }),
+    );
+    firstParty = await readFirstPartyContent(fpDir);
+  } else {
+    // Backward compat: v0.2.x flat layout
+    const fileMap = {
+      primary_source: "primary-source.md",
+      linkedin_headline: "linkedin-headline.txt",
+      linkedin_about: "linkedin-about.md",
+      website_hero: "website-hero.md",
+      website_about_first: "website-about-first.md",
+    };
+    for (const [, fileName] of Object.entries(fileMap)) {
+      const fp = path.join(dir, fileName);
+      if (!existsSync(fp)) {
+        throw new Error(
+          `Input bundle for ${slug} (legacy layout) missing: ${fileName}.`,
+        );
+      }
+    }
+    meta = {
+      candidate_name: rawMeta.candidate_name,
+      company: rawMeta.company,
+      recommended_track: "depth",
+      sources: [
+        {
+          source_id: "01",
+          filename: "primary-source.md",
+          url: rawMeta.source_url,
+          type: rawMeta.source_type,
+          date: rawMeta.source_date ?? null,
+          is_independent: true,
+        },
+      ],
+      research_notes: rawMeta.research_notes,
+    };
+    sources = [
+      {
+        ...meta.sources[0],
+        content: await readFile(path.join(dir, "primary-source.md"), "utf8"),
+      },
+    ];
+    firstParty = await readFirstPartyContent(dir, /*flat*/ true);
   }
 
   const bundleHash = sha256(
     JSON.stringify({
       candidate_slug: slug,
-      ...contents,
+      sources: sources.map((s) => ({ id: s.source_id, content: s.content })),
+      first_party: firstParty,
     }),
   );
 
   return {
     candidate_slug: slug,
-    candidate_name: meta.candidate_name,
-    company: meta.company,
-    source_url: meta.source_url,
-    source_date: meta.source_date ?? null,
-    source_type: meta.source_type,
-    primary_source: contents.primary_source,
+    meta,
+    sources,
+    first_party: firstParty,
+    bundle_hash: bundleHash,
+  };
+}
+
+async function readFirstPartyContent(dir: string, flat = false): Promise<FirstPartyContent> {
+  const baseFiles = {
+    linkedin_headline: "linkedin-headline.txt",
+    linkedin_about: "linkedin-about.md",
+    website_hero: "website-hero.md",
+    website_about_first: "website-about-first.md",
+  };
+  const contents: Record<keyof typeof baseFiles, string> = {
+    linkedin_headline: "",
+    linkedin_about: "",
+    website_hero: "",
+    website_about_first: "",
+  };
+  for (const [key, fileName] of Object.entries(baseFiles) as Array<
+    [keyof typeof baseFiles, string]
+  >) {
+    const fp = path.join(dir, fileName);
+    if (existsSync(fp)) {
+      contents[key] = await readFile(fp, "utf8");
+    }
+  }
+  const combined = [
+    contents.linkedin_headline,
+    contents.linkedin_about,
+    contents.website_hero,
+    contents.website_about_first,
+  ]
+    .join("\n")
+    .toLowerCase();
+  return {
     linkedin_headline: contents.linkedin_headline.trim(),
     linkedin_about: contents.linkedin_about,
     website_hero: contents.website_hero,
     website_about_first: contents.website_about_first,
-    bundle_hash: bundleHash,
+    combined_lowercase: combined,
   };
 }
 

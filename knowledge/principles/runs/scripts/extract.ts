@@ -1,20 +1,27 @@
 // ═══════════════════════════════════════════════
 // knowledge/principles/runs/scripts/extract.ts
 //
-// Phase 0: Extracts the CEO's verbatim differentiation articulation from a
-// long-form external source (interview, podcast transcript, article).
+// Phase 0: Extracts the CEO's verbatim differentiation articulation from
+// independent external sources. Two tracks (see ../test-subjects.md):
+//
+//   --track breadth (default, requires ≥3 independent sources)
+//     Uses extractor-breadth.md prompt. Outputs recurring_themes schema.
+//     validation_quality is computed via OR of two paths:
+//       (a) Recurrence with lexical similarity
+//       (b) Depth with self-reinforcement (NOT external validation)
+//
+//   --track depth (fallback, presence-thin candidates with 1-2 sources)
+//     Uses extractor-depth.md prompt. Outputs core_differentiation_claim.
+//     validation_quality computed deterministically from word counts.
+//
+// Tracks produce different artifact schemas. Track A and Track B results are
+// NOT directly comparable — see test-subjects.md "Cross-method comparability".
 //
 // Usage:
-//   npm run playbook:extract -- --candidate <slug> --model <opus|sonnet>
-//
-// The Extractor sees ONLY the primary source. It does NOT see the playbook,
-// the playbook index, LinkedIn content, or website content. This isolation
-// is methodological — the extraction is the anchor against which all
-// downstream synthesis is compared.
+//   npm run playbook:extract -- --candidate <slug> --model <opus|sonnet|haiku>
+//                                                 [--track breadth|depth] [--run N]
 //
 // On completion, writes extraction JSON and sets STATUS to "pending_review".
-// User must explicitly run `npm run playbook:approve` before synthesis can
-// proceed (see approve.ts and runs/README.md).
 // ═══════════════════════════════════════════════
 
 import { readFile } from "node:fs/promises";
@@ -36,12 +43,15 @@ import {
   requireArg,
   type ModelKey,
   type ArtifactMetadata,
+  type Track,
+  type InputBundle,
 } from "./utils.js";
 
 const TEMPERATURE = 0.5;
-const EXTRACTOR_PROMPT_PATH = path.join(PROMPTS_ROOT, "extractor.md");
 
-interface ExtractionData {
+// ─── Track-specific schemas ───────────────────────────────────────────────
+
+interface DepthExtractionData {
   candidate_name: string;
   company: string;
   source_url: string;
@@ -58,18 +68,56 @@ interface ExtractionData {
   industry_supporting_claims: string[];
   tradeoffs_or_constraints_acknowledged: string[];
   extraction_notes: {
-    source_thinness_observed: boolean;
+    source_thinness_observed?: boolean; // legacy field, may be present in 0.2.x output but ignored by validation
     verbatim_vs_paraphrase_ratio: "mostly_verbatim" | "mixed" | "mostly_paraphrase";
     fields_empty_due_to_source_absence: string[];
   };
 }
 
-interface ValidationQuality {
-  quality: "high" | "low";
-  failures: string[];
+interface ThemeAppearance {
+  source_id: string;
+  verbatim_quote: string;
+  word_count_in_source: number;
+  exact_terminology_used: string[];
 }
 
-function computeValidationQuality(data: ExtractionData): ValidationQuality {
+interface RecurringTheme {
+  theme_label: string;
+  appearances: ThemeAppearance[];
+  appearances_count: number;
+  shared_verbatim_terms: string[];
+  centrality: number;
+  representative_quote: string;
+}
+
+interface BreadthExtractionData {
+  candidate_name: string;
+  company: string;
+  extraction_method: "breadth-first";
+  sources_metadata: Array<{
+    source_id: string;
+    source_url: string;
+    source_type: string;
+    source_date: string | null;
+    source_word_count_ceo_speech: number;
+  }>;
+  recurring_themes: RecurringTheme[];
+  what_ceo_explicitly_says_they_are_NOT: Array<{ statement: string; source_ids: string[] }>;
+  company_specific_proof_points: Array<{ claim: string; source_ids: string[] }>;
+  industry_supporting_claims: Array<{ claim: string; source_ids: string[] }>;
+  tradeoffs_or_constraints_acknowledged: Array<{ statement: string; source_ids: string[] }>;
+  extraction_notes: {
+    verbatim_vs_paraphrase_ratio_per_source: Array<{ source_id: string; ratio: string }>;
+    fields_empty_due_to_source_absence: string[];
+  };
+}
+
+// ─── Validation: track-specific ───────────────────────────────────────────
+
+function computeDepthValidationQuality(data: DepthExtractionData): {
+  quality: "high" | "low";
+  failures: string[];
+} {
   const failures: string[] = [];
   const summaryWords = data.core_differentiation_claim.summary_3_5_sentences
     .trim()
@@ -89,41 +137,111 @@ function computeValidationQuality(data: ExtractionData): ValidationQuality {
       `in_ceo_own_terminology has ${data.core_differentiation_claim.in_ceo_own_terminology.length} terms (<3)`,
     );
   }
+  return { quality: failures.length >= 2 ? "low" : "high", failures };
+}
+
+function computeBreadthValidationQuality(
+  data: BreadthExtractionData,
+  firstPartyCombinedLower: string,
+): {
+  quality: "high" | "low";
+  path_a_recurrence_satisfied: boolean;
+  path_b_depth_self_reinforcement_satisfied: boolean;
+  themes_count: number;
+  recurring_themes_with_shared_terms_count: number;
+  deep_themes_with_first_party_echo_count: number;
+} {
+  const themesCount = data.recurring_themes.length;
+  const recurringWithSharedTerms = data.recurring_themes.filter(
+    (t) => t.appearances_count >= 2 && t.shared_verbatim_terms.length >= 1,
+  );
+  const pathA = themesCount >= 3 && recurringWithSharedTerms.length >= 2;
+
+  const deepThemes = data.recurring_themes.filter((t) => {
+    if (t.appearances_count !== 1) return false;
+    const appearance = t.appearances[0];
+    if (!appearance || appearance.word_count_in_source < 200) return false;
+    return appearance.exact_terminology_used.some((term) =>
+      firstPartyCombinedLower.includes(term.toLowerCase()),
+    );
+  });
+  const pathB = deepThemes.length >= 1;
+
   return {
-    quality: failures.length >= 2 ? "low" : "high",
-    failures,
+    quality: pathA || pathB ? "high" : "low",
+    path_a_recurrence_satisfied: pathA,
+    path_b_depth_self_reinforcement_satisfied: pathB,
+    themes_count: themesCount,
+    recurring_themes_with_shared_terms_count: recurringWithSharedTerms.length,
+    deep_themes_with_first_party_echo_count: deepThemes.length,
   };
 }
 
-async function buildSystemPrompt(): Promise<string> {
-  // The Extractor system prompt is embedded in the .md file inside a code block.
-  // We extract it from there to keep a single source of truth.
-  const md = await readFile(EXTRACTOR_PROMPT_PATH, "utf8");
+// ─── Prompt building ──────────────────────────────────────────────────────
+
+async function readSystemPromptFromFile(filePath: string): Promise<string> {
+  const md = await readFile(filePath, "utf8");
   const match = md.match(/## System Prompt\s*\n\s*```\s*([\s\S]*?)\s*```/);
   if (!match) {
-    throw new Error(
-      `Could not find System Prompt code block in ${EXTRACTOR_PROMPT_PATH}`,
-    );
+    throw new Error(`Could not find System Prompt code block in ${filePath}`);
   }
   return match[1].trim();
 }
 
-async function buildUserPrompt(slug: string): Promise<string> {
-  const bundle = await readInputBundle(slug);
+function buildDepthUserPrompt(bundle: InputBundle): string {
+  const primary = bundle.sources[0];
   return `SOURCE METADATA:
-- candidate_name: ${bundle.candidate_name}
-- company: ${bundle.company}
-- source_url: ${bundle.source_url}
-- source_date: ${bundle.source_date ?? "(not available)"}
-- source_type: ${bundle.source_type}
+- candidate_name: ${bundle.meta.candidate_name}
+- company: ${bundle.meta.company}
+- source_url: ${primary.url}
+- source_date: ${primary.date ?? "(not available)"}
+- source_type: ${primary.type}
 
 SOURCE CONTENT:
 ---
-${bundle.primary_source}
+${primary.content}
 ---
 
 Produce the extraction JSON now.`;
 }
+
+function buildBreadthUserPrompt(bundle: InputBundle): string {
+  if (bundle.sources.length < 3) {
+    throw new Error(
+      `Track A (breadth) requires ≥3 independent sources, got ${bundle.sources.length}. ` +
+        `Use --track depth or expand the sources/ bundle.`,
+    );
+  }
+
+  const sourceBlocks = bundle.sources
+    .map(
+      (s) => `[SOURCE source_id="${s.source_id}"]
+- source_url: ${s.url}
+- source_type: ${s.type}
+- source_date: ${s.date ?? "(not available)"}
+
+CONTENT:
+---
+${s.content}
+---
+[END SOURCE source_id="${s.source_id}"]`,
+    )
+    .join("\n\n");
+
+  return `SOURCES BUNDLE — ${bundle.sources.length} INDEPENDENT SOURCES:
+
+${sourceBlocks}
+
+CANDIDATE METADATA:
+- candidate_name: ${bundle.meta.candidate_name}
+- company: ${bundle.meta.company}
+
+Identify recurring_themes across these sources. For each theme, capture every appearance with verbatim quote, word count estimate, and exact terminology. Then identify shared_verbatim_terms (phrases that appear identically across ≥2 appearances).
+
+Produce the breadth-first extraction JSON now.`;
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
@@ -133,28 +251,43 @@ async function main() {
     throw new Error(`--model must be 'opus' | 'sonnet' | 'haiku', got: ${modelArg}`);
   }
   const model: ModelKey = modelArg;
+  const trackArg = ((args.track as string) ?? "breadth").toLowerCase();
+  if (trackArg !== "breadth" && trackArg !== "depth") {
+    throw new Error(`--track must be 'breadth' | 'depth', got: ${trackArg}`);
+  }
+  const track: Track = trackArg;
   const runNumber = parseInt((args.run as string) ?? "1", 10);
 
-  console.log(`[extract] candidate=${slug} model=${model} run=${runNumber}`);
+  console.log(`[extract] candidate=${slug} model=${model} track=${track} run=${runNumber}`);
 
-  const promptInfo = await readPromptVersion(EXTRACTOR_PROMPT_PATH);
+  const promptFile = path.join(
+    PROMPTS_ROOT,
+    track === "breadth" ? "extractor-breadth.md" : "extractor-depth.md",
+  );
+  const promptInfo = await readPromptVersion(promptFile);
   const playbookInfo = await readPlaybookVersion();
   const bundle = await readInputBundle(slug);
 
-  const systemPrompt = await buildSystemPrompt();
-  const userPrompt = await buildUserPrompt(slug);
+  // Track guard: breadth requires ≥3 independent sources
+  if (track === "breadth" && bundle.sources.length < 3) {
+    throw new Error(
+      `Cannot run breadth extraction on ${slug}: only ${bundle.sources.length} sources in bundle. ` +
+        `Required: ≥3 independent sources. Either expand the bundle or run with --track depth.`,
+    );
+  }
 
-  // Pre-call confirmation (cost transparency)
+  const systemPrompt = await readSystemPromptFromFile(promptFile);
+  const userPrompt =
+    track === "breadth" ? buildBreadthUserPrompt(bundle) : buildDepthUserPrompt(bundle);
+
   const inputCharCount = systemPrompt.length + userPrompt.length;
   const estimatedInputTokens = Math.ceil(inputCharCount / 3.5);
+  const inCostRate = model === "opus" ? 15 : model === "sonnet" ? 3 : 1;
   console.log(
-    `[extract] estimated input tokens: ~${estimatedInputTokens} (≈$${
-      model === "opus"
-        ? ((estimatedInputTokens / 1_000_000) * 15).toFixed(3)
-        : model === "sonnet"
-          ? ((estimatedInputTokens / 1_000_000) * 3).toFixed(3)
-          : ((estimatedInputTokens / 1_000_000) * 1).toFixed(3)
-    } input cost; output cost depends on response size)`,
+    `[extract] estimated input tokens: ~${estimatedInputTokens} (≈$${(
+      (estimatedInputTokens / 1_000_000) *
+      inCostRate
+    ).toFixed(3)} input cost; output cost depends on response size)`,
   );
 
   const result = await callAnthropic({
@@ -164,12 +297,27 @@ async function main() {
     temperature: TEMPERATURE,
   });
 
-  const extractionData = parseJsonResponse<ExtractionData>(
-    result.content,
-    "extract.ts response",
-  );
+  let validation: unknown;
+  let extractionData: unknown;
 
-  const validation = computeValidationQuality(extractionData);
+  if (track === "breadth") {
+    extractionData = parseJsonResponse<BreadthExtractionData>(
+      result.content,
+      "extract.ts breadth response",
+    );
+    validation = computeBreadthValidationQuality(
+      extractionData as BreadthExtractionData,
+      bundle.first_party.combined_lowercase,
+    );
+  } else {
+    extractionData = parseJsonResponse<DepthExtractionData>(
+      result.content,
+      "extract.ts depth response",
+    );
+    validation = computeDepthValidationQuality(extractionData as DepthExtractionData);
+  }
+
+  const enriched = { ...(extractionData as object), _validation: validation, _track: track };
 
   const metadata: ArtifactMetadata = {
     candidate_slug: slug,
@@ -187,31 +335,35 @@ async function main() {
     usage: result.usage,
   };
 
-  // Wrap with validation_quality tag (NOT used as decision gate; just informational)
-  const enrichedData = {
-    ...extractionData,
-    _validation: validation,
-  };
-
-  const filename = artifactFilename({
-    type: "extraction",
-    promptVersion: promptInfo.version,
-    runNumber,
-    date: todayDate(),
-  });
+  const filename =
+    track === "breadth"
+      ? `extraction__v${promptInfo.version}__breadth__run${runNumber}__${todayDate()}.json`
+      : `extraction__v${promptInfo.version}__depth__run${runNumber}__${todayDate()}.json`;
   const outPath = path.join(RUNS_ROOT, "extractions", slug, filename);
-  await writeArtifact(outPath, wrapArtifact(metadata, enrichedData));
+  await writeArtifact(outPath, wrapArtifact(metadata, enriched));
 
   await writeGateStatus(slug, "pending_review");
 
+  const v = validation as { quality: "high" | "low" };
   console.log(`[extract] ✓ wrote ${outPath}`);
   console.log(
     `[extract] cost: $${result.costUsd.toFixed(4)} (${result.usage.input_tokens} in + ${result.usage.output_tokens} out tokens)`,
   );
-  console.log(`[extract] validation_quality: ${validation.quality}`);
-  if (validation.failures.length > 0) {
-    console.log(`[extract] validation failures:`);
-    for (const f of validation.failures) console.log(`  - ${f}`);
+  console.log(`[extract] track=${track}, validation_quality: ${v.quality}`);
+  if (track === "breadth") {
+    const vb = validation as ReturnType<typeof computeBreadthValidationQuality>;
+    console.log(
+      `  path_a (recurrence + shared terms): ${vb.path_a_recurrence_satisfied} (themes=${vb.themes_count}, with_shared_terms=${vb.recurring_themes_with_shared_terms_count}/2 required)`,
+    );
+    console.log(
+      `  path_b (depth + self-reinforcement): ${vb.path_b_depth_self_reinforcement_satisfied} (deep_themes_echoed=${vb.deep_themes_with_first_party_echo_count}/1 required)`,
+    );
+  } else {
+    const vd = validation as ReturnType<typeof computeDepthValidationQuality>;
+    if (vd.failures.length > 0) {
+      console.log(`  failures:`);
+      for (const f of vd.failures) console.log(`    - ${f}`);
+    }
   }
   console.log(`[extract] STATUS: pending_review`);
   console.log(``);
@@ -219,8 +371,6 @@ async function main() {
   console.log(`  ${outPath}`);
   console.log(`Then approve with:`);
   console.log(`  npm run playbook:approve -- --candidate ${slug}`);
-  console.log(`Or reject (re-run with adjustments):`);
-  console.log(`  npm run playbook:approve -- --candidate ${slug} --reject`);
 }
 
 main().catch((err) => {

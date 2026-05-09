@@ -1,10 +1,10 @@
-<!-- prompt-version: 0.2.0 -->
+<!-- prompt-version: 0.2.1 -->
 <!-- last-modified: 2026-05-09 -->
-<!-- changelog: 0.1.0 = initial; 0.1.1 = applied 5 fixes from Buildots dry run; 0.2.0 = system prompt now includes explicit field name list (LLM was inventing alternative schema like "what_makes_company_different") -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = applied 5 fixes from Buildots dry run; 0.2.0 = explicit field name list; 0.2.1 = renamed file from extractor.md to extractor-depth.md as part of Track A/B architecture (see ../test-subjects.md). This variant is for TRACK B (presence-thin candidates, 1-2 independent sources). For Track A (≥3 independent sources), use extractor-breadth.md. -->
 
-# Extractor Prompt
+# Extractor Prompt — Depth-First (Track B, fallback)
 
-מטרה: לחלץ ממקור חיצוני (ראיון / פודקאסט / מאמר) את **ניסוח הבידול של המנכ"ל בלשונו שלו**, לפני כל סינתזה ולפני כל מיפוי.
+מטרה: לחלץ ממקור חיצוני יחיד (ראיון / פודקאסט / מאמר) את **ניסוח הבידול של המנכ"ל בלשונו שלו**, לפני כל סינתזה ולפני כל מיפוי. ה-variant הזה משמש fallback ל-candidates עם presence ציבורית מוגבלת (1-2 מקורות עצמאיים). ל-candidates עם ≥3 מקורות עצמאיים, השתמש ב-`extractor-breadth.md`.
 
 **עיקרון מבני:** ה-Extractor אינו רואה את הפלייבוק, אינו יודע על CTM, אינו ממיין לקטגוריות. מטרתו היחידה לשמר את הניסוח של המנכ"ל verbatim ככל האפשר, עם מבנה מינימלי של תוצאה.
 
