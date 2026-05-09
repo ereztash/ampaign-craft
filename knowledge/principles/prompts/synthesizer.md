@@ -46,28 +46,37 @@ Output format: a single JSON object matching the schema below. Output JSON only,
 
 ## User Prompt Template
 
+**Multi-source requirement:** ה-Synthesizer דורש לפחות 2 sources distinct, כדי ש-dual-tier evidence יוכל להתקיים. Source יחיד (interview בלבד) ייצר lexical-only signals ויחסום את רוב ה-principles ב-score 4. אם המקור החיצוני העיקרי הוא היחיד הזמין, יש לוודא שה-LinkedIn About + Website hero + LinkedIn headline משלימים — כל אחד מהם נחשב source נפרד לצורך זיהוי structural patterns (consistency across sources, length distribution, framing repetition).
+
 ```
-SOURCE METADATA:
+PRIMARY SOURCE METADATA:
 - candidate_name: {{candidate_name}}
 - company: {{company}}
 - source_url: {{source_url}}
 - source_date: {{source_date}}
 - source_type: {{source_type}}
 
-SOURCE CONTENT:
+PRIMARY SOURCE CONTENT:
 ---
 {{source_content}}
 ---
 
-ADDITIONAL CONTEXT (if available):
-- LinkedIn headline: {{linkedin_headline}}
-- LinkedIn About: {{linkedin_about}}
-- Website hero: {{website_hero}}
+REQUIRED SECONDARY SOURCES (for dual-tier evidence):
+- LinkedIn headline: {{linkedin_headline}}                # required
+- LinkedIn About (full): {{linkedin_about}}               # required
+- Website hero (h1 + sub): {{website_hero}}               # required
+- Website About first paragraph: {{website_about_first}}  # required
+
+OPTIONAL SOURCES:
+- Pricing page snippet: {{pricing_page_snippet}}
+- 1-2 case studies (titles + intro): {{case_study_intros}}
 
 PLAYBOOK (full text, all 15 entries with policy):
 ---
 {{playbook_full}}
 ---
+
+Pre-call validation: if any of the four required secondary sources is empty, abort and flag the candidate as 'insufficient_input_diversity'. Do not run synthesis on single-source input.
 
 Produce the synthesis JSON now.
 ```

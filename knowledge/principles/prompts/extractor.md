@@ -59,12 +59,12 @@ Produce the extraction JSON now.
   "source_url": "string",
   "source_date": "ISO 8601 date or null",
   "source_type": "string",
-  "source_word_count": "integer",
+  "source_word_count": "integer — count of CEO's direct speech only (not interviewer questions, not journalist paraphrase)",
 
   "core_differentiation_claim": {
-    "summary_2_3_sentences": "string — what the CEO says makes their company different, summarized in 2-3 sentences using the CEO's own terminology",
+    "summary_3_5_sentences": "string — what the CEO says makes their company different, summarized in 3-5 sentences (target: 80-150 words) using the CEO's own terminology",
     "in_ceo_own_terminology": [
-      "string — distinct term or phrase the CEO uses to describe their differentiation. Aim for 3-7 distinct terms. Reformulations of the same idea count as one term."
+      "string — one distinct term per coherent concept. Compound terms count as one if both components describe a single idea (e.g., 'computer vision' = 1 term). Compound terms count as two if both are emphasized as core differentiators ('wearable cameras AND computer vision', both load-bearing → 2 terms). Reformulations of the same idea count as one. Aim for 3-7 distinct terms."
     ]
   },
 
@@ -79,8 +79,12 @@ Produce the extraction JSON now.
     "string — explicit 'we don't do X' / 'this is not for Y' / 'we chose not to' statements. Empty array if none present."
   ],
 
-  "what_ceo_emphasizes_as_proof": [
-    "string — specific customer names, metrics, case studies, or outcomes the CEO cites as evidence. Empty array if only generic claims."
+  "company_specific_proof_points": [
+    "string — evidence specific to the CEO's own company: named customers, customer-reported metrics, case studies with their company. Empty array if absent."
+  ],
+
+  "industry_supporting_claims": [
+    "string — third-party stats, market sizing, or industry research the CEO cites to frame the problem (e.g., 'McKinsey says 50% productivity improvement is possible'). These are NOT company-specific evidence. Empty array if absent."
   ],
 
   "tradeoffs_or_constraints_acknowledged": [
@@ -90,8 +94,8 @@ Produce the extraction JSON now.
   "extraction_notes": {
     "source_thinness_observed": "boolean — true if CEO speaks mostly in generic terms with few specific claims",
     "verbatim_vs_paraphrase_ratio": "string — 'mostly_verbatim' | 'mixed' | 'mostly_paraphrase' (assessment of how much of the source is direct CEO speech vs. journalist paraphrase)",
-    "missing_fields": [
-      "string — list of output fields you left empty because the source did not contain them. Acceptable values: 'what_ceo_explicitly_says_they_are_NOT', 'what_ceo_emphasizes_as_proof', 'tradeoffs_or_constraints_acknowledged'"
+    "fields_empty_due_to_source_absence": [
+      "string — list of output fields left empty because the source did not contain them (legitimate, not an error). Acceptable values: 'what_ceo_explicitly_says_they_are_NOT', 'company_specific_proof_points', 'industry_supporting_claims', 'tradeoffs_or_constraints_acknowledged'"
     ]
   }
 }
@@ -105,7 +109,7 @@ Produce the extraction JSON now.
 
 ```
 quality = "high"
-if word_count(summary_2_3_sentences) < 80: failures += 1
+if word_count(summary_3_5_sentences) < 80: failures += 1
 if count(quotes where word_count(quote) > 30) < 2: failures += 1
 if len(in_ceo_own_terminology) < 3: failures += 1
 

@@ -83,8 +83,16 @@
 
 **רץ על:** Buildots בלבד (Q&A מובנה, ground truth עשיר).
 
+**Inputs נדרשים:**
+- Unite.AI Q&A (primary source)
+- LinkedIn headline + About מהפרופיל של Roy Danon
+- Website hero + About first paragraph מ-buildots.com
+- אופציונלי: pricing page, 1-2 case study intros
+
+**הערה מהירה ל-Phase 0:** ה-Synthesizer חוסם synthesis על single-source input (ראה [synthesizer.md](./prompts/synthesizer.md)). יש לאסוף את ה-4 secondary sources לפני ההפעלה.
+
 **Process:**
-1. Synthesizer LLM מופעל ב-context נפרד עם הפלייבוק המלא + source
+1. Synthesizer LLM מופעל ב-context נפרד עם הפלייבוק המלא + multi-source bundle
 2. מייצר `synthesis.json` לפי [synthesizer.md](./prompts/synthesizer.md)
 3. הסינתזה רצה 2-3 פעמים לבחינת stability
 
