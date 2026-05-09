@@ -1,6 +1,6 @@
-<!-- prompt-version: 0.1.1 -->
+<!-- prompt-version: 0.2.0 -->
 <!-- last-modified: 2026-05-09 -->
-<!-- changelog: 0.1.0 = initial; 0.1.1 = multi-source input now required (single-source defeats dual-tier evidence policy) -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = multi-source input now required (single-source defeats dual-tier evidence policy); 0.2.0 = handle absent LinkedIn About as interpretable signal (some CEOs don't publish About sections; absence is data, not error) -->
 
 # Synthesizer Prompt
 
@@ -51,6 +51,8 @@ Output format: a single JSON object matching the schema below. Output JSON only,
 ## User Prompt Template
 
 **Multi-source requirement:** ה-Synthesizer דורש לפחות 2 sources distinct, כדי ש-dual-tier evidence יוכל להתקיים. Source יחיד (interview בלבד) ייצר lexical-only signals ויחסום את רוב ה-principles ב-score 4. אם המקור החיצוני העיקרי הוא היחיד הזמין, יש לוודא שה-LinkedIn About + Website hero + LinkedIn headline משלימים — כל אחד מהם נחשב source נפרד לצורך זיהוי structural patterns (consistency across sources, length distribution, framing repetition).
+
+**Absent secondaries — interpretable, not blocking:** אם אחד ממקורות ה-secondary חסר באופן אובייקטיבי (למשל: ל-CEO אין About section ב-LinkedIn, או החברה לא פרסמה About page באתר), ה-source מועבר עם marker מפורש כמו `(absent — no About section published)`. ה-Synthesizer מטפל בזה כ-data, לא כ-error: היעדר About עצמו הוא signal (CEO לא משקיע ב-personal-brand articulation; אולי P02 Explanation-Efficiency חלש; אולי P15 Legitimacy-Driver לא מעניין אותו). אסור לדחות synthesis על בסיס secondary בודד שחסר. דרושים ≥3 secondaries non-absent ביחד עם ה-primary source כדי לרוץ.
 
 ```
 PRIMARY SOURCE METADATA:

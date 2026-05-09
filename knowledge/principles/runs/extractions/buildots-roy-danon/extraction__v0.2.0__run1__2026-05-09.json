@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "candidate_slug": "buildots-roy-danon",
+    "artifact_type": "extraction",
+    "prompt_version": "0.2.0",
+    "prompt_hash_sha256": "76b5af46596c7ed2b4e09f9d7257a851ec3f0e1446fef1f8d62c10266cf9be17",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.5,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T17:37:41.361Z",
+    "input_bundle_hash_sha256": "b370aef91c59024745682d2c11d0abe189e76f18d695a4e0b5fa8bd49db06334",
+    "cost_usd": 0.020478,
+    "usage": {
+      "input_tokens": 1986,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 968,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Roy Danon",
+    "company": "Buildots",
+    "source_url": "https://www.unite.ai/roy-danon-ceo-of-buildots-interview-series/",
+    "source_date": "2020-06-01",
+    "source_type": "long-form Q&A interview",
+    "source_word_count": 700,
+    "core_differentiation_claim": {
+      "summary_3_5_sentences": "Danon positions Buildots as transforming construction sites into 'digitally managed environments' by adding a layer of 'actuals' to BIM models via wearable 360 cameras and computer vision algorithms. The system automatically determines the status of each construction element, creating what he calls a 'digital twin' and a 'Construction Mission Control Room' equivalent to what exists in any manufacturing plant. Buildots also generates longitudinal data that enables insights not just for current projects but for 'rethinking how to design and plan our buildings more efficiently' in the future.",
+      "in_ceo_own_terminology": [
+        "digital twin",
+        "Construction Mission Control Room",
+        "actuals",
+        "wearable cameras and computer vision algorithms",
+        "digitally managed environments",
+        "modern process control systems",
+        "structured data"
+      ]
+    },
+    "supporting_verbatim_quotes": [
+      {
+        "quote": "Buildots adds another layer of data to BIM models, which is the actuals. Our solution utilizes wearable cameras and computer vision algorithms to automatically determine the status of each construction element that appears in the model.",
+        "context": "Explaining how Buildots augments BIM with real-world construction data"
+      },
+      {
+        "quote": "Buildots is transforming the model into what the industry calls a 'digital twin', a digital representation of what was planned originally together with what is being built in reality at any given point during the construction.",
+        "context": "Describing the core output of the Buildots system"
+      },
+      {
+        "quote": "By generating the digital twin with the Buildots system, we create what we call The Construction Mission Control Room. This control room is the equivalent of what exists on any other manufacturing plant, a place where controllers and managers visit to find answers to questions they have regarding the ongoing processes.",
+        "context": "Describing the insight layer built on top of the digital twin"
+      },
+      {
+        "quote": "Buildots generates data that is critical to current projects, but it also enables the option to produce insights for future projects. For the first time, the process is continuously measured and analyzed in such depth and accuracy that it's creating huge potential for rethinking how to design and plan our buildings more efficiently.",
+        "context": "Explaining the longitudinal and forward-looking value of Buildots data"
+      },
+      {
+        "quote": "a construction site is a manufacturing facility. It's a one-off, temporary and extremely dynamic one, but at the end of the day, a building is a product, built according to highly detailed designs and timelines.",
+        "context": "Articulating the foundational insight that shaped the Buildots concept"
+      }
+    ],
+    "what_ceo_explicitly_says_they_are_NOT": [],
+    "company_specific_proof_points": [],
+    "industry_supporting_claims": [
+      "McKinsey claimed that the sector's productivity can be improved by 50% through the introduction of modern process control systems (such as Buildots)"
+    ],
+    "tradeoffs_or_constraints_acknowledged": [
+      "Systems like Buildots rely on the existence of BIM to operate"
+    ],
+    "extraction_notes": {
+      "source_thinness_observed": true,
+      "verbatim_vs_paraphrase_ratio": "mostly_verbatim",
+      "fields_empty_due_to_source_absence": [
+        "what_ceo_explicitly_says_they_are_NOT",
+        "company_specific_proof_points"
+      ]
+    },
+    "_validation": {
+      "quality": "high",
+      "failures": []
+    }
+  }
+}

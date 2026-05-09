@@ -89,6 +89,18 @@ Deno.serve(async (req: Request) => {
     );
   }
 
+  // Opus 4.7 deprecated the `temperature` parameter (the model now has fixed
+  // sampling behavior). Omit it for opus; pass it for sonnet/haiku.
+  const anthropicBody: Record<string, unknown> = {
+    model: modelId,
+    max_tokens,
+    system,
+    messages: [{ role: "user", content: user }],
+  };
+  if (model.toLowerCase() !== "opus") {
+    anthropicBody.temperature = temperature;
+  }
+
   let anthropicRes: Response;
   try {
     anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -98,13 +110,7 @@ Deno.serve(async (req: Request) => {
         "x-api-key": ANTHROPIC_API_KEY,
         "anthropic-version": "2023-06-01",
       },
-      body: JSON.stringify({
-        model: modelId,
-        max_tokens,
-        temperature,
-        system,
-        messages: [{ role: "user", content: user }],
-      }),
+      body: JSON.stringify(anthropicBody),
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "unknown";

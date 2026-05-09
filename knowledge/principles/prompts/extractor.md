@@ -1,6 +1,6 @@
-<!-- prompt-version: 0.1.1 -->
+<!-- prompt-version: 0.2.0 -->
 <!-- last-modified: 2026-05-09 -->
-<!-- changelog: 0.1.0 = initial; 0.1.1 = applied 5 fixes from Buildots dry run (summary length, term counting, proof split, missing_fields rename, source_word_count semantic) -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = applied 5 fixes from Buildots dry run; 0.2.0 = system prompt now includes explicit field name list (LLM was inventing alternative schema like "what_makes_company_different") -->
 
 # Extractor Prompt
 
@@ -29,7 +29,22 @@ Strict rules:
 4. Do not categorize. There are no buckets, axes, or principles in your output.
 5. If the source is thin (CEO speaks generically, no specific terms), produce a short output. Do not pad. Thin output is a valid signal that the source is thin.
 
-Output format: a single JSON object matching the schema below. Output JSON only, no commentary.
+Output format: a single JSON object using EXACTLY the field names below. Do NOT invent new field names. Do NOT rename fields. Do NOT add extra fields. Output JSON only, no commentary, no markdown code fences.
+
+Required field names (use exactly):
+- candidate_name (string)
+- company (string)
+- source_url (string)
+- source_date (string ISO 8601 or null)
+- source_type (string)
+- source_word_count (integer; CEO's direct speech only)
+- core_differentiation_claim (object with two fields: summary_3_5_sentences (string, 80-150 words target) and in_ceo_own_terminology (array of distinct terms, 3-7 items))
+- supporting_verbatim_quotes (array of objects, each with quote (string ≥30 words preferred) and context (string))
+- what_ceo_explicitly_says_they_are_NOT (array of strings; empty array [] if CEO did not say what they are NOT)
+- company_specific_proof_points (array of strings: customer names, customer-reported metrics; empty if absent)
+- industry_supporting_claims (array of strings: third-party stats / market sizing the CEO cites; empty if absent)
+- tradeoffs_or_constraints_acknowledged (array of strings; empty if CEO acknowledged no limits)
+- extraction_notes (object with three fields: source_thinness_observed (boolean), verbatim_vs_paraphrase_ratio (one of "mostly_verbatim" | "mixed" | "mostly_paraphrase"), fields_empty_due_to_source_absence (array of field names left empty because source did not contain them))
 ```
 
 ---
