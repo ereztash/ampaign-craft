@@ -1,3 +1,7 @@
+<!-- prompt-version: 0.1.0 -->
+<!-- last-modified: 2026-05-09 -->
+<!-- changelog: 0.1.0 = initial release; runs at temperature 0.25 with N=3 stability aggregation -->
+
 # Mapper Prompt
 
 מטרה: לתרגם בין שפת המנכ"ל (פלט ה-Extractor) לשפת הפלייבוק (15 principles), בלי לבצע סינתזה.

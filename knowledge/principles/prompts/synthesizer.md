@@ -1,3 +1,7 @@
+<!-- prompt-version: 0.1.1 -->
+<!-- last-modified: 2026-05-09 -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = multi-source input now required (single-source defeats dual-tier evidence policy) -->
+
 # Synthesizer Prompt
 
 מטרה: לקרוא את ה-source החיצוני של candidate (ראיון/פודקאסט/מאמר), לעבד אותו מול הפלייבוק המלא, ולייצר ציוני principle עם evidence quotes ו-Disqualifier checks.

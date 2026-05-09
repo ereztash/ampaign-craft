@@ -1,3 +1,7 @@
+<!-- playbook-version: 0.2.0 -->
+<!-- last-modified: 2026-05-09 -->
+<!-- changelog: 0.1.0 = initial 3-entry release; 0.2.0 = complete to 15 entries with structural corrections (decision-rule tiebreakers, unified disqualifiers, dual-tier policy) -->
+
 # Differentiation Principles Playbook
 
 מסגרת לחילוץ בידול B2B מבוסס מסמכים. ה-playbook הזה הוא **כלי חשיבה ל-LLM**, לא lookup table — כל entry הוא תיאור עשיר שה-LLM מתייעץ בו ומחליט per-CEO באיזה ציר CTM נופל, איזה ראיות נוכחות, ואם בכלל יש מספיק להגן על טענה.

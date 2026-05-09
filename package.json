@@ -28,7 +28,12 @@
     "consistency:behavioral": "npx tsx scripts/consistency/audit-behavioral.ts",
     "consistency:behavioral-coverage": "npx tsx scripts/consistency/audit-behavioral-coverage.ts",
     "consistency:structural": "npx tsx scripts/consistency/audit-structural.ts",
-    "consistency:provenance": "npx tsx scripts/consistency/audit-provenance.ts"
+    "consistency:provenance": "npx tsx scripts/consistency/audit-provenance.ts",
+    "playbook:extract": "node --env-file=.env --import tsx knowledge/principles/runs/scripts/extract.ts",
+    "playbook:approve": "node --env-file=.env --import tsx knowledge/principles/runs/scripts/approve.ts",
+    "playbook:synth": "node --env-file=.env --import tsx knowledge/principles/runs/scripts/synthesize.ts",
+    "playbook:map": "node --env-file=.env --import tsx knowledge/principles/runs/scripts/map.ts",
+    "playbook:compare": "node --env-file=.env --import tsx knowledge/principles/runs/scripts/compare.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

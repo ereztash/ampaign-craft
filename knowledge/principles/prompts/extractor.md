@@ -1,3 +1,7 @@
+<!-- prompt-version: 0.1.1 -->
+<!-- last-modified: 2026-05-09 -->
+<!-- changelog: 0.1.0 = initial; 0.1.1 = applied 5 fixes from Buildots dry run (summary length, term counting, proof split, missing_fields rename, source_word_count semantic) -->
+
 # Extractor Prompt
 
 מטרה: לחלץ ממקור חיצוני (ראיון / פודקאסט / מאמר) את **ניסוח הבידול של המנכ"ל בלשונו שלו**, לפני כל סינתזה ולפני כל מיפוי.
