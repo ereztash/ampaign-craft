@@ -44,6 +44,9 @@ export function estimateCost(
 }
 
 // ─── API caller with sanitized errors ─────────────────────────────────────
+// Calls the playbook-llm Supabase edge function, which proxies to Anthropic.
+// The ANTHROPIC_API_KEY remains in Supabase secrets — never in any client.
+// ──────────────────────────────────────────────────────────────────────────
 
 export interface AnthropicCallOptions {
   model: ModelKey;
@@ -64,57 +67,71 @@ export interface AnthropicCallResult {
 export async function callAnthropic(
   opts: AnthropicCallOptions,
 ): Promise<AnthropicCallResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey =
+    process.env.SUPABASE_ANON_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!supabaseUrl) {
     throw new Error(
-      "ANTHROPIC_API_KEY missing. Add to .env (see .env.example).",
+      "SUPABASE_URL missing. Add to .env (see .env.example). Required to call the playbook-llm edge function proxy.",
+    );
+  }
+  if (!supabaseAnonKey) {
+    throw new Error(
+      "SUPABASE_ANON_KEY missing. Add to .env (see .env.example). The anon key is the publishable Supabase key (safe in client/sandbox).",
     );
   }
 
-  const modelId = MODELS[opts.model];
+  const endpoint = `${supabaseUrl.replace(/\/$/, "")}/functions/v1/playbook-llm`;
   const body = {
-    model: modelId,
-    max_tokens: opts.maxTokens ?? 8192,
-    temperature: opts.temperature,
+    model: opts.model,
     system: opts.systemPrompt,
-    messages: [{ role: "user", content: opts.userPrompt }],
+    user: opts.userPrompt,
+    temperature: opts.temperature,
+    max_tokens: opts.maxTokens ?? 8192,
   };
 
   let response: Response;
   try {
-    response = await fetchWithRetry("https://api.anthropic.com/v1/messages", {
+    response = await fetchWithRetry(endpoint, {
       method: "POST",
       headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        apikey: supabaseAnonKey,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
     });
   } catch (err) {
-    // Sanitize: never include prompt content, never include API key, never include stack
     const message = err instanceof Error ? err.message : "unknown network error";
-    throw new Error(`API network failure: ${sanitizeErrorMessage(message)}`);
+    throw new Error(`Edge function network failure: ${sanitizeErrorMessage(message)}`);
   }
 
   if (!response.ok) {
     const status = response.status;
     let serverMsg = "";
+    let errorCode = "";
     try {
-      const json = await response.json();
-      serverMsg = json?.error?.message ?? "";
+      const json = (await response.json()) as { error?: string; message?: string };
+      errorCode = json?.error ?? "";
+      serverMsg = json?.message ?? "";
     } catch {
       // ignore body parsing errors
     }
 
     if (status === 401) {
       throw new Error(
-        "Auth failed (401): ANTHROPIC_API_KEY rejected. Verify key in .env is valid and active.",
+        "Auth failed (401): SUPABASE_ANON_KEY rejected by edge function. Verify the key in .env matches the publishable key from the project (mcp__supabase__get_publishable_keys).",
       );
     }
-    if (status === 402 || status === 403) {
+    if (status === 502 && errorCode.startsWith("anthropic_")) {
       throw new Error(
-        `Permission/quota error (${status}): ${sanitizeErrorMessage(serverMsg)}. Check spending cap and model access at console.anthropic.com.`,
+        `Upstream Anthropic error: ${errorCode} ${sanitizeErrorMessage(serverMsg)}. The edge function reached Anthropic but Anthropic rejected the call. Check ANTHROPIC_API_KEY in Supabase secrets and spending cap at console.anthropic.com.`,
+      );
+    }
+    if (status === 502) {
+      throw new Error(
+        `Edge function upstream error: ${errorCode} ${sanitizeErrorMessage(serverMsg)}.`,
       );
     }
     if (status === 429) {
@@ -122,27 +139,28 @@ export async function callAnthropic(
         `Rate limited (429) after retries: ${sanitizeErrorMessage(serverMsg)}.`,
       );
     }
+    if (status === 500 && errorCode === "server_misconfigured") {
+      throw new Error(
+        `Edge function misconfigured: ANTHROPIC_API_KEY not set in Supabase secrets. Visit https://supabase.com/dashboard/project/<ref>/settings/functions to add it.`,
+      );
+    }
     throw new Error(
-      `API error ${status}: ${sanitizeErrorMessage(serverMsg)}`,
+      `Edge function error ${status}: ${errorCode} ${sanitizeErrorMessage(serverMsg)}`,
     );
   }
 
   const data = (await response.json()) as {
-    content: Array<{ type: string; text?: string }>;
+    content: string;
     usage: { input_tokens: number; output_tokens: number };
+    model: string;
     stop_reason: string;
   };
 
-  const text = data.content
-    .filter((b) => b.type === "text")
-    .map((b) => b.text ?? "")
-    .join("");
-
   return {
-    content: text,
+    content: data.content,
     usage: data.usage,
     costUsd: estimateCost(opts.model, data.usage.input_tokens, data.usage.output_tokens),
-    model: modelId,
+    model: data.model,
     stopReason: data.stop_reason,
   };
 }
