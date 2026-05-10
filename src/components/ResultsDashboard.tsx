@@ -67,6 +67,7 @@ import { cn } from "@/lib/utils";
 import BackToHub from "@/components/BackToHub";
 import ReflectiveCard from "@/components/reflective/ReflectiveCard";
 import { computeRenderGate } from "@/lib/renderGate";
+import { GraphProvider } from "@/contexts/GraphContext";
 
 interface ResultsDashboardProps {
   result: FunnelResult;
@@ -261,6 +262,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
     reducedMotion ? {} : { initial: { scaleX: 0 }, animate: { scaleX: 1 }, transition: { delay } };
 
   return (
+    <GraphProvider graph={graph}>
     <>
     <div className={cn("min-h-screen px-4 pb-12", embeddedInShell ? "pt-4" : "pt-24")}>
       <div className="mx-auto max-w-5xl" id="results-content">
@@ -576,6 +578,7 @@ const ResultsDashboard = ({ result, defaultTab: routeTab, onEdit, onNewPlan, emb
     </div>
     <PaywallModal open={featureGate.paywallOpen} onOpenChange={featureGate.setPaywallOpen} feature={featureGate.paywallFeature} requiredTier={featureGate.paywallTier} dataUnlockHint={featureGate.dataUnlockHint} />
     </>
+    </GraphProvider>
   );
 };
 

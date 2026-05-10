@@ -30,6 +30,7 @@ import QuoteBuilder from "@/components/QuoteBuilder";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
 import type { ActivationMode } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 
 interface SalesTabProps {
   result: FunnelResult;
@@ -48,7 +49,11 @@ const SalesTab = ({ result, engineMode = "active" }: SalesTabProps) => {
     () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
     [],
   );
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
+  const graphFromContext = useGraph();
+  const graph = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice),
+    [graphFromContext, result.formData, diffResult, stylomeVoice],
+  );
   const isPassive = engineMode === "passive";
   const pipeline = useMemo(() => isPassive ? null : generateSalesPipeline(result, graph), [isPassive, result, graph]);
   const closingFrameworks = useMemo(() => pipeline ? getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c") : [], [pipeline, result.formData.audienceType]);

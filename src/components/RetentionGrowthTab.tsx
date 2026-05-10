@@ -2,6 +2,7 @@ import { useMemo, useState, lazy, Suspense } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generateRetentionStrategy, buildUserKnowledgeGraph, assessChurnRisk } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +31,11 @@ const RetentionGrowthTab = ({ result, engineMode = "active" }: Props) => {
   const [activeTab, setActiveTab] = useState("retention");
   const isPassive = engineMode === "passive";
 
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const graphFromContext = useGraph();
+  const graph = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData),
+    [graphFromContext, result.formData],
+  );
   const retention = useMemo(() => isPassive ? null : generateRetentionStrategy(result.formData, graph), [isPassive, result.formData, graph]);
   const churnRisk = useMemo(() => isPassive ? null : assessChurnRisk(result.formData), [isPassive, result.formData]);
 
