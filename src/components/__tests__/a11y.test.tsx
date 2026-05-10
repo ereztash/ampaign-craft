@@ -65,6 +65,9 @@ vi.mock("framer-motion", async () => {
     }),
     AnimatePresence: ({ children }: React.PropsWithChildren) => children,
     MotionConfig: ({ children }: React.PropsWithChildren) => children,
+    useMotionValue: (initial: number) => ({ get: () => initial, set: () => {}, on: () => () => {} }),
+    useSpring: (initial: number) => ({ get: () => initial, set: () => {}, on: () => () => {} }),
+    useTransform: (_v: unknown, _i: unknown, _o: unknown) => ({ get: () => 0, set: () => {}, on: () => () => {} }),
   };
 });
 

@@ -88,7 +88,9 @@ describe("getTabConfig", () => {
   });
 
   it("beginner gets simplifiedMode on content, analytics, stylome", () => {
-    const tabs = getTabConfig(makeResult({ experienceLevel: "beginner" }), defaultProfile);
+    // Pass foggTier="low" explicitly: the unified gate now blends multiple
+    // signals, so experienceLevel alone no longer drops to the LOW tier.
+    const tabs = getTabConfig(makeResult({ experienceLevel: "beginner" }), defaultProfile, undefined, "low");
     const content = tabs.find((t) => t.id === "content");
     const analytics = tabs.find((t) => t.id === "analytics");
     const stylome = tabs.find((t) => t.id === "stylome");
@@ -98,7 +100,7 @@ describe("getTabConfig", () => {
   });
 
   it("advanced gets no simplifiedMode", () => {
-    const tabs = getTabConfig(makeResult({ experienceLevel: "advanced" }), defaultProfile);
+    const tabs = getTabConfig(makeResult({ experienceLevel: "advanced" }), defaultProfile, undefined, "high");
     const simplified = tabs.filter((t) => t.simplifiedMode);
     expect(simplified).toHaveLength(0);
   });
@@ -140,7 +142,7 @@ describe("getTabConfig", () => {
   });
 
   it("advanced user gets analytics Key badge", () => {
-    const tabs = getTabConfig(makeResult({ experienceLevel: "advanced" }), defaultProfile);
+    const tabs = getTabConfig(makeResult({ experienceLevel: "advanced" }), defaultProfile, undefined, "high");
     const analytics = tabs.find((t) => t.id === "analytics");
     expect(analytics?.badge?.en).toBe("Key");
   });

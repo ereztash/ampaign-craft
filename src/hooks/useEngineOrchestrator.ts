@@ -46,19 +46,19 @@ export function useEngineOrchestrator(
 
   // Persist the latest health score so we can compute delta on next render.
   const prevHealthScoreRef = useRef<number>(
-    Number(safeStorage.getItem(HEALTH_SCORE_KEY) ?? currentHealthScore ?? 0),
+    Number(safeStorage.getString(HEALTH_SCORE_KEY, "") || currentHealthScore || 0),
   );
 
   useEffect(() => {
     if (currentHealthScore === undefined) return;
-    safeStorage.setItem(HEALTH_SCORE_KEY, String(currentHealthScore));
+    safeStorage.setString(HEALTH_SCORE_KEY, String(currentHealthScore));
     prevHealthScoreRef.current = currentHealthScore;
   }, [currentHealthScore]);
 
   const signals = useMemo((): ActivationSignals => {
     const leadCount = insights?.totalLeads ?? 0;
 
-    const firstSeen = profile.investment.firstSeenDate;
+    const firstSeen = profile.investment?.firstSeenDate;
     const daysActive = firstSeen
       ? Math.floor((Date.now() - new Date(firstSeen).getTime()) / MS_PER_DAY)
       : 0;
@@ -75,10 +75,10 @@ export function useEngineOrchestrator(
       ...(chatInsights?.mentionedObjections ?? []),
     ];
 
-    const visitedTabs = Array.from(masteryFeatures);
+    const visitedTabs = masteryFeatures ? Array.from(masteryFeatures) : [];
 
     return { leadCount, daysActive, healthScore, healthScoreDelta, intentKeywords, visitedTabs };
-  }, [insights, profile.investment.firstSeenDate, currentHealthScore, masteryFeatures]);
+  }, [insights, profile.investment?.firstSeenDate, currentHealthScore, masteryFeatures]);
 
   const activeEngines = useMemo(() => getActiveEngines(signals), [signals]);
 

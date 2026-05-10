@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { trackFirstValueSeen } from "@/lib/wedgeTelemetry";
 import { FunnelResult } from "@/types/funnel";
 import { generatePricingIntelligence, buildUserKnowledgeGraph } from "@/viewmodels";
 import { useGraph } from "@/contexts/GraphContext";
