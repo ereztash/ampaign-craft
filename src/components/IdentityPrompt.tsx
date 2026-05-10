@@ -74,7 +74,7 @@ export default function IdentityPrompt({ onComplete, email = "" }: IdentityPromp
       if (res.ok) {
         const profile = (await res.json()) as ProspectProfile;
         const stored = { ...profile, fetchedAt: Date.now() };
-        safeStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+        safeStorage.setJSON(STORAGE_KEY, stored);
         onComplete(stored);
       } else {
         // Construct a minimal profile so the flow continues
@@ -89,7 +89,7 @@ export default function IdentityPrompt({ onComplete, email = "" }: IdentityPromp
           },
           fetchedAt: Date.now(),
         };
-        safeStorage.setItem(STORAGE_KEY, JSON.stringify(fallback));
+        safeStorage.setJSON(STORAGE_KEY, fallback);
         onComplete(fallback);
       }
     } catch {

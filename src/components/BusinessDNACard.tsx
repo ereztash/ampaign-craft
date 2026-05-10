@@ -4,10 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import type {
-  BusinessFingerprint,
-  FingerprintDimensions,
-} from "@/viewmodels";
+import type { BusinessFingerprint, FingerprintDimensions } from "@/viewmodels";
 import { DIMENSION_LABELS, ARCHETYPE_LABELS } from "@/viewmodels";
 
 interface BusinessDNACardProps {

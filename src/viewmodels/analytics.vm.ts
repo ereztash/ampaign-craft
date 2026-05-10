@@ -29,13 +29,14 @@ export type {
   ChannelEPS,
   EPSResult,
 } from "@/engine/emotionalPerformanceEngine";
-export { getEPSVerdict } from "@/engine/emotionalPerformanceEngine";
+export { calculateEPS, getEPSVerdict } from "@/engine/emotionalPerformanceEngine";
 
 export type {
   Industry,
   CrossDomainInsight,
   CrossDomainReport,
 } from "@/engine/crossDomainBenchmarkEngine";
+export { generateCrossDomainInsights } from "@/engine/crossDomainBenchmarkEngine";
 
 export type {
   ContentLanguage,
@@ -53,9 +54,3 @@ export type {
   CohortAssignment,
 } from "@/engine/behavioralCohortEngine";
 export { assignToCohort } from "@/engine/behavioralCohortEngine";
-
-export { calculateEPS } from "@/engine/emotionalPerformanceEngine";
-
-export { generateCrossDomainInsights } from "@/engine/crossDomainBenchmarkEngine";
-
-export { generateRetentionStrategy } from "@/engine/retentionGrowthEngine";

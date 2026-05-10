@@ -39,7 +39,6 @@ const RetentionGrowthTab = ({ result, engineMode = "active" }: Props) => {
   const retention = useMemo(() => isPassive ? null : generateRetentionStrategy(result.formData, graph), [isPassive, result.formData, graph]);
   const churnRisk = useMemo(() => isPassive ? null : assessChurnRisk(result.formData), [isPassive, result.formData]);
 
-  const topSignal = retention.churnPlaybook.signals[0];
   const userState = getPersistedUserState();
 
   const copyText = (text: string, idx: number) => {
@@ -48,6 +47,19 @@ const RetentionGrowthTab = ({ result, engineMode = "active" }: Props) => {
     toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
+
+  if (isPassive || !retention || !churnRisk) {
+    return (
+      <div className="rounded-lg border border-dashed bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+        {tx({
+          he: "מודול השימור והצמיחה יופעל אחרי 30 ימי שימוש פעיל באפליקציה. המשך לאסוף נתונים כדי לפתוח את ה-Flywheel ותחזיות נטישה.",
+          en: "Retention & growth activates after 30 days of active use. Keep collecting data to unlock the Flywheel and churn predictions.",
+        }, language)}
+      </div>
+    );
+  }
+
+  const topSignal = retention.churnPlaybook.signals[0];
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>

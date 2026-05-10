@@ -9,6 +9,7 @@ export type {
   LossFramedMessage,
   WeeklyPulse,
 } from "@/engine/pulseEngine";
+export { generateWeeklyPulse } from "@/engine/pulseEngine";
 
 export type {
   StylomeVoice,

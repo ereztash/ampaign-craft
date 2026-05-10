@@ -1,4 +1,17 @@
-// Referral engine boundary: re-exports types and functions that components need.
-// Components must import from here, never from @/engine/* directly.
+// Referral boundary: re-exports from referralEngine.
 
-export { REFERRAL_REWARDS, getReferralData, getReferralLink, getReferralStats } from "@/engine/referralEngine";
+export type {
+  ReferralData,
+  ReferralRecord,
+  ReferralReward,
+} from "@/engine/referralEngine";
+
+export {
+  REFERRAL_REWARDS,
+  generateReferralCode,
+  getReferralData,
+  recordReferral,
+  markReferralConverted,
+  getReferralLink,
+  getReferralStats,
+} from "@/engine/referralEngine";

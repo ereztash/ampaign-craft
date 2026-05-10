@@ -1,9 +1,20 @@
-// ─── Moat ViewModel ──────────────────────────────────────────────────────────
-// Thin re-exports from moat engine modules.
-// Components import from here; never directly from @/engine/*.
+// Moat boundary: re-exports from moat/* engine modules.
 
-export { enrichDifferentiationWithCitations } from "@/engine/moat/principleTraceEnricher";
+export {
+  enrichDifferentiationWithCitations,
+  distinctPrinciples,
+} from "@/engine/moat/principleTraceEnricher";
 
-export type { PrincipleTrace } from "@/engine/moat/types";
+export {
+  getLibrary,
+  getSourceRegistry,
+  findPrinciple,
+  findSource,
+  libraryVersion,
+} from "@/engine/moat/principleLibrary";
 
-export { libraryVersion } from "@/engine/moat/principleLibrary";
+export type {
+  PrincipleTrace,
+  TracedPrinciple,
+  TracedSource,
+} from "@/engine/moat/types";

@@ -97,6 +97,17 @@ const SalesTab = ({ result, engineMode = "active" }: SalesTabProps) => {
 
   const formatCurrency = (n: number) => `₪${n.toLocaleString()}`;
 
+  if (isPassive || !pipeline || !discProfile || !neuroClosing || !buyerPersonality) {
+    return (
+      <div className="rounded-lg border border-dashed bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+        {tx({
+          he: "מודול המכירות יופעל כשייצברו לפחות 20 לידים ב-CRM. הוסף לידים כדי לפתוח תחזית, פרסונות וסקריפטי סגירה.",
+          en: "Sales module activates once you have at least 20 leads in CRM. Add leads to unlock pipeline forecast, personas, and closing scripts.",
+        }, language)}
+      </div>
+    );
+  }
+
   if (quoteView) {
     return (
       <QuoteBuilder

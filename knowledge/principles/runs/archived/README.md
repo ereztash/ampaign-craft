@@ -1,0 +1,1 @@
+Source-asymmetry: Erez's manual synthesis was based on NotebookLM with deep OSINT not in this engine's bundle. Comparing engine output to that manual synthesis would test the source gap, not the engine. Archived 2026-05-09 per user direction; not part of MVP.

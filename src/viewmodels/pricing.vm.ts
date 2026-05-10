@@ -1,13 +1,18 @@
-// ─── Pricing ViewModel ───────────────────────────────────────────────────────
-// Bridges pricingWizardEngine and pricingIntelligenceEngine → UI props.
+// Pricing boundary: re-exports from pricingIntelligenceEngine and
+// pricingWizardEngine. Components must import from here.
+
+export { generatePricingIntelligence } from "@/engine/pricingIntelligenceEngine";
 
 export type {
   DreamOutcomeLevel,
-  EffortLevel,
-  PricingWizardInput,
-  PricingWizardRecommendation,
-  SocialProofLevel,
   TimeToValue,
+  EffortLevel,
+  SocialProofLevel,
+  PricingWizardInput,
+  PricingWizardTier,
+  PricingWizardRecommendation,
 } from "@/engine/pricingWizardEngine";
-export { DIFFERENTIATOR_OPTIONS } from "@/engine/pricingWizardEngine";
-export { generatePricingIntelligence } from "@/engine/pricingIntelligenceEngine";
+export {
+  DIFFERENTIATOR_OPTIONS,
+  computePricingWizardRecommendation,
+} from "@/engine/pricingWizardEngine";

@@ -1,9 +1,4 @@
-// ─── Executive Brief ViewModel ───────────────────────────────────────────────
-// Thin re-exports from executiveBriefEngine → UI boundary.
-
-export {
-  buildExecutiveBrief,
-} from "@/engine/executiveBriefEngine";
+// Executive-brief boundary: re-exports from executiveBriefEngine.
 
 export type {
   TrafficLight,
@@ -13,3 +8,4 @@ export type {
   ExecutiveBrief,
   BuildExecutiveBriefInput,
 } from "@/engine/executiveBriefEngine";
+export { buildExecutiveBrief } from "@/engine/executiveBriefEngine";

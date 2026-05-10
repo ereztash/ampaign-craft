@@ -78,7 +78,7 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 **ESLint enforcement:**
 - `no-restricted-imports` — error-level ב-`src/components/**`
-- debt allowlist = `eslint.config.js` בלוק "Engine-import debt"
+- debt allowlist נוקה במלואו ב-2026-05-06; אין חריגים כיום
 
 ---
 
@@ -110,3 +110,12 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 - `claude/plan-repo-cleanup-OiANP` — **ענף פעיל** (repo cleanup + viewmodel migration)
 - `perf/reactive-core` — DRAFT, ממתין ל-preview env validation
+
+---
+
+## משימות ממתינות (לא חסומות בקוד)
+
+### Drafts Inbox — A+B Workstream
+ממתין ל-5 ראיונות משתמש (אנושיים — לא ניתן להשלים אוטומטית):
+1. go/no-go: האם משתמש מבין הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
+2. 10 מוקים ויזואליים → module WhatsApp Drafts

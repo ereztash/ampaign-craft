@@ -1,4 +1,8 @@
-// Data import engine boundary: re-exports functions that components need.
-// Components must import from here, never from @/engine/* directly.
+// Data-import boundary: re-exports types and functions from dataImportEngine.
 
-export { detectSchema, parseXlsxFile, validateDataset } from "@/engine/dataImportEngine";
+export {
+  parseXlsxFile,
+  detectSchema,
+  validateDataset,
+  analyzeTrends,
+} from "@/engine/dataImportEngine";

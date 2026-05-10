@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "candidate_slug": "buildots-roy-danon",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.0",
+    "prompt_hash_sha256": "4de990d4dac5d73e0660dc8355d4e8911582f9b25056d18e8c31a44e5b177f5e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.25,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T20:03:07.695Z",
+    "input_bundle_hash_sha256": "b370aef91c59024745682d2c11d0abe189e76f18d695a4e0b5fa8bd49db06334",
+    "cost_usd": 0.03622499999999999,
+    "usage": {
+      "input_tokens": 2180,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1979,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Roy Danon",
+    "company": "Buildots",
+    "mapping": [
+      {
+        "source_field": "in_ceo_own_terminology",
+        "ceo_term": "digital twin",
+        "mapped_principles": [
+          {
+            "principle_code": "P03",
+            "principle_name": "Cognitive-Frame-Shift",
+            "confidence": "high",
+            "rationale": "The 'digital twin' concept reframes how construction managers think about their site — from a physical, untracked environment to a digitally mirrored, real-time representation. This is a mental model shift about what a construction site fundamentally is.",
+            "is_primary": true
+          },
+          {
+            "principle_code": "P05",
+            "principle_name": "Mechanism-Articulation",
+            "confidence": "medium",
+            "rationale": "The digital twin is also the named output of a specific mechanism (wearable cameras + computer vision → BIM enrichment), making it partly a mechanism label.",
+            "is_primary": false
+          }
+        ]
+      },
+      {
+        "source_field": "in_ceo_own_terminology",
+        "ceo_term": "actuals",
+        "mapped_principles": [
+          {
+            "principle_code": "P05",
+            "principle_name": "Mechanism-Articulation",
+            "confidence": "high",
+            "rationale": "'Actuals' is a named data layer — a specific term describing what Buildots adds to BIM (the real-world status layer). It names the mechanism's output distinctly.",
+            "is_primary": true
+          },
+          {
+            "principle_code": "P09",
+            "principle_name": "Domain-Empathy-Translation",
+            "confidence": "medium",
+            "rationale": "The term 'actuals' is borrowed from manufacturing/project management vocabulary, signaling that Buildots speaks the buyer's operational language natively.",
+            "is_primary": false
+          }
+        ]
+      },
+      {
+        "source_field": "in_ceo_own_terminology",
+        "ceo_term": "Construction Mission Control Room",
+        "mapped_principles": [
+          {
+            "principle_code": "P03",
+            "principle_name": "Cognitive-Frame-Shift",
+            "confidence": "high",
+            "rationale": "This named concept reframes the construction site management experience by analogy to a manufacturing control room — a deliberate mental model transplant from an adjacent, more mature industry.",
+            "is_primary": true
+          },
+          {
+            "principle_code": "P09",
+            "principle_name": "Domain-Empathy-Translation",
+            "confidence": "medium",
+            "rationale": "The manufacturing control room analogy demonstrates fluency in the buyer's aspirational operational language, bridging construction and manufacturing idioms.",
+            "is_primary": false
+          }
+        ]
+      },
+      {
+        "source_field": "in_ceo_own_terminology",
+        "ceo_term": "wearable 360 cameras",
+        "mapped_principles": [
+          {
+            "principle_code": "P05",
+            "principle_name": "Mechanism-Articulation",
+            "confidence": "high",
+            "rationale": "Wearable 360 cameras are the named physical mechanism through which Buildots collects unstructured visual data — the 'X' in 'we do X through Y.'",
+            "is_primary": true
+          }
+        ]
+      },
+      {
+        "source_field": "in_ceo_own_terminology",
+        "ceo_term": "computer vision algorithms",
+        "mapped_principles": [
+          {
+            "principle_code": "P05",
+            "principle_name": "Mechanism-Articulation",
+            "confidence": "high",
+            "rationale": "Computer vision algorithms are the named technical methodology — the 'Y' in 'we do X through Y' — that transforms raw visual input into structured construction status data.",
+            "is_primary": true
+          }
+        ]
+      },
+      {
+        "source_field": "in_ceo_own_terminology",
+        "ceo_term": "structured data from unstructured visual data",
+        "mapped_principles": [
+          {
+            "principle_code": "P05",
+            "principle_name": "Mechanism-Articulation",
+            "confidence": "high",
+            "rationale": "This phrase names the transformation mechanism explicitly — converting unstructured visual input into structured, actionable data — which is the core of Buildots' named methodology.",
+            "is_primary": true
+          },
+          {
+            "principle_code": "P02",
+            "principle_name": "Explanation-Efficiency",
+            "confidence": "low",
+            "rationale": "The phrase is compact and repeatable, potentially serving as a one-sentence explanation of what Buildots does technically, though it is more mechanism than pitch.",
+            "is_primary": false
+          }
+        ]
+      },
+      {
+        "source_field": "in_ceo_own_terminology",
+        "ceo_term": "digitally managed environments",
+        "mapped_principles": [
+          {
+            "principle_code": "P03",
+            "principle_name": "Cognitive-Frame-Shift",
+            "confidence": "high",
+            "rationale": "Framing a construction site as a 'digitally managed environment' redefines what a construction site is and can be — a direct cognitive reframe of the buyer's operating context.",
+            "is_primary": true
+          }
+        ]
+      },
+      {
+        "source_field": "tradeoffs_or_constraints_acknowledged",
+        "ceo_term": "Systems like Buildots rely on the existence of BIM to operate",
+        "mapped_principles": [
+          {
+            "principle_code": "P04",
+            "principle_name": "Tradeoff-Declaration",
+            "confidence": "high",
+            "rationale": "This is an explicit constraint acknowledgment — Buildots does not serve buyers without BIM. It implicitly defines a non-customer (those without BIM adoption), which is the semantic core of Tradeoff-Declaration.",
+            "is_primary": true
+          }
+        ]
+      }
+    ],
+    "unmapped_ceo_terms": [],
+    "what_ceo_explicitly_says_they_are_NOT": {
+      "note": "Field was empty in the extraction object — no terms to map."
+    },
+    "what_ceo_emphasizes_as_proof": {
+      "note": "company_specific_proof_points field was empty in the extraction object — no terms to map. Industry supporting claims (McKinsey 50% productivity stat; 2D CAD legacy) were not listed under what_ceo_emphasizes_as_proof and are not mapped per strict field rules.",
+      "industry_claims_disposition": [
+        {
+          "claim": "McKinsey claimed that the sector's productivity can be improved by 50% through the introduction of modern process control systems",
+          "closest_principle": "P12",
+          "principle_name": "Loss-Avoided-Quantification",
+          "confidence": "medium",
+          "rationale": "A 50% productivity improvement figure implies a quantified cost of inaction, semantically adjacent to loss-avoided framing, though it is an industry-level stat rather than a company-specific proof point.",
+          "mapping_status": "informational_only — sourced from industry_supporting_claims, not from mapped fields"
+        },
+        {
+          "claim": "Until very recently highly complex projects were still being planned in 2D CAD",
+          "closest_principle": "P03",
+          "principle_name": "Cognitive-Frame-Shift",
+          "confidence": "low",
+          "rationale": "Used to establish the primitive baseline the industry is moving from, reinforcing the frame-shift narrative, but not a direct CEO differentiation term.",
+          "mapping_status": "informational_only — sourced from industry_supporting_claims, not from mapped fields"
+        }
+      ]
+    }
+  }
+}

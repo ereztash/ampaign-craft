@@ -1,0 +1,149 @@
+{
+  "metadata": {
+    "candidate_slug": "aquant-shahar-chen",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.25,
+    "run_number": 2,
+    "timestamp_iso": "2026-05-09T20:19:08.817Z",
+    "input_bundle_hash_sha256": "94f577e0193322b5cb124626a378be3d30b0b9de0c6ffca8cc1d6df8ceaa7d7b",
+    "cost_usd": 0.027258,
+    "usage": {
+      "input_tokens": 2646,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1288,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Shahar Chen",
+    "company": "Aquant",
+    "extraction_source_url": "https://medium.com/authority-magazine/shahar-chen-of-aquant-on-five-things-you-need-to-create-a-highly-successful-career-in-the-ai-4cb68dff3d51",
+    "mappings": [
+      {
+        "ceo_term": "widening skills gap",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P12"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "Naming a 'widening skills gap' reframes the buyer's problem from a technology deficit to a human-capital crisis, which is a classic cognitive frame shift about the nature of the problem."
+      },
+      {
+        "ceo_term": "harnessing the existing data of companies",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05",
+          "P03"
+        ],
+        "primary_principle": "P05",
+        "confidence": "high",
+        "reasoning": "This phrase names a specific mechanism — using the company's own proprietary data as the input — describing how Aquant delivers its solution (we do X through Y)."
+      },
+      {
+        "ceo_term": "holistic generative AI solution for the service industry",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09",
+          "P02"
+        ],
+        "primary_principle": "P09",
+        "confidence": "medium",
+        "reasoning": "Positioning the solution as purpose-built for 'the service industry' signals that Aquant speaks the buyer's domain language natively rather than offering a generic AI platform."
+      },
+      {
+        "ceo_term": "stringent security measures to prevent internet uploads",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P11",
+          "P04"
+        ],
+        "primary_principle": "P11",
+        "confidence": "medium",
+        "reasoning": "Emphasizing that data never leaves the company's environment addresses a key adoption risk for conservative buyers, functioning as a risk-reversal assurance that shifts perceived exposure away from the buyer."
+      },
+      {
+        "ceo_term": "conservative industry",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09",
+          "P14"
+        ],
+        "primary_principle": "P09",
+        "confidence": "medium",
+        "reasoning": "Labeling the target market as 'conservative' signals deep domain empathy — an understanding of the buyer's cultural and behavioral norms that a generic AI vendor would not possess."
+      },
+      {
+        "ceo_term": "human element",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P09"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "Foregrounding the 'human element' reframes the AI adoption problem as a people-and-change-management challenge rather than a purely technical one, shifting the buyer's mental model of what the real obstacle is."
+      },
+      {
+        "ceo_term": "AI is not here to replace anyone",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P04"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "This statement directly counters the dominant fear-based mental model service technicians hold about AI, constituting a deliberate cognitive frame shift from replacement to augmentation."
+      }
+    ],
+    "unmapped_ceo_terms": [],
+    "ambiguous_mappings": [
+      {
+        "ceo_term": "holistic generative AI solution for the service industry",
+        "candidate_principles": [
+          "P09",
+          "P02"
+        ],
+        "reasoning": "The phrase could map to P09 (domain-native language for the service industry) or P02 (a single repeatable sentence that captures the offer), since it is both industry-specific and functions as a compact one-sentence description of the product."
+      },
+      {
+        "ceo_term": "stringent security measures to prevent internet uploads",
+        "candidate_principles": [
+          "P11",
+          "P04"
+        ],
+        "reasoning": "This could map to P11 (risk-reversal by keeping data on-premise) or P04 (an explicit declaration of what Aquant does NOT do — upload data to the internet), as both framings are semantically valid."
+      }
+    ],
+    "mapping_summary": {
+      "total_terms_mapped": 7,
+      "total_terms_unmapped": 0,
+      "principles_referenced": [
+        "P03",
+        "P05",
+        "P09",
+        "P11",
+        "P12",
+        "P02",
+        "P04",
+        "P14"
+      ],
+      "principles_with_high_confidence_mapping": [
+        "P03",
+        "P05"
+      ]
+    }
+  }
+}

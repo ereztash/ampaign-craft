@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "candidate_slug": "finout-roi-ravhon",
+    "artifact_type": "extraction",
+    "prompt_version": "0.2.1",
+    "prompt_hash_sha256": "111cf55bb8d95a1cceb0d80150bc881d0493f16bd7f876563dbe43c9bd76dc50",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.5,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T20:36:17.124Z",
+    "input_bundle_hash_sha256": "210eeaee0322a8bc2649cd4be86535ca41fe303139af1dd9cb5c67171d277753",
+    "cost_usd": 0.018930000000000002,
+    "usage": {
+      "input_tokens": 1390,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 984,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Roi Ravhon",
+    "company": "Finout",
+    "source_url": "https://www.pitango.com/resources/founder-story-roi-ravhon-finout/",
+    "source_date": "2024",
+    "source_type": "long-form Founder Story interview (Pitango VC publication)",
+    "source_word_count": 250,
+    "core_differentiation_claim": {
+      "summary_3_5_sentences": "Ravhon positions Finout as a cloud cost management platform built specifically for enterprises operating at scale. He describes the product as resting on three pillars: 'Analyzing the past, Predicting the future, and Democratizing FinOps.' The founding insight came from discovering that most of the market was 'still struggling just to understand what their costs even were,' which led Finout to build foundational capabilities rather than a pure analytics layer. Ravhon says the company 'maintained our vision of the end goal, but embraced the fact that we'd have to build all the necessary steppingstones.'",
+      "in_ceo_own_terminology": [
+        "manage cloud cost at scale for enterprises",
+        "Analyzing the past, Predicting the future, and Democratizing FinOps",
+        "three main pillars",
+        "steppingstones",
+        "connect the cloud cost dots",
+        "FinOps"
+      ]
+    },
+    "supporting_verbatim_quotes": [
+      {
+        "quote": "We help manage cloud cost at scale for enterprises. Finout is built on three main pillars: Analyzing the past, Predicting the future, and Democratizing FinOps.",
+        "context": "Ravhon describing Finout's mission and product architecture."
+      },
+      {
+        "quote": "We thought that an enterprise would only need an analytics platform to help them connect the cloud cost dots. In reality, most of the market was still struggling just to understand what their costs even were.",
+        "context": "Ravhon explaining the gap between their initial product assumption and actual market reality."
+      },
+      {
+        "quote": "We maintained our vision of the end goal, but we embraced the fact that we'd have to build all the necessary steppingstones.",
+        "context": "Ravhon on how Finout adapted its product scope in response to market reality."
+      },
+      {
+        "quote": "As Logz.io was migrating to more complex cloud-based infrastructure, adding services, expanding into new regions and moving workloads to different platforms, it became harder to know how much money was actually spent on the cloud.",
+        "context": "Ravhon describing the founding insight that led to Finout, drawn from his experience at Logz.io."
+      },
+      {
+        "quote": "We believe in transparency and letting everyone's voice be heard. We share everything we can—what we're doing well, what we're not doing well, every deal, every feature.",
+        "context": "Ravhon on Finout's internal company culture."
+      }
+    ],
+    "what_ceo_explicitly_says_they_are_NOT": [],
+    "company_specific_proof_points": [],
+    "industry_supporting_claims": [],
+    "tradeoffs_or_constraints_acknowledged": [
+      "And we failed miserably. It was a lot more complicated than we thought it would be. But it was a stepping stone to Finout.",
+      "We thought that an enterprise would only need an analytics platform to help them connect the cloud cost dots. In reality, most of the market was still struggling just to understand what their costs even were."
+    ],
+    "extraction_notes": {
+      "source_thinness_observed": true,
+      "verbatim_vs_paraphrase_ratio": "mostly_verbatim",
+      "fields_empty_due_to_source_absence": [
+        "what_ceo_explicitly_says_they_are_NOT",
+        "company_specific_proof_points",
+        "industry_supporting_claims"
+      ]
+    },
+    "_validation": {
+      "quality": "high",
+      "failures": []
+    },
+    "_track": "depth"
+  }
+}

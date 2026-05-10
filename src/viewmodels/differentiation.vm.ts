@@ -1,41 +1,44 @@
-// ─── Differentiation ViewModel ───────────────────────────────────────────────
-// Thin re-exports from differentiation engine modules.
-// Components import from here; never directly from @/engine/*.
+// Differentiation boundary: re-exports types and functions from
+// differentiationEngine and differentiationKnowledge.
+// Components must import from here.
 
-export { generateDifferentiation } from "@/engine/differentiationEngine";
 export type { AiResults } from "@/engine/differentiationEngine";
-
 export {
-  BUYING_COMMITTEE_ROLES,
-  COMPETITOR_ARCHETYPES,
-  HIDDEN_VALUES,
+  generateDifferentiation,
+  scoreClaimVerification,
+  buildGapAnalysis,
+  buildHiddenValueProfile,
+  getTopHiddenValues,
+  calculateDifferentiationStrength,
+  selectContraryMetrics,
+  suggestHybridCategory,
+} from "@/engine/differentiationEngine";
+
+export type {
+  HiddenValueDef,
+  CompetitorArchetypeDef,
+  BuyingCommitteeRoleDef,
+  HybridCategoryDef,
+  ContraryMetricDef,
+  B2CCompetitorArchetypeDef,
+  InfluenceNetworkRoleDef,
 } from "@/engine/differentiationKnowledge";
 
 export {
-  STAGES,
-  detectStagesInTranscript,
-} from "@/engine/differentiation/conversationStages";
-export type { StageDetectionReport } from "@/engine/differentiation/conversationStages";
-
-export {
-  buildDraftFromScanOutputs,
-  isTranscriptWizardStepValid,
-} from "@/engine/differentiation/transcriptWizardLogic";
-export type { TranscriptWizardStepId } from "@/engine/differentiation/transcriptWizardLogic";
-
-export {
-  downloadDifferentiationMarkdown,
-  downloadPlanStage1Markdown,
-  readFileAsText,
-} from "@/engine/differentiation/transcriptIO";
-
-export { PRINCIPLES_BY_CODE } from "@/engine/differentiation/principles";
-export type {
-  ConvergenceReport,
-  PrincipleAgentOutput,
-} from "@/engine/differentiation/principles";
-
-export { runPrincipleScan } from "@/engine/differentiation/principleAgents";
-
-export { synthesizeUVP } from "@/engine/uvpSynthesisEngine";
-export type { UVPVariant } from "@/engine/uvpSynthesisEngine";
+  HIDDEN_VALUES,
+  COMPETITOR_ARCHETYPES,
+  BUYING_COMMITTEE_ROLES,
+  FAKE_DIFFERENTIATION_SIGNALS,
+  REAL_DIFFERENTIATION_SIGNALS,
+  HYBRID_CATEGORIES,
+  CONTRARY_METRICS,
+  NORMALIZING_FRAMES,
+  B2C_HIDDEN_VALUES,
+  B2C_COMPETITOR_ARCHETYPES,
+  INFLUENCE_NETWORK_ROLES,
+  B2C_CONTRARY_METRICS,
+  B2C_NORMALIZING_FRAMES,
+  getHiddenValuesForMode,
+  getCompetitorArchetypesForMode,
+  getContraryMetricsForMode,
+} from "@/engine/differentiationKnowledge";

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import PricingWizardResults from "../PricingWizardResults";
-import type { PricingWizardRecommendation } from "@/engine/pricingWizardEngine";
+import type { PricingWizardRecommendation } from "@/viewmodels";
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),

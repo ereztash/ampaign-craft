@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { logger } from "@/lib/logger";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -16,6 +16,8 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
+import WedgeGuard from "@/components/WedgeGuard";
+import { trackWedgeModeResolved } from "@/lib/wedgeTelemetry";
 import ConsentBanner from "@/components/ConsentBanner";
 import CheckoutReturnHandler from "@/components/CheckoutReturnHandler";
 import { PMFSurveyModal } from "@/components/PMFSurveyModal";
@@ -32,6 +34,18 @@ import { useUtmTracking } from "@/hooks/useUtmTracking";
 function UtmCapture() {
   const { user } = useAuth();
   useUtmTracking(user?.id);
+  return null;
+}
+
+/** Records the active wedge mode once per session for the analytics dashboard. */
+function WedgeBoot() {
+  const { user } = useAuth();
+  const recordedRef = useRef(false);
+  useEffect(() => {
+    if (recordedRef.current) return;
+    recordedRef.current = true;
+    trackWedgeModeResolved({ userId: user?.id });
+  }, [user?.id]);
   return null;
 }
 
@@ -83,6 +97,7 @@ const ArchetypeRevealScreen = lazy(() => import("./components/ArchetypeRevealScr
 const AARRRDashboard = lazy(() => import("./pages/AARRRDashboard"));
 const AdminAgentMonitor = lazy(() => import("./pages/AdminAgentMonitor"));
 const AdminLLMCost = lazy(() => import("./pages/AdminLLMCost"));
+const AdminWedge = lazy(() => import("./pages/AdminWedge"));
 const PaletteCohorts = lazy(() => import("./pages/admin/PaletteCohorts"));
 const DesignPhilosophy = lazy(() => import("./pages/DesignPhilosophy"));
 const Privacy = lazy(() => import("./pages/legal/Privacy"));
@@ -142,14 +157,14 @@ const AnimatedRoutes = () => {
             <Route path="ai" element={<AiCoachPage />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="intake" element={<Intake />} />
-            <Route path="wizard" element={<Wizard />} />
+            <Route path="wizard" element={<WedgeGuard module="wizard"><Wizard /></WedgeGuard>} />
             <Route path="plans" element={<Plans />} />
             <Route path="plans/:planId/:tab" element={<LegacyPlanRedirect />} />
             <Route path="plans/:planId" element={<LegacyPlanRedirect />} />
-            <Route path="differentiate" element={<Differentiate />} />
-            <Route path="sales" element={<SalesEntry />} />
-            <Route path="pricing" element={<PricingEntry />} />
-            <Route path="retention" element={<RetentionEntry />} />
+            <Route path="differentiate" element={<WedgeGuard module="differentiate"><Differentiate /></WedgeGuard>} />
+            <Route path="sales" element={<WedgeGuard module="sales"><SalesEntry /></WedgeGuard>} />
+            <Route path="pricing" element={<WedgeGuard module="pricing"><PricingEntry /></WedgeGuard>} />
+            <Route path="retention" element={<WedgeGuard module="retention"><RetentionEntry /></WedgeGuard>} />
             <Route path="crm" element={<CrmPage />} />
             <Route path="crm/:leadId" element={<LeadDetail />} />
             <Route path="profile" element={<Profile />} />
@@ -157,6 +172,7 @@ const AnimatedRoutes = () => {
             <Route path="admin/aarrr" element={<AdminRoute><AARRRDashboard /></AdminRoute>} />
             <Route path="admin/agents" element={<AdminRoute><AdminAgentMonitor /></AdminRoute>} />
             <Route path="admin/llm-cost" element={<AdminRoute><AdminLLMCost /></AdminRoute>} />
+            <Route path="admin/wedge" element={<AdminRoute><AdminWedge /></AdminRoute>} />
             <Route path="admin/palette-cohorts" element={<AdminRoute><PaletteCohorts /></AdminRoute>} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="terms" element={<Terms />} />
@@ -190,6 +206,7 @@ const App = () => (
                     <AnimatedRoutes />
                   </Suspense>
                   <UtmCapture />
+                  <WedgeBoot />
                   <ProgressSyncManager />
                   <CheckoutReturnHandler />
                   <ConsentBanner />

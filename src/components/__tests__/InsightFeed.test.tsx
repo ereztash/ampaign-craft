@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import InsightFeed from "../InsightFeed";
-import type { Bottleneck } from "@/engine/bottleneckEngine";
-import type { WeeklyPulse } from "@/engine/pulseEngine";
-import type { UserKnowledgeGraph } from "@/engine/userKnowledgeGraph";
+import type { Bottleneck } from "@/viewmodels";
+import type { WeeklyPulse } from "@/viewmodels";
+import type { UserKnowledgeGraph } from "@/viewmodels";
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRTL: false }),

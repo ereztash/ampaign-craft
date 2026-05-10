@@ -1,12 +1,7 @@
-// ─── Stylome ViewModel ───────────────────────────────────────────────────────
-// Thin re-exports from stylomeEngine.
-// Components import from here; never directly from @/engine/*.
+// Stylome boundary: re-exports from stylomeEngine.
 
+export type { StylomeProfile, StylomeSample } from "@/engine/stylomeEngine";
 export {
-  INTERVIEW_QUESTIONS,
   analyzeSamples,
-} from "@/engine/stylomeEngine";
-export type {
-  StylomeProfile,
-  StylomeSample,
+  INTERVIEW_QUESTIONS,
 } from "@/engine/stylomeEngine";

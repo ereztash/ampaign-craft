@@ -33,17 +33,11 @@ export interface ProspectProfile {
 const STORAGE_KEY = "prospect_profile_v1";
 
 export function getProspectProfile(): ProspectProfile | null {
-  const raw = safeStorage.getItem(STORAGE_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as ProspectProfile;
-  } catch {
-    return null;
-  }
+  return safeStorage.getJSON<ProspectProfile | null>(STORAGE_KEY, null);
 }
 
 export function clearProspectProfile(): void {
-  safeStorage.removeItem(STORAGE_KEY);
+  safeStorage.remove(STORAGE_KEY);
 }
 
 /**
@@ -72,7 +66,7 @@ export async function triggerProspectResearch(
     if (!res.ok) return;
 
     const profile = (await res.json()) as ProspectProfile;
-    safeStorage.setItem(STORAGE_KEY, JSON.stringify({ ...profile, fetchedAt: Date.now() }));
+    safeStorage.setJSON(STORAGE_KEY, { ...profile, fetchedAt: Date.now() });
   } catch {
     // Prospect research is best-effort; never block signup flow
   }

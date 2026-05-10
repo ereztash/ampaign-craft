@@ -1,11 +1,13 @@
-// ─── Business-Fingerprint ViewModel ──────────────────────────────────────────
-// Bridges businessFingerprintEngine → UI props.
+// Business-fingerprint boundary: re-exports types and functions from
+// businessFingerprintEngine.
 
 export type {
-  BusinessFingerprint,
-  FingerprintDimensions,
   BusinessArchetype,
+  FingerprintDimensions,
+  FingerprintUX,
+  BusinessFingerprint,
 } from "@/engine/businessFingerprintEngine";
+
 export {
   computeFingerprint,
   DIMENSION_LABELS,

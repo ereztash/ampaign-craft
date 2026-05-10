@@ -1,5 +1,10 @@
-// ─── Behavioral-Action ViewModel ─────────────────────────────────────────────
-// Bridges behavioralActionEngine and behavioralHeuristicEngine → UI props.
+// Behavioral-action boundary: re-exports from behavioralActionEngine.
 
-export type { BehavioralNudge } from "@/engine/behavioralActionEngine";
-export { deriveHeuristicSet, getPrimaryCtaVerbs } from "@/engine/behavioralHeuristicEngine";
+export type {
+  NudgeType,
+  FoggTriggerStyle,
+  BehavioralNudge,
+  CORResourceState,
+  MotivationState,
+  BAEInput,
+} from "@/engine/behavioralActionEngine";
