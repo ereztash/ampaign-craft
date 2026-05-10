@@ -1,0 +1,81 @@
+{
+  "candidate": "nicolas-bandurek",
+  "track": "breadth",
+  "claims": [
+    {
+      "claim_id": "C1",
+      "principle_code": "P05",
+      "mechanism": "Niko מנסח עקבית מנגנונים בעלי שם — שלוש שיטות לפיתוח מקורות מידע (מחזור / פיתוח מקורות / חיתוט בפחים), פורום שבועי בשם 'פיצוח', מודל הקרחון, משולש זהב (קצב + איכות תהליך + איכות מידע), ומדרג ידע ארבע-שכבתי (נתונים → מידע → ידע → בינה). שמות אלה חוזרים על פני מקורות שונים ובהקשרים שונים.",
+      "evidence_type": "both",
+      "sources": ["blog_03_human_capital", "podcast_ep75"],
+      "confidence": 0.85,
+      "verbatim_anchor": "אנחנו עושים משתמשים בשלוש שיטות השיטה הראשונה אנחנו קוראים לה מחזור... פעם בשבוע יש לנו פורום שאנחנו קוראים לו פיצוח",
+      "lexical_signal": "'אנחנו קוראים לה X', 'אצלנו בדטה for בינס', שמות פרטיים למתודולוגיות (פיצוח, מחזור, חיתוט בפחים, מודל הקרחון, משולש זהב, מדרג הידע)",
+      "structural_signal": "אותן methodologies מופיעות בלפחות שני מקורות נפרדים (blog + podcast); הצגה עקבית של שיטה כשם, לא כתיאור גנרי"
+    },
+    {
+      "claim_id": "C2",
+      "principle_code": "P03",
+      "mechanism": "Niko ממסגר באופן עקבי את עבודתו כהסטה של מסגרת תפיסתית — מה שהארגון חושב שהוא הבעייה (טכנולוגיה, מערכות, אנשים) אינה הבעייה האמיתית; המידע מספר סיפור שונה ממה שהמנהל מספר לעצמו. הדפוס 'הם חושבים X, האמת ש-Y' חוזר במספר רמות (תרבות ארגונית מתחת לפני השטח, שעות עבודה אפקטיביות מול לא, 'מוקדם מדי להחליט' מול 'מאוחר מדי לתקן').",
+      "evidence_type": "both",
+      "sources": ["blog_01_moukdam_meday", "podcast_ep75"],
+      "confidence": 0.80,
+      "verbatim_anchor": "אתה אומר רגע רגע בוא נסתכל מה המידע מספר אתה מקבל סיפור אחר לגמרי... המידע מספר סיפור הרבה יותר עמוק ממה שקולה בפועל בראש של האנשים",
+      "lexical_signal": "'מתחת לפני השטח', 'בדיעבד תמיד אפשר יהיה למצוא את הרמזים', 'המידע מספר סיפור אחר', 'עיוורון ההצלחה', 'פער הרלוונטיות', דפוס 'אנשים חושבים X, האמת Y'",
+      "structural_signal": "case study הרפת — הלקוח חשב 'המכונה עובדת' (רק צפצופים), Niko הראה שבעצם החלב לא אחיד; פוסט שלם בנוי סביב reframing של 'אם לא שבור אל תתקן'"
+    },
+    {
+      "claim_id": "C3",
+      "principle_code": "P08",
+      "mechanism": "Niko משתמש בתבניות חוזרות שמקצרות מחזורים — מסגרת 'פיצוח' שבועית במשך כמעט 20 שנה, אותן 5 הנחיות הטמעה (מיקוד עסקי / קרבה data-flow ל-work-flow / שני לבלים / לא להתעלם מהמערכת אחרי הטמעה / Owner מוגדר), ואותו arc 6-תחומי לאבחון ארגוני (הון חברתי / תהליכים / טכנולוגיות / משאבים / תשתיות / מותג). תבנית קיימת מלפני engagement, לא מומצאת אד-הוק.",
+      "evidence_type": "both",
+      "sources": ["blog_01_moukdam_meday", "blog_03_human_capital", "podcast_ep75"],
+      "confidence": 0.70,
+      "verbatim_anchor": "אני עושה את זה כבר כמעט 20 שנה את התהליך הזה של פעם בשבוע לעצור לתהליך של חשיבה",
+      "lexical_signal": "'פעם בשבוע', 'אנחנו עושים', 'תבנית', 'שיטה', 'אותו תהליך', מסגרות ממוספרות (חמישה תחומים, ארבעה טיפים, שלוש שיטות, שש קטגוריות אבחון)",
+      "structural_signal": "אותן רשימות-מסגרת מופיעות בבלוג ובפודקאסט בניסוחים שונים אך באותו מבנה; cadence שבועית מתועדת על פני תקופה ארוכה"
+    },
+    {
+      "claim_id": "C4",
+      "principle_code": "P06",
+      "mechanism": "Niko מבטיח outcomes מדידים מהירים — תוצרים פונקציונליים מ-'פיצוח' שבועי שניתן ליישם 'מחר בבוקר', וגישה של אבחון מדורג שמספק ערך מוקדם בכל שלב. ה-cadence השבועית עצמה משמשת כ-time-to-value mechanism (לא רבעוני, לא חצי-שנתי).",
+      "evidence_type": "lexical",
+      "sources": ["podcast_ep75"],
+      "confidence": 0.45,
+      "verbatim_anchor": "הרבה פעמים אתה יוצא ממש עם משהו פונקציונלי שאתה יכול לממש אותו מחר בבוקר",
+      "lexical_signal": "'מחר בבוקר', 'פעם בשבוע', 'תוך זמן קצר', אבחון מדורג שמייצר outcomes חלקיים",
+      "structural_signal": null
+    },
+    {
+      "claim_id": "C5",
+      "principle_code": "P01",
+      "mechanism": "Niko ממסגר את הפסיביות הארגונית כמלכודת ('עיוורון ההצלחה', 'מוקדם מדי להחליט') ואת הפעולה היזומה כמוצא — אבחון תקופתי, פעולות 'מחר בבוקר', cadence שבועית. הטענה: ארגון שלא פועל באופן יזום על נתוניו עומד בפני הכחדה רלוונטיות, ומסגרת העבודה של Niko משיבה agency דרך פעולה מובנית.",
+      "evidence_type": "lexical",
+      "sources": ["blog_01_moukdam_meday", "podcast_ep75"],
+      "confidence": 0.40,
+      "verbatim_anchor": "עדיף להחליט על צורך בשיפור עיתי של הקיים מאשר להמתין לנסיבות מושלמות",
+      "lexical_signal": "'מוקדם מדי להחליט', 'מאוחר מדי לתקן', 'אבחון מקדים', 'מחר בבוקר', 'מחפש כל הזמן', 'פעולה אחראית'",
+      "structural_signal": null
+    }
+  ],
+  "metadata": {
+    "engine_version": "nicolas-bandurek-calibration-v1.0",
+    "extractor_model": "claude-opus-4-7",
+    "synthesizer_model": "claude-opus-4-7",
+    "mapper_model": "claude-opus-4-7",
+    "run_timestamp": "2026-05-10T00:00:00Z",
+    "tier_isolation": "collapsed_single_llm",
+    "input_word_count": 8900,
+    "playbook_version": "0.2.0"
+  },
+  "extraction_notes": [
+    "CONTAMINATION DISCLOSURE: ה-extraction בוצע על ידי אותו LLM שעיצב את methodology של ה-calibration test, את disqualification thresholds, ואת ה-verdict bands. ה-priors מוטים לכיוון 'engine מתפקד'. Judge חייב להיות session נקי לחלוטין כדי לפצות.",
+    "5 claims בלבד — ב-minimum של ה-spec (5-7). C4 ו-C5 ב-confidence נמוך (<0.50) ועם evidence_type='lexical' בלבד. Per playbook policy, lexical-only ⇒ 'אין טענה'. הם נכנסו פה כי הסיגנל קיים אבל structural לא מבוסס. ה-judge רשאי לסווג אותם כ-hallucinated.",
+    "P09 (Domain-Empathy-Translation) לא נדלק. הסיגנל אצל Niko הפוך — case studies חוצי-תעשייה (רפת, רטייל, פיננסים, בריאות, לוגיסטיקה, תעשייה, ציבורי) ושפה גנרית-עסקית. זה הדפוס של ה-competitor (Generalist-Cross-Pollination) שאינו principle בעל קוד.",
+    "P12 (Loss-Avoided-Quantification) דיסקווליפיקיישן: יש loss framing ('אם אין את המידע אי אפשר בכלל לתכנן', 'הביצועים נורא נמוכים ביחס לפוטנציאל') אבל אין מספרי $. Disqualifier (א) מופעל.",
+    "P02 (Explanation-Efficiency) אינו ניתן לקביעה מ-INDIRECT — דורש headline/About visibility. ניטוול ל-judge.",
+    "P11, P13, P14, P15 — לא נדלקו (אין לידים אצלנו על pricing, displacement, premium positioning, או brand legitimacy ב-INDIRECT corpus).",
+    "Source balance: 88% של ה-corpus ב-INDIRECT_words מגיע מ-podcast_ep75 (transcript עם STT errors). claims C1, C3 מבוססים גם על blogs, אבל C2, C4, C5 נשענים בעיקר על ה-podcast. נטה caveat ב-judge structural fit analysis.",
+    "Niko מציג עצמו כ-thought-leader/educator (קורסים, ספר, הרצאות) יותר מאשר vendor/operator. זה מסביר למה principles סביב engagement-mechanics (P10 onboarding, P11 risk-reversal, P14 pricing) לא נדלקו — הוא לא מנסה למכור deal סטנדרטי, הוא מוכר השקפת עולם."
+  ]
+}
