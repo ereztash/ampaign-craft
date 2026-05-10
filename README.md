@@ -136,7 +136,7 @@ Annual plans save 35% (`src/lib/pricingTiers.ts` is canonical).
 
 ```
   UI Layer ──────────── React + shadcn/ui + RTL + Archetype-adaptive
-                        185 components · 36 pages · 28 hooks · L1-L5
+                        186 components · 36 pages · 31 hooks · L1-L5
   ViewModel Layer ───── src/viewmodels/ — stable UI contracts, adapter fns
                         ESLint boundary: components may not import @/engine/* directly
   Context Layer ────── Auth · Archetype · UserProfile · DataSource
@@ -148,7 +148,7 @@ Annual plans save 35% (`src/lib/pricingTiers.ts` is canonical).
   LLM Router ────────── Haiku $0.003 / Sonnet $0.015 / Opus $0.075
                         Cost caps · fallback chains · tier-gated by subscription
   Persistence ──────── Supabase Postgres + pgvector · Event Queue
-                        RLS · 51 migrations · 29 Edge Functions · 1536/384-dim
+                        RLS · 51 migrations · 30 Edge Functions · 1536/384-dim
 ```
 
 > See [`docs/architecture.md`](./docs/architecture.md) for the full engine directory.
