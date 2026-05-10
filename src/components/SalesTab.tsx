@@ -1,10 +1,12 @@
 import { useMemo, useState, useCallback, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES } from "@/viewmodels";
-import { buildUserKnowledgeGraph, StylomeVoice } from "@/viewmodels";
-import { inferDISCProfile } from "@/viewmodels";
-import { generateClosingStrategy } from "@/viewmodels";
+import {
+  generateSalesPipeline, getSalesTypeLabel, getNeuroClosingFrameworks, detectBuyerPersonality, BUYER_PERSONALITIES,
+  buildUserKnowledgeGraph, type StylomeVoice,
+  inferDISCProfile,
+  generateClosingStrategy,
+} from "@/viewmodels";
 import { DISCProfileCard } from "@/components/DISCProfileCard";
 import { NeuroClosingCard } from "@/components/NeuroClosingCard";
 import { DifferentiationResult } from "@/types/differentiation";
@@ -27,12 +29,16 @@ import type { Quote } from "@/types/quote";
 import QuoteBuilder from "@/components/QuoteBuilder";
 import { InsightActionCard, type ConfidenceLevel } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
+import type { ActivationMode } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 
 interface SalesTabProps {
   result: FunnelResult;
+  /** Activation mode from useEngineOrchestrator. Defaults to "active" (always run). */
+  engineMode?: ActivationMode;
 }
 
-const SalesTab = ({ result }: SalesTabProps) => {
+const SalesTab = ({ result, engineMode = "active" }: SalesTabProps) => {
   const { t, language } = useLanguage();
   const isHe = language === "he";
   const diffResult = useMemo<DifferentiationResult | null>(
@@ -43,12 +49,17 @@ const SalesTab = ({ result }: SalesTabProps) => {
     () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
     [],
   );
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice), [result.formData, diffResult, stylomeVoice]);
-  const pipeline = useMemo(() => generateSalesPipeline(result, graph), [result, graph]);
-  const closingFrameworks = useMemo(() => getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c"), [pipeline.salesType, result.formData.audienceType]);
-  const buyerPersonality = useMemo(() => detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [result.formData]);
-  const discProfile = useMemo(() => inferDISCProfile(result.formData, graph), [result.formData, graph]);
-  const neuroClosing = useMemo(() => generateClosingStrategy(discProfile, result.formData), [discProfile, result.formData]);
+  const graphFromContext = useGraph();
+  const graph = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData, diffResult, stylomeVoice),
+    [graphFromContext, result.formData, diffResult, stylomeVoice],
+  );
+  const isPassive = engineMode === "passive";
+  const pipeline = useMemo(() => isPassive ? null : generateSalesPipeline(result, graph), [isPassive, result, graph]);
+  const closingFrameworks = useMemo(() => pipeline ? getNeuroClosingFrameworks(pipeline.salesType, result.formData.audienceType || "b2c") : [], [pipeline, result.formData.audienceType]);
+  const buyerPersonality = useMemo(() => isPassive ? null : detectBuyerPersonality(result.formData.audienceType || "b2c", result.formData.businessField || "other"), [isPassive, result.formData]);
+  const discProfile = useMemo(() => isPassive ? null : inferDISCProfile(result.formData, graph), [isPassive, result.formData, graph]);
+  const neuroClosing = useMemo(() => discProfile ? generateClosingStrategy(discProfile, result.formData) : null, [discProfile, result.formData]);
   const personalityProfile = BUYER_PERSONALITIES.find((p) => p.id === buyerPersonality)!;
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
@@ -85,6 +96,17 @@ const SalesTab = ({ result }: SalesTabProps) => {
   };
 
   const formatCurrency = (n: number) => `₪${n.toLocaleString()}`;
+
+  if (isPassive || !pipeline || !discProfile || !neuroClosing || !buyerPersonality) {
+    return (
+      <div className="rounded-lg border border-dashed bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+        {tx({
+          he: "מודול המכירות יופעל כשייצברו לפחות 20 לידים ב-CRM. הוסף לידים כדי לפתוח תחזית, פרסונות וסקריפטי סגירה.",
+          en: "Sales module activates once you have at least 20 leads in CRM. Add leads to unlock pipeline forecast, personas, and closing scripts.",
+        }, language)}
+      </div>
+    );
+  }
 
   if (quoteView) {
     return (

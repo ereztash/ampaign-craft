@@ -1,9 +1,8 @@
 import { useMemo, useState, lazy, Suspense } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { generateRetentionStrategy } from "@/viewmodels";
-import { buildUserKnowledgeGraph } from "@/viewmodels";
-import { assessChurnRisk } from "@/viewmodels";
+import { generateRetentionStrategy, buildUserKnowledgeGraph, assessChurnRisk } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { ChurnPredictionCard } from "@/components/ChurnPredictionCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,22 +15,30 @@ import { Copy, Check, ChevronDown, UserPlus, AlertTriangle, Gift, TrendingUp, He
 import { toast } from "sonner";
 import { InsightActionCard } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
+import type { ActivationMode } from "@/viewmodels";
 
 const ChurnPlaybookTab = lazy(() => import("@/components/ChurnPlaybookTab"));
 
-interface Props { result: FunnelResult }
+interface Props {
+  result: FunnelResult;
+  engineMode?: ActivationMode;
+}
 
-const RetentionGrowthTab = ({ result }: Props) => {
+const RetentionGrowthTab = ({ result, engineMode = "active" }: Props) => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("retention");
+  const isPassive = engineMode === "passive";
 
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
-  const retention = useMemo(() => generateRetentionStrategy(result.formData, graph), [result.formData, graph]);
-  const churnRisk = useMemo(() => assessChurnRisk(result.formData), [result.formData]);
+  const graphFromContext = useGraph();
+  const graph = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData),
+    [graphFromContext, result.formData],
+  );
+  const retention = useMemo(() => isPassive ? null : generateRetentionStrategy(result.formData, graph), [isPassive, result.formData, graph]);
+  const churnRisk = useMemo(() => isPassive ? null : assessChurnRisk(result.formData), [isPassive, result.formData]);
 
-  const topSignal = retention.churnPlaybook.signals[0];
   const userState = getPersistedUserState();
 
   const copyText = (text: string, idx: number) => {
@@ -40,6 +47,19 @@ const RetentionGrowthTab = ({ result }: Props) => {
     toast.success(tx({ he: "הועתק!", en: "Copied!" }, language));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
+
+  if (isPassive || !retention || !churnRisk) {
+    return (
+      <div className="rounded-lg border border-dashed bg-muted/30 p-8 text-center text-sm text-muted-foreground">
+        {tx({
+          he: "מודול השימור והצמיחה יופעל אחרי 30 ימי שימוש פעיל באפליקציה. המשך לאסוף נתונים כדי לפתוח את ה-Flywheel ותחזיות נטישה.",
+          en: "Retention & growth activates after 30 days of active use. Keep collecting data to unlock the Flywheel and churn predictions.",
+        }, language)}
+      </div>
+    );
+  }
+
+  const topSignal = retention.churnPlaybook.signals[0];
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>

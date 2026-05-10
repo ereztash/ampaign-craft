@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { FunnelResult } from "@/types/funnel";
 import { trackFirstValueSeen } from "@/lib/wedgeTelemetry";
-import { generatePricingIntelligence } from "@/viewmodels";
-import { buildUserKnowledgeGraph } from "@/viewmodels";
+import { FunnelResult } from "@/types/funnel";
+import { generatePricingIntelligence, buildUserKnowledgeGraph } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,7 +46,11 @@ const PricingIntelligenceTab = ({ result }: Props) => {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const mountedAtRef = useRef<number>(performance.now());
 
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const graphFromContext = useGraph();
+  const graph = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData),
+    [graphFromContext, result.formData],
+  );
   const pricing = useMemo(() => generatePricingIntelligence(result.formData, graph), [result.formData, graph]);
 
   useEffect(() => {

@@ -20,6 +20,9 @@ import type { BilingualText } from "@/types/i18n";
 export type { BottleneckModule, BottleneckSeverity, LoopState };
 export type { Bottleneck, LoopSnapshot, WeeklyCommitment, BusinessInsight };
 export { selectTactic, detectBottlenecks, generateInsights, commitToAction, reportOutcome, startNewWeek, getStreak, getLoopSnapshot, getInsightUsageCount };
+export type { ReportOutcome } from "@/engine/weeklyLoopEngine";
+export { abandonCommitment, continueCommitment } from "@/engine/weeklyLoopEngine";
+export { generateWeeklyPulse } from "@/engine/pulseEngine";
 
 // ── InsightVM ─────────────────────────────────────────────────────────────────
 

@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
-import { buildUserKnowledgeGraph } from "@/viewmodels";
-import { synthesizeUVP } from "@/viewmodels";
+import { buildUserKnowledgeGraph, synthesizeUVP } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { UVPFormatCard } from "@/components/UVPFormatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,9 +32,10 @@ const UVPSynthesisTab = ({ result, diffResult }: UVPSynthesisTabProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
 
+  const graphFromContext = useGraph();
   const ukg = useMemo(
-    () => buildUserKnowledgeGraph(result.formData, diffResult ?? undefined),
-    [result.formData, diffResult],
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData, diffResult ?? undefined),
+    [graphFromContext, result.formData, diffResult],
   );
 
   const uvp = useMemo(

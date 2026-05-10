@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { analyzeSamples, StylomeProfile, StylomeSample, INTERVIEW_QUESTIONS } from "@/viewmodels";
+import { analyzeSamples, INTERVIEW_QUESTIONS, type StylomeProfile, type StylomeSample } from "@/viewmodels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

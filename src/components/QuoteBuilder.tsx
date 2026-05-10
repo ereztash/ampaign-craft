@@ -26,8 +26,7 @@ import type {
   QuoteDiscount,
 } from "@/types/quote";
 import { calculateQuoteTotal, formatQuotePrice } from "@/types/quote";
-import { assembleQuote } from "@/viewmodels";
-import { generatePricingIntelligence } from "@/viewmodels";
+import { assembleQuote, generatePricingIntelligence } from "@/viewmodels";
 import QuotePreview from "./QuotePreview";
 
 interface QuoteBuilderProps {

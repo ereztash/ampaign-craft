@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
-import { buildUserKnowledgeGraph } from "@/viewmodels";
-import { buildChurnPlaybook, type WeeklyAction, type NudgeEvent, type LeadingIndicator, type Phase, type RiskTier } from "@/viewmodels";
+import { buildUserKnowledgeGraph, buildChurnPlaybook, type WeeklyAction, type NudgeEvent, type LeadingIndicator, type Phase, type RiskTier } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -247,7 +247,11 @@ const ChurnPlaybookTab = ({ result }: ChurnPlaybookTabProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
 
-  const ukg = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const graphFromContext = useGraph();
+  const ukg = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData),
+    [graphFromContext, result.formData],
+  );
   const playbook = useMemo(() => buildChurnPlaybook(result.formData, ukg), [result.formData, ukg]);
 
   return (

@@ -5,7 +5,8 @@ import { authFetch } from "@/lib/authFetch";
 import { readTextStream } from "@/lib/streamToText";
 import { FunnelResult, FormData } from "@/types/funnel";
 import { DifferentiationResult } from "@/types/differentiation";
-import { buildUserKnowledgeGraph, UserKnowledgeGraph, StylomeVoice, loadImportedDataSignals } from "@/viewmodels";
+import { buildUserKnowledgeGraph, loadImportedDataSignals, type UserKnowledgeGraph, type StylomeVoice } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { safeStorage } from "@/lib/safeStorage";
 import { classifyUserState, persistCoachMode } from "@/lib/userStateClassifier";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -168,11 +169,13 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
     [],
   );
+  const graphFromContext = useGraph();
   const formData = result?.formData ?? EMPTY_FORM_DATA;
   const graph = useMemo(() => {
+    if (graphFromContext) return graphFromContext;
     const imported = loadImportedDataSignals();
     return buildUserKnowledgeGraph(formData, diffResult, stylomeVoice, undefined, undefined, { importedData: imported });
-  }, [formData, diffResult, stylomeVoice]);
+  }, [graphFromContext, formData, diffResult, stylomeVoice]);
   const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe, language), [graph, isHe, language]);
 
   useEffect(() => {

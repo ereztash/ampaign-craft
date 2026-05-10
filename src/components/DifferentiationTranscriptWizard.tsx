@@ -27,14 +27,22 @@ import {
 
 import { InsightActionCard } from "@/components/InsightActionCard";
 import { getPersistedUserState } from "@/lib/userStateClassifier";
-import { STAGES, detectStagesInTranscript, type StageDetectionReport } from "@/viewmodels";
-import { PRINCIPLES_BY_CODE, type PrincipleAgentOutput, type ConvergenceReport } from "@/viewmodels";
-import { runPrincipleScan } from "@/viewmodels";
-import { readFileAsText, downloadDifferentiationMarkdown, downloadPlanStage1Markdown } from "@/viewmodels";
 import {
+  STAGES,
+  detectStagesInTranscript,
+  PRINCIPLES_BY_CODE,
+  runPrincipleScan,
+  readFileAsText,
+  downloadDifferentiationMarkdown,
+  downloadPlanStage1Markdown,
   buildDraftFromScanOutputs,
   isTranscriptWizardStepValid,
-  type TranscriptWizardStepId,
+} from "@/viewmodels";
+import type {
+  StageDetectionReport,
+  PrincipleAgentOutput,
+  ConvergenceReport,
+  TranscriptWizardStepId,
 } from "@/viewmodels";
 
 // ───────────────────────────────────────────────

@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { tx } from "@/i18n/tx";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
+import { TiltCard } from "@/components/ui/TiltCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
@@ -91,6 +92,7 @@ export function InsightActionCard({
   }
 
   return (
+    <TiltCard maxDeg={2}>
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
       <CardContent className="p-6 space-y-5">
         <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" dir="auto">
@@ -195,5 +197,6 @@ export function InsightActionCard({
         )}
       </CardContent>
     </Card>
+    </TiltCard>
   );
 }

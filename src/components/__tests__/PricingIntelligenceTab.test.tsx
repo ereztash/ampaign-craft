@@ -11,6 +11,12 @@ vi.mock("@/i18n/tx", () => ({
     lang === "he" ? _obj.he : _obj.en,
 }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn() } }));
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: null, session: null, loading: false }),
+}));
+vi.mock("@/lib/wedgeTelemetry", () => ({
+  trackFirstValueSeen: vi.fn(),
+}));
 vi.mock("@/lib/utils", () => ({ cn: (...c: string[]) => c.filter(Boolean).join(" ") }));
 vi.mock("@/lib/userStateClassifier", () => ({
   getPersistedUserState: () => "ready" as const,
@@ -98,6 +104,10 @@ vi.mock("@/engine/pricingIntelligenceEngine", () => ({
       },
     ],
     subscriptionEconomics: null,
+    competitivePosition: {
+      position: "parity",
+      label: { he: "תמחור תואם שוק", en: "Market parity pricing" },
+    },
   })),
 }));
 

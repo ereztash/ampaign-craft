@@ -4,6 +4,7 @@
 import type { DISCProfile, DISCDistribution } from "@/engine/discProfileEngine";
 import { inferDISCProfile, getReaderFraming } from "@/engine/discProfileEngine";
 import type { NextStep } from "@/engine/nextStepEngine";
+import { assessChurnRisk } from "@/engine/churnPredictionEngine";
 import type {
   ChurnRiskAssessment,
   ChurnIntervention,
@@ -12,7 +13,7 @@ import type { BilingualText } from "@/types/i18n";
 
 // Re-export raw engine types/functions for components that need direct access.
 export type { DISCProfile, DISCDistribution, ChurnRiskAssessment };
-export { inferDISCProfile, getReaderFraming };
+export { inferDISCProfile, getReaderFraming, assessChurnRisk };
 
 // ── DISCProfileVM ─────────────────────────────────────────────────────────────
 

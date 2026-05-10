@@ -21,6 +21,27 @@ import {
   conceptKey,
   type BlackboardWriteContext,
 } from "./blackboard/contract";
+import type { TierPattern, PriceSensitivity, GuaranteeDef } from "./pricingKnowledge";
+
+// ── Module-level lookup Maps (O(1) replacements for O(n) .find/.includes) ──
+
+const PRICE_SENSITIVITY_MAP = new Map<string, PriceSensitivity>(
+  PRICE_SENSITIVITY.map((p) => [p.field, p]),
+);
+
+const TIER_BY_INDUSTRY = new Map<string, TierPattern>();
+for (const pattern of TIER_PATTERNS) {
+  for (const field of pattern.bestFor) {
+    TIER_BY_INDUSTRY.set(field, pattern);
+  }
+}
+
+const GUARANTEE_BY_INDUSTRY = new Map<string, GuaranteeDef>();
+for (const g of GUARANTEE_TYPES) {
+  for (const field of g.bestFor) {
+    GUARANTEE_BY_INDUSTRY.set(field, g);
+  }
+}
 
 export const ENGINE_MANIFEST = {
   name: "pricingIntelligenceEngine",
@@ -100,7 +121,7 @@ function recommendPricingModel(input: ReturnType<typeof extractInput>): PricingM
   else if (input.industry === "fashion" || input.industry === "food") model = "competitive";
   else if (input.differentiationStrength > 50) model = "value_based";
 
-  const sensitivity = PRICE_SENSITIVITY.find((p) => p.field === input.industry) || PRICE_SENSITIVITY[9];
+  const sensitivity = PRICE_SENSITIVITY_MAP.get(input.industry) ?? PRICE_SENSITIVITY[9];
   const isB2B = input.audience === "b2b";
   const basePrice = input.currentPrice || 100;
   const charm = applyCharmPricing(basePrice, isB2B);
@@ -143,7 +164,7 @@ function getValueMetric(input: ReturnType<typeof extractInput>): BilingualText {
 
 function generateTierStructure(input: ReturnType<typeof extractInput>, model: PricingModelRecommendation): TierRecommendation {
   const pattern = input.salesModel === "subscription" ? "good_better_best" : model.model === "freemium" ? "freemium_pro" : input.currentPrice > 2000 ? "single_tier" : "good_better_best";
-  const tierPattern = TIER_PATTERNS.find((p) => p.bestFor.includes(input.industry)) || TIER_PATTERNS[0];
+  const tierPattern = TIER_BY_INDUSTRY.get(input.industry) ?? TIER_PATTERNS[0];
   const base = model.recommendedRange.low;
   const isB2B = input.audience === "b2b";
 
@@ -227,7 +248,7 @@ function buildOfferStack(input: ReturnType<typeof extractInput>, graph: UserKnow
 // ═══ GUARANTEE ═══
 
 function designGuarantee(input: ReturnType<typeof extractInput>, _graph: UserKnowledgeGraph): GuaranteeRecommendation {
-  const match = GUARANTEE_TYPES.find((g) => g.bestFor.includes(input.industry)) || GUARANTEE_TYPES[0];
+  const match = GUARANTEE_BY_INDUSTRY.get(input.industry) ?? GUARANTEE_TYPES[0];
   return {
     type: match.type,
     label: match.label,
@@ -286,7 +307,7 @@ function generatePriceFramingScripts(input: ReturnType<typeof extractInput>, gra
 // ═══ COMPETITIVE POSITION ═══
 
 function analyzeCompetitivePosition(input: ReturnType<typeof extractInput>): CompetitivePositionResult {
-  const sensitivity = PRICE_SENSITIVITY.find((p) => p.field === input.industry) || PRICE_SENSITIVITY[9];
+  const sensitivity = PRICE_SENSITIVITY_MAP.get(input.industry) ?? PRICE_SENSITIVITY[9];
   const position = input.differentiationStrength > 60 ? "premium"
     : input.differentiationStrength > 40 ? "market_rate"
     : sensitivity.sensitivity === "very_high" ? "below_market" : "market_rate";

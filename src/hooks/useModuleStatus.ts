@@ -1,5 +1,5 @@
 // Module status tracking — reads from existing localStorage keys
-import { useMemo } from "react";
+import { useState } from "react";
 import { safeStorage } from "@/lib/safeStorage";
 
 export interface ModuleStatus {
@@ -12,7 +12,7 @@ export interface ModuleStatus {
 }
 
 export function useModuleStatus(): ModuleStatus[] {
-  return useMemo(() => {
+  const [statuses] = useState<ModuleStatus[]>(() => {
     const hasDiff = !!safeStorage.getString("funnelforge-differentiation-result", "");
     const plans = safeStorage.getJSON<unknown[]>("funnelforge-plans", []);
     const hasPlan = plans.length > 0;
@@ -24,5 +24,6 @@ export function useModuleStatus(): ModuleStatus[] {
       { id: "pricing", label: { he: "תמחור", en: "Pricing" }, completed: hasPlan, route: "/pricing", icon: "DollarSign", color: "text-emerald-500" },
       { id: "retention", label: { he: "שימור", en: "Retention" }, completed: hasPlan, route: "/retention", icon: "Heart", color: "text-pink-500" },
     ];
-  }, []);
+  });
+  return statuses;
 }

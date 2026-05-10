@@ -31,8 +31,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { DifferentiationResult } from "@/types/differentiation";
-import { enrichDifferentiationWithCitations } from "@/viewmodels";
-import { libraryVersion } from "@/viewmodels";
+import { enrichDifferentiationWithCitations, libraryVersion } from "@/viewmodels";
 import type { PrincipleTrace } from "@/viewmodels";
 
 interface Props {

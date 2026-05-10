@@ -1,52 +1,51 @@
 # FunnelForge — הוראות המשך עבודה
 
 ## ענף פעיל
-`claude/pricing-wedge-10x` (ניסויי, מתוך `claude/app-evaluation-strategy-SkmAh`)
-
-## Wedge Mode פעיל
-
-ברירת מחדל: **`all`** (הוחזר ב-2026-05-06 — חשיפה מלאה של כל 5 המודולים).
-המודולים הזמינים: `differentiate`, `wizard` (Marketing), `sales`, `pricing`, `retention`.
-מצבי ניסוי (`pricing-only`, `marketing-only`, `differentiate-only`) עדיין נתמכים — ניתן להפעיל מ-`/admin/wedge` או env. במצב hide+learn, route מוסתר נרשם כ-`wedge.locked_module_clicked`.
-
-**שליטה ב-runtime**: `/admin/wedge` (owner only) → לחיצה משנה את המצב + רענון אוטומטי.
-
-**שליטה בבילד**: `VITE_WEDGE_MODE=pricing-only|all|marketing-only|differentiate-only` ב-`.env`.
-
-**שליטה בקוד**: `DEFAULT_MODE` ב-`src/lib/wedgeMode.ts`.
-
-ה-data לבחינת התוצאה זמין ב-`/admin/aarrr` תחת events `wedge.*`.
+`claude/plan-repo-cleanup-OiANP`
 
 ---
 
 ## מה הושלם בסשן האחרון (2026-05-06)
 
-### Slice 4 — מיגרציית ViewModel debt הושלמה במלואה
+### Repo Cleanup — ניקוי ריפוזיטורי מלא
 
-**מצב סופי**: אפס `@/engine/*` imports ב-`src/components/**`. כל ה-allowlist נוקה.
-ESLint rule `no-restricted-imports` פעיל גלובלית בלי חריגים.
+**קבצים שנמחקו:**
+- `all_migrations.sql` — dump מיותר, קיים ב-`supabase/migrations/`
+- `bun.lockb` — פורמט בינארי ישן, מוחלף ע"י `bun.lock`
+- `package-lock.json` — npm lockfile, הפרויקט משתמש ב-Bun
 
-**ViewModel files חדשים (re-export pattern):**
-- `behavioral-heuristic.vm.ts`, `brand-vector.vm.ts`, `business-fingerprint.vm.ts`
-- `churn.vm.ts`, `copy-qa.vm.ts`, `data-import.vm.ts`
-- `differentiation.vm.ts`, `differentiation-transcript.vm.ts`
-- `executive-brief.vm.ts`, `export.vm.ts`, `guidance.vm.ts`
-- `neuro-closing.vm.ts`, `behavioral-action.vm.ts`, `training-data.vm.ts`
-- `pricing.vm.ts`, `agent-blackboard.vm.ts`, `quote.vm.ts`
-- `referral.vm.ts`, `retention-growth.vm.ts`, `sales-pipeline.vm.ts`
-- `stylome.vm.ts`, `uvp-synthesis.vm.ts`, `weekly-loop.vm.ts`
-- `moat.vm.ts`, `pulse.vm.ts`
+**ViewModel layer — השלמת מיגרציה מלאה:**
+- 26 קבצי `.vm.ts` ב-`src/viewmodels/` (14 חדשים נוצרו בסשן זה)
+- 86 טיפוסים/פונקציות שהיו חסרים נוספו לbarrel
+- **54 קומפוננטות production** הוגרו מ-`@/engine/*` ל-`@/viewmodels`
+- אפס imports ישירים מ-`@/engine/*` נשארו בקומפוננטות production
+- `eslint.config.js` allowlist עודכן — קומפוננטות שהוגרו הוסרו
 
-**VMs קיימים שהורחבו:**
-- `analytics.vm.ts` — נוספו `calculateEPS`, `generateCrossDomainInsights`, `assignToCohort`
-- `intake.vm.ts` — נוספו טיפוסי intake, `getIntakeSignal`, `setIntakeSignal`, `recordRouteVisit`, `detectBehaviorMismatch`
-- `next-step.vm.ts` — נוסף `generateWeeklyPulse`
-- `user-profile.vm.ts` — נחשף `DISCProfile`, `inferDISCProfile`, `ChurnRiskAssessment`
+**ViewModels קיימים (`src/viewmodels/`):**
+analytics, behavioral-action, blackboard, brand, business-fingerprint,
+churn, crm-leads, data-import, differentiation, differentiation-phases,
+executive-brief, export, guidance, health, insights, intake, moat,
+next-step, outcome-loop, pricing, prospect-intelligence, referral,
+sales, stylome, training, user-profile
 
-**קבצים שעודכנו:**
-- 52 קבצים ב-`src/components/**` עברו מ-`@/engine/*` ל-`@/viewmodels`
-- `eslint.config.js` — נמחק בלוק "Engine-import debt allowlist" (54 entries)
-- `src/viewmodels/index.ts` — barrel הורחב לכלול את כל ה-VMs החדשים
+### Slice 3 — ViewModel layer + ESLint engine-import boundary (2026-05-02)
+- `src/viewmodels/health.vm.ts`, `insights.vm.ts`, `user-profile.vm.ts` — adapters ראשוניים
+- `eslint.config.js` — rule `no-restricted-imports` error-level ב-`src/components/**`
+- Typography / IA ב-StrategyTab: InsightActionCard, Collapsible phase plan
+
+---
+
+## המשך — עבודה ממתינה
+
+### Drafts Inbox — A+B Workstream (ממתין ל-5 ראיונות משתמש)
+1. go/no-go: האם משתמש מבין הבדל בין טיוטה אסטרטגית לאופרטיבית ב-<3 שניות?
+2. 10 מוקים ויזואליים → module WhatsApp Drafts
+
+### engineActivationRules.ts (Lazy Activation Pattern)
+**קובץ להוסיף**: `src/engine/engineActivationRules.ts`
+```ts
+{ engineId, condition: (signals) => boolean, mode: "passive" | "standby" | "active" }
+```
 
 ---
 
@@ -109,8 +108,7 @@ userKnowledgeGraph → funnelEngine → differentiationEngine
 
 ## ענפים רלוונטיים
 
-- `claude/app-evaluation-strategy-SkmAh` — **ענף פעיל**
-- `claude/continue-checkpoint-166-gQl3G` — היסטורי
+- `claude/plan-repo-cleanup-OiANP` — **ענף פעיל** (repo cleanup + viewmodel migration)
 - `perf/reactive-core` — DRAFT, ממתין ל-preview env validation
 
 ---

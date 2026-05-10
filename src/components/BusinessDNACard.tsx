@@ -1,14 +1,11 @@
 import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
+import { TiltCard } from "@/components/ui/TiltCard";
 import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
-import {
-  BusinessFingerprint,
-  FingerprintDimensions,
-  DIMENSION_LABELS,
-  ARCHETYPE_LABELS,
-} from "@/viewmodels";
+import type { BusinessFingerprint, FingerprintDimensions } from "@/viewmodels";
+import { DIMENSION_LABELS, ARCHETYPE_LABELS } from "@/viewmodels";
 
 interface BusinessDNACardProps {
   fingerprint: BusinessFingerprint;
@@ -170,6 +167,7 @@ const BusinessDNACard = ({ fingerprint, compact }: BusinessDNACardProps) => {
   };
 
   return (
+    <TiltCard maxDeg={3}>
     <Card className="border-primary/20 bg-primary/5">
       <CardContent className={compact ? "p-3" : "p-5"}>
         <div className="text-center mb-3">
@@ -205,6 +203,7 @@ const BusinessDNACard = ({ fingerprint, compact }: BusinessDNACardProps) => {
         )}
       </CardContent>
     </Card>
+    </TiltCard>
   );
 };
 

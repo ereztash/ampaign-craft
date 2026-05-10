@@ -10,11 +10,14 @@ import { FunnelResult } from "@/types/funnel";
 import { MetaAuthState, MetaAdAccount } from "@/types/meta";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { analyzeBrandVector } from "@/viewmodels";
-import { inferDISCProfile } from "@/viewmodels";
-import { calculateEPS } from "@/viewmodels";
-import { generateCrossDomainInsights, type Industry } from "@/viewmodels";
-import { assignToCohort } from "@/viewmodels";
+import {
+  analyzeBrandVector,
+  inferDISCProfile,
+  calculateEPS,
+  generateCrossDomainInsights,
+  type Industry,
+  assignToCohort,
+} from "@/viewmodels";
 
 export interface MetaConnectionProps {
   connected: boolean;
