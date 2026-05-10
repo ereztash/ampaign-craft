@@ -169,11 +169,13 @@ const AiCoachChat = ({ result, healthScore, stylomePrompt }: AiCoachChatProps) =
     () => safeStorage.getJSON<StylomeVoice | null>("funnelforge-stylome-voice", null),
     [],
   );
+  const graphFromContext = useGraph();
   const formData = result?.formData ?? EMPTY_FORM_DATA;
   const graph = useMemo(() => {
+    if (graphFromContext) return graphFromContext;
     const imported = loadImportedDataSignals();
     return buildUserKnowledgeGraph(formData, diffResult, stylomeVoice, undefined, undefined, { importedData: imported });
-  }, [formData, diffResult, stylomeVoice]);
+  }, [graphFromContext, formData, diffResult, stylomeVoice]);
   const quickPrompts = useMemo(() => getSmartPrompts(graph, isHe, language), [graph, isHe, language]);
 
   useEffect(() => {

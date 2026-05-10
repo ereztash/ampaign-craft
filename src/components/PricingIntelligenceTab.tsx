@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { generatePricingIntelligence, buildUserKnowledgeGraph } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,11 @@ const PricingIntelligenceTab = ({ result }: Props) => {
   const isHe = language === "he";
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
-  const graph = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const graphFromContext = useGraph();
+  const graph = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData),
+    [graphFromContext, result.formData],
+  );
   const pricing = useMemo(() => generatePricingIntelligence(result.formData, graph), [result.formData, graph]);
 
   const copyText = (text: string, idx: number) => {

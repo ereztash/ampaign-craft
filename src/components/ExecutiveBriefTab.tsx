@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { FunnelResult } from "@/types/funnel";
 import { buildUserKnowledgeGraph, buildExecutiveBrief, type TrafficLight, type BriefRisk, type NRRScenario, type ActionItem } from "@/viewmodels";
+import { useGraph } from "@/contexts/GraphContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -199,7 +200,11 @@ const ExecutiveBriefTab = ({ result }: ExecutiveBriefTabProps) => {
   const { language } = useLanguage();
   const isHe = language === "he";
 
-  const ukg = useMemo(() => buildUserKnowledgeGraph(result.formData), [result.formData]);
+  const graphFromContext = useGraph();
+  const ukg = useMemo(
+    () => graphFromContext ?? buildUserKnowledgeGraph(result.formData),
+    [graphFromContext, result.formData],
+  );
   const brief = useMemo(() => buildExecutiveBrief({ result, ukg }), [result, ukg]);
 
   return (
