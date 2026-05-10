@@ -50,27 +50,27 @@
 ## HELD_OUT
 
 ### 1. `held_out/linkedin_about.md`
-- **Origin:** LinkedIn About section, expanded
+- **Origin:** linkedin.com/in/nicolas-bandurek-9596221ba/ (About section, expanded)
 - **Type:** explicit self-positioning, first-person profile prose
 - **Included:** טקסט מלא של About section.
 - **Excluded ranges:** אין.
-- **Word count:** ~210 מילים (עברית/אנגלית מעורב).
+- **Word count:** ~220 מילים (אנגלית).
 
 ### 2. `held_out/isrdfb_about.md`
 - **Origin:** isrdfb.com/about
-- **Type:** explicit self-positioning, company/founder bio
+- **Type:** explicit self-positioning, company/founder bio + team bios + ערכים מובילים
 - **Included:** טקסט מלא של עמוד About.
 - **Excluded ranges:** אין.
-- **Word count:** ~340 מילים (עברית).
+- **Word count:** ~500 מילים (עברית).
 
 ### 3. `held_out/speaker_bio.md`
 - **Origin:** isrdfb.com/ddlecture, /inolecture, /crmlecture (טקסט זהה בשלושת העמודים — deduplicated)
 - **Type:** explicit self-positioning, third-person speaker bio (כתוב ע"י ה-subject)
 - **Included:** טקסט הביו המאוחד.
 - **Excluded ranges:** אין.
-- **Word count:** ~150 מילים (עברית).
+- **Word count:** ~80 מילים (עברית).
 
-**Total HELD_OUT:** 3 items (3 unique texts), ~700 מילים.
+**Total HELD_OUT:** 3 items (3 unique texts), ~800 מילים.
 
 ---
 
@@ -97,8 +97,8 @@
 | INDIRECT words (post-curation) | ~8,900 |
 | HELD_OUT items | 3 |
 | HELD_OUT unique texts | 3 |
-| HELD_OUT words | ~700 |
-| INDIRECT_words / HELD_OUT_words ratio | ~12.7× |
+| HELD_OUT words | ~800 |
+| INDIRECT_words / HELD_OUT_words ratio | ~11× |
 
 - INDIRECT ≥ 3 ✓
 - HELD_OUT ≥ 2 ✓
