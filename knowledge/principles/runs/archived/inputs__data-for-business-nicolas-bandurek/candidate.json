@@ -1,0 +1,50 @@
+{
+  "candidate_name": "Nicolas Bandurek",
+  "company": "Data for Business",
+  "recommended_track": "breadth",
+  "sources": [
+    {
+      "source_id": "01",
+      "filename": "source-01-blog.md",
+      "url": "https://www.isrdfb.com/blog (3 blog posts: digitaltransformation, changemanage, humancapital)",
+      "type": "blog posts authored by CEO (analytical content)",
+      "date": "2022-11 to 2023-04",
+      "is_independent": false
+    },
+    {
+      "source_id": "02",
+      "filename": "source-02-website-lectures.md",
+      "url": "https://www.isrdfb.com/ddlecture + /inolecture",
+      "type": "workshop/lecture pages on company website (methodology + bio)",
+      "date": "2023",
+      "is_independent": false
+    },
+    {
+      "source_id": "03",
+      "filename": "source-03-book-methodological-excerpts.md",
+      "url": "https://digitalrosh.com/wp-content/uploads/2020/08/Yoman-Masa-Book-IDF.pdf (full book; PDF 403 to fetcher; user provided text)",
+      "type": "selected methodological excerpts from authored book 'יומן מסע אל הטרנספורמציה הדיגיטלית' (2020). Author's introduction + 8 transformation characteristics + 5 information hypotheses + 3 research-question approaches + retrospective. Fictional narrative chapters excluded to avoid overload and avoid biasing engine toward fictional military context.",
+      "date": "2020",
+      "is_independent": false
+    }
+  ],
+  "research_notes": {
+    "test_type": "BENCHMARK — not standard candidate evaluation",
+    "purpose": "Compare engine output (synthesis) against Erez's prior 3-document manual synthesis on the same subject. The user has a separate checklist of expected themes that will be sent AFTER extraction runs (to avoid biasing the engine).",
+    "subject_relationship": "Nicolas Bandurek is Erez's mentor. 3 strategic documents already exist (Erez-authored, validated operationally — they power an active bot writing in Nicolas's voice). Those documents are deliberately NOT in the bundle.",
+    "icp_note": "Nicolas is consultancy, not B2B SaaS Growth-Stage. ICP fit is NOT the test. Test is whether engine on public raw data converges with Erez's manual synthesis.",
+    "corpus_summary": {
+      "independent_sources": 0,
+      "first_party_sources": "all (website pages, blog posts, LinkedIn, book excerpts)",
+      "total_estimated_words": "~3,500-4,000",
+      "language": "Hebrew (sources 01, 02, 03) + English (LinkedIn About)",
+      "implication": "Bundle is first-party-only. Self-articulation bias is high (CEO describes himself in his own terms; engine reflects rather than discovers). Documented in research_notes."
+    },
+    "book_handling_decision": {
+      "full_book_size": "~30,000 Hebrew words across 12 fictional diary chapters covering 2026-2040 in IDF",
+      "extracted": "Author's introduction + methodological excerpts (8 transformation characteristics, 5 information hypotheses, 3 research-question approaches) + retrospective. Total ~2,500 words.",
+      "excluded": "Narrative chapters (fictional content set in IDF military future; would bias engine toward fictional military context, not Nicolas's actual business positioning).",
+      "rationale": "User original direction: 'הקדמה, פרק מתודולוגי, סיכום. שאר הספר overload.' The book has no single methodological chapter — methodology is distributed across the diary. Selected the highest-density methodological passages."
+    }
+  }
+}

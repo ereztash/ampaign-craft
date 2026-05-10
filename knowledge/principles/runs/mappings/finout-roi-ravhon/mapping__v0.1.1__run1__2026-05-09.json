@@ -1,0 +1,160 @@
+{
+  "metadata": {
+    "candidate_slug": "finout-roi-ravhon",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.25,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T20:42:41.713Z",
+    "input_bundle_hash_sha256": "210eeaee0322a8bc2649cd4be86535ca41fe303139af1dd9cb5c67171d277753",
+    "cost_usd": 0.031296000000000004,
+    "usage": {
+      "input_tokens": 2737,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1539,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Roi Ravhon",
+    "company": "Finout",
+    "extraction_source_url": "https://www.pitango.com/resources/founder-story-roi-ravhon-finout/",
+    "mappings": [
+      {
+        "ceo_term": "manage cloud cost at scale for enterprises",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P14",
+          "P09"
+        ],
+        "primary_principle": "P14",
+        "confidence": "medium",
+        "reasoning": "Targeting enterprises at scale defines a narrow ICP (large-scale cloud spenders), which semantically aligns with niche-focused positioning that enables pricing power; P09 is secondary because 'enterprises at scale' also signals native fluency in enterprise cloud infrastructure language."
+      },
+      {
+        "ceo_term": "Analyzing the past, Predicting the future, and Democratizing FinOps",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05",
+          "P02"
+        ],
+        "primary_principle": "P05",
+        "confidence": "medium",
+        "reasoning": "The three-pillar framing names a structured methodology ('we do cloud cost management through analysis, prediction, and democratization'), which maps to Mechanism-Articulation; P02 is secondary because the one-sentence three-pillar summary is itself highly repeatable by a buyer."
+      },
+      {
+        "ceo_term": "three main pillars",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05",
+          "P02"
+        ],
+        "primary_principle": "P05",
+        "confidence": "high",
+        "reasoning": "Explicitly naming three structural pillars is a classic mechanism-articulation pattern — a named framework through which the product delivers value."
+      },
+      {
+        "ceo_term": "steppingstones",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P06",
+          "P08"
+        ],
+        "primary_principle": "P06",
+        "confidence": "medium",
+        "reasoning": "Building 'steppingstones' implies a staged delivery of value — each stone is an incremental, measurable outcome — which maps most closely to Time-to-First-Value; P08 is secondary because a repeated stepping-stone framework also resembles templated engagements that compress the path to full value."
+      },
+      {
+        "ceo_term": "connect the cloud cost dots",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P12"
+        ],
+        "primary_principle": "P03",
+        "confidence": "medium",
+        "reasoning": "The phrase reframes the buyer's problem from 'we have a cost problem' to 'we can't even see our costs yet,' which is a cognitive frame shift about the nature of the problem; P12 is secondary because connecting cost dots implies quantifying the loss from current cost opacity."
+      },
+      {
+        "ceo_term": "FinOps",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09"
+        ],
+        "primary_principle": "P09",
+        "confidence": "high",
+        "reasoning": "Using the industry-standard term 'FinOps' signals that Finout speaks the buyer's native domain language, which is the core semantic of Domain-Empathy-Translation."
+      },
+      {
+        "ceo_term": "And we failed miserably. It was a lot more complicated than we thought it would be. But it was a stepping stone to Finout.",
+        "ceo_term_source_field": "tradeoffs_or_constraints_acknowledged",
+        "playbook_principles": [
+          "P04"
+        ],
+        "primary_principle": "P04",
+        "confidence": "low",
+        "reasoning": "Acknowledging an explicit failure and pivot is the closest available match to Tradeoff-Declaration, as it signals what the company chose not to remain doing; the fit is imperfect because P04 typically refers to explicit non-customer declarations rather than product pivots."
+      },
+      {
+        "ceo_term": "We thought that an enterprise would only need an analytics platform to help them connect the cloud cost dots. In reality, most of the market was still struggling just to understand what their costs even were.",
+        "ceo_term_source_field": "tradeoffs_or_constraints_acknowledged",
+        "playbook_principles": [
+          "P03",
+          "P12"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "This statement explicitly reframes the buyer's mental model — the market didn't need analytics on top of understood costs; it needed foundational cost visibility first — which is a textbook Cognitive-Frame-Shift of the problem definition."
+      }
+    ],
+    "unmapped_ceo_terms": [],
+    "ambiguous_mappings": [
+      {
+        "ceo_term": "steppingstones",
+        "candidate_principles": [
+          "P06",
+          "P08"
+        ],
+        "reasoning": "Steppingstones could mean incremental first-value delivery (P06) or a repeatable templated framework that shortens the path to full deployment (P08); both are plausible and the term alone does not disambiguate."
+      },
+      {
+        "ceo_term": "connect the cloud cost dots",
+        "candidate_principles": [
+          "P03",
+          "P12"
+        ],
+        "reasoning": "The phrase could be a cognitive reframe of what the real problem is (P03) or an implicit quantification of the cost of not having visibility (P12); the metaphor supports both readings equally."
+      }
+    ],
+    "mapping_summary": {
+      "total_terms_mapped": 8,
+      "total_terms_unmapped": 0,
+      "principles_referenced": [
+        "P14",
+        "P09",
+        "P05",
+        "P02",
+        "P06",
+        "P08",
+        "P03",
+        "P12",
+        "P04"
+      ],
+      "principles_with_high_confidence_mapping": [
+        "P05",
+        "P09",
+        "P03"
+      ]
+    }
+  }
+}

@@ -35,6 +35,9 @@ load-tests/results/
 # Supabase CLI temp files
 supabase/.temp/
 reports/
+# Exception: Differentiation Playbook reports are checked in deliberately.
+!knowledge/principles/reports/
+!knowledge/principles/reports/**
 
 # Validation harness outputs — too large / non-deterministic to commit
 evals/**/outputs/*.json

@@ -1,0 +1,146 @@
+{
+  "metadata": {
+    "candidate_slug": "aquant-shahar-chen",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.25,
+    "run_number": 1,
+    "timestamp_iso": "2026-05-09T20:18:52.734Z",
+    "input_bundle_hash_sha256": "94f577e0193322b5cb124626a378be3d30b0b9de0c6ffca8cc1d6df8ceaa7d7b",
+    "cost_usd": 0.028428000000000002,
+    "usage": {
+      "input_tokens": 2646,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1366,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Shahar Chen",
+    "company": "Aquant",
+    "extraction_source_url": "https://medium.com/authority-magazine/shahar-chen-of-aquant-on-five-things-you-need-to-create-a-highly-successful-career-in-the-ai-4cb68dff3d51",
+    "mappings": [
+      {
+        "ceo_term": "widening skills gap",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P12"
+        ],
+        "primary_principle": "P03",
+        "confidence": "medium",
+        "reasoning": "Naming a 'widening skills gap' reframes the buyer's problem from a technology deficit to a human-capital crisis, which is a cognitive frame shift; it also implies a quantifiable cost-of-doing-nothing (P12) but without any dollar figure attached."
+      },
+      {
+        "ceo_term": "harnessing the existing data of companies",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P05"
+        ],
+        "primary_principle": "P05",
+        "confidence": "high",
+        "reasoning": "This phrase names a specific mechanism — the company's methodology is explicitly 'we solve the skills gap through leveraging the client's own existing data,' which is a classic mechanism-articulation pattern."
+      },
+      {
+        "ceo_term": "holistic generative AI solution for the service industry",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09",
+          "P14"
+        ],
+        "primary_principle": "P09",
+        "confidence": "medium",
+        "reasoning": "Framing the solution as purpose-built for 'the service industry' signals domain-native language and vertical focus (P09); the narrow industry ICP also hints at niche positioning (P14), but P09 is the stronger semantic match given the emphasis on industry-specific delivery."
+      },
+      {
+        "ceo_term": "stringent security measures to prevent internet uploads",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P11"
+        ],
+        "primary_principle": "P11",
+        "confidence": "medium",
+        "reasoning": "Emphasizing security controls that prevent data from leaving the client's environment semantically maps to risk-reversal — it addresses and shifts the buyer's perceived risk of adopting AI by removing a key threat vector."
+      },
+      {
+        "ceo_term": "conservative industry",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09"
+        ],
+        "primary_principle": "P09",
+        "confidence": "high",
+        "reasoning": "Characterizing the target market as 'conservative' demonstrates that Chen speaks the buyer's cultural and industry language natively, which is the core semantic content of domain-empathy translation."
+      },
+      {
+        "ceo_term": "human element",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P09",
+          "P03"
+        ],
+        "primary_principle": "P09",
+        "confidence": "medium",
+        "reasoning": "Foregrounding the 'human element' as critical in a conservative industry reflects domain-empathy — understanding the cultural and emotional texture of the buyer's world — though it also carries a frame-shift quality (P03) in repositioning AI adoption as a people challenge rather than a technology challenge."
+      },
+      {
+        "ceo_term": "AI is not here to replace anyone",
+        "ceo_term_source_field": "in_ceo_own_terminology",
+        "playbook_principles": [
+          "P03",
+          "P04"
+        ],
+        "primary_principle": "P03",
+        "confidence": "high",
+        "reasoning": "This statement directly reframes the buyer's (technician's) mental model of AI from threat/replacement to augmentation tool, which is the defining semantic content of a cognitive frame shift; it also carries a weak tradeoff-declaration flavor (P04) in that it implicitly defines what Aquant is not doing, but the primary intent is reframing."
+      }
+    ],
+    "unmapped_ceo_terms": [],
+    "ambiguous_mappings": [
+      {
+        "ceo_term": "human element",
+        "candidate_principles": [
+          "P09",
+          "P03"
+        ],
+        "reasoning": "The term could equally reflect domain-empathy (understanding the emotional/cultural reality of service technicians) or a cognitive frame shift (repositioning AI adoption as fundamentally a people-management challenge rather than a technology challenge)."
+      },
+      {
+        "ceo_term": "holistic generative AI solution for the service industry",
+        "candidate_principles": [
+          "P09",
+          "P14"
+        ],
+        "reasoning": "The phrase signals both native industry-language fluency (P09) and a deliberately narrow ICP that could support premium niche pricing (P14), making it genuinely ambiguous between the two principles."
+      }
+    ],
+    "mapping_summary": {
+      "total_terms_mapped": 7,
+      "total_terms_unmapped": 0,
+      "principles_referenced": [
+        "P03",
+        "P04",
+        "P05",
+        "P09",
+        "P11",
+        "P12",
+        "P14"
+      ],
+      "principles_with_high_confidence_mapping": [
+        "P05",
+        "P09",
+        "P03"
+      ]
+    }
+  }
+}

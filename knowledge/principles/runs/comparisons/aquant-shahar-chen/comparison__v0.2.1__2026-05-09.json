@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "candidate_slug": "buildots-roy-danon",
+    "candidate_slug": "aquant-shahar-chen",
     "artifact_type": "comparison",
     "prompt_version": "0.2.1",
     "prompt_hash_sha256": "1187f81e474393c281798926a5594b0f02c78c084b410bd0e5ad76dad79d4d80",
@@ -9,8 +9,8 @@
     "model": "deterministic (no LLM)",
     "temperature": 0,
     "run_number": 0,
-    "timestamp_iso": "2026-05-09T20:33:05.998Z",
-    "input_bundle_hash_sha256": "b370aef91c59024745682d2c11d0abe189e76f18d695a4e0b5fa8bd49db06334",
+    "timestamp_iso": "2026-05-09T20:33:06.466Z",
+    "input_bundle_hash_sha256": "94f577e0193322b5cb124626a378be3d30b0b9de0c6ffca8cc1d6df8ceaa7d7b",
     "cost_usd": 0,
     "usage": {
       "input_tokens": 0,
@@ -24,40 +24,34 @@
         "expected_principles": [
           "P03",
           "P05",
-          "P12",
-          "P04"
+          "P09",
+          "P11"
         ],
         "synthesis_at_6_per_run": [
           [
             "P02",
+            "P09"
+          ],
+          [
             "P03",
-            "P05",
             "P09"
           ],
           [
             "P02",
-            "P03",
-            "P05",
-            "P09"
-          ],
-          [
-            "P02",
-            "P03",
-            "P05",
             "P09"
           ]
         ],
         "matches_per_run": [
+          1,
           2,
-          2,
-          2
+          1
         ],
         "coverage_pct_per_run": [
+          25,
           50,
-          50,
-          50
+          25
         ],
-        "average_coverage_pct": 50,
+        "average_coverage_pct": 33.333333333333336,
         "threshold_pct": 60,
         "pass": false
       },
@@ -66,25 +60,27 @@
         "expected_principles": [
           "P03",
           "P05",
-          "P12",
-          "P04"
+          "P09",
+          "P11"
         ],
         "synthesis_at_8_per_run": [
           [],
-          [],
+          [
+            "P09"
+          ],
           []
         ],
         "matches_per_run": [
           0,
-          0,
+          1,
           0
         ],
         "coverage_pct_per_run": [
           0,
-          0,
+          25,
           0
         ],
-        "average_coverage_pct": 0,
+        "average_coverage_pct": 8.333333333333334,
         "threshold_pct": 30,
         "pass": false
       },
@@ -93,64 +89,54 @@
         "synthesis_at_6_per_run": [
           [
             "P02",
+            "P09"
+          ],
+          [
             "P03",
-            "P05",
             "P09"
           ],
           [
             "P02",
-            "P03",
-            "P05",
-            "P09"
-          ],
-          [
-            "P02",
-            "P03",
-            "P05",
             "P09"
           ]
         ],
         "not_in_mapper_per_run": [
           [
-            "P02",
-            "P09"
+            "P02"
           ],
+          [],
           [
-            "P02",
-            "P09"
-          ],
-          [
-            "P02",
-            "P09"
+            "P02"
           ]
         ],
         "pct_synthesis_only_per_run": [
           50,
-          50,
+          0,
           50
         ],
-        "average_pct": 50,
+        "average_pct": 33.333333333333336,
         "note": "High % means synthesis identifies themes the Mapper can't see (epistemic difference, not error). Inspect not_in_mapper_per_run manually to verify with source."
       },
       "ctm_axis_match": {
         "description": "Whether the top-scoring principle's CTM axis matches the mapper's expected axes.",
         "expected_primary_axis": [
           "M",
+          "T",
           "C"
         ],
         "synthesis_top_axis_per_run": [
           "T",
           "T",
-          "M"
+          "T"
         ],
         "matches_per_run": [
-          false,
-          false,
+          true,
+          true,
           true
         ],
-        "match_pct": 33.33333333333333,
+        "match_pct": 100,
         "threshold_pct": 60,
-        "pass": false
+        "pass": true
       },
       "stability": {
         "description": "Max score range (max-min) across runs for any principle. Lower = more stable.",
@@ -159,56 +145,56 @@
           {
             "principle": "P01",
             "scores": [
-              4,
-              3,
-              3
+              2,
+              2,
+              2
             ],
-            "max_minus_min": 1
+            "max_minus_min": 0
           },
           {
             "principle": "P02",
             "scores": [
               6,
-              6,
+              5,
               6
-            ],
-            "max_minus_min": 0
-          },
-          {
-            "principle": "P03",
-            "scores": [
-              6,
-              6,
-              6
-            ],
-            "max_minus_min": 0
-          },
-          {
-            "principle": "P04",
-            "scores": [
-              1,
-              2,
-              2
             ],
             "max_minus_min": 1
           },
           {
+            "principle": "P03",
+            "scores": [
+              5,
+              6,
+              5
+            ],
+            "max_minus_min": 1
+          },
+          {
+            "principle": "P04",
+            "scores": [
+              2,
+              2,
+              2
+            ],
+            "max_minus_min": 0
+          },
+          {
             "principle": "P05",
             "scores": [
-              6,
-              6,
-              7
+              5,
+              4,
+              4
             ],
             "max_minus_min": 1
           },
           {
             "principle": "P06",
             "scores": [
-              2,
-              2,
+              1,
+              1,
               2
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P07",
@@ -222,29 +208,29 @@
           {
             "principle": "P08",
             "scores": [
-              2,
-              2,
-              2
+              4,
+              3,
+              3
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P09",
             "scores": [
               7,
-              7,
+              8,
               7
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P10",
             "scores": [
-              1,
-              1,
-              1
+              3,
+              3,
+              2
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P11",
@@ -258,11 +244,11 @@
           {
             "principle": "P12",
             "scores": [
-              4,
-              4,
-              4
+              3,
+              2,
+              3
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P13",
@@ -285,11 +271,11 @@
           {
             "principle": "P15",
             "scores": [
-              4,
-              3,
-              4
+              2,
+              2,
+              2
             ],
-            "max_minus_min": 1
+            "max_minus_min": 0
           }
         ],
         "max_variance_observed": 1,
@@ -299,20 +285,20 @@
       "evidence_density": {
         "description": "Average number of evidence quotes per high-score principle.",
         "high_score_principles_per_run": [
-          4,
-          4,
-          4
+          2,
+          2,
+          2
         ],
-        "avg_quotes_per_high_score": 2.5,
+        "avg_quotes_per_high_score": 2,
         "threshold_min_quotes": 1,
         "pass": true
       },
       "disqualifier_engagement": {
         "description": "Disqualifiers should be triggered when applicable; high scores should not coexist with triggered disqualifiers.",
         "triggered_count_per_run": [
-          11,
-          10,
-          8
+          12,
+          8,
+          10
         ],
         "high_score_with_triggered_disqualifier_per_run": [
           0,
@@ -325,12 +311,12 @@
         "description": "When competing pairs both fire, tiebreaker should be applied. No 'both_high' soft landings.",
         "pairs_with_both_signals_per_run": [
           1,
-          2,
+          0,
           1
         ],
         "tiebreakers_used_per_run": [
           1,
-          2,
+          0,
           1
         ],
         "soft_landings_per_run": [
@@ -343,13 +329,13 @@
       "score_spread": {
         "description": "Std dev of relevanceScore distribution. Low std dev = no discrimination (lazy analysis).",
         "score_std_dev_per_run": [
-          2.112397269033981,
-          2.039607805437114,
-          2.1499353995462798
+          1.8785337071473827,
+          1.9821424996424675,
+          1.7688665548562132
         ],
-        "average_std_dev": 2.100646824672458,
+        "average_std_dev": 1.8765142538820212,
         "threshold_min": 2,
-        "pass": true
+        "pass": false
       },
       "validation_quality_propagation": {
         "description": "If extraction is low-quality, decision gates do not apply.",

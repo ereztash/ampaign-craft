@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "candidate_slug": "buildots-roy-danon",
+    "candidate_slug": "finout-roi-ravhon",
     "artifact_type": "comparison",
     "prompt_version": "0.2.1",
     "prompt_hash_sha256": "1187f81e474393c281798926a5594b0f02c78c084b410bd0e5ad76dad79d4d80",
@@ -9,8 +9,8 @@
     "model": "deterministic (no LLM)",
     "temperature": 0,
     "run_number": 0,
-    "timestamp_iso": "2026-05-09T20:33:05.998Z",
-    "input_bundle_hash_sha256": "b370aef91c59024745682d2c11d0abe189e76f18d695a4e0b5fa8bd49db06334",
+    "timestamp_iso": "2026-05-09T20:43:40.869Z",
+    "input_bundle_hash_sha256": "210eeaee0322a8bc2649cd4be86535ca41fe303139af1dd9cb5c67171d277753",
     "cost_usd": 0,
     "usage": {
       "input_tokens": 0,
@@ -22,52 +22,51 @@
       "ground_truth_coverage_at_6": {
         "description": "% of mapper-expected principles that synthesis scored ≥6 (playbook's weakSignals threshold). Answers: does the synthesis FIND the theme at all?",
         "expected_principles": [
-          "P03",
+          "P14",
           "P05",
-          "P12",
-          "P04"
+          "P06",
+          "P03",
+          "P09"
         ],
         "synthesis_at_6_per_run": [
           [
             "P02",
-            "P03",
             "P05",
-            "P09"
+            "P15"
           ],
           [
             "P02",
-            "P03",
             "P05",
-            "P09"
+            "P15"
           ],
           [
             "P02",
-            "P03",
             "P05",
-            "P09"
+            "P15"
           ]
         ],
         "matches_per_run": [
-          2,
-          2,
-          2
+          1,
+          1,
+          1
         ],
         "coverage_pct_per_run": [
-          50,
-          50,
-          50
+          20,
+          20,
+          20
         ],
-        "average_coverage_pct": 50,
+        "average_coverage_pct": 20,
         "threshold_pct": 60,
         "pass": false
       },
       "ground_truth_coverage_at_8": {
         "description": "% of mapper-expected principles that synthesis scored ≥8 (playbook's strongSignals threshold). Answers: does the synthesis FLAG it as strong?",
         "expected_principles": [
-          "P03",
+          "P14",
           "P05",
-          "P12",
-          "P04"
+          "P06",
+          "P03",
+          "P09"
         ],
         "synthesis_at_8_per_run": [
           [],
@@ -93,64 +92,62 @@
         "synthesis_at_6_per_run": [
           [
             "P02",
-            "P03",
             "P05",
-            "P09"
+            "P15"
           ],
           [
             "P02",
-            "P03",
             "P05",
-            "P09"
+            "P15"
           ],
           [
             "P02",
-            "P03",
             "P05",
-            "P09"
+            "P15"
           ]
         ],
         "not_in_mapper_per_run": [
           [
             "P02",
-            "P09"
+            "P15"
           ],
           [
             "P02",
-            "P09"
+            "P15"
           ],
           [
             "P02",
-            "P09"
+            "P15"
           ]
         ],
         "pct_synthesis_only_per_run": [
-          50,
-          50,
-          50
+          66.66666666666666,
+          66.66666666666666,
+          66.66666666666666
         ],
-        "average_pct": 50,
+        "average_pct": 66.66666666666666,
         "note": "High % means synthesis identifies themes the Mapper can't see (epistemic difference, not error). Inspect not_in_mapper_per_run manually to verify with source."
       },
       "ctm_axis_match": {
         "description": "Whether the top-scoring principle's CTM axis matches the mapper's expected axes.",
         "expected_primary_axis": [
+          "C",
           "M",
-          "C"
+          "T"
         ],
         "synthesis_top_axis_per_run": [
-          "T",
-          "T",
+          "M",
+          "M",
           "M"
         ],
         "matches_per_run": [
-          false,
-          false,
+          true,
+          true,
           true
         ],
-        "match_pct": 33.33333333333333,
+        "match_pct": 100,
         "threshold_pct": 60,
-        "pass": false
+        "pass": true
       },
       "stability": {
         "description": "Max score range (max-min) across runs for any principle. Lower = more stable.",
@@ -159,43 +156,43 @@
           {
             "principle": "P01",
             "scores": [
-              4,
-              3,
-              3
+              2,
+              2,
+              2
             ],
-            "max_minus_min": 1
+            "max_minus_min": 0
           },
           {
             "principle": "P02",
             "scores": [
               6,
-              6,
-              6
+              7,
+              7
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P03",
             "scores": [
-              6,
-              6,
-              6
+              5,
+              5,
+              5
             ],
             "max_minus_min": 0
           },
           {
             "principle": "P04",
             "scores": [
-              1,
+              2,
               2,
               2
             ],
-            "max_minus_min": 1
+            "max_minus_min": 0
           },
           {
             "principle": "P05",
             "scores": [
-              6,
+              7,
               6,
               7
             ],
@@ -204,9 +201,9 @@
           {
             "principle": "P06",
             "scores": [
-              2,
-              2,
-              2
+              1,
+              1,
+              1
             ],
             "max_minus_min": 0
           },
@@ -222,20 +219,20 @@
           {
             "principle": "P08",
             "scores": [
-              2,
+              3,
               2,
               2
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P09",
             "scores": [
-              7,
-              7,
-              7
+              4,
+              4,
+              5
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P10",
@@ -259,60 +256,60 @@
             "principle": "P12",
             "scores": [
               4,
-              4,
-              4
+              2,
+              3
             ],
-            "max_minus_min": 0
+            "max_minus_min": 2
           },
           {
             "principle": "P13",
             "scores": [
-              1,
-              1,
-              1
+              2,
+              2,
+              4
             ],
-            "max_minus_min": 0
+            "max_minus_min": 2
           },
           {
             "principle": "P14",
             "scores": [
-              3,
-              3,
-              3
+              2,
+              1,
+              2
             ],
-            "max_minus_min": 0
+            "max_minus_min": 1
           },
           {
             "principle": "P15",
             "scores": [
-              4,
-              3,
-              4
+              6,
+              6,
+              6
             ],
-            "max_minus_min": 1
+            "max_minus_min": 0
           }
         ],
-        "max_variance_observed": 1,
+        "max_variance_observed": 2,
         "threshold": 1.5,
-        "pass": true
+        "pass": false
       },
       "evidence_density": {
         "description": "Average number of evidence quotes per high-score principle.",
         "high_score_principles_per_run": [
-          4,
-          4,
-          4
+          3,
+          3,
+          3
         ],
-        "avg_quotes_per_high_score": 2.5,
+        "avg_quotes_per_high_score": 1.5,
         "threshold_min_quotes": 1,
         "pass": true
       },
       "disqualifier_engagement": {
         "description": "Disqualifiers should be triggered when applicable; high scores should not coexist with triggered disqualifiers.",
         "triggered_count_per_run": [
-          11,
           10,
-          8
+          11,
+          11
         ],
         "high_score_with_triggered_disqualifier_per_run": [
           0,
@@ -324,30 +321,30 @@
       "competing_pair_resolution": {
         "description": "When competing pairs both fire, tiebreaker should be applied. No 'both_high' soft landings.",
         "pairs_with_both_signals_per_run": [
+          0,
           1,
-          2,
           1
         ],
         "tiebreakers_used_per_run": [
+          0,
           1,
-          2,
           1
         ],
         "soft_landings_per_run": [
           0,
-          0,
-          0
+          1,
+          1
         ],
         "pass": true
       },
       "score_spread": {
         "description": "Std dev of relevanceScore distribution. Low std dev = no discrimination (lazy analysis).",
         "score_std_dev_per_run": [
-          2.112397269033981,
-          2.039607805437114,
-          2.1499353995462798
+          1.9955506062794355,
+          2.061283311165374,
+          2.1437246921084703
         ],
-        "average_std_dev": 2.100646824672458,
+        "average_std_dev": 2.0668528698510933,
         "threshold_min": 2,
         "pass": true
       },

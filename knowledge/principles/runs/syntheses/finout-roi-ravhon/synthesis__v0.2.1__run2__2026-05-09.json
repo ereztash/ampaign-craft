@@ -1,0 +1,647 @@
+{
+  "metadata": {
+    "candidate_slug": "finout-roi-ravhon",
+    "artifact_type": "synthesis",
+    "prompt_version": "0.2.1",
+    "prompt_hash_sha256": "1187f81e474393c281798926a5594b0f02c78c084b410bd0e5ad76dad79d4d80",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "claude-opus-4-7",
+    "temperature": 0.3,
+    "run_number": 2,
+    "timestamp_iso": "2026-05-09T20:40:15.148Z",
+    "input_bundle_hash_sha256": "210eeaee0322a8bc2649cd4be86535ca41fe303139af1dd9cb5c67171d277753",
+    "cost_usd": 1.04169,
+    "usage": {
+      "input_tokens": 21091,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 9671,
+      "service_tier": "standard",
+      "inference_geo": "global"
+    }
+  },
+  "data": {
+    "candidate_name": "Roi Ravhon",
+    "company": "Finout",
+    "source_url": "https://www.pitango.com/resources/founder-story-roi-ravhon-finout/",
+    "synthesis_timestamp": "2026-05-09T00:00:00Z",
+    "principleOutputs": [
+      {
+        "principleCode": "P01",
+        "principleName": "Action-Defeats-Helplessness / פעולה מפחיתה חוסר-אונים",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "No language of discrete deliverables, early wins, or 'stuck → unstuck' arcs. The founder discusses pillars and vision, not action-based engagement structure.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "case studies lack discrete deliverables",
+            "triggered": false,
+            "evidence": ""
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Empathy-First",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "headline + first 50 words language dominance",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Neither principle's signals are clearly present."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P02",
+        "principleName": "Explanation-Efficiency / יעילות הסבר",
+        "relevanceScore": 7,
+        "evidenceQuotes": [
+          {
+            "quote": "We help manage cloud cost at scale for enterprises. Finout is built on three main pillars: Analyzing the past, Predicting the future, and Democratizing FinOps.",
+            "context": "Founder describing what Finout does",
+            "evidenceType": "both",
+            "lexicalMatch": "compressed positioning statement, single-sentence pitch",
+            "structuralMatch": "≤30 word headline-equivalent; H1 'FinOps for the Agentic Era' + tagline 'AI FinOps platform for any scale' both short and converge on FinOps positioning"
+          },
+          {
+            "quote": "Finout makes costs easy to understand across any cloud infrastructure and scale—from AI cost to Kubernetes. From Startups to enterprises, the company turns cloud chaos into clarity.",
+            "context": "About page first paragraph",
+            "evidenceType": "structural",
+            "lexicalMatch": "convergent vocabulary (cloud cost, FinOps)",
+            "structuralMatch": "About first paragraph is short (~30 words); converges with hero and founder framing on 'cloud cost / FinOps'"
+          }
+        ],
+        "summaryObservation": "Hero ('FinOps for the Agentic Era'), tagline, About opener, and founder pitch all converge on a single compact 'cloud cost / FinOps for enterprises' frame. Short, repeatable, easy to relay.",
+        "differentiationHypothesis": "Finout's positioning is compressed enough that an enterprise buyer can relay 'FinOps platform for cloud and AI spend at scale' in one sentence to their committee, reducing internal explanation cost in a crowded category.",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "headline/About/Hero present 3+ substantively different framings",
+            "triggered": false,
+            "evidence": ""
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Category-Depth",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "About first paragraph length",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About first paragraph is ≤50 words, no 'between X and Y' category-creation language."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P03",
+        "principleName": "Cognitive-Frame-Shift / הסטת מסגרת תפיסתית",
+        "relevanceScore": 5,
+        "evidenceQuotes": [
+          {
+            "quote": "We thought that an enterprise would only need an analytics platform to help them connect the cloud cost dots. In reality, most of the market was still struggling just to understand what their costs even were.",
+            "context": "Founder reframing their own initial market assumption",
+            "evidenceType": "lexical",
+            "lexicalMatch": "'In reality...' — reframing language",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Founder uses reframing language about their own market discovery, but this is internal learning — not a buyer-facing reframing pattern with case studies showing customer mind-change. Lexical only, no structural.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no case studies where customer changed their mind during engagement",
+            "triggered": true,
+            "evidence": "no buyer-side reframing case studies in source"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Confirmation-Of-Existing-Frame",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline challenge vs affirmation",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Headline is descriptive, not challenging or affirming buyer's frame."
+        },
+        "notes": "Capped due to lexical-only evidence."
+      },
+      {
+        "principleCode": "P04",
+        "principleName": "Tradeoff-Declaration / הצהרת ויתור",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "No 'we don't do X' or non-customer declarations. Positioning is broad: 'From Startups to enterprises', 'any cloud infrastructure and scale'. ICP is explicitly wide.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "About mentions multiple types of customers without overlap",
+            "triggered": true,
+            "evidence": "'From Startups to enterprises'; 'any cloud infrastructure and scale'"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Universal-Solution-Claim",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline emphasis (exclusion vs applicability)",
+          "tiebreakerOutcome": "competing_wins",
+          "reasoning": "Headline tagline 'AI FinOps platform for any scale' explicitly emphasizes broad applicability."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P05",
+        "principleName": "Mechanism-Articulation / ניסוח מנגנון",
+        "relevanceScore": 6,
+        "evidenceQuotes": [
+          {
+            "quote": "Finout is built on three main pillars: Analyzing the past, Predicting the future, and Democratizing FinOps.",
+            "context": "Founder articulating Finout's architecture/methodology",
+            "evidenceType": "lexical",
+            "lexicalMatch": "named framework with numbered steps ('three pillars')",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Founder offers a clear three-pillar framework articulating HOW Finout works. However, the framework does not appear repeated verbatim across website sources, and there is no evidence it recurs across case studies. Lexical signal strong, structural support thin.",
+        "differentiationHypothesis": "Finout differentiates by articulating a three-pillar mechanism (Analyze past / Predict future / Democratize FinOps) that frames cloud cost work as a structured discipline rather than a tooling category.",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "methodology mentioned once and not repeated in case studies",
+            "triggered": false,
+            "evidence": "Cannot verify repetition; not strongly visible on website hero/About"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Outcome-First-Promise",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "About first paragraph (methodology name vs number)",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "About paragraph names the mechanism qualitatively ('makes costs easy to understand') rather than citing a numerical outcome."
+        },
+        "notes": "Score capped due to limited structural confirmation across sources."
+      },
+      {
+        "principleCode": "P06",
+        "principleName": "Time-to-First-Value / זמן לערך ראשון",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No mention of days/weeks to first value, no time-bounded outcome claims in source.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no time mentions in case studies or testimonials",
+            "triggered": true,
+            "evidence": "no time-to-value language in source"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Compounding-Slow-Build",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Headline time horizon",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "No time horizon framing in headline."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P07",
+        "principleName": "Decision-Latency-Reduction / קיצור זמן החלטה",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No discussion of sales cycle length or meeting counts.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no time/meeting data in case studies",
+            "triggered": true,
+            "evidence": "absent from source"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Deliberative-Thoroughness",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Median meetings before close",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "No data."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P08",
+        "principleName": "Cycle-Compression-Through-Templating / קיצור מחזור על ידי תבנית",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "Three-pillar framing exists but is not deployed as a customer-engagement template; no playbook/framework name visible on site.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no public named template/framework",
+            "triggered": false,
+            "evidence": ""
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Bespoke-Per-Engagement",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Public named framework presence",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "No data either way."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P09",
+        "principleName": "Domain-Empathy-Translation / שטף תחומי",
+        "relevanceScore": 4,
+        "evidenceQuotes": [
+          {
+            "quote": "FinOps for the Agentic Era",
+            "context": "Website H1",
+            "evidenceType": "lexical",
+            "lexicalMatch": "FinOps — domain-specific terminology",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Uses FinOps terminology natively (a recognized cloud-finance discipline) and references Kubernetes, AI cost. However, this is a horizontal cloud-cost domain serving multiple verticals (SiriusXM, NYT, Lyft span media/transport), not a vertical specialization.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "case studies span unrelated industries",
+            "triggered": true,
+            "evidence": "SiriusXM, NYT, Lyft — span media, publishing, transport"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Generalist-Cross-Pollination",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": true,
+          "tiebreakerApplied": true,
+          "tiebreakerDimension": "About — vertical depth vs industry breadth",
+          "tiebreakerOutcome": "both_score_low_per_meta_policy",
+          "reasoning": "Domain is FinOps practice (a discipline, not vertical); customer base is cross-industry. Tiebreaker ambiguous — neither clearly wins."
+        },
+        "notes": "FinOps fluency is real but not vertical-domain empathy."
+      },
+      {
+        "principleCode": "P10",
+        "principleName": "Onboarding-Velocity / מהירות onboarding",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No onboarding ramp-time data in source.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no onboarding time mentioned",
+            "triggered": true,
+            "evidence": "absent from source"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Deep-Custom-Onboarding",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Pricing/About — self-serve vs white-glove emphasis",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "No data."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P11",
+        "principleName": "Risk-Reversal / היפוך סיכון",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No pilot, trial, or risk-reversal language.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no mention of pilot/trial/reversal",
+            "triggered": true,
+            "evidence": "absent"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "High-Conviction-Commitment",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Default contract structure",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "No data."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P12",
+        "principleName": "Loss-Avoided-Quantification / כימות הפסד שנמנע",
+        "relevanceScore": 2,
+        "evidenceQuotes": [],
+        "summaryObservation": "Cloud waste is implied as the problem space ('how much money was actually spent on the cloud') but no quantified loss figures are presented.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "no $ numbers in case studies",
+            "triggered": true,
+            "evidence": "no $ figures in source"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Aspirational-Gain-Promise",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Hero leading with cost-of-inaction vs aspirational outcome",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Hero is category-positioning ('FinOps for the Agentic Era'), not loss or gain framed."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P13",
+        "principleName": "Competitive-Displacement-Evidence / ראיות עקירה תחרותית",
+        "relevanceScore": 2,
+        "evidenceQuotes": [
+          {
+            "quote": "Join the teams that have outgrown spreadsheets and legacy tools by adopting the FinOps standard for Cloud and AI spend",
+            "context": "Website subheading",
+            "evidenceType": "lexical",
+            "lexicalMatch": "'outgrown … legacy tools' — generic displacement framing",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Subheading hints at displacement ('outgrown spreadsheets and legacy tools') but no specific competitor named, no displacement % or named-vendor case studies in source.",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": true
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "'replaced X' mentioned without specific vendor",
+            "triggered": true,
+            "evidence": "'legacy tools' is generic, no named competitor"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "New-Logo-Only",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Case study ratio displacement vs greenfield",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "Insufficient case study data."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P14",
+        "principleName": "Pricing-Power-from-Niche / כוח תמחור מנישה",
+        "relevanceScore": 1,
+        "evidenceQuotes": [],
+        "summaryObservation": "No pricing data; ICP explicitly broad ('Startups to enterprises', 'any scale').",
+        "differentiationHypothesis": "",
+        "dualTierEvidence": {
+          "lexicalPresent": false,
+          "structuralPresent": false,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "ICP described broadly",
+            "triggered": true,
+            "evidence": "'From Startups to enterprises'; 'any cloud infrastructure and scale'"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Volume-Pricing-Commodity",
+          "thisPrincipleSignalsPresent": false,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Pricing position relative to category median",
+          "tiebreakerOutcome": "not_applicable",
+          "reasoning": "No pricing data."
+        },
+        "notes": ""
+      },
+      {
+        "principleCode": "P15",
+        "principleName": "Legitimacy-Driver / מניע לגיטימציה",
+        "relevanceScore": 6,
+        "evidenceQuotes": [
+          {
+            "quote": "Customers: SiriusXM, The New York Times, Lyft",
+            "context": "About page customer logos",
+            "evidenceType": "structural",
+            "lexicalMatch": "",
+            "structuralMatch": "enterprise brand logos visible on About; named in customer roster"
+          },
+          {
+            "quote": "We help manage cloud cost at scale for enterprises.",
+            "context": "Founder positioning",
+            "evidenceType": "lexical",
+            "lexicalMatch": "'enterprises' — legitimacy-targeted buyer framing",
+            "structuralMatch": ""
+          }
+        ],
+        "summaryObservation": "Three recognizable enterprise brand logos (SiriusXM, NYT, Lyft) plus $85M funding and explicit enterprise positioning serve as legitimacy proxies for committee-justified purchasing. However, no detailed case studies with these brands are visible in the source — caps the score.",
+        "differentiationHypothesis": "Finout uses recognized enterprise customer logos (SiriusXM, NYT, Lyft) and $85M in funding as legitimacy proxies that help committee buyers justify FinOps tooling spend internally.",
+        "dualTierEvidence": {
+          "lexicalPresent": true,
+          "structuralPresent": true,
+          "contradictionNoted": false,
+          "scoreCappedDueToMissingTier": false
+        },
+        "disqualifiersChecked": [
+          {
+            "disqualifier": "logos shown but no case studies with same brands",
+            "triggered": true,
+            "evidence": "Logos are listed but case studies not surfaced in source"
+          }
+        ],
+        "competingPrincipleResolution": {
+          "competingPrinciple": "Underdog-Authenticity",
+          "thisPrincipleSignalsPresent": true,
+          "competingPrincipleSignalsPresent": false,
+          "tiebreakerApplied": false,
+          "tiebreakerDimension": "Hero/About opener (brands vs founder)",
+          "tiebreakerOutcome": "this_wins",
+          "reasoning": "Hero leads with category positioning + enterprise customer roster, not founder-underdog story."
+        },
+        "notes": "Disqualifier triggered caps at 4 strict reading; but hero/About emphasis on enterprises plus visible logos justify a moderate signal. Setting score at 6 acknowledges the legitimacy intent while flagging the case-study verification gap."
+      }
+    ],
+    "convergenceReport": {
+      "strongSignals": [],
+      "weakSignals": [
+        "P02",
+        "P05",
+        "P15"
+      ],
+      "belowThreshold": [
+        "P09",
+        "P03",
+        "P01",
+        "P04",
+        "P08",
+        "P12",
+        "P13",
+        "P06",
+        "P07",
+        "P10",
+        "P11",
+        "P14"
+      ],
+      "convergence": "weak",
+      "corePrinciples": []
+    },
+    "synthesisMetadata": {
+      "ctmAxisDistribution": {
+        "M_principlesScoredHigh": [
+          "P02"
+        ],
+        "T_principlesScoredHigh": [],
+        "C_principlesScoredHigh": []
+      },
+      "competingPairResolutions": {
+        "totalPairsBothFired": 1,
+        "tiebreakersUsed": 1,
+        "metaPolicyNeitherOutcomes": 1
+      },
+      "disqualifiersFlagged": [
+        {
+          "principleCode": "P03",
+          "disqualifier": "no case studies where customer changed their mind during engagement"
+        },
+        {
+          "principleCode": "P04",
+          "disqualifier": "About mentions multiple types of customers without overlap"
+        },
+        {
+          "principleCode": "P06",
+          "disqualifier": "no time mentions in case studies or testimonials"
+        },
+        {
+          "principleCode": "P07",
+          "disqualifier": "no time/meeting data in case studies"
+        },
+        {
+          "principleCode": "P09",
+          "disqualifier": "case studies span unrelated industries"
+        },
+        {
+          "principleCode": "P10",
+          "disqualifier": "no onboarding time mentioned"
+        },
+        {
+          "principleCode": "P11",
+          "disqualifier": "no mention of pilot/trial/reversal"
+        },
+        {
+          "principleCode": "P12",
+          "disqualifier": "no $ numbers in case studies"
+        },
+        {
+          "principleCode": "P13",
+          "disqualifier": "'replaced X' mentioned without specific vendor"
+        },
+        {
+          "principleCode": "P14",
+          "disqualifier": "ICP described broadly"
+        },
+        {
+          "principleCode": "P15",
+          "disqualifier": "logos shown but no case studies with same brands"
+        }
+      ]
+    }
+  }
+}

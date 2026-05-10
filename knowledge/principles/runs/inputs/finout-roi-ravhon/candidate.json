@@ -1,0 +1,24 @@
+{
+  "candidate_name": "Roi Ravhon",
+  "company": "Finout",
+  "recommended_track": "depth",
+  "sources": [
+    {
+      "source_id": "01",
+      "filename": "source-01-pitango-founder-story.md",
+      "url": "https://www.pitango.com/resources/founder-story-roi-ravhon-finout/",
+      "type": "long-form Founder Story interview (Pitango VC publication)",
+      "date": "2024",
+      "is_independent": true
+    }
+  ],
+  "research_notes": {
+    "selected_from": "Doc 1 — research-recommended candidate; Pitango ~1,500 words verified by web_fetch",
+    "verification": "Pitango Founder Story fetched 2026-05-09. WebFetch summarized to ~250 verbatim words across multiple sections. Combined here.",
+    "secondary_sources": "finout.io homepage hero + about page (fetched 2026-05-09)",
+    "linkedin": "Headline 'CEO & Co-Founder at Finout' assumed; About not yet collected (using marker pattern).",
+    "track_decision": "depth (Track B). WebFetch summarization limits effective verbatim recovery from Medium/long-form pieces; consistent constraint across Buildots, Aquant, and now Finout.",
+    "different_from_buildots_and_aquant": "Different positioning: efficiency/cost-management (Cash axis primary), 3-pillar mechanism framing ('Analyzing the past, Predicting the future, Democratizing FinOps'). Tests whether playbook discriminates 3 distinct positioning archetypes.",
+    "expected_principles_pre_test": "DELIBERATELY OMITTED. No pre-anchoring. Will compare extraction + synthesis post-hoc."
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "metadata": {
+    "candidate_slug": "finout-roi-ravhon",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "sonnet (aggregated × 3)",
+    "temperature": 0.25,
+    "run_number": 0,
+    "timestamp_iso": "2026-05-09T20:43:40.421Z",
+    "input_bundle_hash_sha256": "210eeaee0322a8bc2649cd4be86535ca41fe303139af1dd9cb5c67171d277753",
+    "cost_usd": 0.098763,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+    }
+  },
+  "data": {
+    "aggregate": [
+      {
+        "ceo_term": "manage cloud cost at scale for enterprises",
+        "primary_principle_consensus": "P14",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P14"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Targeting enterprises at scale defines a narrow ICP (large-scale cloud spenders), which semantically aligns with niche-focused positioning that enables pricing power; P09 is secondary because 'enterprises at scale' also signals native fluency in enterprise cloud infrastructure language.",
+          "run2: Targeting enterprises at scale defines a narrow ICP (large-scale cloud spenders), which semantically aligns with niche-focused positioning that enables pricing power; P09 is secondary because 'cloud cost at scale' also reflects speaking the enterprise FinOps buyer's native language.",
+          "run3: Targeting enterprises at scale defines a narrow ICP (large-scale cloud spenders), which semantically aligns with niche-focused positioning that enables pricing power; P09 is secondary because 'cloud cost at scale' also reflects speaking the enterprise FinOps buyer's native language."
+        ]
+      },
+      {
+        "ceo_term": "Analyzing the past, Predicting the future, and Democratizing FinOps",
+        "primary_principle_consensus": "P05",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P05"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: The three-pillar framing names a structured methodology ('we do cloud cost management through analysis, prediction, and democratization'), which maps to Mechanism-Articulation; P02 is secondary because the one-sentence three-pillar summary is itself highly repeatable by a buyer.",
+          "run2: This three-part named framework ('Analyzing / Predicting / Democratizing') is a named methodology describing how Finout delivers value through a structured mechanism, matching P05; P02 is secondary because the three-pillar formulation is also a repeatable one-sentence offer summary.",
+          "run3: The three-pillar framing names a structured methodology ('we do cloud cost management through these three mechanisms'), which maps to Mechanism-Articulation; P02 is secondary because the three-part phrase is itself a repeatable one-sentence summary of the offer."
+        ]
+      },
+      {
+        "ceo_term": "three main pillars",
+        "primary_principle_consensus": "P05",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P05"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Explicitly naming three structural pillars is a classic mechanism-articulation pattern — a named framework through which the product delivers value.",
+          "run2: Structuring the product around three named pillars is a mechanism-articulation pattern — 'we do X through Y' — making P05 the primary match; P02 applies secondarily because a three-pillar structure also aids buyer repeatability.",
+          "run3: Explicitly naming three structural pillars of the product is a classic mechanism-articulation pattern — a named framework through which the vendor delivers value."
+        ]
+      },
+      {
+        "ceo_term": "steppingstones",
+        "primary_principle_consensus": "P06",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P06"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Building 'steppingstones' implies a staged delivery of value — each stone is an incremental, measurable outcome — which maps most closely to Time-to-First-Value; P08 is secondary because a repeated stepping-stone framework also resembles templated engagements that compress the path to full value.",
+          "run2: Building 'steppingstones' implies delivering incremental value milestones before reaching the end goal, which loosely maps to time-to-first-value (P06); P08 is a secondary stretch because iterative foundational stages resemble a templated framework that compresses the path to full deployment.",
+          "run3: Building 'steppingstones' toward an end goal implies a phased, incremental delivery of value — semantically closest to Time-to-First-Value (delivering measurable outcomes in stages); P08 is secondary because a repeated steppingstone framework also resembles templated cycle compression."
+        ]
+      },
+      {
+        "ceo_term": "connect the cloud cost dots",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: The phrase reframes the buyer's problem from 'we have a cost problem' to 'we can't even see our costs yet,' which is a cognitive frame shift about the nature of the problem; P12 is secondary because connecting cost dots implies quantifying the loss from current cost opacity.",
+          "run2: The phrase reframes the buyer's mental model — from 'I have a cost analytics problem' to 'I can't even see my costs clearly yet' — which is a cognitive frame shift (P03); P12 is secondary because connecting cost dots implies surfacing previously invisible spend, which relates to quantifying the cost of not knowing.",
+          "run3: The phrase reframes the buyer's problem — from 'we need analytics' to 'we first need to understand what we're spending' — which is a cognitive frame shift about how the problem should be understood; P12 is secondary because failing to 'connect the dots' implies a quantifiable cost-of-doing-nothing."
+        ]
+      },
+      {
+        "ceo_term": "FinOps",
+        "primary_principle_consensus": "P09",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P09"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Using the industry-standard term 'FinOps' signals that Finout speaks the buyer's native domain language, which is the core semantic of Domain-Empathy-Translation.",
+          "run2: Using the industry-standard term 'FinOps' signals that Finout speaks the buyer's native domain language, which is the semantic core of Domain-Empathy-Translation (P09).",
+          "run3: Using the industry-standard term 'FinOps' signals that the vendor speaks the buyer's native domain language, which is the core semantic content of Domain-Empathy-Translation."
+        ]
+      },
+      {
+        "ceo_term": "And we failed miserably. It was a lot more complicated than we thought it would be. But it was a stepping stone to Finout.",
+        "primary_principle_consensus": null,
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P04"
+          },
+          {
+            "run": 2,
+            "principle": "P03"
+          },
+          {
+            "run": 3,
+            "principle": "P01"
+          }
+        ],
+        "consensus_level": "no_consensus",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Acknowledging an explicit failure and pivot is the closest available match to Tradeoff-Declaration, as it signals what the company chose not to remain doing; the fit is imperfect because P04 typically refers to explicit non-customer declarations rather than product pivots.",
+          "run2: Acknowledging an early failure that forced a fundamental rethink of the product scope reflects a reframing of the problem's complexity, loosely mapping to P03 as a cognitive shift about what the real problem actually is.",
+          "run3: Acknowledging failure and reframing it as a productive stepping stone is semantically closest to Action-Defeats-Helplessness — the idea that taking action (even failed action) restores agency and forward momentum, though the match is stretched because this is about the founder's journey, not buyer agency."
+        ]
+      },
+      {
+        "ceo_term": "We thought that an enterprise would only need an analytics platform to help them connect the cloud cost dots. In reality, most of the market was still struggling just to understand what their costs even were.",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: This statement explicitly reframes the buyer's mental model — the market didn't need analytics on top of understood costs; it needed foundational cost visibility first — which is a textbook Cognitive-Frame-Shift of the problem definition.",
+          "run2: This statement explicitly reframes the buyer's problem — from needing analytics to not yet having basic cost visibility — which is a textbook cognitive frame shift (P03); P12 is secondary because the inability to understand costs implies a quantifiable loss from not acting on foundational visibility.",
+          "run3: This statement explicitly reframes the buyer's mental model — the market believed it needed analytics, but the real problem was foundational cost visibility — which is the defining semantic content of Cognitive-Frame-Shift."
+        ]
+      }
+    ],
+    "summary": {
+      "total_distinct_terms": 8,
+      "high_consensus": 7,
+      "medium_consensus": 0,
+      "low_consensus": 0,
+      "no_consensus": 1
+    }
+  }
+}

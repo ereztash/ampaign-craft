@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "candidate_slug": "aquant-shahar-chen",
+    "artifact_type": "mapping",
+    "prompt_version": "0.1.1",
+    "prompt_hash_sha256": "44cd69c20394a0e85cb361c434d4908d6a592c1a400a0e313d884039ae85233e",
+    "playbook_version": "0.2.0",
+    "playbook_hash_sha256": "097100f01969fa0ed4d60beb639a8b8fa482af94e95e2956998e760feeab1fc9",
+    "model": "sonnet (aggregated × 3)",
+    "temperature": 0.25,
+    "run_number": 0,
+    "timestamp_iso": "2026-05-09T20:19:27.122Z",
+    "input_bundle_hash_sha256": "94f577e0193322b5cb124626a378be3d30b0b9de0c6ffca8cc1d6df8ceaa7d7b",
+    "cost_usd": 0.083424,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+    }
+  },
+  "data": {
+    "aggregate": [
+      {
+        "ceo_term": "widening skills gap",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Naming a 'widening skills gap' reframes the buyer's problem from a technology deficit to a human-capital crisis, which is a cognitive frame shift; it also implies a quantifiable cost-of-doing-nothing (P12) but without any dollar figure attached.",
+          "run2: Naming a 'widening skills gap' reframes the buyer's problem from a technology deficit to a human-capital crisis, which is a classic cognitive frame shift about the nature of the problem.",
+          "run3: Naming a 'widening skills gap' reframes the buyer's problem from a technology deficit to a human-capital crisis, which is a cognitive frame shift; it also implies a cost-of-doing-nothing (P12) but that quantification is absent here."
+        ]
+      },
+      {
+        "ceo_term": "harnessing the existing data of companies",
+        "primary_principle_consensus": "P05",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P05"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: This phrase names a specific mechanism — the company's methodology is explicitly 'we solve the skills gap through leveraging the client's own existing data,' which is a classic mechanism-articulation pattern.",
+          "run2: This phrase names a specific mechanism — using the company's own proprietary data as the input — describing how Aquant delivers its solution (we do X through Y).",
+          "run3: This phrase names a specific mechanism — using the client's own proprietary data as the input — which is a 'we do X through Y' methodology articulation."
+        ]
+      },
+      {
+        "ceo_term": "holistic generative AI solution for the service industry",
+        "primary_principle_consensus": "P09",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P09"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Framing the solution as purpose-built for 'the service industry' signals domain-native language and vertical focus (P09); the narrow industry ICP also hints at niche positioning (P14), but P09 is the stronger semantic match given the emphasis on industry-specific delivery.",
+          "run2: Positioning the solution as purpose-built for 'the service industry' signals that Aquant speaks the buyer's domain language natively rather than offering a generic AI platform.",
+          "run3: Positioning the solution as purpose-built for 'the service industry' signals domain-native language and vertical empathy (P09); the phrase also attempts a single-sentence repeatable offer (P02) but lacks enough specificity for high confidence on that principle."
+        ]
+      },
+      {
+        "ceo_term": "stringent security measures to prevent internet uploads",
+        "primary_principle_consensus": "P11",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P11"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Emphasizing security controls that prevent data from leaving the client's environment semantically maps to risk-reversal — it addresses and shifts the buyer's perceived risk of adopting AI by removing a key threat vector.",
+          "run2: Emphasizing that data never leaves the company's environment addresses a key adoption risk for conservative buyers, functioning as a risk-reversal assurance that shifts perceived exposure away from the buyer.",
+          "run3: Emphasizing data-containment security shifts perceived deployment risk away from the buyer, which is semantically equivalent to a risk-reversal posture even without an explicit pilot or exit clause."
+        ]
+      },
+      {
+        "ceo_term": "conservative industry",
+        "primary_principle_consensus": "P09",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P09"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Characterizing the target market as 'conservative' demonstrates that Chen speaks the buyer's cultural and industry language natively, which is the core semantic content of domain-empathy translation.",
+          "run2: Labeling the target market as 'conservative' signals deep domain empathy — an understanding of the buyer's cultural and behavioral norms that a generic AI vendor would not possess.",
+          "run3: Labeling the target vertical as 'conservative' demonstrates that Chen speaks the buyer's cultural and industry language natively, which is the core of domain-empathy translation."
+        ]
+      },
+      {
+        "ceo_term": "human element",
+        "primary_principle_consensus": null,
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P09"
+          },
+          {
+            "run": 2,
+            "principle": "P03"
+          },
+          {
+            "run": 3,
+            "principle": "P09"
+          }
+        ],
+        "consensus_level": "no_consensus",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: Foregrounding the 'human element' as critical in a conservative industry reflects domain-empathy — understanding the cultural and emotional texture of the buyer's world — though it also carries a frame-shift quality (P03) in repositioning AI adoption as a people challenge rather than a technology challenge.",
+          "run2: Foregrounding the 'human element' reframes the AI adoption problem as a people-and-change-management challenge rather than a purely technical one, shifting the buyer's mental model of what the real obstacle is.",
+          "run3: Foregrounding the 'human element' reflects fluency in the emotional and cultural concerns of service-industry buyers (P09), and also begins to reframe how those buyers should think about AI adoption (P03)."
+        ]
+      },
+      {
+        "ceo_term": "AI is not here to replace anyone",
+        "primary_principle_consensus": "P03",
+        "primary_principle_disagreements": [
+          {
+            "run": 1,
+            "principle": "P03"
+          }
+        ],
+        "consensus_level": "high",
+        "appearances_count": 3,
+        "reasoning_per_run": [
+          "run1: This statement directly reframes the buyer's (technician's) mental model of AI from threat/replacement to augmentation tool, which is the defining semantic content of a cognitive frame shift; it also carries a weak tradeoff-declaration flavor (P04) in that it implicitly defines what Aquant is not doing, but the primary intent is reframing.",
+          "run2: This statement directly counters the dominant fear-based mental model service technicians hold about AI, constituting a deliberate cognitive frame shift from replacement to augmentation.",
+          "run3: This statement directly reframes the buyer's (and end-user's) mental model of AI from threat/replacement to augmentation, which is a textbook cognitive frame shift; it also functions as a soft non-displacement declaration (P04) but without the explicit 'we don't serve X' structure."
+        ]
+      }
+    ],
+    "summary": {
+      "total_distinct_terms": 7,
+      "high_consensus": 6,
+      "medium_consensus": 0,
+      "low_consensus": 0,
+      "no_consensus": 1
+    }
+  }
+}

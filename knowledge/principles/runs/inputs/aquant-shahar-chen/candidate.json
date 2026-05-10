@@ -10,14 +10,22 @@
       "type": "long-form Authority Magazine interview (career advice format with differentiation context)",
       "date": "2024",
       "is_independent": true
+    },
+    {
+      "source_id": "02",
+      "filename": "source-02-emerj.md",
+      "url": "https://emerj.com/ai-solutions-for-b2b-customer-experiences-with-shahar-chen-of-aquant/",
+      "type": "podcast article with embedded interview quotes (Emerj 'AI in Business')",
+      "date": "2023-11-22",
+      "is_independent": true
     }
   ],
   "research_notes": {
     "selected_from": "Doc 1 (English TL;DR) — research-recommended candidate; ~2,200 words claimed verified by web_fetch on Authority Magazine",
-    "verification": "Authority Magazine page fetched 2026-05-09. WebFetch summarized; verbatim recovery via two prompts yielded ~7-8 quotes. Combined here as primary source.",
+    "verification": "Authority Magazine + Emerj fetched 2026-05-09. Combined: ~7 quotes from Authority Mag (~250w) + 2 quotes from Emerj (~200w) = 9 verbatim quotes total.",
     "secondary_sources": "aquant.ai/company/about-us (fetched 2026-05-09)",
-    "linkedin": "Headline only ('CEO & Co-Founder at Aquant'); About section pending manual collection. Using marker pattern from Buildots.",
-    "track_decision": "depth (Track B). Same constraint as Buildots — only 1 independent source with substantive verbatim content recoverable via WebFetch. Emerj podcast and Service Council pages are episode landings without transcripts.",
-    "different_from_buildots": "Different industry (field-service AI vs construction AI), different positioning archetype (Domain-Empathy + service intelligence vs Mechanism + digital twin). Comparing two single-source candidates from different verticals tests whether the playbook discriminates."
+    "linkedin": "Headline 'CEO & Co-Founder at Aquant'; About absent (marker pattern).",
+    "track_decision": "Multi-source experiment 2026-05-09. Originally depth (single Authority Magazine), now adds Emerj as source-02 to test whether expanded source bundle raises the synthesis ceiling. Service Council and other sources blocked; first-party blog content excluded as non-independent. 2 independent sources is below the original ≥3 spec; experiment proceeds anyway because the empirical question is whether adding sources affects the ceiling, not whether the count meets the spec.",
+    "why_aquant_for_breadth_test": "1) 100% axis_match on depth (signal-clean baseline); 2) P09=8 in 1 of 3 depth runs (potential ceiling break that more sources may consolidate); 3) two genuinely independent sources accessible vs Buildots (only 1) and Finout (only 1)."
   }
 }

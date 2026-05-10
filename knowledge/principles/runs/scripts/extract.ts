@@ -295,6 +295,9 @@ async function main() {
     systemPrompt,
     userPrompt,
     temperature: TEMPERATURE,
+    // Breadth output for multi-source Hebrew bundles can exceed default 8192.
+    // Use 16000 for breadth, default for depth.
+    maxTokens: track === "breadth" ? 16000 : undefined,
   });
 
   let validation: unknown;
