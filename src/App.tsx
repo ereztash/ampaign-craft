@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { logger } from "@/lib/logger";
 import { Suspense, lazy, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
@@ -13,6 +13,7 @@ import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { ArchetypeProvider } from "@/contexts/ArchetypeContext";
 import { ArchetypeThemeProvider } from "@/providers/ArchetypeThemeProvider";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingFallback from "@/components/LoadingFallback";
 import AppShell from "@/components/AppShell";
@@ -73,6 +74,37 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * Redirects first-time users (no business_profiles row yet) to /genesis
+ * before they reach any authenticated route. FunnelGenesis performs an
+ * optimistic cache write on save so the guard does not re-trigger after
+ * the wizard completes.
+ */
+function GenesisGuard({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  const { data } = useQuery({
+    queryKey: ["genesis-check", user?.id],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count } = await (supabase as any)
+        .from("business_profiles")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id);
+      return (count ?? 0) as number;
+    },
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  if (location.pathname !== "/genesis" && user && data === 0) {
+    return <Navigate to="/genesis" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 const PublicLanding = lazy(() => import("./components/PublicLanding"));
 const PublicLandingDifferentiation = lazy(() => import("./components/PublicLandingDifferentiation"));
 const Index = lazy(() => import("./pages/Index"));
@@ -83,6 +115,7 @@ const AiCoachPage = lazy(() => import("./pages/AiCoachPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Wizard = lazy(() => import("./pages/Wizard"));
 const Intake = lazy(() => import("./pages/Intake"));
+const FunnelGenesis = lazy(() => import("./pages/FunnelGenesis"));
 const Plans = lazy(() => import("./pages/Plans"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Differentiate = lazy(() => import("./pages/Differentiate"));
@@ -148,7 +181,7 @@ const AnimatedRoutes = () => {
           <Route path="/quote/:token" element={<SharedQuote />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/design-philosophy" element={<DesignPhilosophy />} />
-          <Route element={<AppShell />}>
+          <Route element={<GenesisGuard><AppShell /></GenesisGuard>}>
             <Route path="home" element={<CommandCenter />} />
             <Route path="data/:sourceId?" element={<DataHub />} />
             <Route path="strategy/:planId/:focus" element={<StrategyCanvas />} />
@@ -157,6 +190,7 @@ const AnimatedRoutes = () => {
             <Route path="ai" element={<AiCoachPage />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="intake" element={<Intake />} />
+            <Route path="genesis" element={<FunnelGenesis />} />
             <Route path="wizard" element={<WedgeGuard module="wizard"><Wizard /></WedgeGuard>} />
             <Route path="plans" element={<Plans />} />
             <Route path="plans/:planId/:tab" element={<LegacyPlanRedirect />} />

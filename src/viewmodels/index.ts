@@ -1,4 +1,4 @@
-// ─── ViewModel barrel ────────────────────────────────────────────────────────
+// ─── ViewModel barrel ────────────────────────────────────────────────────────────────────────────────
 // Single import point for all UI-facing view-model types and adapters.
 // Components and pages must import from here, never from @/engine/* directly.
 
@@ -174,7 +174,7 @@ export {
 export type { PhaseId, PhaseConfig, PhaseQuestion, DifferentiationFormData } from "./differentiation-phases.vm";
 export { PHASES, getPhaseById, getQuestionsForPhase } from "./differentiation-phases.vm";
 
-// ── Re-exports added for engine-import boundary cleanup (2026-05-06) ─────────
+// ── Re-exports added for engine-import boundary cleanup (2026-05-06) ───────────────
 
 export {
   deriveHeuristicSet,
@@ -346,7 +346,7 @@ export {
   computePricingWizardRecommendation,
 } from "./pricing.vm";
 
-// ── Pricing wedge: Israeli psychology + experiment loop (2026-05-06) ─────────
+// ── Pricing wedge: Israeli psychology + experiment loop (2026-05-06) ─────────────────
 export type {
   CulturalSegment,
   SegmentPricingProfile,
@@ -481,3 +481,15 @@ export {
   findSource,
   libraryVersion,
 } from "./moat.vm";
+
+// ── Funnel Genesis — business profiling + moat score (2026-05-13) ─────────────────
+export type {
+  TeamSize,
+  SalesMotion,
+  Bottleneck as GenesisBottleneck,
+  Fear,
+  Competitor,
+  BusinessSpec,
+  MoatScore,
+} from "./funnel-genesis.vm";
+export { computeMoatScore } from "./funnel-genesis.vm";
