@@ -83,6 +83,7 @@ const AiCoachPage = lazy(() => import("./pages/AiCoachPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Wizard = lazy(() => import("./pages/Wizard"));
 const Intake = lazy(() => import("./pages/Intake"));
+const FunnelGenesis = lazy(() => import("./pages/FunnelGenesis"));
 const Plans = lazy(() => import("./pages/Plans"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Differentiate = lazy(() => import("./pages/Differentiate"));
@@ -157,6 +158,7 @@ const AnimatedRoutes = () => {
             <Route path="ai" element={<AiCoachPage />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="intake" element={<Intake />} />
+            <Route path="genesis" element={<FunnelGenesis />} />
             <Route path="wizard" element={<WedgeGuard module="wizard"><Wizard /></WedgeGuard>} />
             <Route path="plans" element={<Plans />} />
             <Route path="plans/:planId/:tab" element={<LegacyPlanRedirect />} />
