@@ -15,7 +15,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { tx } from "@/i18n/tx";
@@ -86,6 +86,7 @@ const FunnelGenesis = () => {
   const { language } = useLanguage();
   const isHe = language === "he";
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [step, setStep] = useState<Step>(1);
 
@@ -157,6 +158,9 @@ const FunnelGenesis = () => {
       return score;
     },
     onSuccess: (score) => {
+      // Optimistically update the GenesisGuard cache so navigating to /home
+      // after this screen doesn't re-trigger the redirect.
+      queryClient.setQueryData(["genesis-check", user?.id], 1);
       setMoatResult(score);
       setStep("result");
     },
