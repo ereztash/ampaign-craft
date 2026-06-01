@@ -23,12 +23,14 @@ export type WedgeModule =
   | "pricing"
   | "retention";
 
-export type WedgeMode = "all" | "pricing-only" | "marketing-only" | "differentiate-only";
+export type WedgeMode = "all" | "pricing-only" | "marketing-only" | "differentiate-only" | "offer-builder";
 
-export const WEDGE_MODES: WedgeMode[] = ["all", "pricing-only", "marketing-only", "differentiate-only"];
+export const WEDGE_MODES: WedgeMode[] = ["all", "pricing-only", "marketing-only", "differentiate-only", "offer-builder"];
 
 const STORAGE_KEY = "funnelforge.wedge.mode";
 const ALL_MODULES: WedgeModule[] = ["differentiate", "wizard", "sales", "pricing", "retention"];
+// Safe fallback. The MVP launch wedge (differentiate + pricing) is activated via
+// VITE_WEDGE_MODE=offer-builder, not by flipping this default, so dev/tests stay on "all".
 const DEFAULT_MODE: WedgeMode = "all";
 
 const ENABLED_MAP: Record<WedgeMode, WedgeModule[]> = {
@@ -36,6 +38,7 @@ const ENABLED_MAP: Record<WedgeMode, WedgeModule[]> = {
   "pricing-only": ["pricing"],
   "marketing-only": ["wizard"], // wizard is the Marketing/Content entry
   "differentiate-only": ["differentiate"],
+  "offer-builder": ["differentiate", "pricing"], // MVP wedge: package + price your offer
 };
 
 const MODULE_LABELS: Record<WedgeModule, { he: string; en: string }> = {
@@ -104,7 +107,7 @@ export function getModuleLabel(module: WedgeModule, lang: "he" | "en"): string {
 }
 
 export function getActiveWedgeLabel(lang: "he" | "en"): string {
-  const enabled = getEnabledModules();
-  if (enabled.length === 1) return MODULE_LABELS[enabled[0]][lang];
-  return lang === "he" ? "כל המודולים" : "All modules";
+  if (getWedgeMode() === "all") return lang === "he" ? "כל המודולים" : "All modules";
+  // Single- and multi-module wedges: join the enabled module labels (e.g. "בידול + תמחור").
+  return getEnabledModules().map((m) => MODULE_LABELS[m][lang]).join(" + ");
 }

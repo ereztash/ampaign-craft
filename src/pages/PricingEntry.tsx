@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { DollarSign, RefreshCw } from "lucide-react";
 import Illustration from "@/components/ui/illustration";
 import { safeStorage } from "@/lib/safeStorage";
+import { isModuleEnabled } from "@/lib/wedgeMode";
 import IntakePromiseHeader from "@/components/intake/IntakePromiseHeader";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -97,6 +98,11 @@ const PageComponent = () => {
     result?.formData?.audienceType === "b2b" ||
     result?.formData?.audienceType === "both";
 
+  // The empty-state gate routes to /wizard (Marketing) to seed a plan. In a wedge
+  // that hides Marketing (e.g. offer-builder), that route is locked, so the pricing
+  // wizard must stand alone: it is input-driven and needs no prior plan.
+  const marketingEnabled = isModuleEnabled("wizard");
+
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -105,8 +111,8 @@ const PageComponent = () => {
         <BackToHub currentPage={language === "he" ? "תמחור" : "Pricing"} />
         <IntakePromiseHeader moduleTarget="/pricing" suppress={hasPlanWithPrice} />
 
-        {/* ── No plan → gate ─────────────────────────────────────────────── */}
-        {!result ? (
+        {/* ── No plan → gate (only when Marketing is reachable to seed one) ─ */}
+        {!result && marketingEnabled ? (
           <div className="text-center py-16 space-y-4">
             <Illustration type="analytics" size={96} className="text-emerald-500 mx-auto" />
             <h2 className="text-2xl font-bold" dir="auto">
@@ -139,7 +145,7 @@ const PageComponent = () => {
               </p>
             </div>
             <PricingWizard
-              initialSalesModel={result.formData?.salesModel}
+              initialSalesModel={result?.formData?.salesModel}
               audienceIsB2B={audienceIsB2B}
               onComplete={handleWizardComplete}
             />
@@ -188,7 +194,7 @@ const PageComponent = () => {
             <ModuleNextStep current={4} />
           </div>
 
-        ) : (
+        ) : result ? (
 
           /* ── Legacy intelligence tab ─────────────────────────────────── */
           <div className="space-y-4">
@@ -230,7 +236,7 @@ const PageComponent = () => {
             <PricingIntelligenceTab result={result} />
             <ModuleNextStep current={4} />
           </div>
-        )}
+        ) : null}
       </main>
     </div>
   );

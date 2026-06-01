@@ -58,6 +58,14 @@ const MODE_LABELS: Record<WedgeMode, { he: string; en: string; description: { he
       en: "Only Differentiate. Others locked",
     },
   },
+  "offer-builder": {
+    he: "בנה ותמחר את ההצעה",
+    en: "Build & Price Offer",
+    description: {
+      he: "בידול + תמחור נראים. שאר המודולים נעולים עם CTA לסימון עניין",
+      en: "Differentiation + Pricing visible. Others locked with interest-CTA",
+    },
+  },
 };
 
 const AdminWedge = () => {

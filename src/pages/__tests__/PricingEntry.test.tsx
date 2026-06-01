@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import PricingEntry from "../PricingEntry";
 import { getLatestPlanResult } from "@/lib/minimalFormDefaults";
+import { safeStorage } from "@/lib/safeStorage";
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({ language: "en", t: (k: string) => k, isRtl: false }),
@@ -136,5 +137,25 @@ describe("PricingEntry — with plan", () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/pricing wizard/i)).toBeInTheDocument();
+  });
+});
+
+describe("PricingEntry — offer-builder wedge (Marketing hidden), no plan", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockedGetLatestPlanResult.mockReturnValue(null as never);
+    // Resolve the active wedge to offer-builder via the mocked localStorage read,
+    // so isModuleEnabled("wizard") is false and the gate must not appear.
+    vi.mocked(safeStorage.getString).mockReturnValue("offer-builder");
+  });
+
+  it("renders the pricing wizard standalone, without the marketing-plan gate", () => {
+    render(
+      <MemoryRouter>
+        <PricingEntry />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId("pricing-wizard")).toBeInTheDocument();
+    expect(screen.queryByText(/first build a marketing plan/i)).not.toBeInTheDocument();
   });
 });
