@@ -1,161 +1,126 @@
 # FunnelForge - תוכנית מיקוד (Refocus Plan)
 
-> שלב DISCOVERY בלבד. מסמך זה הוא תוצר קריאה-בלבד. לא בוצע שום שינוי קוד.
-> נוצר: 2026-06-01. בסיס: סריקת הריפו החי מול ההכרעות הנעולות.
+> DISCOVERY הושלם. חמש ההכרעות ננעלו 2026-06-01. המסמך מוכן לביצוע.
+> עודכן 2026-06-01 לאחר ניתוח דלתא C1 (ניתוק pricing<->tiers, ו-CTA snag).
 
-## ההכרעות הנעולות (כפי שהתקבלו, לא נפתחות מחדש)
+## ההכרעות הסופיות (נעולות)
 
-1. **קהל יעד חדש**: עצמאי במעבר ממומחיות לעסקה (גיל 25-40, יחיד, לא בעל עסק קטן ולא סוכנות). מיקוד B2C-לעצמאי, לא B2B2C.
-2. **מודל עסקי**: Free + מדרגת תשלום אחת. לקרוס מ-Free/Pro/Business למדרגה אחת. ליישר כל מספר ל-pre-revenue.
-3. **היקף MVP**: wedge של מודול אחד-שניים דרך `wedgeMode` הקיים. הסתרה/נעילה, לא מחיקה.
-4. **אילוצים קשיחים**: solo, בלי תקציב פיתוח, pre-revenue, דדליין השקה קרוב. כל מה שנשאר חייב להיות מתוחזק ע"י אדם אחד. להעדיף החיתוך הקטן ביותר שאפשר לשלוח.
-
----
+| מזהה | ההכרעה | הבחירה הנעולה |
+|---|---|---|
+| **C1** | היקף ה-wedge | `differentiate+pricing` (מוד חדש `offer-builder`). re-wire של ה-CTA הריק ב-`PricingEntry` הוא **חלק מהיקף הפרוסה**, לא תוספת. |
+| **C2** | קריסת tiers | `'business'` נשאר **רדום** ב-DB+type. חיתוך בשכבת התצוגה/checkout בלבד. **אפס migration.** |
+| **B** | תשלום | free-first על `beta_waitlist` הקיים. billing חי כ-fast-follow. |
+| **A** | קהל/reseller | reseller -> עצמאי. ארכוב `consultant-reseller-program.md`; שמירת refer-a-friend. |
+| **D/E** | model/proof | monthly-only במדרגה היחידה. social proof -> "Early Access" לא-מספרי. |
 
 ## תקציר מנהלים
 
-- **ליבה לשמור**: מודול בידול (`differentiate`, ~3,843 שורות) + מודול תמחור (`pricing`, ~4,851 שורות) + תבנית `InsightActionCard`/HITL + intake + מנועי Tier S (health/guidance/funnel) + Auth + מדרגת Free + לולאת refer-a-friend (`referralEngine`) + `beta_waitlist` הקיים.
-- **שומן לנעול/לדחות**: מודול מכירות (`sales`) + מודול שימור (`retention`) (מניחים pipeline/לקוחות קיימים, לא רלוונטי לעצמאי טרום-לקוחות), מדרגת Business + הפיצ'רים שלה (Campaign Cockpit, branded reports, team seats, template publishing), תוכנית reseller (קיימת בדוקס בלבד), billing חי (לדחות מאחורי waitlist קיים).
-- **3 ההחלטות הקריטיות**: (C2) איך לקרוס tiers בלי migration מסוכן; (B) checkout חי מול free-first עם ה-waitlist הקיים; (C1) אילו מודולים ב-wedge + ניסוח ה-positioning המדויק.
-- **מספר פרוסות מוצע**: 6.
+- **ליבה לשמור**: בידול (~3,843 ש') + תמחור (~4,851 ש') = ה-wedge. בנוסף `InsightActionCard`/HITL, intake, מנועי Tier S, Auth, Free, refer-a-friend, `beta_waitlist`.
+- **שומן לנעול/לדחות**: מכירות + שימור (נעולים ב-wedge), מדרגת Business + פיצ'ריה (רדומים), reseller (דוקס בלבד), billing חי (מאחורי waitlist).
+- **סטטוס הכרעות**: כל החמש סגורות. אין החלטות פתוחות.
+- **פרוסות**: 5 פעילות + migration נדחה. סדר חדש: wedge -> קופי -> tiers (מבודד) -> תשלום -> דוקס.
+
+## ממצאי ניתוח דלתא C1 (מנעילים את ההכרעה)
+
+1. **Q1 (heft)**: `differentiate-only` קיים כבר. `differentiate+pricing` = ~15-25 שורות ב-2-3 קבצים, 0 קבצים חדשים, 0 migration, 0 schema. חובה: ערך `MODE_LABELS` חדש ב-`AdminWedge.tsx` (אחרת `typecheck` נשבר על `Record<WedgeMode,...>`).
+2. **Q2 (ניתוק)**: מודול ה-wedge של pricing (`PricingEntry` -> `PricingWizard`/`PricingIntelligenceTab`) **לא מייבא** `pricingTiers.ts`/`types/tier.ts`/`useFeatureGate`. הקובץ היחיד שמייבא tiers הוא `PricingPage.tsx` (מסך המנוי), שאינו חלק ממודול ה-wedge. **חשיפת ה-wedge מנותקת לחלוטין מקריסת ה-tiers (C2).**
+3. **Q3 (audits)**: הדלתא נוגעת ב-**0 מתוך 6** ה-consistency audits (`grep wedge scripts/consistency` ריק). רק `typecheck`+טסט נוגעים. תקף כל עוד מסתירים ולא מוחקים.
+4. **Q4 (עצמאיות)**: pricing הוא intent/input-driven, ללא תלות CRM/leads/pipeline (בניגוד ל-sales/retention). **סייג**: `funnelforge-plans` (ה-`result` ש-PricingEntry דורש) נכתב **רק ע"י `/wizard`**. לכן ב-wedge שמסתיר את wizard, המודול חייב לעמוד עצמאית -> זהו ה-re-wire שבהיקף הפרוסה.
 
 ---
 
-## סתירות מול הריפו (במפורש, לא הותאמו בשקט)
+## טבלה A - מיקוד וצמצום ל-MVP (wedge) [נעול]
 
-| # | ההכרעה הנעולה | מה נמצא בריפו | מסקנה |
-|---|---|---|---|
-| S1 | קהל = עצמאי (B2C) | README + כל המיצוב = "Israeli SMBs / בעלי עסקים"; קיים `docs/consultant-reseller-program.md` שלם (B2B2C) | סתירת מיצוב. נפתרת ב-D + החלטה A. **`reseller` מופיע 0 פעמים בקוד**, `commission` 3 בלבד -> התוכנית היא דוקס-בלבד, זול לתקן. |
-| S2 | מדרגת תשלום אחת | `tier` מאוחסן ב-DB עם `CHECK (tier IN ('free','pro','business'))` (`20260409_005`); `manifest.ts` נועל גם `tier-pro-price-ils=129` וגם `tier-business-price-ils=299` כ-claims ב-README ש-CI בודק | הסרת Business אמיתית = migration + נתונים + identity/numeric audits. ראה החלטה C2. |
-| S3 | wedge של 1-2 מודולים | `wedgeMode.ts` תומך כיום רק ב-wedge **חד-מודולרי** (`pricing-only`/`marketing-only`/`differentiate-only`) או `all`. אין combo דו-מודולרי, אין `sales-only`/`retention-only` | wedge של 2 מודולים דורש הרחבת `ENABLED_MAP` + ה-type. שינוי קטן ומרוכז. ראה טבלה A. |
-| S4 | pre-revenue, מספרים אמיתיים | `docs/financials.md` מציג Pro ₪99 / Business ₪249 / "save 20%" - **drift קיים** מול הקוד (₪129/₪299/35%); Landing מציג "+N בעלי עסקים" כ-social proof ל-pre-revenue | drift + טענות מנופחות. ראה D. |
-
----
-
-## טבלה A - מיקוד וצמצום ל-MVP (wedge)
-
-| קובץ/אזור | מצב נוכחי | מצב מבוקש | סיבה | סיכון | החלטה פתוחה? |
+| קובץ/אזור | מצב נוכחי | מצב מבוקש | סיבה | סיכון | סטטוס |
 |---|---|---|---|---|---|
-| `src/lib/wedgeMode.ts` | מודים: `all`/`pricing-only`/`marketing-only`/`differentiate-only`; `DEFAULT_MODE="all"`; `ENABLED_MAP` חד-מודולרי | להוסיף combo דו-מודולרי (למשל `offer-builder` = `differentiate`+`pricing`) ולקבוע אותו כ-`DEFAULT_MODE` | ההכרעה דורשת wedge של 1-2 מודולים לעצמאי | נמוך (מרוכז בקובץ אחד) | **כן** - אילו מודולים (החלטה C1) |
-| `SalesEntry`, `RetentionEntry` + `salesPipelineEngine`, `retention*Engine` | חשופים במוד `all` | לנעול דרך wedge (לא למחוק) | מכירות/שימור = שומן לעצמאי טרום-לקוחות | נמוך (הסתרה הפיכה; מחיקה היתה שוברת ספירות numeric) | כן (לאשר שהם מחוץ ל-wedge) |
-| `WedgeGuard.tsx`, `LockedModuleScreen.tsx`, `wedgeTelemetry.ts` | מנגנון נעילה + טלמטריית phantom-interest מלא ומחווט | ללא שינוי מבני; להתאים קופי הנעילה לקהל החדש | המנגנון כבר קיים, רק נשען עליו | נמוך | לא |
-| `src/pages/Landing.tsx` (CTA) + ברירת-מחדל ניווט | CTA ראשי -> `/wizard` (Marketing) | להפנות ל-wedge הנבחר (`/differentiate` או `/pricing`) | אם `wizard` מחוץ ל-wedge, ה-CTA מוביל למסך נעול | בינוני (זרימת onboarding) | כן (תלוי C1) |
-| `src/pages/AdminWedge.tsx` (`/admin/wedge`) | מתג runtime owner-only | להוסיף את המוד החדש לרשימה; ללא שינוי מבני | שליטה ידנית קיימת | נמוך | לא |
+| `src/lib/wedgeMode.ts` | מודים חד-מודולריים; `DEFAULT_MODE="all"` | להוסיף `offer-builder` -> `["differentiate","pricing"]`; לתקן `getActiveWedgeLabel` לרב-מודולרי | C1 | נמוך (מרוכז) | Slice 1 |
+| הפעלת ה-wedge | אין | `VITE_WEDGE_MODE=offer-builder` ב-`.env.example` (`DEFAULT_MODE` נשאר `all` כ-fallback בטוח) | להימנע מפליפ ברירת-מחדל מסוכן (תקרית prod עברה) | נמוך, הפיך | Slice 1 |
+| `src/pages/AdminWedge.tsx` | `MODE_LABELS: Record<WedgeMode,...>` | להוסיף ערך ל-`offer-builder` (חובה ל-typecheck) | exhaustiveness | נמוך | Slice 1 |
+| **`src/pages/PricingEntry.tsx:109`** | gate ל-`!result` עם CTA ל-`/wizard` | להציג את הוויזארד **עצמאית** כש-`wizard` נעול ב-wedge (לא dead-end) | `funnelforge-plans` נכתב רק ע"י `/wizard` | בינוני (UX) | **Slice 1 (בהיקף)** |
+| `SalesEntry`, `RetentionEntry` + מנועיהם | חשופים | נעולים דרך wedge (לא נמחקים) | שומן לעצמאי טרום-לקוחות | נמוך, הפיך | Slice 1 (תוצאת ה-wedge) |
 
 ---
 
-## טבלה B - שינוי קהל יעד / מיצוב
+## טבלה B - שינוי קהל יעד / מיצוב [נעול: עצמאי במעבר]
 
-| קובץ/אזור | מצב נוכחי | מצב מבוקש | סיבה | סיכון | החלטה פתוחה? |
+| קובץ/אזור | מצב נוכחי | מצב מבוקש | סיבה | סיכון | סטטוס |
 |---|---|---|---|---|---|
-| `src/pages/Landing.tsx` (hero, before/after, 5 modules) | "משקיע בשיווק ולא רואה תוצאות?" + "בעלי עסקים ישראליים"; כותרת SMB | מסר ל"עצמאי במעבר ממומחיות לעסקה" (למשל: "מומחה/ית בתחומך, אבל לא יודע/ת איך להפוך את זה להצעה שמוכרת?"); להבליט בידול+תמחור | ההכרעה על קהל | נמוך ל-CI (קופי), גבוה למסר (צריך דיוק) | **כן** (ניסוח positioning מדויק) |
-| `src/pages/UseCases.tsx` | דוגמאות לבעלי עסקים/SMB | דוגמאות לעצמאי (יועץ/מאמן/פרילנסר שבונה הצעה ראשונה) | קהל | נמוך | כן (אילו פרסונות) |
-| `src/i18n/translations.ts` (~1,530 קריאות `tx(`) | טרמינולוגיה "עסק/בעל עסק" | מעבר ל"עצמאי/מומחה/הצעה"; לשמור `tx({he,en})` ו-copy ממוגדר | קהל | בינוני (היקף; `i18n-key-count` דורש actual >= claimed -> לא להוריד מפתחות) | לא |
-| `src/lib/socialProofData.ts` | "+N בעלי עסקים" | ניסוח לעצמאים + להעמיד מספר אמיתי (pre-revenue) | קהל + כנות | בינוני (טענת social proof מנופחת) | כן (החלטה E) |
-| Differentiation/Pricing prompts (engine + UI) | מסגור עסקי, "B2B Differentiation Agent" | מסגור "הופך מומחיות להצעה" | קהל | בינוני (prompts משפיעים על פלט LLM; דורש eval) | כן |
+| `src/pages/Landing.tsx` | "בעלי עסקים ישראליים"; 5 מודולים; CTA ל-`/wizard` | מסר לעצמאי במעבר; להבליט בידול+תמחור; CTA לנתיב הפעיל | C1+קהל | נמוך CI | Slice 2 |
+| `src/pages/UseCases.tsx` | דוגמאות SMB | פרסונות עצמאי (יועץ/מאמן/פרילנסר) | קהל | נמוך | Slice 2 |
+| `src/i18n/translations.ts` (~1,530 `tx`) | "עסק/בעל עסק" | "עצמאי/מומחה/הצעה"; לשמור `tx` ו-`i18n-key-count` | קהל | בינוני (היקף) | Slice 2 |
+| `src/lib/socialProofData.ts` | "+N בעלי עסקים" | "Early Access" לא-מספרי (E) | כנות pre-revenue | בינוני | Slice 2 |
+
+> הקופי נכתב **אחרי** ה-wedge, כדי שיתאר את הנתיב שה-wedge חושף בפועל.
 
 ---
 
-## טבלה C - שינוי מודל עסקי / תמחור
+## טבלה C - קריסת tiers [נעול C2: רדום, שכבת תצוגה בלבד]
 
-| קובץ/אזור | מצב נוכחי | מצב מבוקש | סיבה | סיכון | החלטה פתוחה? |
+| קובץ/אזור | מצב נוכחי | מצב מבוקש | סיבה | סיכון | סטטוס |
 |---|---|---|---|---|---|
-| `src/lib/pricingTiers.ts` (`TIERS`, `PricingTier`) | free / pro ₪129 / business ₪299; annual 35%; trial 14 | להציג free + מדרגת תשלום אחת | ההכרעה | גבוה (ripple רחב) | **כן** (שם+מחיר המדרגה; annual? - החלטה D) |
-| `src/types/tier.ts` (`Tier`, `ALL_TIERS`, `TIER_DISPLAY_NAMES`) | 3 tiers | תלוי החלטה C2 (להשאיר enum רדום מול להסיר) | SOT לשמות tier; `identity` audit | גבוה (identity audit) | תלוי C2 |
-| DB: `profiles.tier` + `valid_tier CHECK` + `tier_audit_log` + RPC `process_stripe_tier_change` | `CHECK (tier IN ('free','pro','business'))`; webhook כותב tier | אם הסרה מלאה -> migration שמשנה CHECK + ממפה שורות `business` קיימות | שלמות נתונים | **גבוה** (migration+RLS+נתונים -> ענף+PR) | **כן** (החלטה C2) |
-| `supabase/functions/create-checkout/index.ts` (`PRICE_IDS`, `TRIAL_DAYS`) | ממפה `pro`+`business` ל-Stripe price IDs מ-env | מדרגה אחת; להסיר `business`; (וראה קונפליקט B) | תשלום | גבוה (payments -> ענף+PR) | כן (החלטה B) |
-| `PaywallModal.tsx` + 10 צרכני `useFeatureGate` + flags (`campaignCockpit`/`brandedReports`/`seats`/`templatePublishing`) | gating לפי 3 tiers; פיצ'רים business-only | מטריצת פיצ'רים חדשה ל-free/paid | model | בינוני-גבוה | **כן** (מה נכנס ל-paid) |
-| `Landing.tsx` pricing preview (`TIERS.map`, `i===1`="הכי פופולרי") + `Plans.tsx` + `PricingEntry.tsx` | 3 כרטיסים, מבליט אמצעי | 2 כרטיסים; להסיר לוגיקת "אמצעי" | model | בינוני (UI) | לא |
+| `src/lib/pricingTiers.ts` (`TIERS`) | free/pro/business | להציג free + מדרגה אחת; `'business'` **נשאר ב-union** רדום | C2 (בלי identity break) | בינוני | Slice 3 |
+| `src/types/tier.ts` | 3 ids | ללא שינוי ל-union (נשאר תקף ל-DB CHECK) | identity audit נשאר ירוק | נמוך | Slice 3 |
+| DB `profiles.tier` + `valid_tier CHECK` + RPC | `IN ('free','pro','business')` | **ללא נגיעה** (enum רדום) | אפס migration | אפס | - (נדחה) |
+| `PaywallModal` + צרכני `useFeatureGate` + Landing/Plans/PricingEntry preview | gating ל-3 tiers; כרטיס "אמצעי" | להציג/למכור מדרגה אחת; מטריצת פיצ'רים free/paid | model | בינוני-גבוה | Slice 3 |
+| `scripts/consistency/manifest.ts` + `README.md` + `financials.md` | נועל `tier-business-price-ils=299` | להסיר claim ה-business; ליישר מחיר המדרגה | אחרת `numeric` חוסם | גבוה (CI) | Slice 3 |
+
+> **מודול ה-wedge של pricing מנותק מכל זה** (Q2). קריסת ה-tiers נוגעת רק במסך המנוי/paywall, לא בוויזארד התמחור.
 
 ---
 
-## טבלה D - יישור מסמכים למציאות
+## טבלה D - יישור מסמכים למציאות [נעול]
 
-| קובץ/אזור | מצב נוכחי | מצב מבוקש | סיבה | סיכון | החלטה פתוחה? |
-|---|---|---|---|---|---|
-| `README.md` | "for Israeli SMBs"; "Consultant Reseller Program"; roadmap "Business tier GA"; unit economics 25x; "200+ data points"; תחזיות Y1-Y5 | ליישר לקהל עצמאי, מדרגה אחת, pre-revenue, modeled-not-observed; להסיר/לדחות reseller | כנות + עקביות | גבוה (numeric audit על מחירי tier וספירות) | כן (כמה מהחזון לחשוף) |
-| `scripts/consistency/manifest.ts` (`tier-pro-price-ils=129`, `tier-business-price-ils=299`, `trial-days`, ספירות) | נועל את מחירי 2 ה-tiers כ-claims ב-README ש-CI בודק | להסיר/לעדכן את claim ה-`business`; ליישר claim המדרגה היחידה | אחרת `consistency:numeric` **חוסם** | גבוה (CI blocker) | לא (חובה טכנית) |
-| `docs/financials.md` | Pro ₪99 / Business ₪249 / "save 20%" (drift!) + תחזיות + reseller | ליישר למדרגה יחידה, להצהיר pre-revenue/modeled, להסיר reseller-at-scale | drift קיים + קהל/model | בינוני (לא ב-CI אך מטעה) | כן |
-| `docs/consultant-reseller-program.md` | תוכנית reseller מלאה (B2B2C) | ארכוב/הסרה או מסגור כ"ערוץ עתידי מוקפא" | סותר קהל עצמאי | נמוך (doc) | **כן** (החלטה A) |
-| `CLAUDE.md`, `CHOICES.md`, `docs/business-baseline.md`, `docs/market-research.md`, `docs/competitor-research/*`, `docs/prioritization.md`, `docs/wedge-progress.md` | מניחים SMB / 3-tier / reseller | יישור לקהל+model+wedge החדשים | עקביות | נמוך-בינוני (`parameter-count` ב-CHOICES.md ב-numeric audit) | לא |
-| `Landing.tsx` claims (21 engines / 31 domains / 40 fields) מול README (128 engines) | טקסונומיות טענות לא מיושרות | לאחד; להעדיף מספרים אמיתיים/צנועים | כנות | בינוני | כן |
-
----
-
-## החלטות פתוחות (דורשות קלט שלך לפני שלב הביצוע)
-
-### A. קהל: positioning של reseller מול עצמאי
-**ממצא**: reseller לא ממומש בקוד (0 `reseller`, 3 `commission` ב-`src`); קיים רק ב-README + doc ייעודי. ה-`referralEngine` הוא refer-a-friend (referrer +1 חודש, referee 14 יום) - תואם עצמאי.
-- **(א) [מומלץ]** לשכתב positioning מ-reseller לעצמאי, לארכב `consultant-reseller-program.md`, לשמור refer-a-friend. עלות נמוכה (דוקס בלבד).
-- (ב) ליישר קהל ל-B2B2C (היועץ כמשתמש) - **בניגוד להכרעה הנעולה**; דורש לשמר reseller.
-- (ג) היברид: עצמאי כ-primary, reseller כ"ערוץ עתידי" מוקפא בדוקס.
-- **המלצה: (א)**. נימוק: הקונפליקט רדוד-בקוד ויקר רק בדוקס; ההכרעה הנעולה ברורה.
-
-### B. תשלום: checkout חי מול free-first + waitlist
-**ממצא**: `create-checkout` בנוי (דורש `STRIPE_SECRET_KEY` + `STRIPE_PRICE_*` + webhook; אין טיפול במע"מ/חשבונית = נטל תפעולי solo). `request-beta-access` + טבלת `beta_waitlist` (`20260427_001`) **כבר קיימים**.
-- **(א) [מומלץ להשקה]** free-first; לחווט את ה-waitlist הקיים ל-CTA של ה-paid; לדחות billing חי. ~אפס build נוסף; מסיר billing-ops מהמסלול הקריטי; מאמת ביקוש לפני כסף.
-- (ב) live single-tier checkout עכשיו. הקוד קיים, אבל דורש הקמת Stripe + חשבונית/מע"מ + ניטור webhook; סיכון לדדליין solo.
-- **המלצה: (א) להשקה, (ב) כ-fast-follow**. נימוק: אילוצי solo + דדליין; מנגנון ה-waitlist כבר בנוי.
-
-### C1. אילו מודולים ב-wedge
-**ממצא (fit ל"עצמאי במעבר ממומחיות לעסקה")**: בידול = HIGH, תמחור = HIGH, שיווק = MEDIUM, מכירות = LOW, שימור = LOW.
-- (א) wedge דו-מודולרי "בנה ותמחר את ההצעה" = `differentiate`+`pricing` (דורש הרחבת `wedgeMode`).
-- **(ב) [מומלץ להשקה ראשונה]** `differentiate-only` (קיים כבר; החיתוך הקטן ביותר; אפס שינוי wedge).
-- (ג) `marketing-only` (`wizard`) - ברירת המחדל ההיסטורית, אך פחות מדויק לקהל.
-- **המלצה: (ב) להשקה צמודת-דדליין, שדרוג ל-(א) מיד אחרי**. נימוק: "החיתוך הקטן ביותר שאפשר לשלוח".
-
-### C2. איך לקרוס tiers (גוזר את סיכון ה-migration)
-**ממצא**: `tier` ב-DB תחת `CHECK (tier IN ('free','pro','business'))` + RPC מבוקר + `tier_audit_log`.
-- **(א) [מומלץ ל-MVP]** retire-at-presentation: להשאיר `'business'` כ-enum רדום ב-DB+type, להציג ולמכור מדרגה אחת בלבד, להסיר claim ה-business מ-README+manifest. **אפס migration**, הכי בטוח, תואם פילוסופיית "הסתר אל תמחק" של הריפו.
-- (ב) hard-remove: להסיר `'business'` מה-type unions + `valid_tier CHECK` + RPC + `tier_audit_log`; migration שממפה שורות קיימות; ענף+PR; identity audit.
-- **המלצה: (א) ל-MVP, (ב) כניקוי-חוב עתידי**. נימוק: solo + דדליין; הימנעות ממיגרציה על CHECK עם נתונים חיים.
-
-### D. (משני) annual billing במדרגה היחידה?
-monthly+annual מול monthly-only ל-MVP. **המלצה: monthly-only** (פחות SKUs ב-Stripe, פחות קופי, פחות מספרים ליישר).
-
-### E. (משני) social proof אמיתי
-Landing מציג "+N בעלי עסקים" ל-pre-revenue. **המלצה: להחליף ל"Early Access" לא-מספרי** עד שיש נתון אמיתי.
-
----
-
-## סדר ביצוע מוצע (פרוסות קטנות, PR נפרד לכל אחת)
-
-| # | פרוסה | ענף | תלות | הערה |
-|---|---|---|---|---|
-| 1 | יישור מיצוב בדוקס (audience ב-README/דוקס; ארכוב reseller) **בלי מספרי tier** | `claude/refocus-docs-audience` | - | להפריד מספרי tier ל-Slice 4 כדי לא להפעיל numeric audit מוקדם |
-| 2 | קופי קהל יעד (Landing + UseCases + translations) | `claude/refocus-audience-copy` | - | אין סיכון schema; לשמור `i18n-key-count`; להריץ `check-brand-copy` |
-| 3 | wedge ל-MVP (הרחבת `wedgeMode` + `DEFAULT_MODE` + CTA/route ב-Landing) | `claude/refocus-wedge` | תלוי C1 | אם C1=(ב) `differentiate-only` -> כמעט אפס שינוי קוד |
-| 4 | קריסת tiers בשכבת התצוגה (pricingTiers/tier.ts לפי C2 + PaywallModal + מטריצת פיצ'רים + Landing/Plans/PricingEntry) **+ יישור `manifest.ts`+README+financials** | `claude/refocus-pricing` | תלוי C2 | **הפרוסה הרגישה ל-audits** (identity+numeric). לעדכן manifest+README יחד |
-| 5 | תשלום לפי החלטה B: (א) חיווט `request-beta-access` ל-CTA paid; או (ב) `create-checkout` חד-מדרגתי + הקמת Stripe | `claude/refocus-checkout` | אחרי 4 | payments -> תמיד ענף+PR |
-| 6 | (רק אם C2=(ב)) migration להסרת `'business'` מ-`valid_tier` + מיפוי נתונים | `claude/refocus-tier-migration` | אחרי 4, אימות schema | migration+RLS -> ענף+PR; פעולה לאישור מפורש |
-
----
-
-## השפעה על audits (מה צריך לעדכן כדי שלא יישבר)
-
-| שומר סף | מתי נוגעים בו | פעולה נדרשת |
+| קובץ/אזור | מצב מבוקש | סטטוס |
 |---|---|---|
-| `npm run typecheck` / `npm run lint` | כל פרוסת קוד | אפס שגיאות/warnings |
-| `npm test` (~4,750) | כל פרוסה | לעדכן טסטים שנשענים על 3 tiers / מודולי wedge |
-| `npm run consistency:numeric` | פרוסות 4 + 1-של-מחירים | לעדכן `manifest.ts` (claim `tier-business-price-ils`) **יחד** עם README; אם נמחק קוד -> ספירות engine/page/component משתנות (לכן מעדיפים נעילה ולא מחיקה) |
-| `npm run consistency:identity` | פרוסה 4 (אם C2=(ב)) | tier union חייב להתאים לצרכנים + ל-DB CHECK |
-| `consistency:behavioral` / `provenance` | D (אם נוגעים ב-claims עם `source.quote`) | לעדכן את ה-manifest/quote המתאים |
-| `npm run check:no-em-dash` | כל קופי/דוקס | אסור em-dash (`-` בלבד) |
-| `check-brand-locked.sh` / `check-brand-copy.sh` | פרוסה 2 (מיצוב/מותג) | ליישר לקופי המותג |
-| `check-hygiene-baseline.sh` | כל פרוסת קוד | `safeStorage`/`logger`/בלי `any` |
-| `npm run build` | כל פרוסה | כולל `check:no-em-dash` |
+| `README.md` | קהל עצמאי, מדרגה אחת, pre-revenue/modeled, להסיר/לדחות reseller; ליישר ספירות+מחירים מול `manifest.ts` | Slice 3 (מספרים) + Slice 5 (טקסט) |
+| `docs/financials.md` | לתקן drift קיים (₪99/₪249/20% -> תואם קוד); מדרגה אחת; pre-revenue | Slice 5 |
+| `docs/consultant-reseller-program.md` | ארכוב/מסגור כ"ערוץ עתידי מוקפא" (A) | Slice 5 |
+| `CLAUDE.md`, `CHOICES.md`, `docs/{business-baseline,market-research,competitor-research/*,prioritization,wedge-progress}.md` | יישור לקהל+model+wedge | Slice 5 |
 
 ---
 
-## נספח - מצאי שנסרק (עוגני ראיות)
+## הכרעות (סגורות) - תיעוד הבחירה
 
-- **מנועים**: 128 קבצי `.ts` ב-`src/engine` (55 בשם `*Engine*.ts`). מודולים (לפי שם קובץ, ללא טסטים): differentiate 14/3,843; pricing 17/4,851; wizard 8/3,046; retention 10/1,508; sales 4/1,025.
-- **wedge**: `src/lib/wedgeMode.ts` (+`WedgeGuard`, `LockedModuleScreen`, `AppSidebar`, `wedgeTelemetry`, `AdminWedge`). מודים חד-מודולריים בלבד כיום.
-- **תמחור**: `src/lib/pricingTiers.ts` + `src/types/tier.ts` (שניהם `free|pro|business`). 10 קבצים צורכים `useFeatureGate`.
-- **תשלום**: edge functions `create-checkout`, `customer-portal`, `stripe-webhook`, `purchase-credits`. `PaywallModal` -> `create-checkout`; `Profile` -> `customer-portal`.
-- **DB tier**: `profiles.tier` + `valid_tier CHECK` (`20260409_005`), `tier_audit_log` (`20260423_001`), `subscription_status` + RPC `process_stripe_tier_change` (`20260423_008`). 51 migrations.
-- **waitlist**: `request-beta-access` + `beta_waitlist` (`20260427_001`).
-- **referral**: `referralEngine.ts` + `ReferralDashboard.tsx` + `referral.vm.ts` = refer-a-friend (לא reseller).
-- **reseller**: דוקס בלבד (`docs/consultant-reseller-program.md` + סעיף README). 0 `reseller` בקוד.
-- **i18n**: ~1,530 קריאות `tx(`; `src/i18n/translations.ts`.
-- **audits**: `scripts/consistency/manifest.ts` נועל בין השאר `tier-pro-price-ils=129`, `tier-business-price-ils=299`, `trial-days`, וספירות engine/agent/migration/edge-fn/component/page/hook/i18n/archetype/loop/parameter.
+- **A**: reseller לא ממומש בקוד (0 `reseller`, 3 `commission` ב-`src`); refer-a-friend (`referralEngine`) תואם עצמאי. -> שכתוב positioning בדוקס, עלות נמוכה.
+- **B**: `create-checkout` בנוי אך דורש Stripe+מע"מ+webhook (נטל solo); `request-beta-access`+`beta_waitlist` כבר קיימים. -> free-first, billing fast-follow.
+- **C1**: בידול+תמחור = שני הכאבים של "עצמאי במעבר ממומחיות לעסקה"; הדלתא זולה ומנותקת מ-C2. -> `offer-builder`.
+- **C2**: `tier` נעול ב-DB CHECK + RPC + audit-log; הסרה אמיתית = migration מסוכן. -> רדום, שכבת תצוגה.
+- **D/E**: פחות SKUs/קופי; כנות pre-revenue. -> monthly-only, Early Access.
+
+### לאימות בזמן ביצוע (לא חוסם החלטה)
+- לפני הסתמכות על enum רדום: לוודא שאין שורות `tier='business'` חיות בפרוד (אם יש - לטפל לפני הסרת המסך).
+- לפני נעילת `offer-builder` כברירת מחדל בפרוד: validation ב-preview env (תקרית safeStorage היסטורית בפליפ default).
+
+---
+
+## סדר ביצוע (מעודכן - wedge קודם לקופי)
+
+| # | פרוסה | ענף | audits רגישים | הערה |
+|---|---|---|---|---|
+| **1** | wedge `offer-builder` + `AdminWedge` + **re-wire CTA ב-`PricingEntry`** (עצמאי) | `claude/refocus-wedge` | אין (typecheck+טסט) | השינוי ההתנהגותי שקובע מה המשתמש רואה. ראשון. |
+| 2 | קופי קהל (Landing/UseCases/translations) המתאר את הנתיב הפעיל | `claude/refocus-audience-copy` | brand-copy | אחרי שה-wedge נעול |
+| 3 | קריסת tiers בשכבת התצוגה + יישור `manifest`+README+financials | `claude/refocus-pricing` | **identity + numeric** | **מבודד. אל תשלב. הרץ את כל 6 ה-audits עליו לבד.** |
+| 4 | free-first: חיווט `request-beta-access` ל-CTA paid | `claude/refocus-waitlist` | אין | payments-adjacent -> ענף+PR |
+| 5 | יישור דוקס (reseller->עצמאי, financials, README) | `claude/refocus-docs` | numeric/provenance אם נוגעים ב-claims | אחרון |
+| - | (נדחה) migration להסרת `'business'` | - | identity | רק אם C2 ייפתח מחדש |
+
+---
+
+## השפעה על audits
+
+- **Slice 3 (tiers) הוא היחיד הרגיש ל-consistency** (identity+numeric). מבודד; כל 6 ה-audits רצים עליו לבד לפני המשך.
+- Slices 1/2/4/5: `typecheck` + `lint` + `test` + `build` (+`check:no-em-dash`, `brand`, `hygiene`). אין דלתא ב-numeric/identity.
+- כלל-על: מסתירים ולא מוחקים -> ספירות `engine/page/component` יציבות -> `numeric` לא נשבר מהמיקוד.
+
+---
+
+## נספח - עוגני ראיות
+
+- מנועים: 128 `.ts` (55 `*Engine*.ts`). מודולים: differentiate 14/3843, pricing 17/4851, wizard 8/3046, retention 10/1508, sales 4/1025.
+- wedge: `wedgeMode.ts` (מודים חד-מודולריים), `WedgeGuard`, `LockedModuleScreen`, `AppSidebar`, `wedgeTelemetry`, `AdminWedge`. `getActiveWedgeLabel` לא בשימוש מחוץ ל-`wedgeMode.ts`.
+- pricing wedge module: `PricingEntry` -> `PricingWizard`/`PricingIntelligenceTab`/`PricingWizardResults`. ללא import של tiers. `getLatestPlanResult` קורא `funnelforge-plans`, שנכתב רק ע"י `/wizard`.
+- tiers ב-DB: `profiles.tier`+`valid_tier CHECK` (`20260409_005`), `tier_audit_log` (`20260423_001`), RPC `process_stripe_tier_change` (`20260423_008`).
+- תשלום/waitlist: `create-checkout`/`customer-portal`/`stripe-webhook`; `request-beta-access`+`beta_waitlist` (`20260427_001`).
+- reseller: דוקס בלבד. refer-a-friend: `referralEngine`/`ReferralDashboard`/`referral.vm`.
+- audits: `manifest.ts` נועל `tier-pro-price-ils=129`, `tier-business-price-ils=299`, `trial-days`, וספירות. `grep wedge scripts/consistency` ריק.
+- טסטים נוגעים: `src/pages/__tests__/PricingEntry.test.tsx` (היחיד שנוגע ב-wedge behavior).
