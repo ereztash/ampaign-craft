@@ -64,8 +64,11 @@ describe("differentiationFormRules", () => {
       expect(canProceedPhase("surface", makeFormData({ companySize: "" as never }))).toBe(false);
     });
 
-    it("returns false when currentPositioning is too short (<=10)", () => {
-      expect(canProceedPhase("surface", makeFormData({ currentPositioning: "short" }))).toBe(false);
+    it("proceeds when currentPositioning is empty (articulation is optional)", () => {
+      // The articulation textarea is the ICP choke point. Surface must not
+      // block on it: a user who cannot phrase their differentiation still proceeds.
+      expect(canProceedPhase("surface", makeFormData({ currentPositioning: "" }))).toBe(true);
+      expect(describeBlockingField("surface", makeFormData({ currentPositioning: "" }))).toBeNull();
     });
 
     it("returns false when no non-empty competitors", () => {

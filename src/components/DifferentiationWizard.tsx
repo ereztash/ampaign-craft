@@ -146,6 +146,18 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
     setPhaseIndex((i) => Math.max(i - 1, 0));
   };
 
+  // Escape hatch for the articulation choke point: a user who cannot phrase
+  // their differentiation jumps straight to the extraction phase ("hidden"),
+  // which mines it from pain instead of asking for it. Spec: Slice 1.
+  const extractionPhaseIndex = PHASES.findIndex((p) => p.id === "hidden");
+  const handleSkipToExtraction = () => {
+    if (extractionPhaseIndex < 0) return;
+    setAiInsights([]);
+    setAiError(null);
+    setDirection(1);
+    setPhaseIndex(extractionPhaseIndex);
+  };
+
   // Phase 5 auto-triggers AI
   const isSynthesisPhase = currentPhase.id === "synthesis";
 
@@ -318,6 +330,18 @@ const DifferentiationWizard = ({ onComplete, onBack, initialPrefill }: Different
             )}
           </Button>
           </div>
+          {currentPhase.id === "surface" && (
+            <div className="text-center">
+              <Button
+                variant="link"
+                size="sm"
+                onClick={handleSkipToExtraction}
+                className="h-auto text-xs text-muted-foreground"
+              >
+                {tx({ he: "אני לא יודע איך להגיד את זה. קחו אותי ישר לחילוץ", en: "I don't know how to say it. Take me straight to extraction" }, language)}
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

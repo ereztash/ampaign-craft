@@ -167,30 +167,43 @@ const PageComponent = () => {
               </div>
             )}
 
-            {/* Primary CTA: 5-phase form wizard */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button size="lg" onClick={handleStart} className="gap-2 text-lg px-8">
-                <Sparkles className="h-5 w-5" />
-                {t("diffStartCta")}
-              </Button>
+            {/* Extraction-first framing: you don't need to know how to say it */}
+            <p className="text-base text-foreground/80 max-w-xl mx-auto" dir="auto">
+              {tx({
+                he: "לא צריך לדעת לנסח את הבידול שלך. זאת בדיוק הנקודה. בחרו איך נתחיל:",
+                en: "You don't need to know how to phrase your differentiation. That's the whole point. Choose how we start:",
+              }, language)}
+            </p>
+
+            {/* Two co-equal doors: tell me in your words, or give me a transcript to extract from */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-start">
               <Button
-                size="lg"
+                variant="outline"
+                onClick={handleStart}
+                className="h-auto flex-col items-start gap-1 p-5 border-2 border-primary/30 hover:border-primary/60 whitespace-normal"
+              >
+                <span className="flex items-center gap-2 text-base font-bold text-foreground">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  {t("diffStartCta")}
+                </span>
+                <span className="text-xs font-normal text-muted-foreground" dir="auto">
+                  {tx({ he: "ספרו לי בשפה שלכם. 5 שלבים, בלי לדרוש ניסוח מראש. ~10 דקות", en: "Tell me in your own words. 5 phases, no upfront articulation. ~10 min" }, language)}
+                </span>
+              </Button>
+
+              <Button
                 variant="outline"
                 onClick={() => setView("transcript")}
-                className="gap-2 text-lg px-8"
+                className="h-auto flex-col items-start gap-1 p-5 border-2 border-amber-500/30 hover:border-amber-500/60 whitespace-normal"
               >
-                <FileText className="h-5 w-5" />
-                {tx({ he: "העלה תמלול פגישה", en: "Upload Meeting Transcript" }, language)}
+                <span className="flex items-center gap-2 text-base font-bold text-foreground">
+                  <FileText className="h-5 w-5 text-amber-600" />
+                  {tx({ he: "העלה תמלול פגישה", en: "Upload Meeting Transcript" }, language)}
+                </span>
+                <span className="text-xs font-normal text-muted-foreground" dir="auto">
+                  {tx({ he: "ואני אחלץ את הבידול מתוך שיחה אמיתית. 12 עקרונות, ~3 דקות", en: "and I'll extract your differentiation from a real conversation. 12 principles, ~3 min" }, language)}
+                </span>
               </Button>
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">
-                {tx({ he: "5 שלבים · ~10 דקות · מופעל ב-AI", en: "5 phases · ~10 minutes · AI-powered" }, language)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {tx({ he: "או: 12 עקרונות במקביל על תמלול קיים · ~3 דקות", en: "or: 12 parallel principles on existing transcript · ~3 min" }, language)}
-              </p>
             </div>
           </motion.div>
         )}

@@ -117,9 +117,11 @@ const DifferentiationResultView = ({ result, onBack }: DifferentiationResultProp
           },
         ]}
         checkOptions={[
-          { label: { he: "מדויק", en: "Accurate" }, action: "accept" },
-          { label: { he: "לא מדויק", en: "Needs work" }, action: "reject" },
-          { label: { he: "רוצה גרסה חדה יותר", en: "Sharpen this" }, action: "refine" },
+          // Z1 "works for me" test: accept only phrasing the user owns, not a
+          // line we handed them. Reject routes back to re-extract (onBack).
+          { label: { he: "זה יצא ממני", en: "This came from me" }, action: "accept" },
+          { label: { he: "לא, זה הניסוח שלך", en: "No, that's your phrasing" }, action: "reject" },
+          { label: { he: "כמעט - חדד איתי", en: "Almost - sharpen it with me" }, action: "refine" },
         ]}
         userState={userState}
         onCheck={(action) => {

@@ -27,7 +27,6 @@ export function canProceedPhase(phaseId: PhaseId, formData: DifferentiationFormD
         formData.industry.trim().length > 0 &&
         !!formData.targetMarket &&
         !!formData.companySize &&
-        formData.currentPositioning.trim().length > 10 &&
         formData.topCompetitors.filter((c) => c.trim().length > 0).length >= 1 &&
         !!formData.priceRange
       );
@@ -78,11 +77,8 @@ export function describeBlockingField(
         return { he: "בחר/י שוק יעד", en: "Pick a target market" };
       if (!formData.companySize)
         return { he: "בחר/י גודל חברה", en: "Pick company size" };
-      if (formData.currentPositioning.trim().length <= 10)
-        return {
-          he: "כתוב/י לפחות 10 תווים על המיצוב הנוכחי",
-          en: "Describe the current positioning (at least 10 characters)",
-        };
+      // currentPositioning is intentionally optional: it is the articulation
+      // choke point this module is built to bypass, not enforce.
       if (formData.topCompetitors.filter((c) => c.trim().length > 0).length < 1)
         return { he: "הוסף/י מתחרה אחד לפחות", en: "Add at least one competitor" };
       if (!formData.priceRange)
