@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { tx } from "@/i18n/tx";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useSeo } from "@/hooks/useSeo";
 import {
   Sparkles, ArrowDown, Check, ChevronLeft,
   BarChart3, Crosshair, TrendingUp, DollarSign, Heart,
@@ -32,6 +33,15 @@ export default function PublicLanding() {
   const isHe = language === "he";
   const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
+
+  useSeo({
+    title: isHe
+      ? "FunnelForge - שיווק, מכירות ותמחור לעסקים קטנים"
+      : "FunnelForge - marketing, sales and pricing for small businesses",
+    description: isHe
+      ? "בנה תוכנית שיווק, מכירות ותמחור מותאמת לעסק שלך תוך 5 דקות, מבוסס דאטה ומדע התנהגותי."
+      : "Build a marketing, sales and pricing plan tailored to your business in 5 minutes, grounded in data and behavioral science.",
+  });
 
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
