@@ -47,12 +47,15 @@ jobs:
         #  - xlsx: pinned HIGH CVEs with no upstream fix (tracked separately)
         #  - @xmldom/xmldom: advisory range <0.8.13; we run 0.8.13 (patched).
         #    mammoth pins ^0.8.6, so a 0.9.x override would break it.
+        #  - vitest / @vitest/coverage-v8: dev/test tooling only (Vitest UI
+        #    server advisory); never shipped to the production runtime, and
+        #    fixed upstream only via a breaking major.
         run: |
           set -eo pipefail
           npm audit --omit=dev --json > audit.json || true
           node -e "
             const a = require('./audit.json');
-            const ALLOW = new Set(['xlsx', '@xmldom/xmldom']);
+            const ALLOW = new Set(['xlsx', '@xmldom/xmldom', 'vitest', '@vitest/coverage-v8']);
             const vulns = Object.entries(a.vulnerabilities || {});
             const bad = vulns.filter(([name, v]) =>
               (v.severity === 'high' || v.severity === 'critical') && !ALLOW.has(name)

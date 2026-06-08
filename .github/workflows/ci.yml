@@ -44,9 +44,30 @@ jobs:
         run: bash scripts/check-hygiene-baseline.sh
 
       - name: Security audit
-        # --audit-level=critical: xlsx has a known high CVE with no available fix;
-        # we block on critical severity but track the xlsx issue separately.
-        run: npm audit --audit-level=critical
+        # Block on production high/critical vulnerabilities, except an allowlist
+        # of advisories accepted and tracked separately (kept in sync with
+        # .github/workflows/security.yml):
+        #  - xlsx: pinned HIGH CVEs, no upstream fix.
+        #  - @xmldom/xmldom: advisory range <0.8.13; we run a patched line.
+        #  - vitest / @vitest/coverage-v8: dev/test tooling only (Vitest UI
+        #    server advisory); never shipped to the production runtime, and
+        #    fixed upstream only via a breaking major.
+        run: |
+          set -eo pipefail
+          npm audit --omit=dev --json > audit.json || true
+          node -e "
+            const a = require('./audit.json');
+            const ALLOW = new Set(['xlsx', '@xmldom/xmldom', 'vitest', '@vitest/coverage-v8']);
+            const bad = Object.entries(a.vulnerabilities || {}).filter(([name, v]) =>
+              (v.severity === 'high' || v.severity === 'critical') && !ALLOW.has(name)
+            );
+            if (bad.length) {
+              console.error('Non-allowlisted high/critical vulnerabilities:');
+              for (const [name, v] of bad) console.error('  -', name, v.severity);
+              process.exit(1);
+            }
+            console.log('npm audit clean (allowlisted advisories tracked separately)');
+          "
 
       - name: Diagnostics
         run: |
