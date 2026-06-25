@@ -13,7 +13,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version: 20
@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version: 20
@@ -193,7 +193,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Deploy to Vercel
         run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
         env:
